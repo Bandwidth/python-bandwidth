@@ -5,76 +5,7 @@ import requests
 
 log = logging.getLogger(__name__)
 
-__all__ = ('Client', )
-
-
-class Call(object):
-
-    def __init__(self, client, data):
-        self.client = client
-        self.kwargs = data
-        self.call_id = data['callId']
-
-    def send_dtmf(self, dtmf, timeout=None):
-        '''
-        Sends a string of characters as DTMF on the given call_id
-        Valid chars are '0123456789*#ABCD'
-        '''
-        url = '/v1/users/{}/calls/{}/dtmf'.format(self.uid, call_id)
-
-        json_data = {'dtmfOut': dtmf}
-
-        return self.client._post(url, data=json.dumps(json_data), timeout=timeout)
-
-    def receive_dtmf(self, call_id, max_digits, terminating_digits,
-                     inter_digit_timeout='1', timeout=None):
-        url = '/v1/users/{}/calls/{}/gather'.format(self.uid, call_id)
-
-        http_get_params = {
-                            'maxDigits': max_digits,
-                            'terminatingDigits': terminating_digits,
-                            'interDigitTimeout': inter_digit_timeout
-                        }
-
-        return self._get(url, params=http_get_params, timeout=timeout)
-
-    def end_call(self, call_id):
-        '''
-        Hangs up a call with the given call_id
-        '''
-        url = '/v1/users/{}/calls/{}/'.format(self.uid, call_id)
-
-        return self._post(url, data=json.dumps({}), timeout=None)
-
-    def play_audio(self, call_id, timeout=None, **kwargs):
-        '''
-        Plays audio form the given url to the call associated with call_id
-        '''
-        url = '/v1/users/{}/calls/{}/audio'.format(self.uid, call_id)
-
-        # stops currently playing audio
-        key = 'fileUrl' if 'fileUrl' in kwargs else 'sentence'
-        if kwargs[key]:
-        self._post(url, data=json.dumps({key: ''}), timeout=timeout)
-
-        return self._post(url, data=json.dumps(kwargs), timeout=timeout)
-
-    def get_bridge_url(self, url, timeout=None):
-        return self._get(url, timeout=timeout)
-
-    def get_recordings(self, call_id, timeout=None):
-        '''
-        Retrieves an array with all the recordings of the call_id
-        '''
-        url = '/v1/users/{}/calls/{}/recordings'.format(self.uid, call_id)
-
-        return self._get(url, timeout=timeout)
-
-    def set_call_property(self, call_id, timeout=None, **kwargs):
-        url = '/v1/users/{}/calls/{}'.format(self.uid, call_id)
-        json_data = json.dumps(kwargs)
-
-        return self._post(url, data=json_data, timeout=timeout)
+__all__ = ('Client', 'Call')
 
 
 class Client(object):
@@ -85,18 +16,22 @@ class Client(object):
     default_timeout = 60
     headers = {'content-type': 'application/json'}
 
-    def Call(self, kwargs):
-        return Call(self, kwargs)
+    def Call(self, *args, **kwargs):
+        return Call(self, *args, **kwargs)
 
     class Error(Exception):
         pass
 
     def __init__(self, user_id: str, auth: tuple, endpoint='https://api.catapult.inetwork.com', log_hook=None):
-        self.endpoint = endpoint
+        self.endpoint = endpoint + '/v1/users/{}/'.format(user_id)
         self.log_hook = log_hook
         self.uid = user_id
         self.auth = auth
         self.application_id = None
+
+    def calls(self, *params):
+        result_list = self._get('calls/')
+        return map(self.Call, result_list)
 
     def _log_response(self, response):
         '''
@@ -119,7 +54,7 @@ class Client(object):
 
         self._log_response(response)
 
-        return response
+        return response.json()
 
     def _get(self, url, timeout=None, **kwargs):
         url = self._join_endpoint(url)
@@ -130,7 +65,7 @@ class Client(object):
 
         self._log_response(response)
 
-        return response
+        return response.json()
 
     def _post(self, url, timeout=None, **kwargs):
         url = self._join_endpoint(url)
@@ -140,8 +75,7 @@ class Client(object):
         response = requests.post(url, auth=self.auth, headers=self.headers, **kwargs)
 
         self._log_response(response)
-
-        return response
+        return response.json()
 
     def create_application(self, name, timeout=None, **kwargs):
 
@@ -325,65 +259,8 @@ class Client(object):
         json_data.update(kwargs)
         return self._post(url, data=json.dumps(json_data), timeout=timeout)
 
-    def send_dtmf(self, call_id, dtmf, timeout=None):
-        '''
-        Sends a string of characters as DTMF on the given call_id
-        Valid chars are '0123456789*#ABCD'
-        '''
-        url = '/v1/users/{}/calls/{}/dtmf'.format(self.uid, call_id)
-
-        json_data = {'dtmfOut': dtmf}
-
-        return self._post(url, data=json.dumps(json_data), timeout=timeout)
-
-    def receive_dtmf(self, call_id, max_digits, terminating_digits,
-                     inter_digit_timeout='1', timeout=None):
-        url = '/v1/users/{}/calls/{}/gather'.format(self.uid, call_id)
-
-        http_get_params = {
-            'maxDigits': max_digits,
-            'terminatingDigits': terminating_digits,
-            'interDigitTimeout': inter_digit_timeout}
-
-        return self._get(url, params=http_get_params, timeout=timeout)
-
-    def end_call(self, call_id):
-        '''
-        Hangs up a call with the given call_id
-        '''
-        url = '/v1/users/{}/calls/{}/'.format(self.uid, call_id)
-
-        return self._post(url, data=json.dumps({}), timeout=None)
-
-    def play_audio(self, call_id, timeout=None, **kwargs):
-        '''
-        Plays audio form the given url to the call associated with call_id
-        '''
-        url = '/v1/users/{}/calls/{}/audio'.format(self.uid, call_id)
-
-        # stops currently playing audio
-        key = 'fileUrl' if 'fileUrl' in kwargs else 'sentence'
-        if kwargs[key]:
-            self._post(url, data=json.dumps({key: ''}), timeout=timeout)
-
-        return self._post(url, data=json.dumps(kwargs), timeout=timeout)
-
     def get_bridge_url(self, url, timeout=None):
         return self._get(url, timeout=timeout)
-
-    def get_recordings(self, call_id, timeout=None):
-        '''
-        Retrieves an array with all the recordings of the call_id
-        '''
-        url = '/v1/users/{}/calls/{}/recordings'.format(self.uid, call_id)
-
-        return self._get(url, timeout=timeout)
-
-    def set_call_property(self, call_id, timeout=None, **kwargs):
-        url = '/v1/users/{}/calls/{}'.format(self.uid, call_id)
-        json_data = json.dumps(kwargs)
-
-        return self._post(url, data=json_data, timeout=timeout)
 
     def send_message(self, from_who, to_who, text, timeout=None, **kwargs):
         url = '/v1/users/{}/messages/'.format(self.uid)
@@ -468,3 +345,73 @@ class Client(object):
         self._log_response(response)
 
         return response
+
+
+class Call(object):
+
+    def __init__(self, client: Client, data: dict):
+        self.client = client
+        self.kwargs = data
+        self.call_id_key = 'callId' if 'callId' in data else 'id'
+        self.call_id = data[self.call_id_key]
+
+    def send_dtmf(self, dtmf, timeout=None):
+        '''
+        Sends a string of characters as DTMF on the given call_id
+        Valid chars are '0123456789*#ABCD'
+        '''
+        url = 'calls/{}/dtmf'.format(self.call_id)
+
+        json_data = {'dtmfOut': dtmf}
+
+        return self.client._post(url, data=json.dumps(json_data), timeout=timeout)
+
+    def receive_dtmf(self, max_digits, terminating_digits,
+                     inter_digit_timeout='1', timeout=None):
+        url = 'calls/{}/gather'.format(self.call_id)
+
+        http_get_params = {'maxDigits': max_digits, 'terminatingDigits': terminating_digits,
+                           'interDigitTimeout': inter_digit_timeout}
+        return self.client._get(url, params=http_get_params, timeout=timeout)
+
+    def end_call(self):
+        '''
+        Hangs up a call with the given call_id
+        '''
+        url = '/calls/{}/'.format(self.call_id)
+
+        return self.client._post(url, data=json.dumps({}), timeout=None)
+
+    def play_audio(self, timeout=None, **kwargs):
+        '''
+        Plays audio form the given url to the call associated with call_id
+        '''
+        url = 'calls/{}/audio'.format(self.call_id)
+
+        # stops currently playing audio
+        key = 'fileUrl' if 'fileUrl' in kwargs else 'sentence'
+        if kwargs[key]:
+            self.client._post(url, data=json.dumps({key: ''}), timeout=timeout)
+
+        return self.client._post(url, data=json.dumps(kwargs), timeout=timeout)
+
+    def get_recordings(self, timeout=None):
+        '''
+        Retrieves an array with all the recordings of the call_id
+        '''
+        url = 'calls/{}/recordings'.format(self.call_id)
+
+        return self.client._get(url, timeout=timeout)
+
+    def set_call_property(self, timeout=None, **kwargs):
+        url = '/v1/users/{}/calls/{}'.format(self.call_id)
+        json_data = json.dumps(kwargs)
+        return self.client._post(url, data=json_data, timeout=timeout)
+
+    def update(self):
+        url = '/v1/users/{}/calls/{}'.format(self.call_id)
+        data = self.client._get(url)
+        self.kwargs.update(data)
+
+    def __repr__(self):
+        return 'Call {}'.format(self.kwargs[self.call_id_key])
