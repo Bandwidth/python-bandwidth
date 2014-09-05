@@ -30,8 +30,10 @@ class Client(object):
         self.application_id = None
 
     def calls(self, *params):
-        result_list = self._get('calls/')
-        return map(self.Call, result_list)
+        result_list = self._get('calls/').json()
+        return [self.Call(v) for v in result_list]
+
+    get_calls = calls
 
     def _log_response(self, response):
         '''
@@ -54,7 +56,7 @@ class Client(object):
 
         self._log_response(response)
 
-        return response.json()
+        return response
 
     def _get(self, url, timeout=None, **kwargs):
         url = self._join_endpoint(url)
@@ -65,7 +67,7 @@ class Client(object):
 
         self._log_response(response)
 
-        return response.json()
+        return response
 
     def _post(self, url, timeout=None, **kwargs):
         url = self._join_endpoint(url)
@@ -75,7 +77,7 @@ class Client(object):
         response = requests.post(url, auth=self.auth, headers=self.headers, **kwargs)
 
         self._log_response(response)
-        return response.json()
+        return response
 
     def create_application(self, name, timeout=None, **kwargs):
 
@@ -248,7 +250,7 @@ class Client(object):
         return self._post(url, data=data, timeout=timeout)
 
     def create_call(self, caller, callee, timeout=None, **kwargs):
-        url = '/v1/users/{}/calls/'.format(self.uid)
+        url = 'calls/'.format(self.uid)
 
         json_data = {
             'from': caller,
@@ -257,7 +259,10 @@ class Client(object):
         }
 
         json_data.update(kwargs)
-        return self._post(url, data=json.dumps(json_data), timeout=timeout)
+        data = self._post(url, data=json.dumps(json_data), timeout=timeout)
+        location = data.headers['Location']
+        call_id = location.split('/')[-1]
+        return self.Call({'callId': call_id})
 
     def get_bridge_url(self, url, timeout=None):
         return self._get(url, timeout=timeout)
@@ -364,7 +369,7 @@ class Call(object):
 
         json_data = {'dtmfOut': dtmf}
 
-        return self.client._post(url, data=json.dumps(json_data), timeout=timeout)
+        return self.client._post(url, data=json.dumps(json_data), timeout=timeout).content
 
     def receive_dtmf(self, max_digits, terminating_digits,
                      inter_digit_timeout='1', timeout=None):
@@ -401,7 +406,7 @@ class Call(object):
         '''
         url = 'calls/{}/recordings'.format(self.call_id)
 
-        return self.client._get(url, timeout=timeout)
+        return self.client._get(url, timeout=timeout).json()
 
     def set_call_property(self, timeout=None, **kwargs):
         url = '/v1/users/{}/calls/{}'.format(self.call_id)
@@ -409,8 +414,8 @@ class Call(object):
         return self.client._post(url, data=json_data, timeout=timeout)
 
     def update(self):
-        url = '/v1/users/{}/calls/{}'.format(self.call_id)
-        data = self.client._get(url)
+        url = '/v1/users/calls/{}'.format(self.call_id)
+        data = self.client._get(url).json()
         self.kwargs.update(data)
 
     def __repr__(self):

@@ -230,10 +230,15 @@ class Client(object):
 
         return self._post(url, data=json.dumps(json_data), timeout=timeout)
 
-    def get_call_info(self, call_id, timeout):
+    def get_call_info(self, call_id, timeout=None):
         url = '/v1/users/{}/calls/{}'.format(self.uid, call_id)
 
         return self._get(url, timeout=timeout)
+
+    def get_calls(self, timeout=None, **kwargs):
+        url = '/v1/users/{}/calls/'.format(self.uid)
+
+        return self._get(url, timeout=timeout).json()
 
     def get_bridge_info(self, bridge_id, timeout=None):
         '''
