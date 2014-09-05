@@ -1,26 +1,43 @@
 from urllib.parse import quote
 import logging
 import json
-from rest import RESTClientObject
+
+from .rest import RESTClientObject
+
 
 logger = logging.getLogger(__name__)
 
-__all__ = ('Client', )
+__all__ = ('Client', 'Call')
 
 
 class Client(RESTClientObject):
     endpoint = None
     uid = None
     auth = None
+    log_hook = None
+    default_timeout = 60
+    headers = {'content-type': 'application/json'}
+
+    def Call(self, *args, **kwargs):
+        return Call(self, *args, **kwargs)
+
+    class Error(Exception):
+        pass
 
     def __init__(self, user_id: str, auth: tuple, endpoint='https://api.catapult.inetwork.com',
                  log=None, log_hook=None):
-        self.endpoint = endpoint
+        self.endpoint = endpoint + '/v1/users/{}/'.format(user_id)
         self.log_hook = log_hook
         self.uid = user_id
         self.auth = auth
         self.application_id = None
         self.log = log or logger
+
+    def calls(self, *params):
+        result_list = self._get('calls/').json()
+        return [self.Call(v) for v in result_list]
+
+    get_calls = calls
 
     def create_application(self, name, timeout=None, **kwargs):
 
@@ -165,21 +182,16 @@ class Client(RESTClientObject):
         if record_call:
             json_data['recordingEnabled'] = 'true'
 
-        log.debug('Making a call with the following data: {}'.format(json_data))
+        self.log.debug('Making a call with the following data: {}'.format(json_data))
 
         url = '/v1/users/{}/calls'.format(self.uid)
 
         return self._post(url, data=json.dumps(json_data), timeout=timeout)
 
-    def get_call_info(self, call_id, timeout=None):
+    def get_call_info(self, call_id, timeout):
         url = '/v1/users/{}/calls/{}'.format(self.uid, call_id)
 
         return self._get(url, timeout=timeout)
-
-    def get_calls(self, timeout=None, **kwargs):
-        url = '/v1/users/{}/calls/'.format(self.uid)
-
-        return self._get(url, timeout=timeout).json()
 
     def get_bridge_info(self, bridge_id, timeout=None):
         '''
@@ -198,7 +210,7 @@ class Client(RESTClientObject):
         return self._post(url, data=data, timeout=timeout)
 
     def create_call(self, caller, callee, timeout=None, **kwargs):
-        url = '/v1/users/{}/calls/'.format(self.uid)
+        url = 'calls/'.format(self.uid)
 
         json_data = {
             'from': caller,
@@ -207,67 +219,13 @@ class Client(RESTClientObject):
         }
 
         json_data.update(kwargs)
-        return self._post(url, data=json.dumps(json_data), timeout=timeout)
-
-    def send_dtmf(self, call_id, dtmf, timeout=None):
-        '''
-        Sends a string of characters as DTMF on the given call_id
-        Valid chars are '0123456789*#ABCD'
-        '''
-        url = '/v1/users/{}/calls/{}/dtmf'.format(self.uid, call_id)
-
-        json_data = {'dtmfOut': dtmf}
-
-        return self._post(url, data=json.dumps(json_data), timeout=timeout)
-
-    def receive_dtmf(self, call_id, max_digits, terminating_digits,
-                     inter_digit_timeout='1', timeout=None):
-        url = '/v1/users/{}/calls/{}/gather'.format(self.uid, call_id)
-
-        http_get_params = {
-            'maxDigits': max_digits,
-            'terminatingDigits': terminating_digits,
-            'interDigitTimeout': inter_digit_timeout}
-
-        return self._get(url, params=http_get_params, timeout=timeout)
-
-    def end_call(self, call_id):
-        '''
-        Hangs up a call with the given call_id
-        '''
-        url = '/v1/users/{}/calls/{}/'.format(self.uid, call_id)
-
-        return self._post(url, data=json.dumps({}), timeout=None)
-
-    def play_audio(self, call_id, timeout=None, **kwargs):
-        '''
-        Plays audio form the given url to the call associated with call_id
-        '''
-        url = '/v1/users/{}/calls/{}/audio'.format(self.uid, call_id)
-
-        # stops currently playing audio
-        key = 'fileUrl' if 'fileUrl' in kwargs else 'sentence'
-        if kwargs[key]:
-            self._post(url, data=json.dumps({key: ''}), timeout=timeout)
-
-        return self._post(url, data=json.dumps(kwargs), timeout=timeout)
+        data = self._post(url, data=json.dumps(json_data), timeout=timeout)
+        location = data.headers['Location']
+        call_id = location.split('/')[-1]
+        return self.Call({'callId': call_id})
 
     def get_bridge_url(self, url, timeout=None):
         return self._get(url, timeout=timeout)
-
-    def get_recordings(self, call_id, timeout=None):
-        '''
-        Retrieves an array with all the recordings of the call_id
-        '''
-        url = '/v1/users/{}/calls/{}/recordings'.format(self.uid, call_id)
-
-        return self._get(url, timeout=timeout)
-
-    def set_call_property(self, call_id, timeout=None, **kwargs):
-        url = '/v1/users/{}/calls/{}'.format(self.uid, call_id)
-        json_data = json.dumps(kwargs)
-
-        return self._post(url, data=json_data, timeout=timeout)
 
     def send_message(self, from_who, to_who, text, timeout=None, **kwargs):
         url = '/v1/users/{}/messages/'.format(self.uid)
@@ -339,3 +297,73 @@ class Client(RESTClientObject):
     def delete_media(self, media_name, timeout=None):
         url = '/v1/users/{}/media/{}'.format(self.uid, media_name)
         return self._delete(url, timeout=timeout)
+
+
+class Call(object):
+
+    def __init__(self, client: Client, data: dict):
+        self.client = client
+        self.kwargs = data
+        self.call_id_key = 'callId' if 'callId' in data else 'id'
+        self.call_id = data[self.call_id_key]
+
+    def send_dtmf(self, dtmf, timeout=None):
+        '''
+        Sends a string of characters as DTMF on the given call_id
+        Valid chars are '0123456789*#ABCD'
+        '''
+        url = 'calls/{}/dtmf'.format(self.call_id)
+
+        json_data = {'dtmfOut': dtmf}
+
+        return self.client._post(url, data=json.dumps(json_data), timeout=timeout).content
+
+    def receive_dtmf(self, max_digits, terminating_digits,
+                     inter_digit_timeout='1', timeout=None):
+        url = 'calls/{}/gather'.format(self.call_id)
+
+        http_get_params = {'maxDigits': max_digits, 'terminatingDigits': terminating_digits,
+                           'interDigitTimeout': inter_digit_timeout}
+        return self.client._get(url, params=http_get_params, timeout=timeout)
+
+    def end_call(self):
+        '''
+        Hangs up a call with the given call_id
+        '''
+        url = '/calls/{}/'.format(self.call_id)
+
+        return self.client._post(url, data=json.dumps({}), timeout=None)
+
+    def play_audio(self, timeout=None, **kwargs):
+        '''
+        Plays audio form the given url to the call associated with call_id
+        '''
+        url = 'calls/{}/audio'.format(self.call_id)
+
+        # stops currently playing audio
+        key = 'fileUrl' if 'fileUrl' in kwargs else 'sentence'
+        if kwargs[key]:
+            self.client._post(url, data=json.dumps({key: ''}), timeout=timeout)
+
+        return self.client._post(url, data=json.dumps(kwargs), timeout=timeout)
+
+    def get_recordings(self, timeout=None):
+        '''
+        Retrieves an array with all the recordings of the call_id
+        '''
+        url = 'calls/{}/recordings'.format(self.call_id)
+
+        return self.client._get(url, timeout=timeout).json()
+
+    def set_call_property(self, timeout=None, **kwargs):
+        url = '/v1/users/{}/calls/{}'.format(self.call_id)
+        json_data = json.dumps(kwargs)
+        return self.client._post(url, data=json_data, timeout=timeout)
+
+    def update(self):
+        url = '/v1/users/calls/{}'.format(self.call_id)
+        data = self.client._get(url).json()
+        self.kwargs.update(data)
+
+    def __repr__(self):
+        return 'Call {}'.format(self.kwargs[self.call_id_key])

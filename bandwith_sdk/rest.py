@@ -1,5 +1,5 @@
 import requests
-from errors import BandwithError
+from .errors import BandwithError
 
 
 class RESTClientObject(object):
