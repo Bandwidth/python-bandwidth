@@ -68,5 +68,22 @@ recordings = client.get_recordings(call_id)
 client.send_dtmf(call_id, '#')
 
 client.get_call_info(call_id)
+# {'activeTime': '2014-09-05T09:44:20Z',
+#  'callbackUrl': 'http://ec2-54-164-86-242.compute-1.amazonaws.com:8080/calls/out',
+#  'chargeableDuration': 60,
+#  'direction': 'out',
+#  'endTime': '2014-09-05T09:44:25Z',
+#  'events': '/calls/c-rveds623gx75nnteaykyira/events',
+#  'from': '+19194597763',
+#  'id': 'c-rveds623gx75nnteaykyira',
+#  'recordingEnabled': False,
+#  'recordings': '/calls/c-rveds623gx75nnteaykyira/recordings',
+#  'startTime': '2014-09-05T09:44:20Z',
+#  'state': 'completed',
+#  'to': '+19192755402',
+#  'transcriptionEnabled': False,
+#  'transcriptions': '/calls/c-rveds623gx75nnteaykyira/transcriptions'}
+
 
 new_call_id = client.create_call('+14089155654', '+14088833839')
+# c-gifkcvacopsvn5upq2vskqa
