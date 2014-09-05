@@ -7,8 +7,7 @@ setup(
     name='bandwith_sdk',
     version=__version__,
     description='This client library is designed to support the Bandwith '
-                'API and the official Bandwith SDK, which '
-                'is the canonical way to implement Facebook authentication.',
+                'API and the official Bandwith SDK',
     author='Bandwith',
     maintainer='Bandwith',
     maintainer_email='classifieds-admin@bandwidth.com',
