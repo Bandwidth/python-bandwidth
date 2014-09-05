@@ -1,4 +1,4 @@
-from client_v2 import Client as ClientV2
+from client_v2 import Client as BandSdk, Call
 
 
 creds = ('u-**********', ('t-******', '********'))
@@ -9,6 +9,29 @@ calls = client.get_calls()  # .get_calls(call_id='fooobar', from='+123', to='+12
 # [Call c-rtho4pobjpqudfvcgi24e7i, ..., Call c-gifkcvacopsvn5upq2vskqa]
 
 print(calls)
+
+
+client.Call('fdfdfgg').play_audio('hgui.mp3') # -> Call inst 
+client.play_audio(call_id='fdfdfgg', 'hgui.mp3') # -> {}
+
+
+call = client.get_call(call_id='fooobar', from='+123', to='+1213')  # return Call instance with call_id fooobar if it exists
+calls = client.list_calls(from="+131234214")  # return list of Calls
+applications = client.list_applications(from="+131234214")  # return list of dicts with application datas
+
+
+
+
+call = client.Call(call_id='sdfsdfsdfs')
+
+
+call = client.Call.create(from='+123', to='+1213')
+
+
+call = client.Call.get(call_id='sdfsdfsdfs', from='+123', to='+1213') 
+
+calls = client.Call.list(from='+123', to='+1213')  
+
 
 call = calls[0]
 # Call c-rtho4pobjpqudfvcgi24e7i
