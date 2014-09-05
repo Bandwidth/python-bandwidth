@@ -17,8 +17,8 @@ NoSqlStorage = {}
 
 
 @app.route('/v1/events', methods=['POST'])
-def events():
-    event = json.loads(request.data)
+def events_v1():
+    event = json.loads(request.data.decode('ascii'))
     # Example of deserialized event:
     # {
     #     'time': '2014-07-23T13:04:39Z',
@@ -50,8 +50,8 @@ def events():
 
 
 @app.route('/v2/events', methods=['POST'])
-def events():
-    event = json.loads(request.data)
+def events_v2():
+    event = json.loads(request.data.decode('ascii'))
     # Example of deserialized event:
     # {
     #     'time': '2014-07-23T13:04:39Z',
