@@ -1,14 +1,14 @@
 from urllib.parse import quote
 import logging
 import json
-import requests
+from rest import RESTClientObject
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 __all__ = ('Client', 'Call')
 
 
-class Client(object):
+class Client(RESTClientObject):
     endpoint = None
     uid = None
     auth = None
@@ -22,62 +22,20 @@ class Client(object):
     class Error(Exception):
         pass
 
-    def __init__(self, user_id: str, auth: tuple, endpoint='https://api.catapult.inetwork.com', log_hook=None):
+    def __init__(self, user_id: str, auth: tuple, endpoint='https://api.catapult.inetwork.com',
+                 log=None, log_hook=None):
         self.endpoint = endpoint + '/v1/users/{}/'.format(user_id)
         self.log_hook = log_hook
         self.uid = user_id
         self.auth = auth
         self.application_id = None
+        self.log = log or logger
 
     def calls(self, *params):
         result_list = self._get('calls/').json()
         return [self.Call(v) for v in result_list]
 
     get_calls = calls
-
-    def _log_response(self, response):
-        '''
-        Perform logging actions with the response object returned
-        by Client using self.log_hook.
-        '''
-        if self.log_hook:
-            self.log_hook(response)
-
-    def _join_endpoint(self, url):
-        return '{}{}'.format(self.endpoint, url)
-
-    def _delete(self, url, timeout=None, **kwargs):
-        url = self._join_endpoint(url)
-
-        if timeout is not None:
-            kwargs['timeout'] = timeout
-
-        response = requests.delete(url, auth=self.auth, headers=self.headers, **kwargs)
-
-        self._log_response(response)
-
-        return response
-
-    def _get(self, url, timeout=None, **kwargs):
-        url = self._join_endpoint(url)
-
-        kwargs['timeout'] = timeout or self.default_timeout
-
-        response = requests.get(url, auth=self.auth, headers=self.headers, **kwargs)
-
-        self._log_response(response)
-
-        return response
-
-    def _post(self, url, timeout=None, **kwargs):
-        url = self._join_endpoint(url)
-
-        kwargs['timeout'] = timeout or self.default_timeout
-
-        response = requests.post(url, auth=self.auth, headers=self.headers, **kwargs)
-
-        self._log_response(response)
-        return response
 
     def create_application(self, name, timeout=None, **kwargs):
 
@@ -222,7 +180,7 @@ class Client(object):
         if record_call:
             json_data['recordingEnabled'] = 'true'
 
-        log.debug('Making a call with the following data: {}'.format(json_data))
+        self.log.debug('Making a call with the following data: {}'.format(json_data))
 
         url = '/v1/users/{}/calls'.format(self.uid)
 
@@ -337,19 +295,6 @@ class Client(object):
     def delete_media(self, media_name, timeout=None):
         url = '/v1/users/{}/media/{}'.format(self.uid, media_name)
         return self._delete(url, timeout=timeout)
-
-    def get(self, url, **kwargs):
-        '''
-        There are sevral places project where we need to GET request directly,
-        without any urls or payloads construction.
-        '''
-        if url and url.startswith('https://localhost:8444/'):
-            url = url.replace('localhost:8444', 'api.catapult.inetwork.com')
-        response = requests.get(url, auth=self.auth, headers=self.headers, **kwargs)
-
-        self._log_response(response)
-
-        return response
 
 
 class Call(object):
