@@ -306,6 +306,49 @@ class Client(RESTClientObject):
         url = '/v1/users/{}/media/{}'.format(self.uid, media_name)
         return self._delete(url, timeout=timeout)
 
+    def send_dtmf(self, call_id, dtmf, timeout=None):
+        '''
+        Sends a string of characters as DTMF on the given call_id
+        Valid chars are '0123456789*#ABCD'
+        '''
+        url = '/v1/users/{}/calls/{}/dtmf'.format(self.uid, call_id)
+
+        json_data = {'dtmfOut': dtmf}
+
+        return self._post(url, data=json.dumps(json_data), timeout=timeout)
+
+    def receive_dtmf(self, call_id, max_digits, terminating_digits,
+                     inter_digit_timeout='1', timeout=None):
+        url = '/v1/users/{}/calls/{}/gather'.format(self.uid, call_id)
+
+        http_get_params = {
+            'maxDigits': max_digits,
+            'terminatingDigits': terminating_digits,
+            'interDigitTimeout': inter_digit_timeout}
+
+        return self._get(url, params=http_get_params, timeout=timeout)
+
+    def end_call(self, call_id):
+        '''
+        Hangs up a call with the given call_id
+        '''
+        url = '/v1/users/{}/calls/{}/'.format(self.uid, call_id)
+
+        return self._post(url, data=json.dumps({}), timeout=None)
+
+    def play_audio(self, call_id, timeout=None, **kwargs):
+        '''
+        Plays audio form the given url to the call associated with call_id
+        '''
+        url = '/v1/users/{}/calls/{}/audio'.format(self.uid, call_id)
+
+        # stops currently playing audio
+        key = 'fileUrl' if 'fileUrl' in kwargs else 'sentence'
+        if kwargs[key]:
+            self._post(url, data=json.dumps({key: ''}), timeout=timeout)
+
+        return self._post(url, data=json.dumps(kwargs), timeout=timeout)
+
 
 UNEVALUATED = object()
 
@@ -339,26 +382,17 @@ class Call(object):
         data_as_list = client._get('calls/').json()
         return [cls(client, v) for v in data_as_list]
 
-    def send_dtmf(self, dtmf, timeout=None):
+    def send_dtmf(self, dtmf):
         '''
         Sends a string of characters as DTMF on the given call_id
         Valid chars are '0123456789*#ABCD'
         '''
-        url = 'calls/{}/dtmf'.format(self.call_id)
+        self.client.send_dtmf(self.call_id, dtmf)
 
-        json_data = {'dtmfOut': dtmf}
+    def receive_dtmf(self, max_digits, terminating_digits, inter_digit_timeout='1'):
+        return self.client.receive_dtmf(self.call_id, max_digits, terminating_digits, inter_digit_timeout)
 
-        return self.client._post(url, data=json.dumps(json_data), timeout=timeout).content
-
-    def receive_dtmf(self, max_digits, terminating_digits,
-                     inter_digit_timeout='1', timeout=None):
-        url = 'calls/{}/gather'.format(self.call_id)
-
-        http_get_params = {'maxDigits': max_digits, 'terminatingDigits': terminating_digits,
-                           'interDigitTimeout': inter_digit_timeout}
-        return self.client._get(url, params=http_get_params, timeout=timeout)
-
-    def end_call(self):
+    def hangup(self):
         '''
         Hangs up a call with the given call_id
         '''
@@ -392,7 +426,7 @@ class Call(object):
         json_data = json.dumps(kwargs)
         return self.client._post(url, data=json_data, timeout=timeout)
 
-    def update(self):
+    def refresh(self):
         url = '/v1/users/calls/{}'.format(self.call_id)
         data = self.client._get(url).json()
         self.kwargs.update(data)
