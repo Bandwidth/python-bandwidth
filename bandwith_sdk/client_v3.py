@@ -354,18 +354,37 @@ UNEVALUATED = object()
 
 
 class Call(object):
+    call_id = None
+    direction = None
+    from_ = None
+    to = None
+    recording_enabled = None
+    callback_url = None
+    state = None
+    start_time = None
+    active_time = None
 
     def __init__(self, client: Client, data: dict):
         self.client = client
         if isinstance(data, dict):
-            self.kwargs = data
-            self.call_id_key = 'callId' if 'callId' in data else 'id'
-            self.call_id = data[self.call_id_key]
+            self.data = data
+            self.set_up()
         elif isinstance(data, str):
-            self.kwargs = UNEVALUATED
+            self.data = UNEVALUATED
             self.call_id = data
         else:
             raise TypeError('Accepted only call-id or call data as dictionary')
+
+    def set_up(self):
+        self.call_id = self.data.get('id')
+        self.direction = self.data.get('direction')
+        self.from_ = self.data.get('from')
+        self.to = self.data.get('to')
+        self.recording_enabled = self.data.get('recordingEnabled')
+        self.callback_url = self.data.get('callbackUrl')
+        self.state = self.data.get('state')
+        self.start_time = self.data.get('startTime')
+        self.active_time = self.data.get('activeTime')
 
     @classmethod
     def create(cls, client, *args, **kwargs):
@@ -429,7 +448,8 @@ class Call(object):
     def refresh(self):
         url = '/v1/users/calls/{}'.format(self.call_id)
         data = self.client._get(url).json()
-        self.kwargs.update(data)
+        self.data.update(data)
+        self.set_up()
 
     def __repr__(self):
-        return 'Call {}'.format(repr(self.kwargs) if self.kwargs is not UNEVALUATED else self.call_id)
+        return 'Call({})'.format(repr(self.data) if self.data is not UNEVALUATED else self.call_id)
