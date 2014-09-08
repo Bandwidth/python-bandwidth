@@ -4,7 +4,7 @@ import logging
 import json
 
 from .rest import RESTClientObject
-
+from .errors import BandwithError
 
 logger = logging.getLogger(__name__)
 
@@ -36,9 +36,10 @@ class Client(RESTClientObject):
     def call(self):
         return _PartialProxy(Call, self)
 
-    class Error(Exception):
-        pass
-
+    # @property
+    # def applications(self):
+    #     return _PartialProxy
+    
     def __init__(self, user_id: str, auth: tuple, endpoint='https://api.catapult.inetwork.com',
                  log=None, log_hook=None):
         self.endpoint = endpoint + '/v1/users/{}/'.format(user_id)
@@ -54,13 +55,10 @@ class Client(RESTClientObject):
             'name': name,
         }
         json_data.update(kwargs)
-        return self._post(
-            '/v1/users/{}/applications'.format(self.uid),
-            data=json.dumps(json_data),
-            timeout=timeout)
+        return self._post('applications', data=json.dumps(json_data), timeout=timeout)
 
     def delete_application(self, app_id, timeout=None):
-        url = '/v1/users/{}/applications/{}'.format(self.uid, app_id)
+        url = 'applications/{}'.format(app_id)
 
         return self._delete(url, timeout=timeout)
 
@@ -68,7 +66,7 @@ class Client(RESTClientObject):
         '''
         Gets a list of self.uid's applications.
         '''
-        url = '/v1/users/{}/applications'.format(self.uid)
+        url = 'applications'
 
         http_get_params = {'page': page, 'size': size}
 
@@ -78,7 +76,7 @@ class Client(RESTClientObject):
         '''
         Gets information about one application.
         '''
-        url = '/v1/users/{}/applications/{}'.format(self.uid, application_id)
+        url = 'applications/{}'.format(application_id)
 
         return self._get(url, timeout=timeout)
 
@@ -94,17 +92,14 @@ class Client(RESTClientObject):
             'name': name,
             'fallbackNumber': fallback_number}
 
-        return self._post(
-            '/v1/users/{}/phoneNumbers'.format(self.uid),
-            data=json.dumps(json_data),
-            timeout=timeout)
+        return self._post('phoneNumbers', data=json.dumps(json_data), timeout=timeout)
 
     def delete_number(self, number_id, timeout=None):
         '''
         Deletes a phone number associated with the numberId
         '''
 
-        url = '/v1/users/{}/phoneNumbers/{}'.format(self.uid, number_id)
+        url = 'phoneNumbers/{}'.format(number_id)
 
         return self._delete(url, timeout=timeout)
 
@@ -122,7 +117,7 @@ class Client(RESTClientObject):
         Gets information about one of your numbers using the E.164 number string
         '''
         number = quote(number)
-        url = '/v1/users/{}/phoneNumbers/{}'.format(self.uid, number)
+        url = 'phoneNumbers/{}'.format(number)
 
         return self._get(url, timeout=timeout)
 
@@ -136,7 +131,7 @@ class Client(RESTClientObject):
         if not r.ok:
             return r
         phone_id = r.json()['id']
-        url = '/v1/users/{}/phoneNumbers/{}'.format(self.uid, phone_id)
+        url = 'phoneNumbers/{}'.format(phone_id)
         data = {'applicationId': application_id}
 
         return self._post(url, data=json.dumps(data),
@@ -155,7 +150,7 @@ class Client(RESTClientObject):
         Lists all of the numbers associated with applicationId,
         or all numbers owned by a user if appId=None
         '''
-        url = '/v1/users/{}/phoneNumbers'.format(self.uid)
+        url = 'phoneNumbers'
 
         http_get_params = {
             'applicationId': application_id,
@@ -173,7 +168,7 @@ class Client(RESTClientObject):
         if record_call:
             json_data['recordingEnabled'] = 'true'
 
-        url = '/v1/users/{}/calls'.format(self.uid)
+        url = 'calls'
 
         return self._post(url, data=json.dumps(json_data), timeout=timeout)
 
@@ -193,24 +188,29 @@ class Client(RESTClientObject):
 
         self.log.debug('Making a call with the following data: {}'.format(json_data))
 
-        url = '/v1/users/{}/calls'.format(self.uid)
+        url = 'calls'
 
         return self._post(url, data=json.dumps(json_data), timeout=timeout)
 
     def get_call_info(self, call_id):
-        url = '/v1/users/{}/calls/{}'.format(self.uid, call_id)
+        url = 'calls/{}'.format(call_id)
         return self._get(url).json()
+
+    def get_calls(self, page=1, size=20):
+        url = 'calls/'
+        params = dict(page=page, size=size)
+        return self._get(url, params=params).json()
 
     def get_bridge_info(self, bridge_id, timeout=None):
         '''
         Retrieves info about a bridge such as the call ID's associated with the bridge
         '''
-        url = '/v1/users/{}/bridges/{}'.format(self.uid, bridge_id)
+        url = 'bridges/{}'.format(bridge_id)
 
         return self._get(url, timeout=timeout)
 
     def create_bridge(self, bridge_audio, call_ids, timeout=None):
-        url = '/v1/users/{}/bridges/'.format(self.uid)
+        url = 'bridges/'
 
         json_data = {'bridgeAudio': bridge_audio,
                      'callIds': call_ids}
@@ -218,7 +218,7 @@ class Client(RESTClientObject):
         return self._post(url, data=data, timeout=timeout)
 
     def create_call(self, caller, callee, timeout=None, **kwargs):
-        url = 'calls/'.format(self.uid)
+        url = 'calls/'
 
         json_data = {
             'from': caller,
@@ -236,7 +236,7 @@ class Client(RESTClientObject):
         return self._get(url, timeout=timeout)
 
     def send_message(self, from_who, to_who, text, timeout=None, **kwargs):
-        url = '/v1/users/{}/messages/'.format(self.uid)
+        url = 'messages/'
         json_data = {'from': from_who,
                      'to': to_who,
                      'text': text
@@ -247,13 +247,13 @@ class Client(RESTClientObject):
         return self._post(url, data=data, timeout=timeout)
 
     def send_message_multy_v1(self, message_batch, timeout=None):
-        url = '/v1/users/{}/messages/'.format(self.uid)
+        url = 'messages/'
 
         if not all(isinstance(m, dict) and
                    m['from'] and
                    m['to'] and
                    m['text'] for m in message_batch):
-            raise Client.Error('Invallid data to multi message {}'.format(message_batch))
+            raise BandwithError('Invallid data to multi message {}'.format(message_batch))
 
         data = json.dumps(message_batch)
 
@@ -268,7 +268,7 @@ class Client(RESTClientObject):
         @param timeout:
         @return:
         '''
-        url = '/v1/users/{}/messages/'.format(self.uid)
+        url = 'messages/'
 
         def _composition(elem):
             text, cb_url, tag = elem
@@ -286,7 +286,7 @@ class Client(RESTClientObject):
         return self._post(url, data=data, timeout=timeout)
 
     def activate_gathering(self, call_id, maxDigits, interDigitTimeout, terminatingDigits, timeout=None, **kwargs):
-        url = '/v1/users/{}/calls/{}/gather'.format(self.uid, call_id)
+        url = 'calls/{}/gather'.format(call_id)
         data = {'maxDigits': maxDigits,
                 'interDigitTimeout': interDigitTimeout,
                 'terminatingDigits': terminatingDigits,
@@ -295,15 +295,15 @@ class Client(RESTClientObject):
         return self._post(url, data=json.dumps(data), timeout=timeout)
 
     def get_gather_info(self, call_id, gather_id, timeout=None):
-        url = '/v1/users/{}/calls/{}/gather/{}'.format(self.uid, call_id, gather_id)
+        url = 'calls/{}/gather/{}'.format(call_id, gather_id)
         return self._get(url, timeout=timeout)
 
     def get_recording(self, rid, timeout=None):
-        url = '/v1/users/{}/recordings/{}'.format(self.uid, rid)
+        url = 'recordings/{}'.format(rid)
         return self._get(url, timeout=timeout)
 
     def delete_media(self, media_name, timeout=None):
-        url = '/v1/users/{}/media/{}'.format(self.uid, media_name)
+        url = 'media/{}'.format(media_name)
         return self._delete(url, timeout=timeout)
 
     def send_dtmf(self, call_id, dtmf, timeout=None):
@@ -311,7 +311,7 @@ class Client(RESTClientObject):
         Sends a string of characters as DTMF on the given call_id
         Valid chars are '0123456789*#ABCD'
         '''
-        url = '/v1/users/{}/calls/{}/dtmf'.format(self.uid, call_id)
+        url = 'calls/{}/dtmf'.format(call_id)
 
         json_data = {'dtmfOut': dtmf}
 
@@ -319,7 +319,7 @@ class Client(RESTClientObject):
 
     def receive_dtmf(self, call_id, max_digits, terminating_digits,
                      inter_digit_timeout='1', timeout=None):
-        url = '/v1/users/{}/calls/{}/gather'.format(self.uid, call_id)
+        url = 'calls/{}/gather'.format(call_id)
 
         http_get_params = {
             'maxDigits': max_digits,
@@ -332,7 +332,7 @@ class Client(RESTClientObject):
         '''
         Hangs up a call with the given call_id
         '''
-        url = '/v1/users/{}/calls/{}/'.format(self.uid, call_id)
+        url = 'calls/{}/'.format(call_id)
 
         return self._post(url, data=json.dumps({}), timeout=None)
 
@@ -340,7 +340,7 @@ class Client(RESTClientObject):
         '''
         Plays audio form the given url to the call associated with call_id
         '''
-        url = '/v1/users/{}/calls/{}/audio'.format(self.uid, call_id)
+        url = 'calls/{}/audio'.format(call_id)
 
         # stops currently playing audio
         key = 'fileUrl' if 'fileUrl' in kwargs else 'sentence'
@@ -397,8 +397,8 @@ class Call(object):
         return cls(client, data_as_dict)
 
     @classmethod
-    def list(cls, client):
-        data_as_list = client._get('calls/').json()
+    def list(cls, client, *args, **kwargs):
+        data_as_list = client.get_calls(*args, **kwargs)
         return [cls(client, v) for v in data_as_list]
 
     def send_dtmf(self, dtmf):
@@ -415,9 +415,7 @@ class Call(object):
         '''
         Hangs up a call with the given call_id
         '''
-        url = '/calls/{}/'.format(self.call_id)
-
-        return self.client._post(url, data=json.dumps({}), timeout=None)
+        self.client.end_call(self.call_id)
 
     def play_audio(self, timeout=None, **kwargs):
         '''
@@ -441,7 +439,7 @@ class Call(object):
         return self.client._get(url, timeout=timeout).json()
 
     def set_call_property(self, timeout=None, **kwargs):
-        url = '/v1/users/{}/calls/{}'.format(self.call_id)
+        url = 'calls/{}'.format(self.call_id)
         json_data = json.dumps(kwargs)
         return self.client._post(url, data=json_data, timeout=timeout)
 
