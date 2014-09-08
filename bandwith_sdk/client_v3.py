@@ -1,4 +1,5 @@
 from urllib.parse import quote
+from functools import partial
 import logging
 import json
 
@@ -10,6 +11,19 @@ logger = logging.getLogger(__name__)
 __all__ = ('Client', 'Call')
 
 
+class _PartialProxy(object):
+
+    def __init__(self, resource, client):
+        self.resource = resource
+        self.client = client
+
+    def __call__(self, *args, **kwargs):
+        return self.resource(self.client, *args, **kwargs)
+
+    def __getattr__(self, item):
+        return partial(getattr(self.resource, item), self.client)
+
+
 class Client(RESTClientObject):
     endpoint = None
     uid = None
@@ -18,8 +32,9 @@ class Client(RESTClientObject):
     default_timeout = 60
     headers = {'content-type': 'application/json'}
 
-    def Call(self, *args, **kwargs):
-        return Call(self, *args, **kwargs)
+    @property
+    def call(self):
+        return _PartialProxy(Call, self)
 
     class Error(Exception):
         pass
@@ -32,12 +47,6 @@ class Client(RESTClientObject):
         self.auth = auth
         self.application_id = None
         self.log = log or logger
-
-    def calls(self, *params):
-        result_list = self._get('calls/').json()
-        return [self.Call(v) for v in result_list]
-
-    get_calls = calls
 
     def create_application(self, name, timeout=None, **kwargs):
 
@@ -188,10 +197,9 @@ class Client(RESTClientObject):
 
         return self._post(url, data=json.dumps(json_data), timeout=timeout)
 
-    def get_call_info(self, call_id, timeout):
+    def get_call_info(self, call_id):
         url = '/v1/users/{}/calls/{}'.format(self.uid, call_id)
-
-        return self._get(url, timeout=timeout)
+        return self._get(url).json()
 
     def get_bridge_info(self, bridge_id, timeout=None):
         '''
@@ -222,7 +230,7 @@ class Client(RESTClientObject):
         data = self._post(url, data=json.dumps(json_data), timeout=timeout)
         location = data.headers['Location']
         call_id = location.split('/')[-1]
-        return self.Call({'callId': call_id})
+        return call_id
 
     def get_bridge_url(self, url, timeout=None):
         return self._get(url, timeout=timeout)
@@ -299,13 +307,37 @@ class Client(RESTClientObject):
         return self._delete(url, timeout=timeout)
 
 
+UNEVALUATED = object()
+
+
 class Call(object):
 
     def __init__(self, client: Client, data: dict):
         self.client = client
-        self.kwargs = data
-        self.call_id_key = 'callId' if 'callId' in data else 'id'
-        self.call_id = data[self.call_id_key]
+        if isinstance(data, dict):
+            self.kwargs = data
+            self.call_id_key = 'callId' if 'callId' in data else 'id'
+            self.call_id = data[self.call_id_key]
+        elif isinstance(data, str):
+            self.kwargs = UNEVALUATED
+            self.call_id = data
+        else:
+            raise TypeError('Accepted only call-id or call data as dictionary')
+
+    @classmethod
+    def create(cls, client, *args, **kwargs):
+        call_id = client.create_call(*args, **kwargs)
+        return cls(client, call_id)
+
+    @classmethod
+    def get(cls, client, *args, **kwargs):
+        data_as_dict = client.get_call_info(*args, **kwargs)
+        return cls(client, data_as_dict)
+
+    @classmethod
+    def list(cls, client):
+        data_as_list = client._get('calls/').json()
+        return [cls(client, v) for v in data_as_list]
 
     def send_dtmf(self, dtmf, timeout=None):
         '''
@@ -366,4 +398,4 @@ class Call(object):
         self.kwargs.update(data)
 
     def __repr__(self):
-        return 'Call {}'.format(self.kwargs[self.call_id_key])
+        return 'Call {}'.format(repr(self.kwargs) if self.kwargs is not UNEVALUATED else self.call_id)
