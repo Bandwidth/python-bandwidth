@@ -376,7 +376,7 @@ class Call(object):
             raise TypeError('Accepted only call-id or call data as dictionary')
 
     def set_up(self):
-        self.call_id = self.data.get('id')
+        self.call_id = self.data.get('id') or self.data.get('callId')
         self.direction = self.data.get('direction')
         self.from_ = self.data.get('from')
         self.to = self.data.get('to')
