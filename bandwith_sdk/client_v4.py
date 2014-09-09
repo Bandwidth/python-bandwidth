@@ -363,14 +363,11 @@ class Call(object):
         return self.client._post(url, data=json_data, timeout=timeout)
 
     def bridge(self, *calls, bridge_audio=True):
-        data = json.dumps({"bridgeAudio": bridge_audio, "callIds": [c.call_id for c in calls]})
-        r = self.client._post('/bridges', data=data)
-        location = r.headers['Location']
-        bridge_id = location.split('/')[-1]
-        return Bridge(bridge_id, *calls, bridge_audio=bridge_audio)
+        _calls = (self,) + calls
+        return Bridge.create(*_calls, bridge_audio=bridge_audio)
 
     def refresh(self):
-        url = '/v1/users/calls/{}'.format(self.call_id)
+        url = 'calls/{}'.format(self.call_id)
         data = self.client._get(url).json()
         self.data.update(data)
         self.set_up()
@@ -446,7 +443,48 @@ class Bridge(object):
 
     def __init__(self, id, *calls, bridge_audio=True):
         self.calls = calls
+        self.client = Client()
+        self.bridge_audio = bridge_audio
+        self.id = id
+
+    @classmethod
+    def create(cls, *calls, bridge_audio=True):
+        client = cls.client or Client()
+        data = json.dumps({"bridgeAudio": bridge_audio, "callIds": [c.call_id for c in calls]})
+        r = client._post('/bridges', data=data)
+        location = r.headers['Location']
+        bridge_id = location.split('/')[-1]
+        return cls(bridge_id, *calls, bridge_audio=bridge_audio)
 
     @property
     def call_ids(self):
         return [c.call_id for c in self.calls]
+
+    def call(self, caller, callee):
+        new_call = Call.create(caller, callee, bridgeId=self.id)
+        self.calls += (new_call,)
+        return new_call
+
+    def add_call(self, call):
+        return
+
+    def fetch_calls(self):
+        url = '/bridges/{}/calls'.format(self.id)
+        r = self.client.get(url)
+        return [Call(v) for v in r.json()]
+
+    def play_audio(self, file):
+        '''
+        Plays audio form the given url to the call associated with call_id
+        '''
+        url = 'bridges/{}/audio'.format(self.id)
+
+        self.client._post(url, data=json.dumps({'fileUrl': file}))
+
+    def stop_audio(self, file):
+        '''
+        Plays audio form the given url to the call associated with call_id
+        '''
+        url = 'bridges/{}/audio'.format(self.id)
+
+        self.client._post(url, data=json.dumps({'fileUrl': ''}))
