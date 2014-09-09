@@ -8,7 +8,7 @@ from .errors import BandwithError
 
 logger = logging.getLogger(__name__)
 
-__all__ = ('_Client', 'Call')
+__all__ = ('_Client', 'Call', )
 
 
 _global_client = None
@@ -374,7 +374,7 @@ class Call(object):
 
     def __repr__(self):
         return 'Call({})'.format(repr(self.data) if self.data is not UNEVALUATED else self.call_id)
-    
+
     def send_dtmf(self, dtmf, timeout=None):
         '''
         Sends a string of characters as DTMF on the given call_id
@@ -440,6 +440,7 @@ class Bridge(object):
     completed_time = None
     created_time = None
     activated_time = None
+    client = None
 
     def __init__(self, id, *calls, bridge_audio=True):
         self.calls = calls
@@ -451,7 +452,7 @@ class Bridge(object):
     def create(cls, *calls, bridge_audio=True):
         client = cls.client or Client()
         data = json.dumps({"bridgeAudio": bridge_audio, "callIds": [c.call_id for c in calls]})
-        r = client._post('/bridges', data=data)
+        r = client._post('bridges', data=data)
         location = r.headers['Location']
         bridge_id = location.split('/')[-1]
         return cls(bridge_id, *calls, bridge_audio=bridge_audio)
@@ -469,8 +470,8 @@ class Bridge(object):
         return
 
     def fetch_calls(self):
-        url = '/bridges/{}/calls'.format(self.id)
-        r = self.client.get(url)
+        url = 'bridges/{}/calls'.format(self.id)
+        r = self.client._get(url)
         return [Call(v) for v in r.json()]
 
     def play_audio(self, file):
