@@ -156,19 +156,6 @@ class _Client(RESTClientObject):
 
         return self._get(url, params=http_get_params, timeout=timeout)
 
-    def call_phone(self, from_number, to_number, record_call=False, timeout=None):
-        '''
-        Initiates a call
-        '''
-        json_data = {'from': from_number, 'to': to_number}
-
-        if record_call:
-            json_data['recordingEnabled'] = 'true'
-
-        url = 'calls'
-
-        return self._post(url, data=json.dumps(json_data), timeout=timeout)
-
     def call_phone_into_bridge(self, from_number, to_number, bridge_id, tag=None,
                                record_call=False, timeout=None):
         '''
@@ -329,9 +316,20 @@ class Call(object):
         self.active_time = self.data.get('activeTime')
 
     @classmethod
-    def create(cls, *args, **kwargs):
+    def create(cls, caller, callee, **kwargs):
         client = cls.client or Client()
-        call_id = client.create_call(*args, **kwargs)
+        url = 'calls/'
+
+        json_data = {
+            'from': caller,
+            'to': callee,
+            'callTimeout': 30,  # seconds
+        }
+
+        json_data.update(kwargs)
+        data = client._post(url, data=json.dumps(json_data))
+        location = data.headers['Location']
+        call_id = location.split('/')[-1]
         return cls(call_id)
 
     @classmethod
@@ -359,18 +357,17 @@ class Call(object):
 
         return self.client._post(url, data=json.dumps(kwargs), timeout=timeout)
 
-    def get_recordings(self, timeout=None):
-        '''
-        Retrieves an array with all the recordings of the call_id
-        '''
-        url = 'calls/{}/recordings'.format(self.call_id)
-
-        return self.client._get(url, timeout=timeout).json()
-
     def set_call_property(self, timeout=None, **kwargs):
         url = 'calls/{}'.format(self.call_id)
         json_data = json.dumps(kwargs)
         return self.client._post(url, data=json_data, timeout=timeout)
+
+    def bridge(self, *calls, bridge_audio=True):
+        data = json.dumps({"bridgeAudio": bridge_audio, "callIds": [c.call_id for c in calls]})
+        r = self.client._post('/bridges', data=data)
+        location = r.headers['Location']
+        bridge_id = location.split('/')[-1]
+        return Bridge(bridge_id, *calls, bridge_audio=bridge_audio)
 
     def refresh(self):
         url = '/v1/users/calls/{}'.format(self.call_id)
@@ -423,3 +420,33 @@ class Call(object):
     def get_gather_info(self, gather_id, timeout=None):
         url = 'calls/{}/gather/{}'.format(self.call_id, gather_id)
         return self.client._get(url, timeout=timeout)
+
+    def get_recordings(self, timeout=None):
+        '''
+        Retrieves an array with all the recordings of the call_id
+        '''
+        url = 'calls/{}/recordings'.format(self.call_id)
+
+        return self.client._get(url, timeout=timeout).json()
+
+
+class Applications(object):
+    pass
+
+
+class Bridge(object):
+    id = None
+    state = None
+    call_ids = None
+    calls = None
+    bridge_audio = None
+    completed_time = None
+    created_time = None
+    activated_time = None
+
+    def __init__(self, id, *calls, bridge_audio=True):
+        self.calls = calls
+
+    @property
+    def call_ids(self):
+        return [c.call_id for c in self.calls]
