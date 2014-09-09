@@ -384,7 +384,7 @@ class Call(object):
 
         json_data = {'dtmfOut': dtmf}
 
-        return self._post(url, data=json.dumps(json_data), timeout=timeout)
+        return self.client._post(url, data=json.dumps(json_data), timeout=timeout)
 
     def receive_dtmf(self, max_digits, terminating_digits,
                      inter_digit_timeout='1', timeout=None):
@@ -395,7 +395,7 @@ class Call(object):
             'terminatingDigits': terminating_digits,
             'interDigitTimeout': inter_digit_timeout}
 
-        return self.client_get(url, params=http_get_params, timeout=timeout)
+        return self.client._get(url, params=http_get_params, timeout=timeout)
 
     def hangup(self):
         '''
