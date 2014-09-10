@@ -71,6 +71,10 @@ class PlaybackCallEvent(BaseEvent):
     time = None
     tag = None
 
+    @property
+    def done(self):
+        return self.status == 'done'
+
 
 _events = {"hangup": HangupEvent,
            "answer": AnswerCallEvent,
