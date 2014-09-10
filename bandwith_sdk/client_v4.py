@@ -5,6 +5,7 @@ import json
 
 from .rest import RESTClientObject
 from .errors import BandwithError
+from .events import *
 
 logger = logging.getLogger(__name__)
 
