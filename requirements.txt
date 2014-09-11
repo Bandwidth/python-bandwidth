@@ -1,2 +1,4 @@
 responses
 requests
+six
+-r ./dev_requierements.txt
