@@ -7,7 +7,7 @@ pep:
 	$(PEP) $(PACKAGE) tests
 
 test:
-	green tests -v
+	green tests -vvv
 
 clean:
 	rm -rf `find . -name __pycache__`
