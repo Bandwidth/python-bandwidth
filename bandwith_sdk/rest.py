@@ -1,3 +1,4 @@
+import json
 import requests
 from .errors import BandwithError
 
@@ -53,23 +54,24 @@ class RESTClientObject(object):
 
         return response
 
-    def _get(self, url, timeout=None, **kwargs):
+    def _get(self, url, params=None, timeout=None, **kwargs):
         url = self._join_endpoint(url)
 
         kwargs['timeout'] = timeout or self.default_timeout
 
-        response = self.request('get', url, auth=self.auth, headers=self.headers, **kwargs)
+        response = self.request('get', url, auth=self.auth, headers=self.headers, params=params, **kwargs)
 
         self._log_response(response)
 
         return response
 
-    def _post(self, url, timeout=None, **kwargs):
+    def _post(self, url, data=None, timeout=None, **kwargs):
         url = self._join_endpoint(url)
 
         kwargs['timeout'] = timeout or self.default_timeout
-
-        response = self.request('post', url, auth=self.auth, headers=self.headers, **kwargs)
+        if data:
+            data = json.dumps(data)
+        response = self.request('post', url, auth=self.auth, headers=self.headers, data=data, **kwargs)
 
         self._log_response(response)
 
