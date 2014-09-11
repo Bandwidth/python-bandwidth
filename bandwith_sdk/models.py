@@ -101,18 +101,46 @@ class Call(object):
         data_as_list = client.get_calls(*args, **kwargs)
         return [cls(v) for v in data_as_list]
 
-    def play_audio(self, timeout=None, **kwargs):
+    def __repr__(self):
+        return 'Call({})'.format(repr(self.data) if self.data is not UNEVALUATED else self.call_id)
+
+    # Audio part
+    def play_audio(self, file_name):
         '''
         Plays audio form the given url to the call associated with call_id
         '''
         url = 'calls/{}/audio'.format(self.call_id)
+        self.client._post(url, data={'fileUrl': file_name})
 
-        # stops currently playing audio
-        key = 'fileUrl' if 'fileUrl' in kwargs else 'sentence'
-        if kwargs[key]:
-            self.client._post(url, data={key: ''}, timeout=timeout)
+    def stop_audio(self):
+        '''
+        Plays audio form the given url to the call associated with call_id
+        '''
+        url = 'calls/{}/audio'.format(self.call_id)
+        self.client._post(url, data={'fileUrl': ''})
 
-        return self.client._post(url, data=kwargs, timeout=timeout)
+    def speak_sentence(self, sentence, gender='female', locale=None, voice=None):
+        url = 'calls/{}/audio'.format(self.call_id)
+        json_data = {'sentence': sentence, 'gender': gender}
+        if locale:
+            json_data['locale'] = locale
+        if voice:
+            json_data['voice'] = voice
+        self.client._post(url, data=json_data)
+
+    def stop_sentence(self):
+        url = 'calls/{}/audio'.format(self.call_id)
+        self.client._post(url, data={'sentence': ''})
+
+    def transfer(self, phone, callback_url=None):
+        url = 'calls/{}'.format(self.call_id)
+        json_data = {"transferTo": phone,
+                     "state": "transferring"
+                     }
+        if callback_url:
+            json_data['callbackUrl'] = callback_url
+
+        return self.client._post(url, data=json_data)
 
     def set_call_property(self, timeout=None, **kwargs):
         url = 'calls/{}'.format(self.call_id)
@@ -128,9 +156,6 @@ class Call(object):
         self.data.update(data)
         self.set_up()
 
-    def __repr__(self):
-        return 'Call({})'.format(repr(self.data) if self.data is not UNEVALUATED else self.call_id)
-
     def send_dtmf(self, dtmf, timeout=None):
         '''
         Sends a string of characters as DTMF on the given call_id
@@ -140,7 +165,7 @@ class Call(object):
 
         json_data = {'dtmfOut': dtmf}
 
-        return self.client._post(url, data=json_data, timeout=timeout)
+        self.client._post(url, data=json_data, timeout=timeout)
 
     def receive_dtmf(self, max_digits, terminating_digits,
                      inter_digit_timeout='1', timeout=None):
