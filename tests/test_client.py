@@ -9,7 +9,7 @@ class ClientTest(unittest.TestCase):
         """
         Basic client installation.
         """
-        client = Client('u-**********', 't-******', 's-********')
+        client = Client('u-user', 't-token', 's-secret')
         restored_client = Client()
         self.assertIs(client, restored_client)
 

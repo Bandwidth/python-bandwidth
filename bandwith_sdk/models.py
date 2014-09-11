@@ -90,9 +90,10 @@ class Call(object):
         return cls(call_id)
 
     @classmethod
-    def get(cls, *args, **kwargs):
+    def get(cls, call_id):
         client = cls.client or Client()
-        data_as_dict = client.get_call_info(*args, **kwargs)
+        url = 'calls/{}'.format(call_id)
+        data_as_dict = client._get(url).json()
         return cls(data_as_dict)
 
     @classmethod
