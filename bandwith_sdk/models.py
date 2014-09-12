@@ -88,7 +88,10 @@ class Call(Resource):
         data = client._post(url, data=json_data)
         location = data.headers['Location']
         call_id = location.split('/')[-1]
-        return cls(call_id)
+        call = cls(call_id)
+        call.from_ = caller
+        call.to = callee
+        return call
 
     @classmethod
     def get(cls, call_id):
@@ -145,9 +148,9 @@ class Call(Resource):
 
         return self.client._post(url, data=json_data)
 
-    def set_call_property(self, timeout=None, **kwargs):
+    def set_call_property(self, **kwargs):
         url = 'calls/{}'.format(self.call_id)
-        return self.client._post(url, data=kwargs, timeout=timeout)
+        return self.client._post(url, data=kwargs)
 
     def bridge(self, *calls, bridge_audio=True):
         _calls = (self,) + calls
@@ -401,3 +404,8 @@ class Bridge(Resource):
     def stop_sentence(self):
         url = 'bridges/{}/audio'.format(self.id)
         self.client._post(url, data={'sentence': ''})
+
+    def refresh(self):
+        url = 'bridges/{}'.format(self.id)
+        data = self.client._get(url).json()
+        self.set_up(data)
