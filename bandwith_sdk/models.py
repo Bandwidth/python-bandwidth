@@ -1,6 +1,6 @@
 # Object models for SDK
 from .client import Client
-from .utils import prepare_json
+from .utils import prepare_json, unpack_json_dct
 
 # Sentinel value to mark that some of properties have been not synced.
 UNEVALUATED = object()
@@ -232,22 +232,20 @@ class Application(Resource):
                'incoming_sms_url_callback_timeout',
                'incoming_sms_fallback_url', 'callback_http_method', 'auto_answer')
 
-    def __init__(self, data: dict):
+    def __init__(self, id, data: dict):
         self.client = Client()
-        if isinstance(data, dict):
+        self.application_id = id
+        if data:
             self.data = data
             self.set_up()
-        elif isinstance(data, str):
-            self.data = UNEVALUATED
-            self.application_id = data
         else:
-            raise TypeError('Accepted only call-id or call data as dictionary')
+            raise TypeError('Accepted only application-id or application data as dictionary')
 
     def set_up(self):
         [setattr(self, k, v) for k, v in self.data.items() if k in self._fields and v]
 
     @classmethod
-    def create(cls, **kwargs):
+    def create(cls, **data):
         """
         :name: A name you choose for this application
         :incoming_call_url: A URL where call events will be sent for an inbound call
@@ -265,33 +263,73 @@ class Application(Resource):
         """
         client = cls.client or Client()
         url = 'applications/'
-        data = prepare_json(
-            {k: v for k, v in kwargs.items() if v and k in cls._fields})
-        resp = client._post(url, data=data)
+        p_data = prepare_json(
+            {k: v for k, v in data.items() if v and k in cls._fields})
+        resp = client._post(url, data=p_data)
         location = resp.headers['Location']
         application_id = location.split('/')[-1]
-        kwargs.update({'application_id': application_id})
-        return cls(data=kwargs)
+        data.update({'application_id': application_id})
+        return cls(data=data)
 
     @classmethod
-    def list(cls, *args, **kwargs):
+    def list(cls, page=1, size=20):
         """
 
-        :param args:
-        :param kwargs:
-        :return:
+        :page: Used for pagination to indicate the page requested for querying a list of applications.
+        If no value is specified the default is 1.
+        :size: Used for pagination to indicate the size of each page requested for querying a list of applications.
+        If no value is specified the default value is 25. (Maximum value 1000).
+        :return: List of Application instances
         """
-        raise NotImplemented
+        client = cls.client or Client()
+        data_as_list = client._get(
+            'applications/', params=dict(page=page, size=size)).json()
+        return [cls(id=v['id'], data=unpack_json_dct(v)) for v in data_as_list]
 
     @classmethod
-    def get(cls, *args, **kwargs):
+    def get(cls, id):
         """
+        :id: application id that you want to retrieve.
+        Gets information about one of your applications. No query parameters are supported.
+        :return: Application instance
+        """
+        client = cls.client or Client()
+        url = 'applications/{}'.format(id)
+        data_as_dict = client._get(url).json()
+        application = cls(id=data_as_dict['id'], data=unpack_json_dct(data_as_dict))
+        return application
 
-        :param args:
-        :param kwargs:
-        :return:
+    @classmethod
+    def patch(cls, id, **data):
         """
-        raise NotImplemented
+        :id: Application id of application that you want to change
+        :incomingCallUrl: A URL where call events will be sent for an inbound call
+        :incomingSmsUrl:  A URL where message events will be sent for an inbound SMS message
+        :name:    A name you choose for this application
+        :callbackHttpMethod:  Determine if the callback event should be sent via HTTP GET or HTTP POST.
+        (If not set the default is HTTP POST)
+        :autoAnswer:  Determines whether or not an incoming call should be automatically answered. Default value is 'true'.
+
+        :return: True if it's patched
+        """
+        client = cls.client or Client()
+        url = 'applications/{}'.format(id)
+        p_data = prepare_json(
+            {k: v for k, v in data.items() if v and k in cls._fields})
+        client._post(url, data=p_data)
+        return True
+
+    @classmethod
+    def delete(cls, id):
+        """
+        :id: application id that you want to retrieve.
+        Permanently deletes an application.
+        :return: True if it's deleted
+        """
+        client = cls.client or Client()
+        url = 'applications/{}'.format(id)
+        client._delete(url)
+        return True
 
 
 class Bridge(Resource):
