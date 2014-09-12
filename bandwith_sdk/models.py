@@ -38,7 +38,7 @@ class Resource(object):
         raise NotImplemented
 
 
-class Call(object):
+class Call(Resource):
     call_id = None
     direction = None
     from_ = None
@@ -97,9 +97,9 @@ class Call(object):
         return cls(data_as_dict)
 
     @classmethod
-    def list(cls, *args, **kwargs):
+    def list(cls, page=1, size=20):
         client = cls.client or Client()
-        data_as_list = client.get_calls(*args, **kwargs)
+        data_as_list = client._get('calls/', params=dict(page=page, size=size)).json()
         return [cls(v) for v in data_as_list]
 
     def __repr__(self):
