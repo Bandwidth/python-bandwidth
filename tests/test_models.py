@@ -85,7 +85,7 @@ class CallsTest(unittest.TestCase):
         """
 
         responses.add(responses.GET,
-                      'https://api.catapult.inetwork.com/v1/users/u-user/calls/',
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls',
                       body=raw,
                       status=200,
                       content_type='application/json')
@@ -100,7 +100,7 @@ class CallsTest(unittest.TestCase):
         Call.create("+1919000001", "+1919000002")
         """
         responses.add(responses.POST,
-                      'https://api.catapult.inetwork.com/v1/users/u-user/calls/',
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls',
                       body='',
                       status=201,
                       content_type='application/json',
@@ -187,7 +187,7 @@ class BridgesTest(unittest.TestCase):
         """
 
         responses.add(responses.GET,
-                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/',
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges',
                       body=raw,
                       status=200,
                       content_type='application/json')
@@ -202,7 +202,7 @@ class BridgesTest(unittest.TestCase):
         Bridge.create()
         """
         responses.add(responses.POST,
-                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/',
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges',
                       body='',
                       status=201,
                       content_type='application/json',
@@ -218,7 +218,7 @@ class BridgesTest(unittest.TestCase):
         Bridge.create(Call('c-foo'), Call('c-bar')))
         """
         responses.add(responses.POST,
-                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/',
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges',
                       body='',
                       status=201,
                       content_type='application/json',
