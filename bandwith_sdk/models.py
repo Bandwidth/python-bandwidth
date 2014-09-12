@@ -38,7 +38,7 @@ class Resource(object):
         raise NotImplemented
 
 
-class Call(object):
+class Call(Resource):
     call_id = None
     direction = None
     from_ = None
