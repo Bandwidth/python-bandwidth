@@ -272,3 +272,104 @@ class Application(Resource):
         :return:
         """
         raise NotImplemented
+
+
+class Bridge(Resource):
+    id = None
+    state = None
+    call_ids = None
+    calls = None
+    bridge_audio = None
+    completed_time = None
+    created_time = None
+    activated_time = None
+    client = None
+
+    def __init__(self, id, *calls, bridge_audio=True):
+        self.calls = calls
+        self.client = Client()
+        self.bridge_audio = bridge_audio
+        self.id = id
+
+    def set_up(self, data):
+        self.state = data.get('state')
+        self.bridge_audio = data.get('bridgeAudio')
+        self.completed_time = data.get('completedTime')
+        self.created_time = data.get('createdTime')
+        self.activated_time = data.get('activatedTime')
+
+    @classmethod
+    def get(cls, bridge_id):
+        client = cls.client or Client()
+        url = 'bridges/{}'.format(bridge_id)
+        data_as_dict = client._get(url).json()
+        bridge = cls(data_as_dict['id'])
+        bridge.set_up(data_as_dict)
+        return bridge
+
+    @classmethod
+    def create(cls, *calls, bridge_audio=True):
+        """
+        :param calls:
+        :param bridge_audio:
+        :return:
+        """
+        client = cls.client or Client()
+        data = {"bridgeAudio": bridge_audio, "callIds": [c.call_id for c in calls]}
+        r = client._post('bridges/', data=data)
+        location = r.headers['Location']
+        bridge_id = location.split('/')[-1]
+        return cls(bridge_id, *calls, bridge_audio=bridge_audio)
+
+    @property
+    def call_ids(self):
+        return [c.call_id for c in self.calls]
+
+    def call_party(self, caller, callee):
+        new_call = Call.create(caller, callee, bridgeId=self.id)
+        self.calls += (new_call,)
+        return new_call
+
+    def set_calls(self, *calls):
+        data = {"bridgeAudio": "false",
+                "callIds": [c.call_id for c in calls]
+                }
+        url = 'bridges/{}/audio'.format(self.id)
+
+        self.client._post(url, data=data)
+        self.calls = calls
+
+    def fetch_calls(self):
+        url = 'bridges/{}/calls'.format(self.id)
+        r = self.client._get(url)
+        self.calls = [Call(v) for v in r.json()]
+        return self.calls
+
+    def play_audio(self, file):
+        '''
+        Plays audio form the given url to the call associated with call_id
+        '''
+        url = 'bridges/{}/audio'.format(self.id)
+
+        self.client._post(url, data={'fileUrl': file})
+
+    def stop_audio(self):
+        '''
+        Plays audio form the given url to the call associated with call_id
+        '''
+        url = 'bridges/{}/audio'.format(self.id)
+
+        self.client._post(url, data={'fileUrl': ''})
+
+    def speak_sentence(self, sentence, gender='female', locale=None, voice=None):
+        url = 'bridges/{}/audio'.format(self.id)
+        json_data = {'sentence': sentence, 'gender': gender}
+        if locale:
+            json_data['locale'] = locale
+        if voice:
+            json_data['voice'] = voice
+        self.client._post(url, data=json_data)
+
+    def stop_sentence(self):
+        url = 'bridges/{}/audio'.format(self.id)
+        self.client._post(url, data={'sentence': ''})
