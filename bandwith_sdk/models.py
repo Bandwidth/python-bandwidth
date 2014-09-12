@@ -305,11 +305,13 @@ class Bridge(Resource):
     activated_time = None
     client = None
 
-    def __init__(self, id, *calls, bridge_audio=True):
+    def __init__(self, id, *calls, bridge_audio=True, data=None):
         self.calls = calls
         self.client = Client()
         self.bridge_audio = bridge_audio
         self.id = id
+        if data:
+            self.set_up(data)
 
     def set_up(self, data):
         self.state = data.get('state')
@@ -319,12 +321,18 @@ class Bridge(Resource):
         self.activated_time = data.get('activatedTime')
 
     @classmethod
+    def list(cls, page=1, size=20):
+        client = cls.client or Client()
+        data_as_list = client._get(
+            'bridges/', params=dict(page=page, size=size)).json()
+        return [cls(v['id'], data=v) for v in data_as_list]
+
+    @classmethod
     def get(cls, bridge_id):
         client = cls.client or Client()
         url = 'bridges/{}'.format(bridge_id)
         data_as_dict = client._get(url).json()
-        bridge = cls(data_as_dict['id'])
-        bridge.set_up(data_as_dict)
+        bridge = cls(data_as_dict['id'], data=data_as_dict)
         return bridge
 
     @classmethod
