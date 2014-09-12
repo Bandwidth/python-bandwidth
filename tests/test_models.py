@@ -211,3 +211,38 @@ class BridgesTest(unittest.TestCase):
         bridge = Bridge.create()
         self.assertIsInstance(bridge, Bridge)
         self.assertEqual(bridge.id, 'new-bridge-id')
+
+    @responses.activate
+    def test_create_form_call(self):
+        """
+        Bridge.create(Call('c-foo'), Call('c-bar')))
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/bridges/new-bridge-id'})
+
+        bridge = Bridge.create(Call('c-foo'), Call('c-bar'))
+        self.assertIsInstance(bridge, Bridge)
+        self.assertEqual(bridge.id, 'new-bridge-id')
+
+        request_message = responses.calls[0].request.body
+
+        self.assertEqual(sorted(request_message), sorted('{"callIds": ["c-foo", "c-bar"], "bridgeAudio": true}'))
+
+    def test_calls_property(self):
+        """
+        Bridge('bridge-id').calls
+        """
+
+        bridge = Bridge('bridge-id', Call('c-foo'), Call('c-bar'))
+
+        self.assertIsInstance(bridge, Bridge)
+        self.assertEqual(bridge.id, 'bridge-id')
+
+        calls = bridge.calls
+
+        self.assertEqual(calls[0].call_id, 'c-foo')
+        self.assertEqual(calls[1].call_id, 'c-bar')
