@@ -193,7 +193,8 @@ class Call(object):
                 'interDigitTimeout': interDigitTimeout,
                 'terminatingDigits': terminatingDigits,
                 'prompt': kwargs.get('prompt')}
-        data = {k: v for k, v in data.items() if v is not None}  # deleting keys with None values
+        # deleting keys with None values
+        data = {k: v for k, v in data.items() if v is not None}
         return self.client._post(url, data=data, timeout=timeout)
 
     def get_gather_info(self, gather_id, timeout=None):
@@ -208,3 +209,66 @@ class Call(object):
 
         return self.client._get(url, timeout=timeout).json()
 
+
+class Application(Resource):
+
+    application_id = None
+    name = None
+    incoming_call_url = None
+    incoming_call_url_callback_timeout = None
+    incoming_call_fallback_url = None
+    incoming_sms_url = None
+    incoming_sms_url_callback_timeout = None
+    incoming_sms_fallback_url = None
+    callback_http_method = None
+    auto_answer = None
+    fields = ('application_id', 'name',
+              'incoming_call_url',
+              'incoming_call_url_callback_timeout',
+              'incoming_call_fallback_url',
+              'incoming_sms_url',
+              'incoming_sms_url_callback_timeout',
+              'incoming_sms_fallback_url', 'callback_http_method', 'auto_answer')
+
+    def __init__(self, data: dict):
+        self.client = Client()
+        if isinstance(data, dict):
+            self.data = data
+            self.set_up()
+        elif isinstance(data, str):
+            self.data = UNEVALUATED
+            self.application_id = data
+        else:
+            raise TypeError('Accepted only call-id or call data as dictionary')
+
+    @classmethod
+    def create(cls, **kwargs):
+        """
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        url = 'applications/'
+        d = prerare.json({k: v for k, v in kwargs.items() if v and k in cls.fields})
+
+        raise NotImplemented
+
+    @classmethod
+    def list(cls, *args, **kwargs):
+        """
+
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        raise NotImplemented
+
+    @classmethod
+    def get(cls, *args, **kwargs):
+        """
+
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        raise NotImplemented
