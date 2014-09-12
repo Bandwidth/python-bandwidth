@@ -38,8 +38,14 @@ class RESTClientObject(object):
             response = provider(method, *args, **kwargs)
             response.raise_for_status()
             return response
-        except Exception as e:
+        except requests.exceptions.HTTPError as e:
             self.log.exception('Error from bandwith api.')
+            if response.status_code == 400:
+                message = response.json()['message']
+                raise BandwithError(message)
+            else:
+                raise BandwithError(e)
+        except Exception as e:
             raise BandwithError(e)
 
     def _delete(self, url, timeout=None, **kwargs):
@@ -67,7 +73,6 @@ class RESTClientObject(object):
 
     def _post(self, url, data=None, timeout=None, **kwargs):
         url = self._join_endpoint(url)
-
         kwargs['timeout'] = timeout or self.default_timeout
         if data:
             data = json.dumps(data)

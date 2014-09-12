@@ -1,5 +1,6 @@
 # Object models for SDK
 from .client import Client
+from .utils import prepare_json
 
 # Sentinel value to mark that some of properties have been not synced.
 UNEVALUATED = object()
@@ -99,7 +100,8 @@ class Call(Resource):
     @classmethod
     def list(cls, page=1, size=20):
         client = cls.client or Client()
-        data_as_list = client._get('calls/', params=dict(page=page, size=size)).json()
+        data_as_list = client._get(
+            'calls/', params=dict(page=page, size=size)).json()
         return [cls(v) for v in data_as_list]
 
     def __repr__(self):
@@ -220,15 +222,15 @@ class Application(Resource):
     incoming_sms_url = None
     incoming_sms_url_callback_timeout = None
     incoming_sms_fallback_url = None
-    callback_http_method = None
-    auto_answer = None
-    fields = ('application_id', 'name',
-              'incoming_call_url',
-              'incoming_call_url_callback_timeout',
-              'incoming_call_fallback_url',
-              'incoming_sms_url',
-              'incoming_sms_url_callback_timeout',
-              'incoming_sms_fallback_url', 'callback_http_method', 'auto_answer')
+    callback_http_method = 'post'
+    auto_answer = True
+    _fields = ('application_id', 'name',
+               'incoming_call_url',
+               'incoming_call_url_callback_timeout',
+               'incoming_call_fallback_url',
+               'incoming_sms_url',
+               'incoming_sms_url_callback_timeout',
+               'incoming_sms_fallback_url', 'callback_http_method', 'auto_answer')
 
     def __init__(self, data: dict):
         self.client = Client()
@@ -241,17 +243,35 @@ class Application(Resource):
         else:
             raise TypeError('Accepted only call-id or call data as dictionary')
 
+    def set_up(self):
+        [setattr(self, k, v) for k, v in self.data.items() if k in self._fields and v]
+
     @classmethod
     def create(cls, **kwargs):
         """
-        :param args:
-        :param kwargs:
-        :return:
+        :name: A name you choose for this application
+        :incoming_call_url: A URL where call events will be sent for an inbound call
+        :incoming_call_url_callback_timeout: Determine how long should the platform wait for incomingCallUrl's response before
+        timing out in milliseconds.
+        :incoming_call_fallback_url: The URL used to send the callback event if the request to incomingCallUrl fails.
+        :incoming_sms_url:  A URL where message events will be sent for an inbound SMS message.
+        :incoming_sms_url_callback_timeout: Determine how long should the platform wait for incomingSmsUrl's response before
+        timing out in milliseconds.
+        :incoming_sms_fallback_url: The URL used to send the callback event if the request to incomingSmsUrl fails.
+        :callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST.
+        (If not set the default is HTTP POST).
+        :auto_answer: Determines whether or not an incoming call should be automatically answered. Default value is 'true'.
+        :return: Application instance
         """
+        client = cls.client or Client()
         url = 'applications/'
-        d = prerare.json({k: v for k, v in kwargs.items() if v and k in cls.fields})
-
-        raise NotImplemented
+        data = prepare_json(
+            {k: v for k, v in kwargs.items() if v and k in cls._fields})
+        resp = client._post(url, data=data)
+        location = resp.headers['Location']
+        application_id = location.split('/')[-1]
+        kwargs.update({'application_id': application_id})
+        return cls(data=kwargs)
 
     @classmethod
     def list(cls, *args, **kwargs):
