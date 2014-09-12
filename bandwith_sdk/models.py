@@ -75,6 +75,21 @@ class Call(Resource):
 
     @classmethod
     def create(cls, caller, callee, **kwargs):
+        """
+        Makes a phone call.
+
+        :param caller: One of your telephone numbers the call should come from (must be in E.164 format,
+            like +19195551212)
+
+        :param callee: The number to call (must be either an E.164 formated number, like +19195551212, or a
+            valid SIP URI, like sip:someone@somewhere.com)
+
+        :param kwargs:
+            recordingEnabled -Indicates if the call should be recorded after being created.
+            bridgeId - Create a call in a bridge
+
+        :return: new Call instance with @call_id and @from_, @to fields.
+        """
         client = cls.client or Client()
         url = 'calls/'
 
@@ -95,16 +110,42 @@ class Call(Resource):
 
     @classmethod
     def get(cls, call_id):
+        """
+        Gets information about an active or completed call.
+
+        :param call_id:
+
+        :return: new Call instance with all provided fields.
+        """
         client = cls.client or Client()
         url = 'calls/{}'.format(call_id)
         data_as_dict = client._get(url).json()
         return cls(data_as_dict)
 
     @classmethod
-    def list(cls, page=1, size=20):
+    def list(cls, **query):
+        """
+        Gets a list of active and historic calls you made or received.
+
+        :param page: Used for pagination to indicate the page requested for querying a list of calls.
+                    If no value is specified the default is 0.
+
+        :param size: Used for pagination to indicate the size of each page requested for querying a list of calls.
+                    If no value is specified the default value is 25. (Maximum value 1000)
+
+        :param bridgeId: Id of the bridge for querying a list of calls history. (Pagination do not apply).
+
+        :param conferenceId: Id of the conference for querying a list of calls history. (Pagination do not apply).
+
+        :param from: Telephone number to filter the calls that came from (must be in E.164 format, like +19195551212).
+
+        :param to: The number to filter calls that was called to (must be either an E.164 formated number,
+                like +19195551212, or a valid SIP URI, like sip:someone@somewhere.com).
+
+        :return: list of Call instances
+        """
         client = cls.client or Client()
-        data_as_list = client._get(
-            'calls/', params=dict(page=page, size=size)).json()
+        data_as_list = client._get('calls/', params=query).json()
         return [cls(v) for v in data_as_list]
 
     def __repr__(self):
