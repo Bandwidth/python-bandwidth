@@ -383,13 +383,13 @@ class Bridge(Resource):
     activated_time = None
     client = None
 
-    def __init__(self, id, bridge_audio=True, data=None, *calls):
+    def __init__(self, id, *calls, **kwargs):
         self.calls = calls
         self.client = Client()
-        self.bridge_audio = bridge_audio
+        self.bridge_audio = kwargs.pop('bridge_audio', None)
         self.id = id
-        if data:
-            self.set_up(data)
+        if 'data' in kwargs:
+            self.set_up(kwargs['data'])
 
     def set_up(self, data):
         self.state = data.get('state')
@@ -413,18 +413,19 @@ class Bridge(Resource):
         return bridge
 
     @classmethod
-    def create(cls, bridge_audio=True, *calls):
+    def create(cls, *calls, **kwargs):
         """
         :param calls:
         :param bridge_audio:
         :return:
         """
         client = cls.client or Client()
-        data = {"bridgeAudio": bridge_audio, "callIds": [c.call_id for c in calls]}
+        data = to_api(kwargs)
+        data["callIds"] = [c.call_id for c in calls]
         r = client._post(cls.path, data=data)
         location = r.headers['Location']
         bridge_id = location.split('/')[-1]
-        return cls(id=bridge_id, bridge_audio=bridge_audio, *calls)
+        return cls(bridge_id, *calls, **kwargs)
 
     @property
     def call_ids(self):
