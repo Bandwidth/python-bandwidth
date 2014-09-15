@@ -1,24 +1,33 @@
+import six
 import re
 
 ALL_CAPITAL = re.compile(r'(.)([A-Z][a-z]+)')
 CASE_SWITCH = re.compile(r'([a-z0-9])([A-Z])')
-UNDERSCORES = re.compile(r'[a-z]_[a-z]')
+UNDERSCORES = re.compile(r'[a-z]_[a-z]{0,1}')
+
+
+def underscoreToCamel(match):
+    groups = match.group()
+    if len(groups) == 2:
+        # underscoreToCamel('from_') -> 'from'
+        return groups[0]
+    return groups[0] + groups[2].upper()
+
+
+def camelize(value):
+    return UNDERSCORES.sub(underscoreToCamel, value)
+
+
+def underscorize(value):
+    partial_result = ALL_CAPITAL.sub(r'\1_\2', value)
+    return CASE_SWITCH.sub(r'\1_\2', partial_result).lower()
 
 
 def make_camel(*args):
-    def underscoreToCamel(match):
-        return match.group()[0] + match.group()[2].upper()
-
-    def camelize(value):
-        return UNDERSCORES.sub(underscoreToCamel, value)
-    return list(map(camelize, args))
+    return [camelize(a) for a in args]
 
 
 def make_underscore(*args):
-    def underscorize(value):
-        partial_result = ALL_CAPITAL.sub(r'\1_\2', value)
-        return CASE_SWITCH.sub(r'\1_\2', partial_result).lower()
-
     return list(map(underscorize, args))
 
 
@@ -30,3 +39,30 @@ def prepare_json(dct):
 def unpack_json_dct(dct):
     keys = make_underscore(*dct.keys())
     return dict(zip(keys, dct.values()))
+
+
+def drop_empty(data):
+    return {k: v for k, v in six.iteritems(data) if v is not None}
+
+
+# alternative tools
+
+def to_api(data):
+    """
+    :param data: dictionary {'max_digits': 1}
+    :return: {'maxDigits': 1}
+    """
+    assert isinstance(data, dict), 'Wrong type'
+    data = drop_empty(data)
+    api_data = {camelize(k): v for k, v in six.iteritems(data)}
+    return api_data
+
+
+def from_api(data):
+    """
+    :param data: {'maxDigits': 1}
+    :return: {'max_digits': 1}
+    """
+    assert isinstance(data, dict), 'Wrong type'
+    app_data = {underscorize(k): v for k, v in six.iteritems(data)}
+    return app_data

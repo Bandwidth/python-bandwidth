@@ -1,6 +1,7 @@
 # Object models for SDK
+import six
 from .client import Client
-from .utils import prepare_json, unpack_json_dct
+from .utils import prepare_json, unpack_json_dct, to_api, from_api
 
 # Sentinel value to mark that some of properties have been not synced.
 UNEVALUATED = object()
@@ -51,31 +52,27 @@ class Call(Resource):
     start_time = None
     active_time = None
     client = None
+    _fields = frozenset(('call_id', 'direction', 'from_', 'to', 'recording_enabled', 'callback_url',
+                         'state', 'start_time', 'active_time'))
 
     def __init__(self, data):
         self.client = Client()
         if isinstance(data, dict):
-            self.data = data
-            self.set_up()
-        elif isinstance(data, str):
-            self.data = UNEVALUATED
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
             self.call_id = data
         else:
             raise TypeError('Accepted only call-id or call data as dictionary')
 
-    def set_up(self):
-        self.call_id = self.data.get('id') or self.data.get('callId')
-        self.direction = self.data.get('direction')
-        self.from_ = self.data.get('from')
-        self.to = self.data.get('to')
-        self.recording_enabled = self.data.get('recordingEnabled')
-        self.callback_url = self.data.get('callbackUrl')
-        self.state = self.data.get('state')
-        self.start_time = self.data.get('startTime')
-        self.active_time = self.data.get('activeTime')
+    def set_up(self, data):
+        self.from_ = self.from_ or data.get('from')
+        self.call_id = self.call_id or data.get('id')
+        for k, v in six.iteritems(data):
+            if k in self._fields:
+                setattr(self, k, v)
 
     @classmethod
-    def create(cls, caller, callee, **kwargs):
+    def create(cls, caller, callee, bridge_id=None, recording_enabled=None, timeout=30):
         """
         Makes a phone call.
 
@@ -85,27 +82,27 @@ class Call(Resource):
         :param callee: The number to call (must be either an E.164 formated number, like +19195551212, or a
             valid SIP URI, like sip:someone@somewhere.com)
 
-        :param kwargs:
-            recordingEnabled -Indicates if the call should be recorded after being created.
-            bridgeId - Create a call in a bridge
+        :param bridge_id: Create a call in a bridge
+
+        :param recording_enabled: Indicates if the call should be recorded after being created.
 
         :return: new Call instance with @call_id and @from_, @to fields.
         """
         client = cls.client or Client()
 
-        json_data = {
+        data = {
             'from': caller,
             'to': callee,
-            'callTimeout': 30,  # seconds
+            'callTimeout': timeout,  # seconds
+            'bridgeId': bridge_id,
+            'recordingEnabled': recording_enabled
         }
-
-        json_data.update(kwargs)
+        json_data = to_api(data)
         data = client._post(cls.path, data=json_data)
         location = data.headers['Location']
         call_id = location.split('/')[-1]
         call = cls(call_id)
-        call.from_ = caller
-        call.to = callee
+        call.set_up(json_data)
         return call
 
     @classmethod
@@ -133,11 +130,11 @@ class Call(Resource):
         :param size: Used for pagination to indicate the size of each page requested for querying a list of calls.
                     If no value is specified the default value is 25. (Maximum value 1000)
 
-        :param bridgeId: Id of the bridge for querying a list of calls history. (Pagination do not apply).
+        :param bridge_id: Id of the bridge for querying a list of calls history. (Pagination do not apply).
 
-        :param conferenceId: Id of the conference for querying a list of calls history. (Pagination do not apply).
+        :param conference_id: Id of the conference for querying a list of calls history. (Pagination do not apply).
 
-        :param from: Telephone number to filter the calls that came from (must be in E.164 format, like +19195551212).
+        :param from_: Telephone number to filter the calls that came from (must be in E.164 format, like +19195551212).
 
         :param to: The number to filter calls that was called to (must be either an E.164 formated number,
                 like +19195551212, or a valid SIP URI, like sip:someone@somewhere.com).
@@ -145,11 +142,12 @@ class Call(Resource):
         :return: list of Call instances
         """
         client = cls.client or Client()
+        query = to_api(query)
         data_as_list = client._get(cls.path, params=query).json()
         return [cls(v) for v in data_as_list]
 
     def __repr__(self):
-        return 'Call({})'.format(repr(self.data) if self.data is not UNEVALUATED else self.call_id)
+        return 'Call(%r, state=%r)' % (self.call_id, self.state or 'Unknown')
 
     # Audio part
     def play_audio(self, file_name):
@@ -161,7 +159,7 @@ class Call(Resource):
 
     def stop_audio(self):
         '''
-        Plays audio form the given url to the call associated with call_id
+        Stop an audio file playing
         '''
         url = '{}/{}/audio'.format(self.path, self.call_id)
         self.client._post(url, data={'fileUrl': ''})
@@ -385,13 +383,13 @@ class Bridge(Resource):
     activated_time = None
     client = None
 
-    def __init__(self, id, bridge_audio=True, data=None, *calls):
+    def __init__(self, id, *calls, **kwargs):
         self.calls = calls
         self.client = Client()
-        self.bridge_audio = bridge_audio
+        self.bridge_audio = kwargs.pop('bridge_audio', None)
         self.id = id
-        if data:
-            self.set_up(data)
+        if 'data' in kwargs:
+            self.set_up(kwargs['data'])
 
     def set_up(self, data):
         self.state = data.get('state')
@@ -415,18 +413,19 @@ class Bridge(Resource):
         return bridge
 
     @classmethod
-    def create(cls, bridge_audio=True, *calls):
+    def create(cls, *calls, **kwargs):
         """
         :param calls:
         :param bridge_audio:
         :return:
         """
         client = cls.client or Client()
-        data = {"bridgeAudio": bridge_audio, "callIds": [c.call_id for c in calls]}
+        data = to_api(kwargs)
+        data["callIds"] = [c.call_id for c in calls]
         r = client._post(cls.path, data=data)
         location = r.headers['Location']
         bridge_id = location.split('/')[-1]
-        return cls(id=bridge_id, bridge_audio=bridge_audio, *calls)
+        return cls(bridge_id, *calls, **kwargs)
 
     @property
     def call_ids(self):

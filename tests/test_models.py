@@ -34,6 +34,11 @@ class CallsTest(unittest.TestCase):
         call = Call.get('c-call-id')
 
         self.assertEqual(call.call_id, 'c-call-id')
+        self.assertEqual(call.direction, 'out')
+        self.assertEqual(call.from_, '+1919000001')
+        self.assertEqual(call.to, '+1919000002')
+        self.assertEqual(call.recording_enabled, False)
+        self.assertEqual(call.state, 'active')
 
     @responses.activate
     def test_get_and_not_found(self):
@@ -229,8 +234,7 @@ class BridgesTest(unittest.TestCase):
         self.assertEqual(bridge.id, 'new-bridge-id')
 
         request_message = responses.calls[0].request.body
-
-        self.assertEqual(sorted(request_message), sorted('{"callIds": ["c-foo", "c-bar"], "bridgeAudio": true}'))
+        self.assertEqual(request_message, '{"callIds": ["c-foo", "c-bar"]}')
 
     def test_calls_property(self):
         """
