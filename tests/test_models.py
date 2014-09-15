@@ -4,6 +4,10 @@ import unittest
 from bandwith_sdk import Call, Bridge, BandwithError, Application
 
 
+def assertJsonEq(first, second, msg='Ouups'):
+    assert sorted(first) == sorted(second), '%r != %r\n%s' % (first, second, msg)
+
+
 class CallsTest(unittest.TestCase):
 
     @responses.activate
@@ -114,6 +118,200 @@ class CallsTest(unittest.TestCase):
         call = Call.create("+1919000001", "+1919000002")
 
         self.assertEqual(call.call_id, 'new-call-id')
+
+    @responses.activate
+    def test_play_audio(self):
+        """
+        Call('new-call-id').play_audio('Hello.mp3')
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls/new-call-id/audio',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/calls/new-call-id'})
+
+        call = Call('new-call-id')
+        call.play_audio('Hello.mp3', loop_enabled=True, tag='custom_tag')
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"loopEnabled": true, "tag": "custom_tag", "fileUrl": "Hello.mp3"}')
+
+    @responses.activate
+    def test_stop_audio(self):
+        """
+        Call('new-call-id').stop_audio()
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls/new-call-id/audio',
+                      body='',
+                      status=200,
+                      content_type='application/json',
+                      )
+
+        call = Call('new-call-id')
+        call.stop_audio()
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"fileUrl": ""}')
+
+    @responses.activate
+    def test_speak_sentence(self):
+        """
+        Call('new-call-id').speak_sentence('Hello', gender='female')
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls/new-call-id/audio',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/calls/new-call-id'})
+
+        call = Call('new-call-id')
+        call.speak_sentence('Hello', gender='female', voice='Jorge', loop_enabled=True)
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"voice": "Jorge", "sentence": "Hello", "gender": "female", "loopEnabled": true}')
+
+    @responses.activate
+    def test_stop_sentence(self):
+        """
+        Call('new-call-id').stop_sentence()
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls/new-call-id/audio',
+                      body='',
+                      status=200,
+                      content_type='application/json',
+                      )
+
+        call = Call('new-call-id')
+        call.stop_sentence()
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"sentence": ""}')
+
+    @responses.activate
+    def test_transfer(self):
+        """
+        Call('new-call-id').transfer('+1919000008', whisper_audio={"sentence": "Hello {number}, thanks for calling"})
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls/new-call-id',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/calls/tr-call-id'})
+
+        call = Call('new-call-id')
+        new_call = call.transfer('+1919000008', whisper_audio={"sentence": "Hello {number}, thanks for calling"})
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"transferTo": "+1919000008", "state": "transferring", '
+                                      '"whisperAudio": {"sentence": "Hello {number}, thanks for calling"}}')
+
+        self.assertIsInstance(new_call, Call)
+        self.assertEqual(new_call.call_id, 'tr-call-id')
+
+    @responses.activate
+    def test_hangup(self):
+        """
+        Call('new-call-id').hangup()
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls/new-call-id',
+                      body='',
+                      status=200,
+                      content_type='application/json',
+                      )
+
+        call = Call('new-call-id')
+        call.hangup()
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"state": "completed"}')
+
+        self.assertEqual(call.state, 'completed')
+
+    @responses.activate
+    def test_send_dtmf(self):
+        """
+        Call('new-call-id').send_dtmf('121')
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls/new-call-id/dtmf',
+                      body='',
+                      status=200,
+                      content_type='application/json',
+                      )
+
+        call = Call('new-call-id')
+        call.send_dtmf('121')
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"dtmfOut": "121"}')
+
+    @responses.activate
+    def test_get_events(self):
+        """
+        Call('new-call-id').get_events()
+        """
+        raw = """
+        [
+        {
+        "id": "{callEventId1}",
+        "time": "2012-09-19T13:55:41.343Z",
+        "name": "create"
+        },
+        {
+        "id": "{callEventId2}",
+        "time": "2012-09-19T13:55:45.583Z",
+        "name": "answer"
+        },
+        {
+        "id": "{callEventId3}",
+        "time": "2012-09-19T13:55:45.583Z",
+        "name": "hangup",
+        "data": "foo"
+        }]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls/new-call-id/events',
+                      body=raw,
+                      status=200,
+                      content_type='application/json',
+                      )
+
+        call = Call('new-call-id')
+        events = call.get_events()
+
+    @responses.activate
+    def test_refresh(self):
+        """
+        Call('c-call-id').refresh()
+        """
+        raw = """
+        {
+        "id": "c-call-id",
+        "direction": "out",
+        "from": "+1919000001",
+        "to": "+1919000002",
+        "recordingEnabled": false,
+        "callbackUrl": "",
+        "state": "active",
+        "startTime": "2013-02-08T13:15:47.587Z",
+        "activeTime": "2013-02-08T13:15:52.347Z",
+        "events": "https://.../calls/{callId}/events"
+        }
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls/c-call-id',
+                      body=raw,
+                      status=200,
+                      content_type='application/json',
+                      )
+
+        call = Call('c-call-id')
+        call.refresh()
+        self.assertEqual(call.call_id, 'c-call-id')
+        self.assertEqual(call.direction, 'out')
+        self.assertEqual(call.from_, '+1919000001')
+        self.assertEqual(call.to, '+1919000002')
+        self.assertEqual(call.recording_enabled, False)
+        self.assertEqual(call.state, 'active')
 
 
 class BridgesTest(unittest.TestCase):
@@ -234,7 +432,7 @@ class BridgesTest(unittest.TestCase):
         self.assertEqual(bridge.id, 'new-bridge-id')
 
         request_message = responses.calls[0].request.body
-        self.assertEqual(request_message, '{"callIds": ["c-foo", "c-bar"]}')
+        assertJsonEq(request_message, '{"callIds": ["c-foo", "c-bar"]}')
 
     def test_calls_property(self):
         """
