@@ -1,5 +1,6 @@
 import json
 from six import iteritems
+from .utils import from_api
 # Event abstraction
 
 
@@ -10,7 +11,7 @@ class Event(object):
         if data is not None:
             event_as_dict = json.loads(data.decode('utf-8'))
         else:
-            event_as_dict = kwargs
+            event_as_dict = from_api(kwargs)
         event_cls = _events.get(event_as_dict['eventType'])
         if not event_cls:
             raise ValueError('Unknown event {}'.format(event_as_dict))
@@ -29,7 +30,7 @@ class BaseEvent(object):
     @property
     def call(self):
         # avoid cyclic imports
-        from example_v4 import Call
+        from .models import Call
         return Call(self.callId)
 
 

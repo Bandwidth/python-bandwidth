@@ -249,65 +249,65 @@ class Call(Resource):
         return self.client._post(url, data=to_api(kwargs))
 
     def bridge(self, *calls, **kwargs):
+        '''
+        #todo: proper docstring
+        :param calls:
+        :param kwargs:
+        :return:
+        '''
         _calls = (self,) + calls
         return Bridge.create(*_calls, **kwargs)
 
     def refresh(self):
+        '''
+        Updates call fields internally for this call instance
+        :return: None
+        '''
         url = '{}/{}'.format(self.path, self.call_id)
         data = self.client._get(url).json()
         self.set_up(from_api(data))
 
-    def send_dtmf(self, dtmf, timeout=None):
+    def hangup(self):
+        '''
+        Hangs up a call with the given call_id
+        '''
+        url = '{}/{}'.format(self.path, self.call_id)
+
+        json_data = {'state': 'completed'}
+        self.client._post(url, data=to_api(json_data), timeout=None)
+        self.set_up(json_data)
+
+    #Dtmf section
+    def send_dtmf(self, dtmf):
         '''
         Sends a string of characters as DTMF on the given call_id
         Valid chars are '0123456789*#ABCD'
         '''
         url = '{}/{}/dtmf'.format(self.path, self.call_id)
 
-        json_data = {'dtmfOut': dtmf}
+        json_data = to_api({'dtmfOut': dtmf})
 
-        self.client._post(url, data=json_data, timeout=timeout)
+        self.client._post(url, data=json_data)
 
-    def receive_dtmf(self, max_digits, terminating_digits,
-                     inter_digit_timeout='1', timeout=None):
-        url = '{}/{}/gather'.format(self.path, self.call_id)
-
-        http_get_params = {
-            'maxDigits': max_digits,
-            'terminatingDigits': terminating_digits,
-            'interDigitTimeout': inter_digit_timeout}
-
-        return self.client._get(url, params=http_get_params, timeout=timeout)
-
-    def hangup(self):
-        '''
-        Hangs up a call with the given call_id
-        '''
-        url = '{}/{}/'.format(self.path, self.call_id)
-
-        return self.client._post(url, data={}, timeout=None)
-
-    def activate_gathering(self, maxDigits, interDigitTimeout, terminatingDigits, timeout=None, **kwargs):
-        url = '{}/{}/gather'.format(self.path, self.call_id)
-        data = {'maxDigits': maxDigits,
-                'interDigitTimeout': interDigitTimeout,
-                'terminatingDigits': terminatingDigits,
-                'prompt': kwargs.get('prompt')}
-        # deleting keys with None values
-        data = {k: v for k, v in data.items() if v is not None}
-        return self.client._post(url, data=data, timeout=timeout)
-
-    def get_gather_info(self, gather_id, timeout=None):
-        url = '{}/{}/gather/{}'.format(self.path, self.call_id, gather_id)
-        return self.client._get(url, timeout=timeout)
+    def gather(self, *args, **kwargs):
+        raise NotImplementedError
 
     def get_recordings(self, timeout=None):
         '''
         Retrieves an array with all the recordings of the call_id
         '''
         url = '{}/{}/recordings'.format(self.path, self.call_id)
+        # todo: should be implement using Recording type
+        return from_api(self.client._get(url, timeout=timeout).json())
 
-        return self.client._get(url, timeout=timeout).json()
+    def get_events(self):
+        '''
+        Gets the events that occurred during the call. No query parameters are supported.
+        '''
+        url = '{}/{}/events'.format(self.path, self.call_id)
+        data = self.client._get(url).json()
+        from .events import Event
+        return tuple(Event.create(**e) for e in data)
 
 
 class Application(Resource):
