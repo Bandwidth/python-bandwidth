@@ -41,7 +41,10 @@ class RESTClientObject(object):
         except requests.exceptions.HTTPError as e:
             self.log.exception('Error from bandwith api.')
             if response.status_code == 400:
-                message = response.json()['message']
+                if response.headers['content-type'] == 'json':
+                    message = response.json()['message']
+                else:
+                    message = response.content.decode('ascii')
                 raise BandwithError(message)
             else:
                 raise BandwithError(e)
@@ -64,7 +67,6 @@ class RESTClientObject(object):
         url = self._join_endpoint(url)
 
         kwargs['timeout'] = timeout or self.default_timeout
-
         response = self.request('get', url, auth=self.auth, headers=self.headers, params=params, **kwargs)
 
         self._log_response(response)

@@ -1,7 +1,7 @@
 import six
 import re
 from dateutil import parser
-from datetime import datetime
+from datetime import datetime, date
 
 ALL_CAPITAL = re.compile(r'(.)([A-Z][a-z]+)')
 CASE_SWITCH = re.compile(r'([a-z0-9])([A-Z])')
@@ -58,10 +58,12 @@ def to_api(data):
     :param data: dictionary {'max_digits': 1}
     :return: {'maxDigits': 1}
     """
+    if not data:
+        return {}
     assert isinstance(data, dict), 'Wrong type'
     data = drop_empty(data)
     for k, v in six.iteritems(data):
-        if isinstance(v, datetime):
+        if isinstance(v, datetime) or isinstance(v, date):
             data[k] = v.isoformat()
     api_data = {camelize(k): v for k, v in six.iteritems(data)}
     return api_data

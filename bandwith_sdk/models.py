@@ -7,7 +7,21 @@ from .utils import prepare_json, unpack_json_dct, to_api, from_api
 UNEVALUATED = object()
 
 
-class Resource(object):
+class GetResource(object):
+    client = None
+
+    @classmethod
+    def get(cls, *args, **kwargs):
+        """
+
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        raise NotImplemented
+
+
+class Resource(GetResource):
     client = None
 
     @classmethod
@@ -21,16 +35,6 @@ class Resource(object):
 
     @classmethod
     def list(cls, *args, **kwargs):
-        """
-
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        raise NotImplemented
-
-    @classmethod
-    def get(cls, *args, **kwargs):
         """
 
         :param args:
@@ -545,3 +549,46 @@ class Bridge(Resource):
         url = '{}/{}'.format(self.path, self.id)
         data = self.client.get(url).json()
         self.set_up(data)
+
+
+class Account(GetResource):
+    balance = None
+    account_type = None
+    _path = 'account/'
+
+    def __init__(self, data=None):
+        self.client = Client()
+        if data:
+            self.set_up(data)
+
+    def set_up(self, data):
+        [setattr(self, k, v) for k, v in data.items() if v is not None]
+
+    @classmethod
+    def get(cls, *args, **kwargs):
+        """
+
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        client = cls.client or Client()
+        data = from_api(client.get(cls._path).json())
+        return cls(data=data)
+
+    @classmethod
+    def get_transactions(cls, **query_params):
+        """
+        :max_items: Limit the number of transactions that will be returned
+        :to_date: Return only transactions that are newer than the parameter. Format: "yyyy-MM-dd'T'HH:mm:ssZ"
+        :from_date: Return only transactions that are older than the parameter. Format: "yyyy-MM-dd'T'HH:mm:ssZ"
+        :type: Return only transactions that are this type
+        :page: Used for pagination to indicate the page requested for querying a list of transactions.
+               If no value is specified the default is 0.
+        :size: Used for pagination to indicate the size of each page requested for querying a list of transactions.
+               If no value is specified the default value is 25. (Maximum value 1000)
+        """
+        client = cls.client or Client()
+        url = '{}{}'.format(cls._path, 'transactions')
+        data = [from_api(d) for d in client.get(url, params=to_api(query_params)).json()]
+        return data
