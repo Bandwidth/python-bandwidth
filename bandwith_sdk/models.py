@@ -306,7 +306,7 @@ class Call(Resource):
         '''
         url = '{}/{}/events'.format(self.path, self.call_id)
         data = self.client.get(url).json()
-        return data
+        return [from_api(e) for e in data]
 
 
 class Application(Resource):
