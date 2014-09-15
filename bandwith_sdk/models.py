@@ -150,12 +150,23 @@ class Call(Resource):
         return 'Call(%r, state=%r)' % (self.call_id, self.state or 'Unknown')
 
     # Audio part
-    def play_audio(self, file_name):
+    def play_audio(self, file_url, **kwargs):
         '''
         Plays audio form the given url to the call associated with call_id
+
+        :param file_url: The location of an audio file to play (WAV and MP3 supported).
+
+        :param loop_enabled: When value is true, the audio will keep playing in a loop. Default: false.
+
+        :param tag:	A string that will be included in the events delivered when the audio playback starts or finishes.
+
+        :return: None
         '''
+
         url = '{}/{}/audio'.format(self.path, self.call_id)
-        self.client._post(url, data={'fileUrl': file_name})
+        data = to_api(kwargs)
+        data['fileUrl'] = file_url
+        self.client._post(url, data=data)
 
     def stop_audio(self):
         '''
@@ -164,42 +175,87 @@ class Call(Resource):
         url = '{}/{}/audio'.format(self.path, self.call_id)
         self.client._post(url, data={'fileUrl': ''})
 
-    def speak_sentence(self, sentence, gender='female', locale=None, voice=None):
+    def speak_sentence(self, sentence, **kwargs):
+        '''
+        :param sentence: The sentence to speak.
+
+        :param gender: The gender of the voice used to synthesize the sentence. It will be considered only if sentence
+                    is not null. The female gender will be used by default. 	No
+
+        :param locale: The locale used to get the accent of the voice used to synthesize the sentence. Currently
+            Bandwidth API supports:
+
+            en_US or en_UK (English)
+            es or es_MX (Spanish)
+            fr or fr_FR (French)
+            de or de_DE (German)
+            it or it_IT (Italian)
+
+            It will be considered only if sentence is not null/empty. The en_US will be used by default.
+        :param voice: The voice to speak the sentence. The API currently supports the following voices:
+
+            English US: Kate, Susan, Julie, Dave, Paul
+            English UK: Bridget
+            Spanish: Esperanza, Violeta, Jorge
+            French: Jolie, Bernard
+            German: Katrin, Stefan
+            Italian: Paola, Luca
+
+            It will be considered only if sentence is not null/empty. Susan's voice will be used by default.
+
+        :param loop_enabled: When value is true, the audio will keep playing in a loop. Default: false.
+
+        :param tag:	A string that will be included in the events delivered when the audio playback starts or finishes.
+
+        :return: None
+        '''
         url = '{}/{}/audio'.format(self.path, self.call_id)
-        json_data = {'sentence': sentence, 'gender': gender}
-        if locale:
-            json_data['locale'] = locale
-        if voice:
-            json_data['voice'] = voice
-        self.client._post(url, data=json_data)
+        data = to_api(kwargs)
+        data['sentence'] = sentence
+        self.client._post(url, data=data)
 
     def stop_sentence(self):
+        '''
+        Stop a current sentence
+        :return: None
+        '''
         url = '{}/{}/audio'.format(self.path, self.call_id)
         self.client._post(url, data={'sentence': ''})
 
-    def transfer(self, phone, callback_url=None):
+    # Call manipulation
+    def transfer(self, phone, **kwargs):
+        '''
+        :param phone:
+        :param callback_url: A URL where call events will be sent for an inbound call
+        :param transfer_caller_id: A phone number that will be shown
+        :param whisper_audio: Say something before bridging the calls:
+            {"sentence": "Hello {number}, thanks for calling"}
+        :return: new Call instance
+        '''
         url = '{}/{}'.format(self.path, self.call_id)
-        json_data = {"transferTo": phone,
-                     "state": "transferring"
-                     }
-        if callback_url:
-            json_data['callbackUrl'] = callback_url
-
-        return self.client._post(url, data=json_data)
+        json_data = {'transferTo': phone,
+                     'state': 'transferring'}
+        json_data.update(kwargs)
+        json_data = to_api(json_data)
+        data = self.client._post(url, data=json_data)
+        location = data.headers['Location']
+        call_id = location.split('/')[-1]
+        call = self.__class__(call_id)
+        call.set_up(json_data)
+        return call
 
     def set_call_property(self, **kwargs):
         url = '{}/{}'.format(self.path, self.call_id)
-        return self.client._post(url, data=kwargs)
+        return self.client._post(url, data=to_api(kwargs))
 
-    def bridge(self, bridge_audio=True, *calls):
+    def bridge(self, *calls, **kwargs):
         _calls = (self,) + calls
-        return Bridge.create(*_calls, bridge_audio=bridge_audio)
+        return Bridge.create(*_calls, **kwargs)
 
     def refresh(self):
         url = '{}/{}'.format(self.path, self.call_id)
         data = self.client._get(url).json()
-        self.data.update(data)
-        self.set_up()
+        self.set_up(from_api(data))
 
     def send_dtmf(self, dtmf, timeout=None):
         '''
