@@ -268,6 +268,7 @@ class Application(Resource):
     incoming_sms_fallback_url = None
     callback_http_method = 'post'
     auto_answer = True
+    _path = 'applications/'
     _fields = ('application_id', 'name',
                'incoming_call_url',
                'incoming_call_url_callback_timeout',
@@ -276,9 +277,9 @@ class Application(Resource):
                'incoming_sms_url_callback_timeout',
                'incoming_sms_fallback_url', 'callback_http_method', 'auto_answer')
 
-    def __init__(self, id, data):
+    def __init__(self, application_id, data):
         self.client = Client()
-        self.application_id = id
+        self.application_id = application_id
         if data:
             self.data = data
             self.set_up()
@@ -306,13 +307,12 @@ class Application(Resource):
         :return: Application instance
         """
         client = cls.client or Client()
-        url = 'applications/'
         p_data = prepare_json(
             {k: v for k, v in data.items() if v is not None and k in cls._fields})
-        resp = client._post(url, data=p_data)
+        resp = client._post(cls._path, data=p_data)
         location = resp.headers['Location']
         application_id = location.split('/')[-1]
-        return cls(id=application_id, data=data)
+        return cls(application_id=application_id, data=data)
 
     @classmethod
     def list(cls, page=0, size=25):
@@ -326,20 +326,20 @@ class Application(Resource):
         """
         client = cls.client or Client()
         data_as_list = client._get(
-            'applications', params=dict(page=page, size=size)).json()
-        return [cls(id=v['id'], data=unpack_json_dct(v)) for v in data_as_list]
+            cls._path, params=dict(page=page, size=size)).json()
+        return [cls(application_id=v['id'], data=unpack_json_dct(v)) for v in data_as_list]
 
     @classmethod
-    def get(cls, id):
+    def get(cls, application_id):
         """
-        :id: application id that you want to retrieve.
+        :application_id: application id that you want to retrieve.
         Gets information about one of your applications. No query parameters are supported.
         :return: Application instance
         """
         client = cls.client or Client()
-        url = 'applications/{}'.format(id)
+        url = '{}{}'.format(cls._path, application_id)
         data_as_dict = client._get(url).json()
-        application = cls(id=data_as_dict['id'], data=unpack_json_dct(data_as_dict))
+        application = cls(application_id=data_as_dict['id'], data=unpack_json_dct(data_as_dict))
         return application
 
     def patch(self, **data):
@@ -354,7 +354,7 @@ class Application(Resource):
         :return: True if it's patched
         """
         client = self.client or Client()
-        url = 'applications/{}'.format(self.application_id)
+        url = '{}{}'.format(self._path, self.application_id)
         cleaned_data = {k: v for k, v in data.items() if v is not None and k in self._fields}
         client._post(url, data=prepare_json(cleaned_data))
         if cleaned_data:
@@ -368,7 +368,7 @@ class Application(Resource):
         :return: True if it's deleted
         """
         client = self.client or Client()
-        url = 'applications/{}'.format(self.application_id)
+        url = '{}{}'.format(self._path, self.application_id)
         client._delete(url)
         return True
 

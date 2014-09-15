@@ -318,7 +318,7 @@ class ApplicationsTest(unittest.TestCase):
         """
 
         responses.add(responses.GET,
-                      'https://api.catapult.inetwork.com/v1/users/u-user/applications',
+                      'https://api.catapult.inetwork.com/v1/users/u-user/applications/',
                       body=raw,
                       status=200,
                       content_type='application/json')
