@@ -9,6 +9,9 @@ pep:
 test:
 	tox
 
+local_test:
+	green tests -vvv
+
 clean:
 	rm -rf `find . -name __pycache__`
 	rm -f `find . -type f -name '*.py[co]' `

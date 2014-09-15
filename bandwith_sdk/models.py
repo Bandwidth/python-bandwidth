@@ -52,7 +52,7 @@ class Call(Resource):
     active_time = None
     client = None
 
-    def __init__(self, data: dict):
+    def __init__(self, data):
         self.client = Client()
         if isinstance(data, dict):
             self.data = data
@@ -193,7 +193,7 @@ class Call(Resource):
         url = '{}/{}'.format(self.path, self.call_id)
         return self.client._post(url, data=kwargs)
 
-    def bridge(self, *calls, bridge_audio=True):
+    def bridge(self, bridge_audio=True, *calls):
         _calls = (self,) + calls
         return Bridge.create(*_calls, bridge_audio=bridge_audio)
 
@@ -276,7 +276,7 @@ class Application(Resource):
                'incoming_sms_url_callback_timeout',
                'incoming_sms_fallback_url', 'callback_http_method', 'auto_answer')
 
-    def __init__(self, id, data: dict):
+    def __init__(self, id, data):
         self.client = Client()
         self.application_id = id
         if data:
@@ -385,7 +385,7 @@ class Bridge(Resource):
     activated_time = None
     client = None
 
-    def __init__(self, id, *calls, bridge_audio=True, data=None):
+    def __init__(self, id, bridge_audio=True, data=None, *calls):
         self.calls = calls
         self.client = Client()
         self.bridge_audio = bridge_audio
@@ -415,7 +415,7 @@ class Bridge(Resource):
         return bridge
 
     @classmethod
-    def create(cls, *calls, bridge_audio=True):
+    def create(cls, bridge_audio=True, *calls):
         """
         :param calls:
         :param bridge_audio:
@@ -426,7 +426,7 @@ class Bridge(Resource):
         r = client._post(cls.path, data=data)
         location = r.headers['Location']
         bridge_id = location.split('/')[-1]
-        return cls(bridge_id, *calls, bridge_audio=bridge_audio)
+        return cls(id=bridge_id, bridge_audio=bridge_audio, *calls)
 
     @property
     def call_ids(self):
