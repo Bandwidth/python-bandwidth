@@ -1,4 +1,5 @@
 responses
 requests
 six
+tox==1.7.2
 -r ./dev_requierements.txt

@@ -32,10 +32,10 @@ class RESTClientObject(object):
     def _join_endpoint(self, url):
         return '{}{}'.format(self.endpoint, url)
 
-    def request(self, method, *args, provider=requests.request, **kwargs):
+    def request(self, method, *args, **kwargs):
         assert method in ('get', 'post', 'delete', 'patch')
         try:
-            response = provider(method, *args, **kwargs)
+            response = requests.request(method, *args, **kwargs)
             response.raise_for_status()
             return response
         except requests.exceptions.HTTPError as e:

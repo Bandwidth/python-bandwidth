@@ -1,6 +1,6 @@
 # Object models for SDK
 from .client import Client
-from .utils import prepare_json
+from .utils import prepare_json, unpack_json_dct
 
 # Sentinel value to mark that some of properties have been not synced.
 UNEVALUATED = object()
@@ -52,7 +52,7 @@ class Call(Resource):
     active_time = None
     client = None
 
-    def __init__(self, data: dict):
+    def __init__(self, data):
         self.client = Client()
         if isinstance(data, dict):
             self.data = data
@@ -193,7 +193,7 @@ class Call(Resource):
         url = '{}/{}'.format(self.path, self.call_id)
         return self.client._post(url, data=kwargs)
 
-    def bridge(self, *calls, bridge_audio=True):
+    def bridge(self, bridge_audio=True, *calls):
         _calls = (self,) + calls
         return Bridge.create(*_calls, bridge_audio=bridge_audio)
 
@@ -268,6 +268,7 @@ class Application(Resource):
     incoming_sms_fallback_url = None
     callback_http_method = 'post'
     auto_answer = True
+    _path = 'applications/'
     _fields = ('application_id', 'name',
                'incoming_call_url',
                'incoming_call_url_callback_timeout',
@@ -276,22 +277,20 @@ class Application(Resource):
                'incoming_sms_url_callback_timeout',
                'incoming_sms_fallback_url', 'callback_http_method', 'auto_answer')
 
-    def __init__(self, data: dict):
+    def __init__(self, application_id, data):
         self.client = Client()
-        if isinstance(data, dict):
+        self.application_id = application_id
+        if data:
             self.data = data
             self.set_up()
-        elif isinstance(data, str):
-            self.data = UNEVALUATED
-            self.application_id = data
         else:
-            raise TypeError('Accepted only call-id or call data as dictionary')
+            raise TypeError('Accepted only application-id or application data as dictionary')
 
     def set_up(self):
-        [setattr(self, k, v) for k, v in self.data.items() if k in self._fields and v]
+        [setattr(self, k, v) for k, v in self.data.items() if k in self._fields and v is not None]
 
     @classmethod
-    def create(cls, **kwargs):
+    def create(cls, **data):
         """
         :name: A name you choose for this application
         :incoming_call_url: A URL where call events will be sent for an inbound call
@@ -308,34 +307,70 @@ class Application(Resource):
         :return: Application instance
         """
         client = cls.client or Client()
-        url = 'applications/'
-        data = prepare_json(
-            {k: v for k, v in kwargs.items() if v and k in cls._fields})
-        resp = client._post(url, data=data)
+        p_data = prepare_json(
+            {k: v for k, v in data.items() if v is not None and k in cls._fields})
+        resp = client._post(cls._path, data=p_data)
         location = resp.headers['Location']
         application_id = location.split('/')[-1]
-        kwargs.update({'application_id': application_id})
-        return cls(data=kwargs)
+        return cls(application_id=application_id, data=data)
 
     @classmethod
-    def list(cls, *args, **kwargs):
+    def list(cls, page=0, size=25):
         """
 
-        :param args:
-        :param kwargs:
-        :return:
+        :page: Used for pagination to indicate the page requested for querying a list of applications.
+        If no value is specified the default is 1.
+        :size: Used for pagination to indicate the size of each page requested for querying a list of applications.
+        If no value is specified the default value is 25. (Maximum value 1000).
+        :return: List of Application instances
         """
-        raise NotImplemented
+        client = cls.client or Client()
+        data_as_list = client._get(
+            cls._path, params=dict(page=page, size=size)).json()
+        return [cls(application_id=v['id'], data=unpack_json_dct(v)) for v in data_as_list]
 
     @classmethod
-    def get(cls, *args, **kwargs):
+    def get(cls, application_id):
         """
+        :application_id: application id that you want to retrieve.
+        Gets information about one of your applications. No query parameters are supported.
+        :return: Application instance
+        """
+        client = cls.client or Client()
+        url = '{}{}'.format(cls._path, application_id)
+        data_as_dict = client._get(url).json()
+        application = cls(application_id=data_as_dict['id'], data=unpack_json_dct(data_as_dict))
+        return application
 
-        :param args:
-        :param kwargs:
-        :return:
+    def patch(self, **data):
         """
-        raise NotImplemented
+        :incoming_call_url: A URL where call events will be sent for an inbound call
+        :incoming_sms_url:  A URL where message events will be sent for an inbound SMS message
+        :name:    A name you choose for this application
+        :callback_http_method:  Determine if the callback event should be sent via HTTP GET or HTTP POST.
+        (If not set the default is HTTP POST)
+        :auto_answer:  Determines whether or not an incoming call should be automatically answered. Default value is 'true'.
+
+        :return: True if it's patched
+        """
+        client = self.client or Client()
+        url = '{}{}'.format(self._path, self.application_id)
+        cleaned_data = {k: v for k, v in data.items() if v is not None and k in self._fields}
+        client._post(url, data=prepare_json(cleaned_data))
+        if cleaned_data:
+            self.data = cleaned_data
+            self.set_up()
+        return True
+
+    def delete(self):
+        """
+        Delete application instance on catapult side.
+        :return: True if it's deleted
+        """
+        client = self.client or Client()
+        url = '{}{}'.format(self._path, self.application_id)
+        client._delete(url)
+        return True
 
 
 class Bridge(Resource):
@@ -350,7 +385,7 @@ class Bridge(Resource):
     activated_time = None
     client = None
 
-    def __init__(self, id, *calls, bridge_audio=True, data=None):
+    def __init__(self, id, bridge_audio=True, data=None, *calls):
         self.calls = calls
         self.client = Client()
         self.bridge_audio = bridge_audio
@@ -380,7 +415,7 @@ class Bridge(Resource):
         return bridge
 
     @classmethod
-    def create(cls, *calls, bridge_audio=True):
+    def create(cls, bridge_audio=True, *calls):
         """
         :param calls:
         :param bridge_audio:
@@ -391,7 +426,7 @@ class Bridge(Resource):
         r = client._post(cls.path, data=data)
         location = r.headers['Location']
         bridge_id = location.split('/')[-1]
-        return cls(bridge_id, *calls, bridge_audio=bridge_audio)
+        return cls(id=bridge_id, bridge_audio=bridge_audio, *calls)
 
     @property
     def call_ids(self):
