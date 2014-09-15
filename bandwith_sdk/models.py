@@ -430,13 +430,14 @@ class Bridge(Resource):
     path = 'bridges'
     id = None
     state = None
-    call_ids = None
     calls = None
     bridge_audio = None
     completed_time = None
     created_time = None
     activated_time = None
     client = None
+    _fields = frozenset(('id', 'state', 'bridge_audio', 'completed_time', 'created_time',
+                         'activated_time'))
 
     def __init__(self, id, *calls, **kwargs):
         self.calls = calls
@@ -444,19 +445,18 @@ class Bridge(Resource):
         self.bridge_audio = kwargs.pop('bridge_audio', None)
         self.id = id
         if 'data' in kwargs:
-            self.set_up(kwargs['data'])
+            self.set_up(from_api(kwargs['data']))
 
     def set_up(self, data):
-        self.state = data.get('state')
-        self.bridge_audio = data.get('bridgeAudio')
-        self.completed_time = data.get('completedTime')
-        self.created_time = data.get('createdTime')
-        self.activated_time = data.get('activatedTime')
+        for k, v in six.iteritems(data):
+            if k in self._fields:
+                setattr(self, k, v)
 
     @classmethod
     def list(cls, page=1, size=20):
         client = cls.client or Client()
-        data_as_list = client.get(cls.path, params=dict(page=page, size=size)).json()
+        query = to_api({'page': page, 'size': size})
+        data_as_list = client.get(cls.path, params=query).json()
         return [cls(v['id'], data=v) for v in data_as_list]
 
     @classmethod
@@ -476,25 +476,24 @@ class Bridge(Resource):
         """
         client = cls.client or Client()
         data = to_api(kwargs)
-        data["callIds"] = [c.call_id for c in calls]
+        data["call_ids"] = [c.call_id for c in calls]
+        data = to_api(data)
         r = client.post(cls.path, data=data)
         location = r.headers['Location']
         bridge_id = location.split('/')[-1]
-        return cls(bridge_id, *calls, **kwargs)
+        return cls(bridge_id, *calls, data=data)
 
     @property
     def call_ids(self):
         return [c.call_id for c in self.calls]
 
     def call_party(self, caller, callee):
-        new_call = Call.create(caller, callee, bridgeId=self.id)
+        new_call = Call.create(caller, callee, bridge_id=self.id)
         self.calls += (new_call,)
         return new_call
 
     def set_calls(self, *calls):
-        data = {"bridgeAudio": "false",
-                "callIds": [c.call_id for c in calls]
-                }
+        data = to_api({'call_ids': [c.call_id for c in calls]})
         url = '{}/{}/audio'.format(self.path, self.id)
 
         self.client.post(url, data=data)
@@ -506,36 +505,84 @@ class Bridge(Resource):
         self.calls = [Call(v) for v in r.json()]
         return self.calls
 
-    def play_audio(self, file):
+    # Audio part
+    def play_audio(self, file_url, **kwargs):
         '''
         Plays audio form the given url to the call associated with call_id
-        '''
-        url = '{}/{}/audio'.format(self.path, self.id)
 
-        self.client.post(url, data={'fileUrl': file})
+        :param file_url: The location of an audio file to play (WAV and MP3 supported).
+
+        :param loop_enabled: When value is true, the audio will keep playing in a loop. Default: false.
+
+        :param tag:	A string that will be included in the events delivered when the audio playback starts or finishes.
+
+        :return: None
+        '''
+
+        url = '{}/{}/audio'.format(self.path, self.id)
+        kwargs['file_url'] = file_url
+        data = to_api(kwargs)
+        self.client.post(url, data=data)
 
     def stop_audio(self):
         '''
-        Plays audio form the given url to the call associated with call_id
+        Stop an audio file playing
         '''
         url = '{}/{}/audio'.format(self.path, self.id)
+        self.client.post(url, data=to_api({'file_url': ''}))
 
-        self.client.post(url, data={'fileUrl': ''})
+    def speak_sentence(self, sentence, **kwargs):
+        '''
+        :param sentence: The sentence to speak.
 
-    def speak_sentence(self, sentence, gender='female', locale=None, voice=None):
+        :param gender: The gender of the voice used to synthesize the sentence. It will be considered only if sentence
+                    is not null. The female gender will be used by default.
+
+        :param locale: The locale used to get the accent of the voice used to synthesize the sentence. Currently
+            Bandwidth API supports:
+
+            en_US or en_UK (English)
+            es or es_MX (Spanish)
+            fr or fr_FR (French)
+            de or de_DE (German)
+            it or it_IT (Italian)
+
+            It will be considered only if sentence is not null/empty. The en_US will be used by default.
+        :param voice: The voice to speak the sentence. The API currently supports the following voices:
+
+            English US: Kate, Susan, Julie, Dave, Paul
+            English UK: Bridget
+            Spanish: Esperanza, Violeta, Jorge
+            French: Jolie, Bernard
+            German: Katrin, Stefan
+            Italian: Paola, Luca
+
+            It will be considered only if sentence is not null/empty. Susan's voice will be used by default.
+
+        :param loop_enabled: When value is true, the audio will keep playing in a loop. Default: false.
+
+        :param tag:	A string that will be included in the events delivered when the audio playback starts or finishes.
+
+        :return: None
+        '''
         url = '{}/{}/audio'.format(self.path, self.id)
-        json_data = {'sentence': sentence, 'gender': gender}
-        if locale:
-            json_data['locale'] = locale
-        if voice:
-            json_data['voice'] = voice
-        self.client.post(url, data=json_data)
+        kwargs['sentence'] = sentence
+        data = to_api(kwargs)
+        self.client.post(url, data=data)
 
     def stop_sentence(self):
+        '''
+        Stop a current sentence
+        :return: None
+        '''
         url = '{}/{}/audio'.format(self.path, self.id)
-        self.client.post(url, data={'sentence': ''})
+        self.client.post(url, data=to_api({'sentence': ''}))
 
     def refresh(self):
+        '''
+        Updates bridge fields internally for this bridge instance
+        :return: None
+        '''
         url = '{}/{}'.format(self.path, self.id)
         data = self.client.get(url).json()
-        self.set_up(data)
+        self.set_up(from_api(data))
