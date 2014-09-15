@@ -286,7 +286,7 @@ class Application(Resource):
             raise TypeError('Accepted only application-id or application data as dictionary')
 
     def set_up(self):
-        [setattr(self, k, v) for k, v in self.data.items() if k in self._fields and v]
+        [setattr(self, k, v) for k, v in self.data.items() if k in self._fields and v is not None]
 
     @classmethod
     def create(cls, **data):
@@ -308,15 +308,14 @@ class Application(Resource):
         client = cls.client or Client()
         url = 'applications/'
         p_data = prepare_json(
-            {k: v for k, v in data.items() if v and k in cls._fields})
+            {k: v for k, v in data.items() if v is not None and k in cls._fields})
         resp = client._post(url, data=p_data)
         location = resp.headers['Location']
         application_id = location.split('/')[-1]
-        data.update({'application_id': application_id})
-        return cls(data=data)
+        return cls(id=application_id, data=data)
 
     @classmethod
-    def list(cls, page=1, size=20):
+    def list(cls, page=0, size=25):
         """
 
         :page: Used for pagination to indicate the page requested for querying a list of applications.
@@ -327,7 +326,7 @@ class Application(Resource):
         """
         client = cls.client or Client()
         data_as_list = client._get(
-            'applications/', params=dict(page=page, size=size)).json()
+            'applications', params=dict(page=page, size=size)).json()
         return [cls(id=v['id'], data=unpack_json_dct(v)) for v in data_as_list]
 
     @classmethod
@@ -343,35 +342,33 @@ class Application(Resource):
         application = cls(id=data_as_dict['id'], data=unpack_json_dct(data_as_dict))
         return application
 
-    @classmethod
-    def patch(cls, id, **data):
+    def patch(self, **data):
         """
-        :id: Application id of application that you want to change
-        :incomingCallUrl: A URL where call events will be sent for an inbound call
-        :incomingSmsUrl:  A URL where message events will be sent for an inbound SMS message
+        :incoming_call_url: A URL where call events will be sent for an inbound call
+        :incoming_sms_url:  A URL where message events will be sent for an inbound SMS message
         :name:    A name you choose for this application
-        :callbackHttpMethod:  Determine if the callback event should be sent via HTTP GET or HTTP POST.
+        :callback_http_method:  Determine if the callback event should be sent via HTTP GET or HTTP POST.
         (If not set the default is HTTP POST)
-        :autoAnswer:  Determines whether or not an incoming call should be automatically answered. Default value is 'true'.
+        :auto_answer:  Determines whether or not an incoming call should be automatically answered. Default value is 'true'.
 
         :return: True if it's patched
         """
-        client = cls.client or Client()
-        url = 'applications/{}'.format(id)
-        p_data = prepare_json(
-            {k: v for k, v in data.items() if v and k in cls._fields})
-        client._post(url, data=p_data)
+        client = self.client or Client()
+        url = 'applications/{}'.format(self.application_id)
+        cleaned_data = {k: v for k, v in data.items() if v is not None and k in self._fields}
+        client._post(url, data=prepare_json(cleaned_data))
+        if cleaned_data:
+            self.data = cleaned_data
+            self.set_up()
         return True
 
-    @classmethod
-    def delete(cls, id):
+    def delete(self):
         """
-        :id: application id that you want to retrieve.
-        Permanently deletes an application.
+        Delete application instance on catapult side.
         :return: True if it's deleted
         """
-        client = cls.client or Client()
-        url = 'applications/{}'.format(id)
+        client = self.client or Client()
+        url = 'applications/{}'.format(self.application_id)
         client._delete(url)
         return True
 
