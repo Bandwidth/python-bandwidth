@@ -277,6 +277,7 @@ class CallsTest(unittest.TestCase):
 
         call = Call('new-call-id')
         events = call.get_events()
+        self.assertEqual(len(events), 3)
 
     @responses.activate
     def test_refresh(self):

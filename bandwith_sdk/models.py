@@ -93,9 +93,9 @@ class Call(Resource):
         data = {
             'from': caller,
             'to': callee,
-            'callTimeout': timeout,  # seconds
-            'bridgeId': bridge_id,
-            'recordingEnabled': recording_enabled
+            'call_timeout': timeout,  # seconds
+            'bridge_id': bridge_id,
+            'recording_enabled': recording_enabled
         }
         json_data = to_api(data)
         data = client.post(cls.path, data=json_data)
@@ -164,8 +164,8 @@ class Call(Resource):
         '''
 
         url = '{}/{}/audio'.format(self.path, self.call_id)
+        kwargs['file_url'] = file_url
         data = to_api(kwargs)
-        data['fileUrl'] = file_url
         self.client.post(url, data=data)
 
     def stop_audio(self):
@@ -173,7 +173,7 @@ class Call(Resource):
         Stop an audio file playing
         '''
         url = '{}/{}/audio'.format(self.path, self.call_id)
-        self.client.post(url, data={'fileUrl': ''})
+        self.client.post(url, data=to_api({'file_url': ''}))
 
     def speak_sentence(self, sentence, **kwargs):
         '''
@@ -210,8 +210,8 @@ class Call(Resource):
         :return: None
         '''
         url = '{}/{}/audio'.format(self.path, self.call_id)
+        kwargs['sentence'] = sentence
         data = to_api(kwargs)
-        data['sentence'] = sentence
         self.client.post(url, data=data)
 
     def stop_sentence(self):
@@ -220,7 +220,7 @@ class Call(Resource):
         :return: None
         '''
         url = '{}/{}/audio'.format(self.path, self.call_id)
-        self.client.post(url, data={'sentence': ''})
+        self.client.post(url, data=to_api({'sentence': ''}))
 
     # Call manipulation
     def transfer(self, phone, **kwargs):
@@ -233,7 +233,7 @@ class Call(Resource):
         :return: new Call instance
         '''
         url = '{}/{}'.format(self.path, self.call_id)
-        json_data = {'transferTo': phone,
+        json_data = {'transfer_to': phone,
                      'state': 'transferring'}
         json_data.update(kwargs)
         json_data = to_api(json_data)
@@ -285,7 +285,7 @@ class Call(Resource):
         '''
         url = '{}/{}/dtmf'.format(self.path, self.call_id)
 
-        json_data = to_api({'dtmfOut': dtmf})
+        json_data = to_api({'dtmf_out': dtmf})
 
         self.client.post(url, data=json_data)
 
@@ -306,8 +306,7 @@ class Call(Resource):
         '''
         url = '{}/{}/events'.format(self.path, self.call_id)
         data = self.client.get(url).json()
-        from .events import Event
-        return tuple(Event.create(**e) for e in data)
+        return [from_api(e) for e in data]
 
 
 class Application(Resource):
