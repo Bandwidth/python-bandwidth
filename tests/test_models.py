@@ -168,7 +168,8 @@ class CallsTest(unittest.TestCase):
         call = Call('new-call-id')
         call.speak_sentence('Hello', gender='female', voice='Jorge', loop_enabled=True)
         request_message = responses.calls[0].request.body
-        assertJsonEq(request_message, '{"voice": "Jorge", "sentence": "Hello", "gender": "female", "loopEnabled": true}')
+        assertJsonEq(
+            request_message, '{"voice": "Jorge", "sentence": "Hello", "gender": "female", "loopEnabled": true}')
 
     @responses.activate
     def test_stop_sentence(self):
@@ -555,4 +556,45 @@ class ApplicationsTest(unittest.TestCase):
         self.assertEqual(application.incoming_call_url, 'http://test.callback.info')
         self.assertEqual(application.callback_http_method, 'post')
         self.assertEqual(application.name, 'new-application')
+        self.assertEqual(application.auto_answer, True)
+
+    @responses.activate
+    def test_create_refresh(self):
+        """
+        Application.refresh()
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/applications/',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/applications/new-application-id'})
+
+        application = Application.create(name='new-application', incoming_call_url='http://test.callback.info')
+
+        self.assertEqual(application.application_id, 'new-application-id')
+        self.assertEqual(application.incoming_call_url, 'http://test.callback.info')
+        self.assertEqual(application.callback_http_method, 'post')
+        self.assertEqual(application.name, 'new-application')
+        self.assertEqual(application.auto_answer, True)
+
+        raw = """
+        {
+        "id": "new-application-id",
+        "callbackHttpMethod": "post",
+        "incomingCallUrl": "http://callback.info",
+        "name": "test_application_name",
+        "autoAnswer": true
+        }
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/applications/new-application-id',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        application.refresh()
+        self.assertEqual(application.application_id, 'new-application-id')
+        self.assertEqual(application.incoming_call_url, 'http://callback.info')
+        self.assertEqual(application.callback_http_method, 'post')
+        self.assertEqual(application.name, 'test_application_name')
         self.assertEqual(application.auto_answer, True)

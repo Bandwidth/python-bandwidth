@@ -277,7 +277,7 @@ class Call(Resource):
         self.client.post(url, data=to_api(json_data), timeout=None)
         self.set_up(json_data)
 
-    #Dtmf section
+    # Dtmf section
     def send_dtmf(self, dtmf):
         '''
         Sends a string of characters as DTMF on the given call_id
@@ -425,6 +425,12 @@ class Application(Resource):
         url = '{}{}'.format(self._path, self.application_id)
         client.delete(url)
         return True
+
+    def refresh(self):
+        url = '{}{}'.format(self._path, self.application_id)
+        data = self.client.get(url).json()
+        self.data = from_api(data)
+        self.set_up()
 
 
 class Bridge(Resource):
