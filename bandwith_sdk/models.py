@@ -306,8 +306,7 @@ class Call(Resource):
         '''
         url = '{}/{}/events'.format(self.path, self.call_id)
         data = self.client.get(url).json()
-        from .events import Event
-        return tuple(Event.create(**e) for e in data)
+        return data
 
 
 class Application(Resource):
