@@ -42,4 +42,27 @@ def unpack_json_dct(dct):
 
 
 def drop_empty(data):
-    return {k: v for k, v in six.iteritems(data) if v}
+    return {k: v for k, v in six.iteritems(data) if v is not None}
+
+
+# alternative tools
+
+def to_api(data):
+    """
+    :param data: dictionary {'max_digits': 1}
+    :return: {'maxDigits': 1}
+    """
+    assert isinstance(data, dict), 'Wrong type'
+    data = drop_empty(data)
+    api_data = {camelize(k): v for k, v in six.iteritems(data)}
+    return api_data
+
+
+def from_api(data):
+    """
+    :param data: {'maxDigits': 1}
+    :return: {'max_digits': 1}
+    """
+    assert isinstance(data, dict), 'Wrong type'
+    app_data = {underscorize(k): v for k, v in six.iteritems(data)}
+    return app_data
