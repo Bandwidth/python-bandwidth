@@ -454,6 +454,18 @@ class Bridge(Resource):
 
     @classmethod
     def list(cls, page=1, size=20):
+        """
+        Get list of bridges for a given user.
+
+        :param page: Used for pagination to indicate the page requested for querying a list of calls.
+                    If no value is specified the default is 0.
+
+
+        :param size: Used for pagination to indicate the size of each page requested for querying a list of calls.
+                    If no value is specified the default value is 25. (Maximum value 1000)
+
+        :return: list of Bridge instances
+        """
         client = cls.client or Client()
         query = to_api({'page': page, 'size': size})
         data_as_list = client.get(cls.path, params=query).json()
@@ -461,6 +473,13 @@ class Bridge(Resource):
 
     @classmethod
     def get(cls, bridge_id):
+        """
+        Gets information about a specific bridge.
+
+        :param bridge_id:
+
+        :return: Bridge instance
+        """
         client = cls.client or Client()
         url = '{}/{}'.format(cls.path, bridge_id)
         data_as_dict = client.get(url).json()
@@ -470,9 +489,15 @@ class Bridge(Resource):
     @classmethod
     def create(cls, *calls, **kwargs):
         """
-        :param calls:
-        :param bridge_audio:
-        :return:
+        Gets information about a specific bridge.
+
+        :param calls: The list of call in the bridge.
+                If the list of call ids is not provided the bridge is logically created and it can be used to place
+                calls later
+
+        :param bridge_audio: Enable/Disable two way audio path (default = true)
+
+        :return: new Bridge instance
         """
         client = cls.client or Client()
         data = to_api(kwargs)
@@ -485,6 +510,9 @@ class Bridge(Resource):
 
     @property
     def call_ids(self):
+        '''
+        :return: list of call-ids for local version
+        '''
         return [c.call_id for c in self.calls]
 
     def call_party(self, caller, callee):
@@ -492,14 +520,22 @@ class Bridge(Resource):
         self.calls += (new_call,)
         return new_call
 
-    def set_calls(self, *calls):
-        data = to_api({'call_ids': [c.call_id for c in calls]})
-        url = '{}/{}/audio'.format(self.path, self.id)
+    def update(self, *calls, **kwargs):
+        """
+        Change calls in a bridge and bridge/unbridge the audio
+        :return: None
+        """
+        kwargs['call_ids'] = [c.call_id for c in calls]
+        data = to_api(kwargs)
+        url = '{}/{}'.format(self.path, self.id)
 
         self.client.post(url, data=data)
         self.calls = calls
 
     def fetch_calls(self):
+        """
+        Get the list of calls that are on the bridge
+        """
         url = '{}/{}/calls'.format(self.path, self.id)
         r = self.client.get(url)
         self.calls = [Call(v) for v in r.json()]

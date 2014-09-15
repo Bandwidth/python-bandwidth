@@ -119,6 +119,10 @@ class CallsTest(unittest.TestCase):
 
         self.assertEqual(call.call_id, 'new-call-id')
 
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"to": "+1919000002", "from": "+1919000001", '
+                                      '"callTimeout": 30}')
+
     @responses.activate
     def test_play_audio(self):
         """
@@ -545,6 +549,44 @@ class BridgesTest(unittest.TestCase):
 
         self.assertEqual(bridge.state, 'completed')
         self.assertEqual(bridge.bridge_audio, True)
+
+    @responses.activate
+    def test_call_party(self):
+        """
+        Bridge('b-id').call_party("+1919000001", "+1919000002")
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/calls/new-call-id'})
+
+        call = Bridge('b-id').call_party('+1919000001', '+1919000002')
+
+        self.assertIsInstance(call, Call)
+        self.assertEqual(call.call_id, 'new-call-id')
+
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"to": "+1919000002", "from": "+1919000001", '
+                                      '"callTimeout": 30, "bridgeId": "b-id"}')
+
+    @responses.activate
+    def test_update(self):
+        """
+        Bridge('b-id').update(Call('a-id'), Call('b-id'), bridge_audio=False)
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/b-id',
+                      body='',
+                      status=200,
+                      content_type='application/json',
+                      )
+
+        Bridge('b-id').update(Call('a-id'), Call('b-id'), bridge_audio=False)
+
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"bridgeAudio": false, "callIds": ["a-id", "b-id"]}')
 
 
 class ApplicationsTest(unittest.TestCase):
