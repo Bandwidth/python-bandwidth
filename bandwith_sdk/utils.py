@@ -1,3 +1,4 @@
+import six
 import re
 
 ALL_CAPITAL = re.compile(r'(.)([A-Z][a-z]+)')
@@ -30,3 +31,7 @@ def prepare_json(dct):
 def unpack_json_dct(dct):
     keys = make_underscore(*dct.keys())
     return dict(zip(keys, dct.values()))
+
+
+def drop_empty(data):
+    return {k: v for k, v in six.iteritems(data) if v}

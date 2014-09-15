@@ -1,6 +1,6 @@
 # Object models for SDK
 from .client import Client
-from .utils import prepare_json
+from .utils import prepare_json, drop_empty
 
 # Sentinel value to mark that some of properties have been not synced.
 UNEVALUATED = object()
@@ -75,7 +75,7 @@ class Call(Resource):
         self.active_time = self.data.get('activeTime')
 
     @classmethod
-    def create(cls, caller, callee, **kwargs):
+    def create(cls, caller, callee, bridge_id=None, recording_enabled=None, timeout=30):
         """
         Makes a phone call.
 
@@ -85,9 +85,9 @@ class Call(Resource):
         :param callee: The number to call (must be either an E.164 formated number, like +19195551212, or a
             valid SIP URI, like sip:someone@somewhere.com)
 
-        :param kwargs:
-            recordingEnabled -Indicates if the call should be recorded after being created.
-            bridgeId - Create a call in a bridge
+        :param bridge_id: Create a call in a bridge
+
+        :param recording_enabled: Indicates if the call should be recorded after being created.
 
         :return: new Call instance with @call_id and @from_, @to fields.
         """
@@ -96,10 +96,12 @@ class Call(Resource):
         json_data = {
             'from': caller,
             'to': callee,
-            'callTimeout': 30,  # seconds
+            'callTimeout': timeout,  # seconds
+            'bridgeId': bridge_id,
+            'recordingEnabled': recording_enabled
         }
-
-        json_data.update(kwargs)
+        json_data = drop_empty(json_data)
+        #todo: update params
         data = client._post(cls.path, data=json_data)
         location = data.headers['Location']
         call_id = location.split('/')[-1]
