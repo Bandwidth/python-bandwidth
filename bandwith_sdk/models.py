@@ -98,7 +98,7 @@ class Call(Resource):
             'recordingEnabled': recording_enabled
         }
         json_data = to_api(data)
-        data = client._post(cls.path, data=json_data)
+        data = client.post(cls.path, data=json_data)
         location = data.headers['Location']
         call_id = location.split('/')[-1]
         call = cls(call_id)
@@ -116,7 +116,7 @@ class Call(Resource):
         """
         client = cls.client or Client()
         url = '{}/{}'.format(cls.path, call_id)
-        data_as_dict = client._get(url).json()
+        data_as_dict = client.get(url).json()
         return cls(data_as_dict)
 
     @classmethod
@@ -143,7 +143,7 @@ class Call(Resource):
         """
         client = cls.client or Client()
         query = to_api(query)
-        data_as_list = client._get(cls.path, params=query).json()
+        data_as_list = client.get(cls.path, params=query).json()
         return [cls(v) for v in data_as_list]
 
     def __repr__(self):
@@ -166,14 +166,14 @@ class Call(Resource):
         url = '{}/{}/audio'.format(self.path, self.call_id)
         data = to_api(kwargs)
         data['fileUrl'] = file_url
-        self.client._post(url, data=data)
+        self.client.post(url, data=data)
 
     def stop_audio(self):
         '''
         Stop an audio file playing
         '''
         url = '{}/{}/audio'.format(self.path, self.call_id)
-        self.client._post(url, data={'fileUrl': ''})
+        self.client.post(url, data={'fileUrl': ''})
 
     def speak_sentence(self, sentence, **kwargs):
         '''
@@ -212,7 +212,7 @@ class Call(Resource):
         url = '{}/{}/audio'.format(self.path, self.call_id)
         data = to_api(kwargs)
         data['sentence'] = sentence
-        self.client._post(url, data=data)
+        self.client.post(url, data=data)
 
     def stop_sentence(self):
         '''
@@ -220,7 +220,7 @@ class Call(Resource):
         :return: None
         '''
         url = '{}/{}/audio'.format(self.path, self.call_id)
-        self.client._post(url, data={'sentence': ''})
+        self.client.post(url, data={'sentence': ''})
 
     # Call manipulation
     def transfer(self, phone, **kwargs):
@@ -237,7 +237,7 @@ class Call(Resource):
                      'state': 'transferring'}
         json_data.update(kwargs)
         json_data = to_api(json_data)
-        data = self.client._post(url, data=json_data)
+        data = self.client.post(url, data=json_data)
         location = data.headers['Location']
         call_id = location.split('/')[-1]
         call = self.__class__(call_id)
@@ -246,7 +246,7 @@ class Call(Resource):
 
     def set_call_property(self, **kwargs):
         url = '{}/{}'.format(self.path, self.call_id)
-        return self.client._post(url, data=to_api(kwargs))
+        return self.client.post(url, data=to_api(kwargs))
 
     def bridge(self, *calls, **kwargs):
         '''
@@ -264,7 +264,7 @@ class Call(Resource):
         :return: None
         '''
         url = '{}/{}'.format(self.path, self.call_id)
-        data = self.client._get(url).json()
+        data = self.client.get(url).json()
         self.set_up(from_api(data))
 
     def hangup(self):
@@ -274,7 +274,7 @@ class Call(Resource):
         url = '{}/{}'.format(self.path, self.call_id)
 
         json_data = {'state': 'completed'}
-        self.client._post(url, data=to_api(json_data), timeout=None)
+        self.client.post(url, data=to_api(json_data), timeout=None)
         self.set_up(json_data)
 
     #Dtmf section
@@ -287,7 +287,7 @@ class Call(Resource):
 
         json_data = to_api({'dtmfOut': dtmf})
 
-        self.client._post(url, data=json_data)
+        self.client.post(url, data=json_data)
 
     def gather(self, *args, **kwargs):
         raise NotImplementedError
@@ -298,14 +298,14 @@ class Call(Resource):
         '''
         url = '{}/{}/recordings'.format(self.path, self.call_id)
         # todo: should be implement using Recording type
-        return from_api(self.client._get(url, timeout=timeout).json())
+        return from_api(self.client.get(url, timeout=timeout).json())
 
     def get_events(self):
         '''
         Gets the events that occurred during the call. No query parameters are supported.
         '''
         url = '{}/{}/events'.format(self.path, self.call_id)
-        data = self.client._get(url).json()
+        data = self.client.get(url).json()
         from .events import Event
         return tuple(Event.create(**e) for e in data)
 
@@ -363,7 +363,7 @@ class Application(Resource):
         client = cls.client or Client()
         p_data = prepare_json(
             {k: v for k, v in data.items() if v is not None and k in cls._fields})
-        resp = client._post(cls._path, data=p_data)
+        resp = client.post(cls._path, data=p_data)
         location = resp.headers['Location']
         application_id = location.split('/')[-1]
         return cls(application_id=application_id, data=data)
@@ -379,7 +379,7 @@ class Application(Resource):
         :return: List of Application instances
         """
         client = cls.client or Client()
-        data_as_list = client._get(
+        data_as_list = client.get(
             cls._path, params=dict(page=page, size=size)).json()
         return [cls(application_id=v['id'], data=unpack_json_dct(v)) for v in data_as_list]
 
@@ -392,7 +392,7 @@ class Application(Resource):
         """
         client = cls.client or Client()
         url = '{}{}'.format(cls._path, application_id)
-        data_as_dict = client._get(url).json()
+        data_as_dict = client.get(url).json()
         application = cls(application_id=data_as_dict['id'], data=unpack_json_dct(data_as_dict))
         return application
 
@@ -410,7 +410,7 @@ class Application(Resource):
         client = self.client or Client()
         url = '{}{}'.format(self._path, self.application_id)
         cleaned_data = {k: v for k, v in data.items() if v is not None and k in self._fields}
-        client._post(url, data=prepare_json(cleaned_data))
+        client.post(url, data=prepare_json(cleaned_data))
         if cleaned_data:
             self.data = cleaned_data
             self.set_up()
@@ -423,7 +423,7 @@ class Application(Resource):
         """
         client = self.client or Client()
         url = '{}{}'.format(self._path, self.application_id)
-        client._delete(url)
+        client.delete(url)
         return True
 
 
@@ -457,14 +457,14 @@ class Bridge(Resource):
     @classmethod
     def list(cls, page=1, size=20):
         client = cls.client or Client()
-        data_as_list = client._get(cls.path, params=dict(page=page, size=size)).json()
+        data_as_list = client.get(cls.path, params=dict(page=page, size=size)).json()
         return [cls(v['id'], data=v) for v in data_as_list]
 
     @classmethod
     def get(cls, bridge_id):
         client = cls.client or Client()
         url = '{}/{}'.format(cls.path, bridge_id)
-        data_as_dict = client._get(url).json()
+        data_as_dict = client.get(url).json()
         bridge = cls(data_as_dict['id'], data=data_as_dict)
         return bridge
 
@@ -478,7 +478,7 @@ class Bridge(Resource):
         client = cls.client or Client()
         data = to_api(kwargs)
         data["callIds"] = [c.call_id for c in calls]
-        r = client._post(cls.path, data=data)
+        r = client.post(cls.path, data=data)
         location = r.headers['Location']
         bridge_id = location.split('/')[-1]
         return cls(bridge_id, *calls, **kwargs)
@@ -498,12 +498,12 @@ class Bridge(Resource):
                 }
         url = '{}/{}/audio'.format(self.path, self.id)
 
-        self.client._post(url, data=data)
+        self.client.post(url, data=data)
         self.calls = calls
 
     def fetch_calls(self):
         url = '{}/{}/calls'.format(self.path, self.id)
-        r = self.client._get(url)
+        r = self.client.get(url)
         self.calls = [Call(v) for v in r.json()]
         return self.calls
 
@@ -513,7 +513,7 @@ class Bridge(Resource):
         '''
         url = '{}/{}/audio'.format(self.path, self.id)
 
-        self.client._post(url, data={'fileUrl': file})
+        self.client.post(url, data={'fileUrl': file})
 
     def stop_audio(self):
         '''
@@ -521,7 +521,7 @@ class Bridge(Resource):
         '''
         url = '{}/{}/audio'.format(self.path, self.id)
 
-        self.client._post(url, data={'fileUrl': ''})
+        self.client.post(url, data={'fileUrl': ''})
 
     def speak_sentence(self, sentence, gender='female', locale=None, voice=None):
         url = '{}/{}/audio'.format(self.path, self.id)
@@ -530,13 +530,13 @@ class Bridge(Resource):
             json_data['locale'] = locale
         if voice:
             json_data['voice'] = voice
-        self.client._post(url, data=json_data)
+        self.client.post(url, data=json_data)
 
     def stop_sentence(self):
         url = '{}/{}/audio'.format(self.path, self.id)
-        self.client._post(url, data={'sentence': ''})
+        self.client.post(url, data={'sentence': ''})
 
     def refresh(self):
         url = '{}/{}'.format(self.path, self.id)
-        data = self.client._get(url).json()
+        data = self.client.get(url).json()
         self.set_up(data)
