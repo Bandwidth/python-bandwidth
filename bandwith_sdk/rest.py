@@ -48,7 +48,7 @@ class RESTClientObject(object):
         except Exception as e:
             raise BandwithError(e)
 
-    def _delete(self, url, timeout=None, **kwargs):
+    def delete(self, url, timeout=None, **kwargs):
         url = self._join_endpoint(url)
 
         if timeout is not None:
@@ -60,7 +60,7 @@ class RESTClientObject(object):
 
         return response
 
-    def _get(self, url, params=None, timeout=None, **kwargs):
+    def get(self, url, params=None, timeout=None, **kwargs):
         url = self._join_endpoint(url)
 
         kwargs['timeout'] = timeout or self.default_timeout
@@ -71,7 +71,7 @@ class RESTClientObject(object):
 
         return response
 
-    def _post(self, url, data=None, timeout=None, **kwargs):
+    def post(self, url, data=None, timeout=None, **kwargs):
         url = self._join_endpoint(url)
         kwargs['timeout'] = timeout or self.default_timeout
         if data:
