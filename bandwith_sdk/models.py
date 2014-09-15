@@ -180,7 +180,7 @@ class Call(Resource):
         :param sentence: The sentence to speak.
 
         :param gender: The gender of the voice used to synthesize the sentence. It will be considered only if sentence
-                    is not null. The female gender will be used by default. 	No
+                    is not null. The female gender will be used by default.
 
         :param locale: The locale used to get the accent of the voice used to synthesize the sentence. Currently
             Bandwidth API supports:
