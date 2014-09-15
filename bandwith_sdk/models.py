@@ -1,7 +1,7 @@
 # Object models for SDK
 import six
 from .client import Client
-from .utils import prepare_json, drop_empty
+from .utils import prepare_json, to_api, from_api
 
 # Sentinel value to mark that some of properties have been not synced.
 UNEVALUATED = object()
@@ -52,28 +52,24 @@ class Call(Resource):
     start_time = None
     active_time = None
     client = None
+    _fields = frozenset(('call_id', 'direction', 'from_', 'to', 'recording_enabled', 'callback_url',
+                         'state', 'start_time', 'active_time'))
 
     def __init__(self, data):
         self.client = Client()
         if isinstance(data, dict):
-            self.data = data
-            self.set_up()
+            self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
-            self.data = UNEVALUATED
             self.call_id = data
         else:
             raise TypeError('Accepted only call-id or call data as dictionary')
 
-    def set_up(self):
-        self.call_id = self.data.get('id') or self.data.get('callId')
-        self.direction = self.data.get('direction')
-        self.from_ = self.data.get('from')
-        self.to = self.data.get('to')
-        self.recording_enabled = self.data.get('recordingEnabled')
-        self.callback_url = self.data.get('callbackUrl')
-        self.state = self.data.get('state')
-        self.start_time = self.data.get('startTime')
-        self.active_time = self.data.get('activeTime')
+    def set_up(self, data):
+        self.from_ = self.from_ or data.get('from')
+        self.call_id = self.call_id or data.get('id')
+        for k, v in six.iteritems(data):
+            if k in self._fields:
+                setattr(self, k, v)
 
     @classmethod
     def create(cls, caller, callee, bridge_id=None, recording_enabled=None, timeout=30):
@@ -94,21 +90,19 @@ class Call(Resource):
         """
         client = cls.client or Client()
 
-        json_data = {
+        data = {
             'from': caller,
             'to': callee,
             'callTimeout': timeout,  # seconds
             'bridgeId': bridge_id,
             'recordingEnabled': recording_enabled
         }
-        json_data = drop_empty(json_data)
-        #todo: update params
+        json_data = to_api(data)
         data = client._post(cls.path, data=json_data)
         location = data.headers['Location']
         call_id = location.split('/')[-1]
         call = cls(call_id)
-        call.from_ = caller
-        call.to = callee
+        call.set_up(json_data)
         return call
 
     @classmethod
@@ -148,11 +142,12 @@ class Call(Resource):
         :return: list of Call instances
         """
         client = cls.client or Client()
+        query = to_api(query)
         data_as_list = client._get(cls.path, params=query).json()
         return [cls(v) for v in data_as_list]
 
     def __repr__(self):
-        return 'Call({})'.format(repr(self.data) if self.data is not UNEVALUATED else self.call_id)
+        return 'Call(%r, state=%r)' % (self.call_id, self.state or 'Unknown')
 
     # Audio part
     def play_audio(self, file_name):

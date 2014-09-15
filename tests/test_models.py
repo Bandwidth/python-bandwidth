@@ -34,6 +34,11 @@ class CallsTest(unittest.TestCase):
         call = Call.get('c-call-id')
 
         self.assertEqual(call.call_id, 'c-call-id')
+        self.assertEqual(call.direction, 'out')
+        self.assertEqual(call.from_, '+1919000001')
+        self.assertEqual(call.to, '+1919000002')
+        self.assertEqual(call.recording_enabled, False)
+        self.assertEqual(call.state, 'active')
 
     @responses.activate
     def test_get_and_not_found(self):
