@@ -1,4 +1,5 @@
 # Object models for SDK
+import six
 from .client import Client
 from .utils import prepare_json, drop_empty
 
@@ -52,12 +53,12 @@ class Call(Resource):
     active_time = None
     client = None
 
-    def __init__(self, data: dict):
+    def __init__(self, data):
         self.client = Client()
         if isinstance(data, dict):
             self.data = data
             self.set_up()
-        elif isinstance(data, str):
+        elif isinstance(data, six.string_types):
             self.data = UNEVALUATED
             self.call_id = data
         else:
@@ -135,11 +136,11 @@ class Call(Resource):
         :param size: Used for pagination to indicate the size of each page requested for querying a list of calls.
                     If no value is specified the default value is 25. (Maximum value 1000)
 
-        :param bridgeId: Id of the bridge for querying a list of calls history. (Pagination do not apply).
+        :param bridge_id: Id of the bridge for querying a list of calls history. (Pagination do not apply).
 
-        :param conferenceId: Id of the conference for querying a list of calls history. (Pagination do not apply).
+        :param conference_id: Id of the conference for querying a list of calls history. (Pagination do not apply).
 
-        :param from: Telephone number to filter the calls that came from (must be in E.164 format, like +19195551212).
+        :param from_: Telephone number to filter the calls that came from (must be in E.164 format, like +19195551212).
 
         :param to: The number to filter calls that was called to (must be either an E.164 formated number,
                 like +19195551212, or a valid SIP URI, like sip:someone@somewhere.com).
