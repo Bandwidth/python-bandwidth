@@ -159,7 +159,7 @@ class Call(Resource):
 
     def stop_audio(self):
         '''
-        Plays audio form the given url to the call associated with call_id
+        Stop an audio file playing
         '''
         url = '{}/{}/audio'.format(self.path, self.call_id)
         self.client._post(url, data={'fileUrl': ''})
