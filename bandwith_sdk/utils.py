@@ -7,8 +7,9 @@ ALL_CAPITAL = re.compile(r'(.)([A-Z][a-z]+)')
 CASE_SWITCH = re.compile(r'([a-z0-9])([A-Z])')
 UNDERSCORES = re.compile(r'[a-z]_[a-z]{0,1}')
 
-time_fields = set('time', 'completed_time', 'created_time', 'activated_time',
-                  'start_time', 'active_time', 'end_time', 'created', 'updated')
+time_fields = frozenset(
+    ['time', 'completed_time', 'created_time', 'activated_time',
+     'start_time', 'active_time', 'end_time', 'created', 'updated'])
 
 
 def underscoreToCamel(match):
