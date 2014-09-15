@@ -1,7 +1,7 @@
 import responses
 import unittest
 
-from bandwith_sdk import Call, Bridge, BandwithError
+from bandwith_sdk import Call, Bridge, BandwithError, Application
 
 
 class CallsTest(unittest.TestCase):
@@ -251,3 +251,111 @@ class BridgesTest(unittest.TestCase):
 
         self.assertEqual(calls[0].call_id, 'c-foo')
         self.assertEqual(calls[1].call_id, 'c-bar')
+
+
+class ApplicationsTest(unittest.TestCase):
+
+    @responses.activate
+    def test_get(self):
+        """
+        Application.get('by-application_id')
+        """
+        raw = """
+        {
+        "id": "a-application-id",
+        "callbackHttpMethod": "post",
+        "incomingCallUrl": "http://callback.info",
+        "name": "test_application_name",
+        "autoAnswer": true
+        }
+        """
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/applications/a-application-id',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        application = Application.get('a-application-id')
+
+        self.assertEqual(application.application_id, 'a-application-id')
+        self.assertEqual(application.incoming_call_url, 'http://callback.info')
+        self.assertEqual(application.callback_http_method, 'post')
+        self.assertEqual(application.name, 'test_application_name')
+        self.assertEqual(application.auto_answer, True)
+
+    @responses.activate
+    def test_get_and_not_found(self):
+        """
+        Not found Application.get('by-application_id')
+        """
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/applications/c-call-id',
+                      body='',
+                      status=404,
+                      content_type='application/json')
+        with self.assertRaises(BandwithError) as be:
+            Application.get('c-call-id')
+        the_exception = be.exception
+        self.assertEqual(str(the_exception), '404 Client Error: None')
+
+    @responses.activate
+    def test_list(self):
+        """
+        Application.list()
+        """
+        raw = """
+        [{
+        "id": "a-application-id",
+        "callbackHttpMethod": "post",
+        "incomingCallUrl": "http://callback.info",
+        "name": "test_application_name",
+        "autoAnswer": true
+        },
+        {
+        "id": "a-application-id1",
+        "callbackHttpMethod": "get",
+        "incomingCallUrl": "http://callback1.info",
+        "name": "test_application_name1",
+        "autoAnswer": false
+        }
+        ]
+        """
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/applications/',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        applications = Application.list()
+
+        self.assertEqual(applications[0].application_id, 'a-application-id')
+        self.assertEqual(applications[0].incoming_call_url, 'http://callback.info')
+        self.assertEqual(applications[0].callback_http_method, 'post')
+        self.assertEqual(applications[0].name, 'test_application_name')
+        self.assertEqual(applications[0].auto_answer, True)
+        self.assertEqual(applications[1].application_id, 'a-application-id1')
+        self.assertEqual(applications[1].incoming_call_url, 'http://callback1.info')
+        self.assertEqual(applications[1].callback_http_method, 'get')
+        self.assertEqual(applications[1].name, 'test_application_name1')
+        self.assertEqual(applications[1].auto_answer, False)
+
+    @responses.activate
+    def test_create(self):
+        """
+        Application.create(name='new-application', incoming_call_url='http://test.callback.info')
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/applications/',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/applications/new-application-id'})
+
+        application = Application.create(name='new-application', incoming_call_url='http://test.callback.info')
+
+        self.assertEqual(application.application_id, 'new-application-id')
+        self.assertEqual(application.incoming_call_url, 'http://test.callback.info')
+        self.assertEqual(application.callback_http_method, 'post')
+        self.assertEqual(application.name, 'new-application')
+        self.assertEqual(application.auto_answer, True)

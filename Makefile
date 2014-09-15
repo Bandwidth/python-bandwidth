@@ -7,6 +7,9 @@ pep:
 	$(PEP) $(PACKAGE) tests
 
 test:
+	tox
+
+local_test:
 	green tests -vvv
 
 clean:
