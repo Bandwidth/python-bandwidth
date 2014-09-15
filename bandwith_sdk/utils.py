@@ -1,9 +1,14 @@
 import six
 import re
+from dateutil import parser
+from datetime import datetime
 
 ALL_CAPITAL = re.compile(r'(.)([A-Z][a-z]+)')
 CASE_SWITCH = re.compile(r'([a-z0-9])([A-Z])')
 UNDERSCORES = re.compile(r'[a-z]_[a-z]{0,1}')
+
+time_fields = set('time', 'completed_time', 'created_time', 'activated_time',
+                  'start_time', 'active_time', 'end_time', 'created', 'updated')
 
 
 def underscoreToCamel(match):
@@ -54,6 +59,9 @@ def to_api(data):
     """
     assert isinstance(data, dict), 'Wrong type'
     data = drop_empty(data)
+    for k, v in six.iteritems(data):
+        if isinstance(v, datetime):
+            data[k] = v.isoformat()
     api_data = {camelize(k): v for k, v in six.iteritems(data)}
     return api_data
 
@@ -65,4 +73,7 @@ def from_api(data):
     """
     assert isinstance(data, dict), 'Wrong type'
     app_data = {underscorize(k): v for k, v in six.iteritems(data)}
+    for k, v in six.iteritems(app_data):
+        if k in time_fields:
+            app_data[k] = parser.parse(v)
     return app_data
