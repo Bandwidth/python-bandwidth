@@ -50,16 +50,40 @@ class CallsTest(unittest.TestCase):
         """
         Not found Call.get('by-call-id')
         """
-
+        raw = """
+                {
+            "category": "not-found",
+            "code": "call-not-found",
+            "message": "The call c-call-id could not be found",
+            "details": [
+                {
+                    "name": "callId",
+                    "value": "c-call-id"
+                },
+                {
+                    "name": "requestMethod",
+                    "value": "GET"
+                },
+                {
+                    "name": "remoteAddress",
+                    "value": "193.239.74.XXX"
+                },
+                {
+                    "name": "requestPath",
+                    "value": "users/u-user/calls/c-call-id"
+                }
+            ]
+        }
+        """
         responses.add(responses.GET,
                       'https://api.catapult.inetwork.com/v1/users/u-user/calls/c-call-id',
-                      body='',
+                      body=raw,
                       status=404,
                       content_type='application/json')
         with self.assertRaises(BandwithError) as be:
             Call.get('c-call-id')
         the_exception = be.exception
-        self.assertEqual(str(the_exception), '404 Client Error: None')
+        self.assertEqual(str(the_exception), '404 client error: The call c-call-id could not be found')
 
     @responses.activate
     def test_list(self):
@@ -375,16 +399,40 @@ class BridgesTest(unittest.TestCase):
         """
         Not found Bridge.get('by-bridge-id')
         """
-
+        raw = """
+                {
+            "category": "not-found",
+            "code": "bridge-not-found",
+            "message": "The bridge by-bridge-id could not be found",
+            "details": [
+                {
+                    "name": "bridgeId",
+                    "value": "by-bridge-id"
+                },
+                {
+                    "name": "requestMethod",
+                    "value": "GET"
+                },
+                {
+                    "name": "remoteAddress",
+                    "value": "193.239.152.XXX"
+                },
+                {
+                    "name": "requestPath",
+                    "value": "users/u-user/bridges/by-bridge-id"
+                }
+            ]
+        }
+        """
         responses.add(responses.GET,
                       'https://api.catapult.inetwork.com/v1/users/u-user/bridges/by-bridge-id',
-                      body='',
+                      body=raw,
                       status=404,
                       content_type='application/json')
         with self.assertRaises(BandwithError) as be:
             Bridge.get('by-bridge-id')
         the_exception = be.exception
-        self.assertEqual(str(the_exception), '404 Client Error: None')
+        self.assertEqual(str(the_exception), '404 client error: The bridge by-bridge-id could not be found')
 
     @responses.activate
     def test_list(self):
@@ -645,16 +693,40 @@ class ApplicationsTest(unittest.TestCase):
         """
         Not found Application.get('by-application_id')
         """
-
+        raw = """
+                {
+            "category": "not-found",
+            "code": "application-not-found",
+            "message": "The application by-application_id could not be found",
+            "details": [
+                {
+                    "name": "applicationId",
+                    "value": "by-application_id"
+                },
+                {
+                    "name": "requestMethod",
+                    "value": "GET"
+                },
+                {
+                    "name": "remoteAddress",
+                    "value": "193.239.74.XXX"
+                },
+                {
+                    "name": "requestPath",
+                    "value": "users/u-user/applications/by-application_id"
+                }
+            ]
+        }
+        """
         responses.add(responses.GET,
-                      'https://api.catapult.inetwork.com/v1/users/u-user/applications/c-call-id',
-                      body='',
+                      'https://api.catapult.inetwork.com/v1/users/u-user/applications/by-application_id',
+                      body=raw,
                       status=404,
                       content_type='application/json')
         with self.assertRaises(BandwithError) as be:
-            Application.get('c-call-id')
+            Application.get('by-application_id')
         the_exception = be.exception
-        self.assertEqual(str(the_exception), '404 Client Error: None')
+        self.assertEqual(str(the_exception), '404 client error: The application by-application_id could not be found')
 
     @responses.activate
     def test_list(self):

@@ -41,8 +41,8 @@ class RESTClientObject(object):
         except requests.exceptions.HTTPError as e:
             self.log.exception('Error from bandwith api.')
             if 400 <= response.status_code <= 500:
-                if response.headers['content-type'] == 'json':
-                    message = response.json()['message']
+                if response.headers['content-type'] == 'application/json':
+                    message = "{} client error: {}".format(response.status_code, response.json()['message'])
                 else:
                     message = response.content.decode('ascii')[:79]
                 raise BandwithError(message)
