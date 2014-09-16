@@ -591,5 +591,6 @@ class Account(GetResource):
         """
         client = cls.client or Client()
         url = '{}{}'.format(cls._path, 'transactions')
-        data = [from_api(d) for d in client.get(url, params=to_api(query_params)).json()]
+        json_resp = client.get(url, params=to_api(query_params)).json()
+        data = [from_api(d) for d in json_resp]
         return data

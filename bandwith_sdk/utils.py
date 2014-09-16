@@ -63,7 +63,7 @@ def to_api(data):
     assert isinstance(data, dict), 'Wrong type'
     data = drop_empty(data)
     for k, v in six.iteritems(data):
-        if isinstance(v, datetime) or isinstance(v, date):
+        if isinstance(v, (datetime, date)):
             data[k] = v.isoformat()
     api_data = {camelize(k): v for k, v in six.iteritems(data)}
     return api_data
