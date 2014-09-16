@@ -1,7 +1,7 @@
 # Object models for SDK
 import six
 from .client import Client
-from .utils import prepare_json, unpack_json_dct, to_api, from_api
+from .utils import prepare_json, unpack_json_dct, to_api, from_api, enum
 
 # Sentinel value to mark that some of properties have been not synced.
 UNEVALUATED = object()
@@ -42,6 +42,7 @@ class Resource(object):
 
 class Call(Resource):
     path = 'calls'
+    STATES = enum('started', 'rejected', 'active', 'completed', 'transferring')
     call_id = None
     direction = None
     from_ = None
@@ -234,7 +235,7 @@ class Call(Resource):
         '''
         url = '{}/{}'.format(self.path, self.call_id)
         json_data = {'transfer_to': phone,
-                     'state': 'transferring'}
+                     'state': Call.STATES.transferring}
         json_data.update(kwargs)
         json_data = to_api(json_data)
         data = self.client.post(url, data=json_data)
@@ -273,7 +274,7 @@ class Call(Resource):
         '''
         url = '{}/{}'.format(self.path, self.call_id)
 
-        json_data = {'state': 'completed'}
+        json_data = {'state': Call.STATES.completed}
         self.client.post(url, data=to_api(json_data), timeout=None)
         self.set_up(json_data)
 
@@ -428,6 +429,7 @@ class Application(Resource):
 
 class Bridge(Resource):
     path = 'bridges'
+    STATES = enum('created', 'active', 'hold', 'completed', 'error')
     id = None
     state = None
     calls = None
