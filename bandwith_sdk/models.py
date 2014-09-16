@@ -7,7 +7,21 @@ from .utils import prepare_json, unpack_json_dct, to_api, from_api, enum
 UNEVALUATED = object()
 
 
-class Resource(object):
+class Getabble(object):
+    client = None
+
+    @classmethod
+    def get(cls, *args, **kwargs):
+        """
+
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        raise NotImplemented
+
+
+class Resource(Getabble):
     client = None
 
     @classmethod
@@ -21,16 +35,6 @@ class Resource(object):
 
     @classmethod
     def list(cls, *args, **kwargs):
-        """
-
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        raise NotImplemented
-
-    @classmethod
-    def get(cls, *args, **kwargs):
         """
 
         :param args:
@@ -278,7 +282,7 @@ class Call(Resource):
         self.client.post(url, data=to_api(json_data), timeout=None)
         self.set_up(json_data)
 
-    #Dtmf section
+    # Dtmf section
     def send_dtmf(self, dtmf):
         '''
         Sends a string of characters as DTMF on the given call_id
@@ -425,6 +429,12 @@ class Application(Resource):
         url = '{}{}'.format(self._path, self.application_id)
         client.delete(url)
         return True
+
+    def refresh(self):
+        url = '{}{}'.format(self._path, self.application_id)
+        data = self.client.get(url).json()
+        self.data = from_api(data)
+        self.set_up()
 
 
 class Bridge(Resource):
@@ -624,3 +634,48 @@ class Bridge(Resource):
         url = '{}/{}'.format(self.path, self.id)
         data = self.client.get(url).json()
         self.set_up(from_api(data))
+
+
+class Account(Getabble):
+    balance = None
+    account_type = None
+    _path = 'account/'
+
+    def __init__(self, data=None):
+        self.client = Client()
+        if data:
+            self.set_up(data)
+
+    def set_up(self, data):
+        [setattr(self, k, v) for k, v in data.items() if v is not None]
+
+    @classmethod
+    def get(cls):
+        """
+        Get an Account object. No query parameters are supported
+        :return: Account instance.
+        """
+        client = cls.client or Client()
+        data = from_api(client.get(cls._path).json())
+        return cls(data=data)
+
+    @classmethod
+    def get_transactions(cls, **query_params):
+        """
+        Get the transactions from Account.
+        :max_items: Limit the number of transactions that will be returned
+        :to_date: Return only transactions that are newer than the parameter. Format: "yyyy-MM-dd'T'HH:mm:ssZ"
+        :from_date: Return only transactions that are older than the parameter. Format: "yyyy-MM-dd'T'HH:mm:ssZ"
+        :type: Return only transactions that are this type
+        :page: Used for pagination to indicate the page requested for querying a list of transactions.
+               If no value is specified the default is 0.
+        :size: Used for pagination to indicate the size of each page requested for querying a list of transactions.
+               If no value is specified the default value is 25. (Maximum value 1000)
+
+        :return: list of dictionaries that contains information about transcation
+        """
+        client = cls.client or Client()
+        url = '{}{}'.format(cls._path, 'transactions')
+        json_resp = client.get(url, params=to_api(query_params)).json()
+        data = [from_api(d) for d in json_resp]
+        return data
