@@ -339,6 +339,59 @@ class CallsTest(unittest.TestCase):
         self.assertEqual(call.recording_enabled, False)
         self.assertEqual(call.state, 'active')
 
+    @responses.activate
+    def test_gather_create(self):
+        """
+        gather = Call('new-call-id').gather;
+        gather.create(max_digits='5', terminating_digits='*', inter_digit_timeout='7')
+        """
+
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls/new-call-id/gather',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/calls/new-call-id/gather/g-foo'})
+
+        gather = Call('new-call-id').gather
+        gather.create(max_digits='5', terminating_digits='*', inter_digit_timeout='7')
+
+        self.assertEqual(gather.id, 'g-foo')
+
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"terminatingDigits": "*", "maxDigits": "5", "interDigitTimeout": "7"}')
+
+    @responses.activate
+    def test_gather_get(self):
+        """
+        gather = Call('new-call-id').gather;
+        gather.get('g-foo')
+        """
+        raw = """
+        {
+        "id": "g-foo",
+        "state": "completed",
+        "reason": "max-digits",
+        "createdTime": "2014-02-12T19:33:56Z",
+        "completedTime": "2014-02-12T19:33:59Z",
+        "call": "https://api.catapult.inetwork.com/v1/users/u-xa2n3oxk6it4efbglisna6a/calls/c-isw3qup6gvr3ywcsentygnq",
+        "digits": "123"
+        }
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls/new-call-id/gather/g-foo',
+                      body=raw,
+                      status=200,
+                      content_type='application/json',
+                      )
+
+        gather = Call('new-call-id').gather
+        gather.get('g-foo')
+
+        self.assertEqual(gather.id, 'g-foo')
+        self.assertEqual(gather.reason, 'max-digits')
+        self.assertEqual(gather.digits, '123')
+
 
 class BridgesTest(unittest.TestCase):
 
