@@ -304,8 +304,9 @@ class Call(Resource):
 
         self.client.post(url, data=json_data)
 
-    def gather(self, *args, **kwargs):
-        raise NotImplementedError
+    @property
+    def gather(self):
+        return Gather(self.call_id, client=self.client)
 
     def get_recordings(self, timeout=None):
         '''
@@ -682,10 +683,65 @@ class Account(Getabble):
         :size: Used for pagination to indicate the size of each page requested for querying a list of transactions.
                If no value is specified the default value is 25. (Maximum value 1000)
 
-        :return: list of dictionaries that contains information about transcation
+        :return: list of dictionaries that contains information about transaction
         """
         client = cls.client or Client()
         url = '{}{}'.format(cls._path, 'transactions')
         json_resp = client.get(url, params=to_api(query_params)).json()
         data = [from_api(d) for d in json_resp]
         return data
+
+
+class Gather(Resource):
+    path = 'calls'
+    id = None
+    reason = None
+    state = None
+    created_time = None
+    completed_time = None
+    digits = None
+
+    _fields = frozenset(('id', 'state', 'reason', 'created_time', 'completed_time',
+                         'digits'))
+
+    def __init__(self, call_id, client=None):
+        self.client = client or Client()
+        self.call_id = call_id
+
+    def set_up(self, data):
+        for k, v in six.iteritems(data):
+            if k in self._fields:
+                setattr(self, k, v)
+
+    def get(self, gather_id):
+        """
+        Gets information about a specific bridge.
+
+        :param gather_id:
+
+        :return: Bridge instance
+        """
+        url = '{}/{}/gather/{}'.format(self.path, self.call_id, gather_id)
+        data_as_dict = self.client.get(url).json()
+        self.set_up(from_api(data_as_dict))
+        return self
+
+    def create(self, **kwargs):
+        """
+        Collects a series of DTMF digits from a phone call with an optional prompt.
+        This request returns immediately. When gather finishes, an event with
+        the results will be posted to the callback URL.
+        """
+        client = self.client
+        data = to_api(kwargs)
+        url = '{}/{}/gather'.format(self.path, self.call_id)
+        r = client.post(url, data=data)
+        location = r.headers['Location']
+        self.id = location.split('/')[-1]
+        return self
+
+    def stop(self):
+        assert self.id is not None
+        url = '{}/{}/gather/{}'.format(self.path, self.call_id, self.id)
+        data = to_api({'state': 'completed'})
+        self.client.post(url, data=data)
