@@ -279,7 +279,17 @@ class Call(Resource):
         url = '{}/{}'.format(self.path, self.call_id)
 
         json_data = {'state': Call.STATES.completed}
-        self.client.post(url, data=to_api(json_data), timeout=None)
+        self.client.post(url, data=to_api(json_data))
+        self.set_up(json_data)
+
+    def reject(self):
+        '''
+        Hangs up a call with the given call_id
+        '''
+        url = '{}/{}'.format(self.path, self.call_id)
+
+        json_data = {'state': Call.STATES.rejected}
+        self.client.post(url, data=to_api(json_data))
         self.set_up(json_data)
 
     # Dtmf section

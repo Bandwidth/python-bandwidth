@@ -234,6 +234,25 @@ class CallsTest(unittest.TestCase):
         self.assertEqual(call.state, 'completed')
 
     @responses.activate
+    def test_reject(self):
+        """
+        Call('new-call-id').reject()
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls/new-call-id',
+                      body='',
+                      status=200,
+                      content_type='application/json',
+                      )
+
+        call = Call('new-call-id')
+        call.reject()
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"state": "rejected"}')
+
+        self.assertEqual(call.state, 'rejected')
+
+    @responses.activate
     def test_send_dtmf(self):
         """
         Call('new-call-id').send_dtmf('121')
