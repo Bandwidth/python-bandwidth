@@ -1,7 +1,8 @@
 import responses
 import unittest
 
-from bandwith_sdk import Call, Bridge, BandwithError, Application
+from bandwith_sdk import Call, Bridge, BandwithError, Application, Account
+from datetime import datetime
 
 
 def assertJsonEq(first, second, msg='Ouups'):
@@ -168,7 +169,8 @@ class CallsTest(unittest.TestCase):
         call = Call('new-call-id')
         call.speak_sentence('Hello', gender='female', voice='Jorge', loop_enabled=True)
         request_message = responses.calls[0].request.body
-        assertJsonEq(request_message, '{"voice": "Jorge", "sentence": "Hello", "gender": "female", "loopEnabled": true}')
+        assertJsonEq(
+            request_message, '{"voice": "Jorge", "sentence": "Hello", "gender": "female", "loopEnabled": true}')
 
     @responses.activate
     def test_stop_sentence(self):
@@ -557,3 +559,105 @@ class ApplicationsTest(unittest.TestCase):
         self.assertEqual(application.callback_http_method, 'post')
         self.assertEqual(application.name, 'new-application')
         self.assertEqual(application.auto_answer, True)
+
+    @responses.activate
+    def test_create_refresh(self):
+        """
+        Application.refresh()
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/applications/',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/applications/new-application-id'})
+
+        application = Application.create(name='new-application', incoming_call_url='http://test.callback.info')
+
+        self.assertEqual(application.application_id, 'new-application-id')
+        self.assertEqual(application.incoming_call_url, 'http://test.callback.info')
+        self.assertEqual(application.callback_http_method, 'post')
+        self.assertEqual(application.name, 'new-application')
+        self.assertEqual(application.auto_answer, True)
+
+        raw = """
+        {
+        "id": "new-application-id",
+        "callbackHttpMethod": "post",
+        "incomingCallUrl": "http://callback.info",
+        "name": "test_application_name",
+        "autoAnswer": true
+        }
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/applications/new-application-id',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        application.refresh()
+        self.assertEqual(application.application_id, 'new-application-id')
+        self.assertEqual(application.incoming_call_url, 'http://callback.info')
+        self.assertEqual(application.callback_http_method, 'post')
+        self.assertEqual(application.name, 'test_application_name')
+        self.assertEqual(application.auto_answer, True)
+
+
+class AccountTests(unittest.TestCase):
+
+    @responses.activate
+    def test_get(self):
+        """
+        Account.get()
+        """
+        raw = """
+        {
+        "balance": "98.75800",
+        "accountType": "pre-pay"
+        }
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/account/',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        account = Account.get()
+        self.assertEqual(account.balance, "98.75800")
+        self.assertEqual(account.account_type, "pre-pay")
+
+    @responses.activate
+    def test_get_transactions(self):
+        """
+        Account.get_transactions()
+        """
+        raw = """
+        [
+            {
+                "id": "transaction_1",
+                "time": "2014-09-15T18:14:08Z",
+                "amount": "0.00",
+                "type": "charge",
+                "units": 12,
+                "productType": "toll-free-call-out",
+                "number": "+1Number1"
+            },
+            {
+                "id": "transaction_2",
+                "time": "2014-09-15T18:14:08Z",
+                "amount": "0.00",
+                "type": "charge",
+                "units": 12,
+                "productType": "toll-free-call-in",
+                "number": "+1Number2"
+            }
+        ]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/account/transactions',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        data = Account.get_transactions()
+        self.assertEqual(data[0]['id'], 'transaction_1')
+        self.assertIsInstance(data[0]['time'], datetime)
+        self.assertEqual(data[1]['id'], 'transaction_2')
+        self.assertIsInstance(data[1]['time'], datetime)
