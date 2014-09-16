@@ -706,7 +706,7 @@ class Gather(Resource):
 
     def __init__(self, call_id, client=None):
         self.client = client or Client()
-        self.call_id = call_id
+        self.path = 'calls/{}/gather'.format(call_id)
 
     def set_up(self, data):
         for k, v in six.iteritems(data):
@@ -715,13 +715,13 @@ class Gather(Resource):
 
     def get(self, gather_id):
         """
-        Gets information about a specific bridge.
+        Get the gather DTMF parameters and results
 
         :param gather_id:
 
         :return: Bridge instance
         """
-        url = '{}/{}/gather/{}'.format(self.path, self.call_id, gather_id)
+        url = '{}/{}'.format(self.path, gather_id)
         data_as_dict = self.client.get(url).json()
         self.set_up(from_api(data_as_dict))
         return self
@@ -734,14 +734,16 @@ class Gather(Resource):
         """
         client = self.client
         data = to_api(kwargs)
-        url = '{}/{}/gather'.format(self.path, self.call_id)
-        r = client.post(url, data=data)
+        r = client.post(self.path, data=data)
         location = r.headers['Location']
         self.id = location.split('/')[-1]
         return self
 
     def stop(self):
+        """
+        Update the gather DTMF. The only update allowed is state:completed to stop the gather.
+        """
         assert self.id is not None
-        url = '{}/{}/gather/{}'.format(self.path, self.call_id, self.id)
+        url = '{}/{}'.format(self.path, self.id)
         data = to_api({'state': 'completed'})
         self.client.post(url, data=data)
