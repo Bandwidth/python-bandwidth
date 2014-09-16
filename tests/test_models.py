@@ -120,6 +120,10 @@ class CallsTest(unittest.TestCase):
 
         self.assertEqual(call.call_id, 'new-call-id')
 
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"to": "+1919000002", "from": "+1919000001", '
+                                      '"callTimeout": 30}')
+
     @responses.activate
     def test_play_audio(self):
         """
@@ -451,6 +455,140 @@ class BridgesTest(unittest.TestCase):
 
         self.assertEqual(calls[0].call_id, 'c-foo')
         self.assertEqual(calls[1].call_id, 'c-bar')
+
+    @responses.activate
+    def test_play_audio(self):
+        """
+        Bridge('b-id').play_audio('Hello.mp3')
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/b-id/audio',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/calls/b-id'})
+
+        bridge = Bridge('b-id')
+        bridge.play_audio('Hello.mp3', loop_enabled=True, tag='custom_tag')
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"loopEnabled": true, "tag": "custom_tag", "fileUrl": "Hello.mp3"}')
+
+    @responses.activate
+    def test_stop_audio(self):
+        """
+        Bridge('b-id').stop_audio()
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/b-id/audio',
+                      body='',
+                      status=200,
+                      content_type='application/json',
+                      )
+
+        bridge = Bridge('b-id')
+        bridge.stop_audio()
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"fileUrl": ""}')
+
+    @responses.activate
+    def test_speak_sentence(self):
+        """
+        Bridge('b-id').speak_sentence('Hello', gender='female')
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/b-id/audio',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/bridges/b-id'})
+
+        bridge = Bridge('b-id')
+        bridge.speak_sentence('Hello', gender='female', voice='Jorge', loop_enabled=True)
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"voice": "Jorge", "sentence": "Hello", "gender": "female", "loopEnabled": true}')
+
+    @responses.activate
+    def test_stop_sentence(self):
+        """
+        Bridge('b-id').stop_sentence()
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/b-id/audio',
+                      body='',
+                      status=200,
+                      content_type='application/json',
+                      )
+
+        Bridge('b-id').stop_sentence()
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"sentence": ""}')
+
+    @responses.activate
+    def test_refresh(self):
+        """
+        Bridge('b-id').refresh()
+        """
+        raw = """
+        {
+        "id": "b-id",
+        "state": "completed",
+        "bridgeAudio": true,
+        "calls":"https://.../v1/users/{userId}/bridges/{bridgeId}/calls",
+        "createdTime": "2013-04-22T13:55:30.279Z",
+        "activatedTime": "2013-04-22T13:55:30.280Z",
+        "completedTime": "2013-04-22T13:59:30.122Z"
+        }
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/b-id',
+                      body=raw,
+                      status=200,
+                      content_type='application/json',
+                      )
+
+        bridge = Bridge('b-id')
+        bridge.refresh()
+
+        self.assertEqual(bridge.state, 'completed')
+        self.assertEqual(bridge.bridge_audio, True)
+
+    @responses.activate
+    def test_call_party(self):
+        """
+        Bridge('b-id').call_party("+1919000001", "+1919000002")
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/calls/new-call-id'})
+
+        call = Bridge('b-id').call_party('+1919000001', '+1919000002')
+
+        self.assertIsInstance(call, Call)
+        self.assertEqual(call.call_id, 'new-call-id')
+
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"to": "+1919000002", "from": "+1919000001", '
+                                      '"callTimeout": 30, "bridgeId": "b-id"}')
+
+    @responses.activate
+    def test_update(self):
+        """
+        Bridge('b-id').update(Call('a-id'), Call('b-id'), bridge_audio=False)
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/b-id',
+                      body='',
+                      status=200,
+                      content_type='application/json',
+                      )
+
+        Bridge('b-id').update(Call('a-id'), Call('b-id'), bridge_audio=False)
+
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"bridgeAudio": false, "callIds": ["a-id", "b-id"]}')
 
 
 class ApplicationsTest(unittest.TestCase):

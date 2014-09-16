@@ -80,3 +80,11 @@ def from_api(data):
         if k in time_fields:
             app_data[k] = parser.parse(v)
     return app_data
+
+
+def enum(*vals, **enums):
+    """
+    Enum without third party libs and compatible with py2 and py3 versions.
+    """
+    enums.update(dict(zip(vals, vals)))
+    return type('Enum', (), enums)
