@@ -538,8 +538,8 @@ class Bridge(Resource):
         '''
         return [c.call_id for c in self.calls]
 
-    def call_party(self, caller, callee):
-        new_call = Call.create(caller, callee, bridge_id=self.id)
+    def call_party(self, caller, callee, **kwargs):
+        new_call = Call.create(caller, callee, bridge_id=self.id, **kwargs)
         self.calls += (new_call,)
         return new_call
 
