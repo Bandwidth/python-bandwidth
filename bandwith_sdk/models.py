@@ -7,7 +7,7 @@ from .utils import prepare_json, unpack_json_dct, to_api, from_api, enum
 UNEVALUATED = object()
 
 
-class Gettabble(object):
+class Gettable(object):
     client = None
 
     @classmethod
@@ -21,7 +21,7 @@ class Gettabble(object):
         raise NotImplemented
 
 
-class Resource(Gettabble):
+class Resource(Gettable):
     client = None
 
     @classmethod
@@ -304,8 +304,9 @@ class Call(Resource):
 
         self.client.post(url, data=json_data)
 
-    def gather(self, *args, **kwargs):
-        raise NotImplementedError
+    @property
+    def gather(self):
+        return Gather(self.call_id, client=self.client)
 
     def get_recordings(self, timeout=None):
         '''
@@ -646,7 +647,7 @@ class Bridge(Resource):
         self.set_up(from_api(data))
 
 
-class Account(Gettabble):
+class Account(Gettable):
     balance = None
     account_type = None
     _path = 'account/'
@@ -682,10 +683,106 @@ class Account(Gettabble):
         :size: Used for pagination to indicate the size of each page requested for querying a list of transactions.
                If no value is specified the default value is 25. (Maximum value 1000)
 
-        :return: list of dictionaries that contains information about transcation
+        :return: list of dictionaries that contains information about transaction
         """
         client = cls.client or Client()
         url = '{}{}'.format(cls._path, 'transactions')
         json_resp = client.get(url, params=to_api(query_params)).json()
         data = [from_api(d) for d in json_resp]
         return data
+
+
+class Gather(Resource):
+    path = 'calls'
+    id = None
+    reason = None
+    state = None
+    created_time = None
+    completed_time = None
+    digits = None
+
+    _fields = frozenset(('id', 'state', 'reason', 'created_time', 'completed_time',
+                         'digits'))
+
+    def __init__(self, call_id, client=None):
+        self.client = client or Client()
+        self.path = 'calls/{}/gather'.format(call_id)
+
+    def set_up(self, data):
+        for k, v in six.iteritems(data):
+            if k in self._fields:
+                setattr(self, k, v)
+
+    def get(self, gather_id):
+        """
+        Get the gather DTMF parameters and results
+
+        :param gather_id:
+
+        :return: Gather instance
+        """
+        url = '{}/{}'.format(self.path, gather_id)
+        data_as_dict = self.client.get(url).json()
+        self.set_up(from_api(data_as_dict))
+        return self
+
+    def create(self, **kwargs):
+        """
+        Collects a series of DTMF digits from a phone call with an optional prompt.
+        This request returns immediately. When gather finishes, an event with
+        the results will be posted to the callback URL.
+
+        :param max_digits: The maximum number of digits to collect, not including terminating digits (maximum 30)
+
+        :param inter_digit_timeout: Stop gathering if a DTMF digit is not detected in this many seconds
+            (default 5.0; maximum 30.0)
+
+        :param terminating_digits: A string of DTMF digits that end the gather operation immediately if any one of
+            them is detected (default "#"; an empty string means collect all DTMF until maxDigits or the timeout)
+
+            Example:
+                # : The gather ends if # is detected (this is the default behavior if the terminatingDigits property
+                    is not specified)
+                0#* : The gather ends if either 0, #, or * is detected
+
+            Don't forget to encode keypad digits that have special meaning in a URL, like #.
+
+        :param suppress_dtmf: Suppress DTMF callback events to be triggered (default true)
+
+        :param tag A string you choose that will be included with the response and events for this gather operation
+
+        :param prompt.sentence: The text to speak for the prompt (uses the call audio resource defaults)
+            Don't forget to encode special characters in the sentence.
+
+        :param prompt.gender: The gender to use for the voice reading the prompt sentence
+            (uses the call audio resource defaults)
+
+        :param prompt.locale: The language and region to use for the voice reading the prompt sentence
+            (uses the call audio resource defaults)
+
+        :param prompt.file_url: The URL for an audio file to play as the prompt (uses the call audio resource defaults)
+
+        :param prompt.loop_enabled: When value is true, the audio will keep playing in a loop. Default: false
+
+        :param prompt.bargeable: Make the prompt (audio or sentence) bargeable (will be interrupted at first digit
+            gathered) Default: true
+
+        >>> Gather.create(max_digits='5', terminating_digits='*', inter_digit_timeout='7',
+                          prompt={'sentence': 'Please enter your 5 digit code', 'loop_enabled': True})
+        :return new Gather instance
+        """
+        client = self.client
+        data = to_api(kwargs)
+        r = client.post(self.path, data=data)
+        location = r.headers['Location']
+        self.id = location.split('/')[-1]
+        return self
+
+    def stop(self):
+        """
+        Update the gather DTMF. The only update allowed is state:completed to stop the gather.
+        """
+        assert self.id is not None
+        url = '{}/{}'.format(self.path, self.id)
+        data = to_api({'state': 'completed'})
+        self.client.post(url, data=data)
