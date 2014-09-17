@@ -4,7 +4,7 @@
 import os
 
 from flask import Flask, request, jsonify
-from flask.ext.rq import RQ
+from flask.ext.rqify import init_rqify
 
 from bandwith_sdk import Call
 
@@ -13,9 +13,9 @@ from bandwith_sdk import Call
 # ----------------------------------------------------------------------------#
 
 app = Flask(__name__)
+init_rqify(app)
 # app.config.from_object('config')
 CALLER = os.environ.get('CALLER_NUMBER')
-RQ(app)
 
 # ----------------------------------------------------------------------------#
 # Controllers.
