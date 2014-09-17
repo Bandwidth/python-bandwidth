@@ -4,3 +4,4 @@ six
 tox==1.7.2
 python-dateutil==2.2
 -r ./dev_requierements.txt
+-r examples/web/requirements.txt
