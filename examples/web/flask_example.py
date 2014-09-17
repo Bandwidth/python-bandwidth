@@ -6,7 +6,7 @@ import logging
 
 from flask import Flask, request, jsonify
 
-from bandwith_sdk import Call, Event, Bridge, AnswerCallEvent, PlaybackCallEvent, HangupCallEvent, GatherCallEvent
+from bandwidth_sdk import Call, Event, Bridge, AnswerCallEvent, PlaybackCallEvent, HangupCallEvent, GatherCallEvent
 
 # ----------------------------------------------------------------------------#
 # App Config.

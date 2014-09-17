@@ -1,13 +1,13 @@
 import unittest
 from datetime import datetime
 
-from bandwith_sdk import (EventType,
-                          Event,
-                          IncomingCallEvent,
-                          AnswerCallEvent,
-                          HangupCallEvent,
-                          PlaybackCallEvent,
-                          )
+from bandwidth_sdk import (EventType,
+                           Event,
+                           IncomingCallEvent,
+                           AnswerCallEvent,
+                           HangupCallEvent,
+                           PlaybackCallEvent,
+                           )
 
 
 class EventsTest(unittest.TestCase):

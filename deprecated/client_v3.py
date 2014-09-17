@@ -4,7 +4,7 @@ import logging
 import json
 
 from .rest import RESTClientObject
-from .errors import BandwithError
+from .errors import BandwidthError
 
 logger = logging.getLogger(__name__)
 
@@ -253,7 +253,7 @@ class Client(RESTClientObject):
                    m['from'] and
                    m['to'] and
                    m['text'] for m in message_batch):
-            raise BandwithError('Invallid data to multi message {}'.format(message_batch))
+            raise BandwidthError('Invallid data to multi message {}'.format(message_batch))
 
         data = json.dumps(message_batch)
 

@@ -1,7 +1,7 @@
 import responses
 import unittest
 
-from bandwith_sdk import Call, Bridge, AppPlatformError, Application, Account
+from bandwidth_sdk import Call, Bridge, AppPlatformError, Application, Account
 from datetime import datetime
 
 

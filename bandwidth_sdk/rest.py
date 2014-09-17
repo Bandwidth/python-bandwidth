@@ -39,7 +39,7 @@ class RESTClientObject(object):
             response.raise_for_status()
             return response
         except requests.exceptions.HTTPError:
-            self.log.exception('Error from bandwith api.')
+            self.log.exception('Error from bandwidth api.')
             template = '{} client error: {}' if response.status_code < 500 else '{} server error: {}'
             if response.headers['content-type'] == 'application/json':
                 message = template.format(response.status_code, response.json()['message'])

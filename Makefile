@@ -1,6 +1,6 @@
 FLAKE=pyflakes
 PEP=pep8
-PACKAGE=bandwith_sdk
+PACKAGE=bandwidth_sdk
 
 pep:
 	$(FLAKE) $(PACKAGE) tests

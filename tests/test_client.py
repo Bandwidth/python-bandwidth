@@ -1,6 +1,6 @@
 import unittest
 
-from bandwith_sdk import Client
+from bandwidth_sdk import Client
 
 
 class ClientTest(unittest.TestCase):
