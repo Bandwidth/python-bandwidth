@@ -378,12 +378,15 @@ class CallsTest(unittest.TestCase):
                       adding_headers={'Location': '/v1/users/u-user/calls/new-call-id/gather/g-foo'})
 
         gather = Call('new-call-id').gather
-        gather.create(max_digits='5', terminating_digits='*', inter_digit_timeout='7')
+        gather.create(max_digits='5', terminating_digits='*', inter_digit_timeout='7',
+                      prompt={"sentence": "Please enter your 5 digit code", 'loop_enabled': True})
 
         self.assertEqual(gather.id, 'g-foo')
 
         request_message = responses.calls[0].request.body
-        assertJsonEq(request_message, '{"terminatingDigits": "*", "maxDigits": "5", "interDigitTimeout": "7"}')
+        assertJsonEq(request_message, '{"maxDigits": "5", "terminatingDigits": "*", '
+                                      '"prompt": {"loopEnabled": true, "sentence": "Please enter your 5 digit code"}, '
+                                      '"interDigitTimeout": "7"}')
 
     @responses.activate
     def test_gather_get(self):

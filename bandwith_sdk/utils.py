@@ -65,7 +65,7 @@ def to_api(data):
     for k, v in six.iteritems(data):
         if isinstance(v, (datetime, date)):
             data[k] = v.isoformat()
-    api_data = {camelize(k): v for k, v in six.iteritems(data)}
+    api_data = {camelize(k): to_api(v) if isinstance(v, dict) else v for k, v in six.iteritems(data)}
     return api_data
 
 

@@ -719,7 +719,7 @@ class Gather(Resource):
 
         :param gather_id:
 
-        :return: Bridge instance
+        :return: Gather instance
         """
         url = '{}/{}'.format(self.path, gather_id)
         data_as_dict = self.client.get(url).json()
