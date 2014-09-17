@@ -731,6 +731,45 @@ class Gather(Resource):
         Collects a series of DTMF digits from a phone call with an optional prompt.
         This request returns immediately. When gather finishes, an event with
         the results will be posted to the callback URL.
+
+        :param max_digits: The maximum number of digits to collect, not including terminating digits (maximum 30)
+
+        :param inter_digit_timeout: Stop gathering if a DTMF digit is not detected in this many seconds
+            (default 5.0; maximum 30.0)
+
+        :param terminating_digits: A string of DTMF digits that end the gather operation immediately if any one of
+            them is detected (default "#"; an empty string means collect all DTMF until maxDigits or the timeout)
+
+            Example:
+                # : The gather ends if # is detected (this is the default behavior if the terminatingDigits property
+                    is not specified)
+                0#* : The gather ends if either 0, #, or * is detected
+
+            Don't forget to encode keypad digits that have special meaning in a URL, like #.
+
+        :param suppress_dtmf: Suppress DTMF callback events to be triggered (default true)
+
+        :param tag A string you choose that will be included with the response and events for this gather operation
+
+        :param prompt.sentence: The text to speak for the prompt (uses the call audio resource defaults)
+            Don't forget to encode special characters in the sentence.
+
+        :param prompt.gender: The gender to use for the voice reading the prompt sentence
+            (uses the call audio resource defaults)
+
+        :param prompt.locale: The language and region to use for the voice reading the prompt sentence
+            (uses the call audio resource defaults)
+
+        :param prompt.file_url: The URL for an audio file to play as the prompt (uses the call audio resource defaults)
+
+        :param prompt.loop_enabled: When value is true, the audio will keep playing in a loop. Default: false
+
+        :param prompt.bargeable: Make the prompt (audio or sentence) bargeable (will be interrupted at first digit
+            gathered) Default: true
+
+        >>> Gather.create(max_digits='5', terminating_digits='*', inter_digit_timeout='7',
+                          prompt={'sentence': 'Please enter your 5 digit code', 'loop_enabled': True})
+        :return new Gather instance
         """
         client = self.client
         data = to_api(kwargs)
