@@ -1,3 +1,5 @@
 flask-rq
 Flask==0.10.1
 -e ./../../
+gunicorn
+Flask-Heroku-RQify>=0.1

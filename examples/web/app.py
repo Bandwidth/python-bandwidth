@@ -5,7 +5,7 @@ import os
 import logging
 
 from flask import Flask, request, jsonify
-from flask.ext.rq import RQ
+from flask.ext.rqify import init_rqify
 
 from bandwith_sdk import Call, Event, Bridge, AnswerCallEvent, PlaybackCallEvent, HangupCallEvent, GatherCallEvent
 
@@ -14,13 +14,13 @@ from bandwith_sdk import Call, Event, Bridge, AnswerCallEvent, PlaybackCallEvent
 # ----------------------------------------------------------------------------#
 
 app = Flask(__name__)
+init_rqify(app)
 # app.config.from_object('config')
 CALLER = os.environ.get('CALLER_NUMBER')
 BRIDGE_CALLEE = os.environ.get('CALLER_NUMBER')
 
 DOMAIN = os.environ.get('DOMAIN')
 
-RQ(app)
 
 logger = logging.getLogger(__name__)
 # ----------------------------------------------------------------------------#
