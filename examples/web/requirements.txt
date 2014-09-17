@@ -1,5 +1,5 @@
-flask-rq
 Flask==0.10.1
--e ./../../
+-e ./
 gunicorn
 Flask-Heroku-RQify>=0.1
+redis==2.10.3
