@@ -1,7 +1,7 @@
 import responses
 import unittest
 
-from bandwith_sdk import Call, Bridge, BandwithError, Application, Account
+from bandwith_sdk import Call, Bridge, AppPlatformError, Application, Account
 from datetime import datetime
 
 
@@ -80,7 +80,7 @@ class CallsTest(unittest.TestCase):
                       body=raw,
                       status=404,
                       content_type='application/json')
-        with self.assertRaises(BandwithError) as be:
+        with self.assertRaises(AppPlatformError) as be:
             Call.get('c-call-id')
         the_exception = be.exception
         self.assertEqual(str(the_exception), '404 client error: The call c-call-id could not be found')
@@ -482,7 +482,7 @@ class BridgesTest(unittest.TestCase):
                       body=raw,
                       status=404,
                       content_type='application/json')
-        with self.assertRaises(BandwithError) as be:
+        with self.assertRaises(AppPlatformError) as be:
             Bridge.get('by-bridge-id')
         the_exception = be.exception
         self.assertEqual(str(the_exception), '404 client error: The bridge by-bridge-id could not be found')
@@ -776,7 +776,7 @@ class ApplicationsTest(unittest.TestCase):
                       body=raw,
                       status=404,
                       content_type='application/json')
-        with self.assertRaises(BandwithError) as be:
+        with self.assertRaises(AppPlatformError) as be:
             Application.get('by-application_id')
         the_exception = be.exception
         self.assertEqual(str(the_exception), '404 client error: The application by-application_id could not be found')

@@ -1,6 +1,6 @@
 import json
 import requests
-from .errors import BandwithError
+from .errors import AppPlatformError
 
 
 class RESTClientObject(object):
@@ -38,18 +38,16 @@ class RESTClientObject(object):
             response = requests.request(method, *args, **kwargs)
             response.raise_for_status()
             return response
-        except requests.exceptions.HTTPError as e:
+        except requests.exceptions.HTTPError:
             self.log.exception('Error from bandwith api.')
-            if 400 <= response.status_code <= 500:
-                if response.headers['content-type'] == 'application/json':
-                    message = "{} client error: {}".format(response.status_code, response.json()['message'])
-                else:
-                    message = response.content.decode('ascii')[:79]
-                raise BandwithError(message)
+            template = '{} client error: {}' if response.status_code < 500 else '{} server error: {}'
+            if response.headers['content-type'] == 'application/json':
+                message = template.format(response.status_code, response.json()['message'])
             else:
-                raise BandwithError(e)
+                message = template.format(response.status_code, response.content.decode('ascii')[:79])
+            raise AppPlatformError(message)
         except Exception as e:
-            raise BandwithError(e)
+            raise AppPlatformError(e)
 
     def delete(self, url, timeout=None, **kwargs):
         url = self._join_endpoint(url)

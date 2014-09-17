@@ -7,7 +7,7 @@ from .utils import prepare_json, unpack_json_dct, to_api, from_api, enum
 UNEVALUATED = object()
 
 
-class Gettabble(object):
+class Gettable(object):
     client = None
 
     @classmethod
@@ -21,7 +21,7 @@ class Gettabble(object):
         raise NotImplemented
 
 
-class Resource(Gettabble):
+class Resource(Gettable):
     client = None
 
     @classmethod
@@ -647,7 +647,7 @@ class Bridge(Resource):
         self.set_up(from_api(data))
 
 
-class Account(Gettabble):
+class Account(Gettable):
     balance = None
     account_type = None
     _path = 'account/'
