@@ -77,7 +77,8 @@ class HangupCallEvent(EventType):
     call_state = None
     cause = None
     time = None
-    _fields = frozenset(('call_id', 'event_type', 'from_', 'to', 'call_uri', 'call_state', 'time', 'cause'))
+    tag = None
+    _fields = frozenset(('call_id', 'event_type', 'from_', 'to', 'call_uri', 'call_state', 'time', 'cause', 'tag'))
 
 
 class PlaybackCallEvent(EventType):
@@ -94,7 +95,17 @@ class PlaybackCallEvent(EventType):
         return self.status == 'done'
 
 
+class GatherCallEvent(EventType):
+    event_type = None
+    call_id = None
+    state = None
+    dtmf_digits = None
+    tag = None
+    _fields = frozenset(('call_id', 'event_type', 'state', 'dtmf_digits', 'tag'))
+
+
 _events = {"hangup": HangupCallEvent,
            "answer": AnswerCallEvent,
            "incomingcall": IncomingCallEvent,
+           "gather": GatherCallEvent,
            "playback": PlaybackCallEvent}
