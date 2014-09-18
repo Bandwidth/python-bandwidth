@@ -106,6 +106,10 @@ class GatherCallEvent(EventType):
     tag = None
     _fields = frozenset(('call_id', 'event_type', 'state', 'digits', 'tag', 'time', 'gather_id'))
 
+    @property
+    def gather(self):
+        return self.call.gather.get(self.gather_id)
+
 
 class DtmfCallEvent(EventType):
     event_type = None
