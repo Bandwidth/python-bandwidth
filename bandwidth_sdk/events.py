@@ -98,10 +98,13 @@ class PlaybackCallEvent(EventType):
 class GatherCallEvent(EventType):
     event_type = None
     call_id = None
+    time = None
+    reason = None
+    gather_id = None
     state = None
-    dtmf_digits = None
+    digits = None
     tag = None
-    _fields = frozenset(('call_id', 'event_type', 'state', 'dtmf_digits', 'tag'))
+    _fields = frozenset(('call_id', 'event_type', 'state', 'digits', 'tag', 'time', 'gather_id'))
 
 
 class DtmfCallEvent(EventType):
