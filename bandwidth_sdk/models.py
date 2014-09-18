@@ -77,7 +77,7 @@ class Call(Resource):
                 setattr(self, k, v)
 
     @classmethod
-    def create(cls, caller, callee, bridge_id=None, recording_enabled=None, timeout=30):
+    def create(cls, caller, callee, bridge_id=None, recording_enabled=None, call_back_url=None, timeout=30):
         """
         Makes a phone call.
 
@@ -100,7 +100,8 @@ class Call(Resource):
             'to': callee,
             'call_timeout': timeout,  # seconds
             'bridge_id': bridge_id,
-            'recording_enabled': recording_enabled
+            'recording_enabled': recording_enabled,
+            'call_back_url': call_back_url
         }
         json_data = to_api(data)
         data = client.post(cls.path, data=json_data)
