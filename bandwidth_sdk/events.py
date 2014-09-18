@@ -55,7 +55,9 @@ class IncomingCallEvent(EventType):
     call_state = None
     application_id = None
     time = None
-    _fields = frozenset(('call_id', 'event_type', 'from_', 'to', 'call_uri', 'call_state', 'time', 'application_id'))
+    tag = None
+    _fields = frozenset(('call_id', 'event_type', 'from_', 'to', 'call_uri', 'call_state', 'time',
+                         'application_id', 'tag'))
 
 
 class AnswerCallEvent(EventType):
@@ -66,7 +68,9 @@ class AnswerCallEvent(EventType):
     call_state = None
     application_id = None
     time = None
-    _fields = frozenset(('call_id', 'event_type', 'from_', 'to', 'call_uri', 'call_state', 'time', 'application_id'))
+    tag = None
+    _fields = frozenset(('call_id', 'event_type', 'from_', 'to', 'call_uri', 'call_state', 'time',
+                         'application_id', 'tag'))
 
 
 class HangupCallEvent(EventType):
@@ -104,7 +108,7 @@ class GatherCallEvent(EventType):
     state = None
     digits = None
     tag = None
-    _fields = frozenset(('call_id', 'event_type', 'state', 'digits', 'tag', 'time', 'gather_id'))
+    _fields = frozenset(('call_id', 'event_type', 'state', 'digits', 'tag', 'time', 'gather_id', 'reason'))
 
     @property
     def gather(self):
@@ -118,7 +122,8 @@ class DtmfCallEvent(EventType):
     time = None
     dtmf_digit = None
     dtmf_duration = None
-    _fields = frozenset(('event_type', 'call_id', 'call_uri', 'time', 'dtmf_digit', 'dtmf_duration'))
+    tag = None
+    _fields = frozenset(('event_type', 'call_id', 'call_uri', 'time', 'dtmf_digit', 'dtmf_duration', 'tag'))
 
 
 class SpeakCallEvent(EventType):
