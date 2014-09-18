@@ -104,6 +104,16 @@ class GatherCallEvent(EventType):
     _fields = frozenset(('call_id', 'event_type', 'state', 'dtmf_digits', 'tag'))
 
 
+class DtmfCallEvent(EventType):
+    event_type = None
+    call_id = None
+    call_uri = None
+    time = None
+    dtmf_digit = None
+    dtmf_duration = None
+    _fields = frozenset(('event_type', 'call_id', 'call_uri', 'time', 'dtmf_digit', 'dtmf_duration'))
+
+
 class SpeakCallEvent(EventType):
     event_type = None
     call_id = None
@@ -124,4 +134,5 @@ _events = {"hangup": HangupCallEvent,
            "incomingcall": IncomingCallEvent,
            "gather": GatherCallEvent,
            "speak": SpeakCallEvent,
-           "playback": PlaybackCallEvent}
+           "playback": PlaybackCallEvent,
+           "dtmf": DtmfCallEvent}
