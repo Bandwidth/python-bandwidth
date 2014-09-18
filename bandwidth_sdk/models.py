@@ -77,7 +77,7 @@ class Call(Resource):
                 setattr(self, k, v)
 
     @classmethod
-    def create(cls, caller, callee, bridge_id=None, recording_enabled=None, callback_url=None, timeout=30):
+    def create(cls, caller, callee, bridge_id=None, recording_enabled=None, callback_url=None, timeout=30, **kwargs):
         """
         Makes a phone call.
 
@@ -103,6 +103,8 @@ class Call(Resource):
             'recording_enabled': recording_enabled,
             'callback_url': callback_url
         }
+
+        data.update(kwargs)
         json_data = to_api(data)
         data = client.post(cls.path, data=json_data)
         location = data.headers['Location']
