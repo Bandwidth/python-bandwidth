@@ -104,8 +104,24 @@ class GatherCallEvent(EventType):
     _fields = frozenset(('call_id', 'event_type', 'state', 'dtmf_digits', 'tag'))
 
 
+class SpeakCallEvent(EventType):
+    event_type = None
+    call_id = None
+    call_uri = None
+    status = None
+    state = None
+    time = None
+    tag = None
+    _fields = frozenset(('call_id', 'event_type', 'status', 'state', 'call_uri', 'tag', 'time'))
+
+    @property
+    def done(self):
+        return self.status == 'done'
+
+
 _events = {"hangup": HangupCallEvent,
            "answer": AnswerCallEvent,
            "incomingcall": IncomingCallEvent,
            "gather": GatherCallEvent,
+           "speak": SpeakCallEvent,
            "playback": PlaybackCallEvent}
