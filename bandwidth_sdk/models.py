@@ -789,3 +789,73 @@ class Gather(Resource):
         url = '{}/{}'.format(self.path, self.id)
         data = to_api({'state': 'completed'})
         self.client.post(url, data=data)
+
+
+class Conference(Gettable):
+    """
+    The Conference resource allows you create conferences, add members to it,
+    play audio, speak text, mute/unmute members, hold/unhold members and other
+    things related to conferencing.
+    """
+    path = 'conferences'
+    STATES = enum('created', 'active', 'completed')
+    client = None
+
+    active_members = None
+    callback_url = None
+    callback_timeout = None
+    fallback_url = None
+    completed_time = None
+    created_time = None
+    from_ = None
+    id = None
+    state = None
+    _fields = frozenset(('id', 'state', 'from_', 'created_time', 'completed_time', 'fallback_url',
+                         'callback_timeout', 'callback_url', 'active_members'))
+
+    def __init__(self, data):
+        self.client = Client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.id = data
+        else:
+            raise TypeError('Accepted only id as string or data as dictionary')
+
+    def set_up(self, data):
+        self.from_ = self.from_ or data.get('from')
+        for k, v in six.iteritems(data):
+            if k in self._fields:
+                setattr(self, k, v)
+
+    @classmethod
+    def create(cls, from_, **params):
+        """
+        todo: docstring
+        """
+        client = cls.client or Client()
+        params['from'] = from_
+        json_data = to_api(params)
+        data = client.post(cls.path, data=json_data)
+        location = data.headers['Location']
+        cid = location.split('/')[-1]
+        conference = cls(params)
+        conference.id = cid
+        return conference
+
+    @classmethod
+    def get(cls, conf_id):
+        """
+        Retrieve the conference information.
+
+        :param conf_id:
+
+        :return: new Conference instance with all provided fields.
+        """
+        client = cls.client or Client()
+        url = '{}/{}'.format(cls.path, conf_id)
+        data_as_dict = client.get(url).json()
+        return cls(data_as_dict)
+
+    def __repr__(self):
+        return 'Conference(%r, state=%r)' % (self.id, self.state or 'Unknown')
