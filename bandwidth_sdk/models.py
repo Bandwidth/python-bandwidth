@@ -10,6 +10,7 @@ UNEVALUATED = object()
 
 class Gettable(object):
     client = None
+    _fields = None
 
     @classmethod
     def get(cls, *args, **kwargs):
@@ -20,6 +21,11 @@ class Gettable(object):
         :return:
         """
         raise NotImplemented
+
+    def set_up(self, data):
+        for k, v in six.iteritems(data):
+            if k in self._fields:
+                setattr(self, k, v)
 
 
 class Resource(Gettable):
@@ -73,9 +79,7 @@ class Call(Resource):
     def set_up(self, data):
         self.from_ = self.from_ or data.get('from')
         self.call_id = self.call_id or data.get('id')
-        for k, v in six.iteritems(data):
-            if k in self._fields:
-                setattr(self, k, v)
+        super(Call, self).set_up(data)
 
     @classmethod
     def create(cls, caller, callee, bridge_id=None, recording_enabled=None, callback_url=None, timeout=30, **kwargs):
@@ -353,12 +357,10 @@ class Application(Resource):
         self.application_id = application_id
         if data:
             self.data = data
-            self.set_up()
+            #todo: drop data
+            self.set_up(data)
         else:
             raise TypeError('Accepted only application-id or application data as dictionary')
-
-    def set_up(self):
-        [setattr(self, k, v) for k, v in self.data.items() if k in self._fields and v is not None]
 
     @classmethod
     def create(cls, **data):
@@ -429,7 +431,7 @@ class Application(Resource):
         client.post(url, data=prepare_json(cleaned_data))
         if cleaned_data:
             self.data = cleaned_data
-            self.set_up()
+            self.set_up(self.data)
         return True
 
     def delete(self):
@@ -445,8 +447,7 @@ class Application(Resource):
     def refresh(self):
         url = '{}{}'.format(self._path, self.application_id)
         data = self.client.get(url).json()
-        self.data = from_api(data)
-        self.set_up()
+        self.set_up(from_api(data))
 
 
 class Bridge(Resource):
@@ -470,11 +471,6 @@ class Bridge(Resource):
         self.id = id
         if 'data' in kwargs:
             self.set_up(from_api(kwargs['data']))
-
-    def set_up(self, data):
-        for k, v in six.iteritems(data):
-            if k in self._fields:
-                setattr(self, k, v)
 
     @classmethod
     def list(cls, page=1, size=20):
@@ -651,14 +647,12 @@ class Account(Gettable):
     balance = None
     account_type = None
     _path = 'account/'
+    _fields = frozenset(('balance', 'account_type'))
 
     def __init__(self, data=None):
         self.client = Client()
         if data:
             self.set_up(data)
-
-    def set_up(self, data):
-        [setattr(self, k, v) for k, v in data.items() if v is not None]
 
     @classmethod
     def get(cls):
@@ -707,11 +701,6 @@ class Gather(Resource):
     def __init__(self, call_id, client=None):
         self.client = client or Client()
         self.path = 'calls/{}/gather'.format(call_id)
-
-    def set_up(self, data):
-        for k, v in six.iteritems(data):
-            if k in self._fields:
-                setattr(self, k, v)
 
     def get(self, gather_id):
         """
@@ -820,9 +809,7 @@ class Conference(Gettable):
 
     def set_up(self, data):
         self.from_ = self.from_ or data.get('from')
-        for k, v in six.iteritems(data):
-            if k in self._fields:
-                setattr(self, k, v)
+        super(Conference, self).set_up(data)
 
     @classmethod
     def create(cls, from_, **params):
@@ -920,11 +907,6 @@ class ConferenceMember(Resource):
         else:
             raise TypeError('Accepted only id as string or data as dictionary')
         self.conf_id = conf_id
-
-    def set_up(self, data):
-        for k, v in six.iteritems(data):
-            if k in self._fields:
-                setattr(self, k, v)
 
     def get(self):
         """
