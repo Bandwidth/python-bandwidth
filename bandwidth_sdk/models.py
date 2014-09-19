@@ -714,7 +714,7 @@ class Conference(AudioMixin, Gettable):
         client = self.client
         url = '{}/{}'.format(self.path, self.id)
         data = to_api(params)
-        client.post(url, data=data).json()
+        client.post(url, data=data)
         self.set_up(params)
         return self
 

@@ -9,7 +9,7 @@ UNDERSCORES = re.compile(r'[a-z]_[a-z]{0,1}')
 
 time_fields = frozenset(
     ['time', 'completed_time', 'created_time', 'activated_time',
-     'start_time', 'active_time', 'end_time', 'created', 'updated'])
+     'start_time', 'active_time', 'end_time', 'created', 'updated', 'added_time'])
 
 
 def underscoreToCamel(match):
