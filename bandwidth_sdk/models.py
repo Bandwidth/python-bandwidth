@@ -107,9 +107,8 @@ class Call(Resource):
 
         data.update(kwargs)
         json_data = to_api(data)
-        data = client.post(cls.path, data=json_data)
-        location = data.headers['Location']
-        call_id = location.split('/')[-1]
+        r = client.post(cls.path, data=json_data)
+        call_id = get_location_id(r)
         call = cls(call_id)
         call.set_up(json_data)
         return call
@@ -246,9 +245,8 @@ class Call(Resource):
                      'state': Call.STATES.transferring}
         json_data.update(kwargs)
         json_data = to_api(json_data)
-        data = self.client.post(url, data=json_data)
-        location = data.headers['Location']
-        call_id = location.split('/')[-1]
+        r = self.client.post(url, data=json_data)
+        call_id = get_location_id(r)
         call = self.__class__(call_id)
         call.set_up(json_data)
         return call
@@ -383,8 +381,7 @@ class Application(Resource):
         p_data = prepare_json(
             {k: v for k, v in data.items() if v is not None and k in cls._fields})
         resp = client.post(cls._path, data=p_data)
-        location = resp.headers['Location']
-        application_id = location.split('/')[-1]
+        application_id = get_location_id(resp)
         return cls(application_id=application_id, data=data)
 
     @classmethod
@@ -531,8 +528,7 @@ class Bridge(Resource):
         data["call_ids"] = [c.call_id for c in calls]
         data = to_api(data)
         r = client.post(cls.path, data=data)
-        location = r.headers['Location']
-        bridge_id = location.split('/')[-1]
+        bridge_id = get_location_id(r)
         return cls(bridge_id, *calls, data=data)
 
     @property
@@ -778,8 +774,7 @@ class Gather(Resource):
         client = self.client
         data = to_api(kwargs)
         r = client.post(self.path, data=data)
-        location = r.headers['Location']
-        self.id = location.split('/')[-1]
+        self.id = get_location_id(r)
         return self
 
     def stop(self):
@@ -837,9 +832,8 @@ class Conference(Gettable):
         client = cls.client or Client()
         params['from'] = from_
         json_data = to_api(params)
-        data = client.post(cls.path, data=json_data)
-        location = data.headers['Location']
-        cid = location.split('/')[-1]
+        r = client.post(cls.path, data=json_data)
+        cid = get_location_id(r)
         conference = cls(params)
         conference.id = cid
         return conference
