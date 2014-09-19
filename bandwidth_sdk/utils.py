@@ -88,3 +88,8 @@ def enum(*vals, **enums):
     """
     enums.update(dict(zip(vals, vals)))
     return type('Enum', (), enums)
+
+
+def get_location_id(response):
+    location = response.headers['Location']
+    return location.split('/')[-1]

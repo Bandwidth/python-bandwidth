@@ -1,7 +1,8 @@
 # Object models for SDK
 import six
+from functools import partial
 from .client import Client
-from .utils import prepare_json, unpack_json_dct, to_api, from_api, enum
+from .utils import prepare_json, unpack_json_dct, to_api, from_api, enum, get_location_id
 
 # Sentinel value to mark that some of properties have been not synced.
 UNEVALUATED = object()
@@ -859,3 +860,99 @@ class Conference(Gettable):
 
     def __repr__(self):
         return 'Conference(%r, state=%r)' % (self.id, self.state or 'Unknown')
+
+    def update(self, **params):
+        """
+        Change the conference properties/status.
+        :return: the instance with updated fields.
+        """
+        client = self.client
+        url = '{}/{}'.format(self.path, self.id)
+        data = to_api(params)
+        client.post(url, data=data).json()
+        self.set_up(params)
+        return self
+
+    def get_members(self):
+        """
+        List all members from a conference. If a member had already hung up or removed from conference it will be
+        displayed as completed.
+        """
+        client = self.client
+        url = '{}/{}/members'.format(self.path, self.id)
+        member_list = client.get(url).json()
+        return [self.member(member) for member in member_list]
+
+    def add_member(self, call_id, **params):
+        """
+        Add members to a conference.
+        Important:-- The callId must refer to an active call that was created using this conferenceId.
+        """
+        client = self.client
+        url = '{}/{}/members'.format(self.path, self.id)
+        params['call_id'] = call_id
+        data = to_api(params)
+        r = client.post(url, data=data)
+        mid = get_location_id(r)
+        return self.member(mid)
+
+    @property
+    def member(self):
+        return partial(ConferenceMember, self.id)
+
+
+class ConferenceMember(Resource):
+    """
+
+    """
+    sub_path = 'members'
+    id = None
+    added_time = None
+    hold = None
+    mute = None
+    state = None
+    join_tone = None
+    leaving_tone = None
+    conf_id = None
+
+    _fields = frozenset(('id', 'state', 'added_time', 'hold', 'mute', 'join_tone', 'leaving_tone'))
+
+    def __init__(self, conf_id, data):
+        self.client = Client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.id = data
+        else:
+            raise TypeError('Accepted only id as string or data as dictionary')
+        self.conf_id = conf_id
+
+    def set_up(self, data):
+        for k, v in six.iteritems(data):
+            if k in self._fields:
+                setattr(self, k, v)
+
+    def get(self):
+        """
+        Retrieve a conference member attributes/properties.
+        :return: ConferenceMember instance.
+        """
+        client = self.client
+        url = 'conferences/{}/members/{}'.format(self.conf_id, self.id)
+        data = from_api(client.get(url).json())
+        self.set_up(data)
+        return self
+
+    def update(self, **params):
+        """
+        Update a member status/properties.
+        """
+        client = self.client
+        url = 'conferences/{}/members/{}'.format(self.conf_id, self.id)
+        data = to_api(params)
+        client.post(url, data=data).json()
+        self.set_up(params)
+        return self
+
+    def __repr__(self):
+        return 'ConferenceMember(%r, state=%r)' % (self.id, self.state or 'Unknown')
