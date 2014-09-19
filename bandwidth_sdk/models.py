@@ -3,6 +3,7 @@ import six
 from functools import partial
 from .client import Client
 from .utils import prepare_json, unpack_json_dct, to_api, from_api, enum, get_location_id
+from.generics import AudioMixin
 
 # Sentinel value to mark that some of properties have been not synced.
 UNEVALUATED = object()
@@ -51,7 +52,7 @@ class Resource(Gettable):
         raise NotImplemented
 
 
-class Call(Resource):
+class Call(AudioMixin, Resource):
     path = 'calls'
     STATES = enum('started', 'rejected', 'active', 'completed', 'transferring')
     call_id = None
@@ -161,78 +162,8 @@ class Call(Resource):
     def __repr__(self):
         return 'Call(%r, state=%r)' % (self.call_id, self.state or 'Unknown')
 
-    # Audio part
-    def play_audio(self, file_url, **kwargs):
-        '''
-        Plays audio form the given url to the call associated with call_id
-
-        :param file_url: The location of an audio file to play (WAV and MP3 supported).
-
-        :param loop_enabled: When value is true, the audio will keep playing in a loop. Default: false.
-
-        :param tag:	A string that will be included in the events delivered when the audio playback starts or finishes.
-
-        :return: None
-        '''
-
-        url = '{}/{}/audio'.format(self.path, self.call_id)
-        kwargs['file_url'] = file_url
-        data = to_api(kwargs)
-        self.client.post(url, data=data)
-
-    def stop_audio(self):
-        '''
-        Stop an audio file playing
-        '''
-        url = '{}/{}/audio'.format(self.path, self.call_id)
-        self.client.post(url, data=to_api({'file_url': ''}))
-
-    def speak_sentence(self, sentence, **kwargs):
-        '''
-        :param sentence: The sentence to speak.
-
-        :param gender: The gender of the voice used to synthesize the sentence. It will be considered only if sentence
-                    is not null. The female gender will be used by default.
-
-        :param locale: The locale used to get the accent of the voice used to synthesize the sentence. Currently
-            Bandwidth API supports:
-
-            en_US or en_UK (English)
-            es or es_MX (Spanish)
-            fr or fr_FR (French)
-            de or de_DE (German)
-            it or it_IT (Italian)
-
-            It will be considered only if sentence is not null/empty. The en_US will be used by default.
-        :param voice: The voice to speak the sentence. The API currently supports the following voices:
-
-            English US: Kate, Susan, Julie, Dave, Paul
-            English UK: Bridget
-            Spanish: Esperanza, Violeta, Jorge
-            French: Jolie, Bernard
-            German: Katrin, Stefan
-            Italian: Paola, Luca
-
-            It will be considered only if sentence is not null/empty. Susan's voice will be used by default.
-
-        :param loop_enabled: When value is true, the audio will keep playing in a loop. Default: false.
-
-        :param tag:	A string that will be included in the events delivered when the audio playback starts or finishes.
-
-        :return: None
-        '''
-        url = '{}/{}/audio'.format(self.path, self.call_id)
-        kwargs['sentence'] = sentence
-        data = to_api(kwargs)
-        self.client.post(url, data=data)
-
-    def stop_sentence(self):
-        '''
-        Stop a current sentence
-        :return: None
-        '''
-        url = '{}/{}/audio'.format(self.path, self.call_id)
-        self.client.post(url, data=to_api({'sentence': ''}))
+    def get_audio_url(self):
+        return '{}/{}/audio'.format(self.path, self.call_id)
 
     # Call manipulation
     def transfer(self, phone, **kwargs):
@@ -450,7 +381,7 @@ class Application(Resource):
         self.set_up(from_api(data))
 
 
-class Bridge(Resource):
+class Bridge(AudioMixin, Resource):
     path = 'bridges'
     STATES = enum('created', 'active', 'hold', 'completed', 'error')
     id = None
@@ -560,78 +491,8 @@ class Bridge(Resource):
         self.calls = [Call(v) for v in r.json()]
         return self.calls
 
-    # Audio part
-    def play_audio(self, file_url, **kwargs):
-        '''
-        Plays audio form the given url to the call associated with call_id
-
-        :param file_url: The location of an audio file to play (WAV and MP3 supported).
-
-        :param loop_enabled: When value is true, the audio will keep playing in a loop. Default: false.
-
-        :param tag:	A string that will be included in the events delivered when the audio playback starts or finishes.
-
-        :return: None
-        '''
-
-        url = '{}/{}/audio'.format(self.path, self.id)
-        kwargs['file_url'] = file_url
-        data = to_api(kwargs)
-        self.client.post(url, data=data)
-
-    def stop_audio(self):
-        '''
-        Stop an audio file playing
-        '''
-        url = '{}/{}/audio'.format(self.path, self.id)
-        self.client.post(url, data=to_api({'file_url': ''}))
-
-    def speak_sentence(self, sentence, **kwargs):
-        '''
-        :param sentence: The sentence to speak.
-
-        :param gender: The gender of the voice used to synthesize the sentence. It will be considered only if sentence
-                    is not null. The female gender will be used by default.
-
-        :param locale: The locale used to get the accent of the voice used to synthesize the sentence. Currently
-            Bandwidth API supports:
-
-            en_US or en_UK (English)
-            es or es_MX (Spanish)
-            fr or fr_FR (French)
-            de or de_DE (German)
-            it or it_IT (Italian)
-
-            It will be considered only if sentence is not null/empty. The en_US will be used by default.
-        :param voice: The voice to speak the sentence. The API currently supports the following voices:
-
-            English US: Kate, Susan, Julie, Dave, Paul
-            English UK: Bridget
-            Spanish: Esperanza, Violeta, Jorge
-            French: Jolie, Bernard
-            German: Katrin, Stefan
-            Italian: Paola, Luca
-
-            It will be considered only if sentence is not null/empty. Susan's voice will be used by default.
-
-        :param loop_enabled: When value is true, the audio will keep playing in a loop. Default: false.
-
-        :param tag:	A string that will be included in the events delivered when the audio playback starts or finishes.
-
-        :return: None
-        '''
-        url = '{}/{}/audio'.format(self.path, self.id)
-        kwargs['sentence'] = sentence
-        data = to_api(kwargs)
-        self.client.post(url, data=data)
-
-    def stop_sentence(self):
-        '''
-        Stop a current sentence
-        :return: None
-        '''
-        url = '{}/{}/audio'.format(self.path, self.id)
-        self.client.post(url, data=to_api({'sentence': ''}))
+    def get_audio_url(self):
+        return '{}/{}/audio'.format(self.path, self.id)
 
     def refresh(self):
         '''
@@ -776,7 +637,7 @@ class Gather(Resource):
         self.client.post(url, data=data)
 
 
-class Conference(Gettable):
+class Conference(AudioMixin, Gettable):
     """
     The Conference resource allows you create conferences, add members to it,
     play audio, speak text, mute/unmute members, hold/unhold members and other
@@ -810,6 +671,9 @@ class Conference(Gettable):
     def set_up(self, data):
         self.from_ = self.from_ or data.get('from')
         super(Conference, self).set_up(data)
+
+    def get_audio_url(self):
+        return '{}/{}/audio'.format(self.path, self.id)
 
     @classmethod
     def create(cls, from_, **params):
@@ -882,7 +746,7 @@ class Conference(Gettable):
         return partial(ConferenceMember, self.id)
 
 
-class ConferenceMember(Resource):
+class ConferenceMember(AudioMixin, Resource):
     """
 
     """
@@ -932,3 +796,6 @@ class ConferenceMember(Resource):
 
     def __repr__(self):
         return 'ConferenceMember(%r, state=%r)' % (self.id, self.state or 'Unknown')
+
+    def get_audio_url(self):
+        return 'conferences/{}/members/{}/audio'.format(self.conf_id, self.id)
