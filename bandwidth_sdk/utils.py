@@ -91,5 +91,7 @@ def enum(*vals, **enums):
 
 
 def get_location_id(response):
+    if isinstance(response, str):
+        return response.split('/')[-1]
     location = response.headers['Location']
     return location.split('/')[-1]

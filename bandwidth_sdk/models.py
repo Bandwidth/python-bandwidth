@@ -288,7 +288,7 @@ class Application(Resource):
         self.application_id = application_id
         if data:
             self.data = data
-            #todo: drop data
+            # todo: drop data
             self.set_up(data)
         else:
             raise TypeError('Accepted only application-id or application data as dictionary')
@@ -638,6 +638,7 @@ class Gather(Resource):
 
 
 class Conference(AudioMixin, Gettable):
+
     """
     The Conference resource allows you create conferences, add members to it,
     play audio, speak text, mute/unmute members, hold/unhold members and other
@@ -747,6 +748,7 @@ class Conference(AudioMixin, Gettable):
 
 
 class ConferenceMember(AudioMixin, Resource):
+
     """
 
     """
@@ -799,3 +801,49 @@ class ConferenceMember(AudioMixin, Resource):
 
     def get_audio_url(self):
         return 'conferences/{}/members/{}/audio'.format(self.conf_id, self.id)
+
+
+class Recording(Gettable):
+    id = None
+    media = None
+    call = None
+    state = None
+    start_time = None
+    end_time = None
+    _path = 'recordings/'
+    _fields = frozenset(['id', 'media', 'call', 'state', 'start_time', 'end_time'])
+
+    def __init__(self, data):
+        self.client = Client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.id = data
+
+    def set_up(self, data):
+        call = data.pop('call', None)
+        if call:
+            data['call'] = Call(get_location_id(call))
+        for k, v in six.iteritems(data):
+            if k in self._fields:
+                setattr(self, k, v)
+
+    @classmethod
+    def list(cls, page=None, size=None):
+        client = cls.client or Client()
+        data_as_list = client.get(
+            cls._path, params=dict(page=page, size=size)).json()
+        return [cls(data=unpack_json_dct(v)) for v in data_as_list]
+
+    @classmethod
+    def get(cls, recording_id):
+        client = cls.client or Client()
+        url = '{}{}'.format(cls._path, recording_id)
+        data_as_dict = client.get(url).json()
+        recording = cls(data=unpack_json_dct(data_as_dict))
+        return recording
+
+    def get_media_file(self):
+        client = self.client or Client()
+        resp = client.get(self.media, join_endpoint=False)
+        return resp.content, resp.headers['Content-Type']
