@@ -37,16 +37,6 @@ def make_underscore(*args):
     return list(map(underscorize, args))
 
 
-def prepare_json(dct):
-    keys = make_camel(*dct.keys())
-    return dict(zip(keys, dct.values()))
-
-
-def unpack_json_dct(dct):
-    keys = make_underscore(*dct.keys())
-    return dict(zip(keys, dct.values()))
-
-
 def drop_empty(data):
     return {k: v for k, v in six.iteritems(data) if v is not None}
 
@@ -91,7 +81,5 @@ def enum(*vals, **enums):
 
 
 def get_location_id(response):
-    if isinstance(response, str):
-        return response.split('/')[-1]
     location = response.headers['Location']
     return location.split('/')[-1]

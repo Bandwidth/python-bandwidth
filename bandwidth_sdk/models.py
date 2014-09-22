@@ -2,7 +2,7 @@
 import six
 from functools import partial
 from .client import Client
-from .utils import prepare_json, unpack_json_dct, to_api, from_api, enum, get_location_id
+from .utils import to_api, from_api, enum, get_location_id
 from.generics import AudioMixin
 
 # Sentinel value to mark that some of properties have been not synced.
@@ -311,7 +311,7 @@ class Application(Resource):
         :return: Application instance
         """
         client = cls.client or Client()
-        p_data = prepare_json(
+        p_data = to_api(
             {k: v for k, v in data.items() if v is not None and k in cls._fields})
         resp = client.post(cls._path, data=p_data)
         application_id = get_location_id(resp)
@@ -330,7 +330,7 @@ class Application(Resource):
         client = cls.client or Client()
         data_as_list = client.get(
             cls._path, params=dict(page=page, size=size)).json()
-        return [cls(application_id=v['id'], data=unpack_json_dct(v)) for v in data_as_list]
+        return [cls(application_id=v['id'], data=from_api(v)) for v in data_as_list]
 
     @classmethod
     def get(cls, application_id):
@@ -342,7 +342,7 @@ class Application(Resource):
         client = cls.client or Client()
         url = '{}{}'.format(cls._path, application_id)
         data_as_dict = client.get(url).json()
-        application = cls(application_id=data_as_dict['id'], data=unpack_json_dct(data_as_dict))
+        application = cls(application_id=data_as_dict['id'], data=from_api(data_as_dict))
         return application
 
     def patch(self, **data):
@@ -359,7 +359,7 @@ class Application(Resource):
         client = self.client or Client()
         url = '{}{}'.format(self._path, self.application_id)
         cleaned_data = {k: v for k, v in data.items() if v is not None and k in self._fields}
-        client.post(url, data=prepare_json(cleaned_data))
+        client.post(url, data=to_api(cleaned_data))
         if cleaned_data:
             self.data = cleaned_data
             self.set_up(self.data)
@@ -810,7 +810,7 @@ class Recording(Gettable):
     state = None
     start_time = None
     end_time = None
-    _path = 'recordings/'
+    _path = 'recordings'
     _fields = frozenset(['id', 'media', 'call', 'state', 'start_time', 'end_time'])
 
     def __init__(self, data):
@@ -823,24 +823,22 @@ class Recording(Gettable):
     def set_up(self, data):
         call = data.pop('call', None)
         if call:
-            data['call'] = Call(get_location_id(call))
-        for k, v in six.iteritems(data):
-            if k in self._fields:
-                setattr(self, k, v)
+            data['call'] = Call(call.split('/')[-1])
+        super(Recording, self).set_up(data)
 
     @classmethod
     def list(cls, page=None, size=None):
         client = cls.client or Client()
         data_as_list = client.get(
             cls._path, params=dict(page=page, size=size)).json()
-        return [cls(data=unpack_json_dct(v)) for v in data_as_list]
+        return [cls(data=v) for v in data_as_list]
 
     @classmethod
     def get(cls, recording_id):
         client = cls.client or Client()
-        url = '{}{}'.format(cls._path, recording_id)
+        url = '{}/{}'.format(cls._path, recording_id)
         data_as_dict = client.get(url).json()
-        recording = cls(data=unpack_json_dct(data_as_dict))
+        recording = cls(data=data_as_dict)
         return recording
 
     def get_media_file(self):

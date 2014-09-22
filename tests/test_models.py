@@ -3,7 +3,7 @@ import unittest
 
 from bandwidth_sdk import (Call, Bridge,
                            AppPlatformError, Application,
-                           Account, Conference)
+                           Account, Conference, Recording)
 from datetime import datetime
 
 
@@ -630,7 +630,8 @@ class BridgesTest(unittest.TestCase):
         bridge = Bridge('b-id')
         bridge.speak_sentence('Hello', gender='female', voice='Jorge', loop_enabled=True)
         request_message = responses.calls[0].request.body
-        assertJsonEq(request_message, '{"voice": "Jorge", "sentence": "Hello", "gender": "female", "loopEnabled": true}')
+        assertJsonEq(
+            request_message, '{"voice": "Jorge", "sentence": "Hello", "gender": "female", "loopEnabled": true}')
 
     @responses.activate
     def test_stop_sentence(self):
@@ -1147,3 +1148,85 @@ class ConferenceTest(unittest.TestCase):
         self.assertEqual(member.join_tone, False)
         self.assertEqual(member.leaving_tone, False)
         self.assertIsInstance(member.added_time, datetime)
+
+
+class RecordingTest(unittest.TestCase):
+
+    @responses.activate
+    def test_get(self):
+        """
+        Recording.get('r-id')
+        """
+        raw = """
+        {
+          "endTime": "2013-02-08T13:17:12.181Z",
+          "id": "r-id",
+          "media": "https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-1.wav",
+          "call": "https://api.catapult.inetwork.com/v1/users/u-user-id/calls/c-call-id",
+          "startTime": "2013-02-08T13:15:47.587Z",
+          "state": "complete"
+        }
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/recordings/r-id',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        recording = Recording.get('r-id')
+        self.assertEqual(recording.state, 'complete')
+        self.assertEqual(recording.id, 'r-id')
+        self.assertEqual(recording.media,
+                         'https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-1.wav')
+        self.assertIsInstance(recording.start_time, datetime)
+        self.assertIsInstance(recording.end_time, datetime)
+        self.assertIsInstance(recording.call, Call)
+        self.assertEqual(recording.call.call_id, 'c-call-id')
+
+    @responses.activate
+    def test_list(self):
+        """
+        Recording.list()
+        """
+        raw = """
+        [
+        {
+          "endTime": "2013-02-08T13:17:12.181Z",
+          "id": "r-id",
+          "media": "https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-1.wav",
+          "call": "https://api.catapult.inetwork.com/v1/users/u-user-id/calls/c-call-id",
+          "startTime": "2013-02-08T13:15:47.587Z",
+          "state": "complete"
+        },
+        {
+          "id": "r-id2",
+          "media": "https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-2.wav",
+          "call": "https://api.catapult.inetwork.com/v1/users/u-user-id/calls/c-call-id1",
+          "startTime": "2013-02-08T13:15:47.587Z",
+          "state": "recording"
+        }
+        ]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/recordings',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        recordings = Recording.list()
+        self.assertEqual(recordings[0].state, 'complete')
+        self.assertEqual(recordings[0].id, 'r-id')
+        self.assertEqual(recordings[0].media,
+                         'https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-1.wav')
+        self.assertIsInstance(recordings[0].start_time, datetime)
+        self.assertIsInstance(recordings[0].end_time, datetime)
+        self.assertIsInstance(recordings[0].call, Call)
+        self.assertEqual(recordings[0].call.call_id, 'c-call-id')
+        self.assertEqual(recordings[1].state, 'recording')
+        self.assertEqual(recordings[1].id, 'r-id2')
+        self.assertEqual(recordings[1].media,
+                         'https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-2.wav')
+        self.assertIsInstance(recordings[1].start_time, datetime)
+        self.assertIsNone(recordings[1].end_time)
+        self.assertIsInstance(recordings[1].call, Call)
+        self.assertEqual(recordings[1].call.call_id, 'c-call-id1')
+
+        # TO DO test get_media_url
