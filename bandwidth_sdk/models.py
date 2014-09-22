@@ -1,7 +1,9 @@
 # Object models for SDK
 import six
+from functools import partial
 from .client import Client
-from .utils import prepare_json, unpack_json_dct, to_api, from_api, enum
+from .utils import prepare_json, unpack_json_dct, to_api, from_api, enum, get_location_id
+from.generics import AudioMixin
 
 # Sentinel value to mark that some of properties have been not synced.
 UNEVALUATED = object()
@@ -9,6 +11,7 @@ UNEVALUATED = object()
 
 class Gettable(object):
     client = None
+    _fields = None
 
     @classmethod
     def get(cls, *args, **kwargs):
@@ -19,6 +22,11 @@ class Gettable(object):
         :return:
         """
         raise NotImplemented
+
+    def set_up(self, data):
+        for k, v in six.iteritems(data):
+            if k in self._fields:
+                setattr(self, k, v)
 
 
 class Resource(Gettable):
@@ -44,7 +52,7 @@ class Resource(Gettable):
         raise NotImplemented
 
 
-class Call(Resource):
+class Call(AudioMixin, Resource):
     path = 'calls'
     STATES = enum('started', 'rejected', 'active', 'completed', 'transferring')
     call_id = None
@@ -72,9 +80,7 @@ class Call(Resource):
     def set_up(self, data):
         self.from_ = self.from_ or data.get('from')
         self.call_id = self.call_id or data.get('id')
-        for k, v in six.iteritems(data):
-            if k in self._fields:
-                setattr(self, k, v)
+        super(Call, self).set_up(data)
 
     @classmethod
     def create(cls, caller, callee, bridge_id=None, recording_enabled=None, callback_url=None, timeout=30, **kwargs):
@@ -106,9 +112,8 @@ class Call(Resource):
 
         data.update(kwargs)
         json_data = to_api(data)
-        data = client.post(cls.path, data=json_data)
-        location = data.headers['Location']
-        call_id = location.split('/')[-1]
+        r = client.post(cls.path, data=json_data)
+        call_id = get_location_id(r)
         call = cls(call_id)
         call.set_up(json_data)
         return call
@@ -157,78 +162,8 @@ class Call(Resource):
     def __repr__(self):
         return 'Call(%r, state=%r)' % (self.call_id, self.state or 'Unknown')
 
-    # Audio part
-    def play_audio(self, file_url, **kwargs):
-        '''
-        Plays audio form the given url to the call associated with call_id
-
-        :param file_url: The location of an audio file to play (WAV and MP3 supported).
-
-        :param loop_enabled: When value is true, the audio will keep playing in a loop. Default: false.
-
-        :param tag:	A string that will be included in the events delivered when the audio playback starts or finishes.
-
-        :return: None
-        '''
-
-        url = '{}/{}/audio'.format(self.path, self.call_id)
-        kwargs['file_url'] = file_url
-        data = to_api(kwargs)
-        self.client.post(url, data=data)
-
-    def stop_audio(self):
-        '''
-        Stop an audio file playing
-        '''
-        url = '{}/{}/audio'.format(self.path, self.call_id)
-        self.client.post(url, data=to_api({'file_url': ''}))
-
-    def speak_sentence(self, sentence, **kwargs):
-        '''
-        :param sentence: The sentence to speak.
-
-        :param gender: The gender of the voice used to synthesize the sentence. It will be considered only if sentence
-                    is not null. The female gender will be used by default.
-
-        :param locale: The locale used to get the accent of the voice used to synthesize the sentence. Currently
-            Bandwidth API supports:
-
-            en_US or en_UK (English)
-            es or es_MX (Spanish)
-            fr or fr_FR (French)
-            de or de_DE (German)
-            it or it_IT (Italian)
-
-            It will be considered only if sentence is not null/empty. The en_US will be used by default.
-        :param voice: The voice to speak the sentence. The API currently supports the following voices:
-
-            English US: Kate, Susan, Julie, Dave, Paul
-            English UK: Bridget
-            Spanish: Esperanza, Violeta, Jorge
-            French: Jolie, Bernard
-            German: Katrin, Stefan
-            Italian: Paola, Luca
-
-            It will be considered only if sentence is not null/empty. Susan's voice will be used by default.
-
-        :param loop_enabled: When value is true, the audio will keep playing in a loop. Default: false.
-
-        :param tag:	A string that will be included in the events delivered when the audio playback starts or finishes.
-
-        :return: None
-        '''
-        url = '{}/{}/audio'.format(self.path, self.call_id)
-        kwargs['sentence'] = sentence
-        data = to_api(kwargs)
-        self.client.post(url, data=data)
-
-    def stop_sentence(self):
-        '''
-        Stop a current sentence
-        :return: None
-        '''
-        url = '{}/{}/audio'.format(self.path, self.call_id)
-        self.client.post(url, data=to_api({'sentence': ''}))
+    def get_audio_url(self):
+        return '{}/{}/audio'.format(self.path, self.call_id)
 
     # Call manipulation
     def transfer(self, phone, **kwargs):
@@ -245,9 +180,8 @@ class Call(Resource):
                      'state': Call.STATES.transferring}
         json_data.update(kwargs)
         json_data = to_api(json_data)
-        data = self.client.post(url, data=json_data)
-        location = data.headers['Location']
-        call_id = location.split('/')[-1]
+        r = self.client.post(url, data=json_data)
+        call_id = get_location_id(r)
         call = self.__class__(call_id)
         call.set_up(json_data)
         return call
@@ -354,12 +288,10 @@ class Application(Resource):
         self.application_id = application_id
         if data:
             self.data = data
-            self.set_up()
+            #todo: drop data
+            self.set_up(data)
         else:
             raise TypeError('Accepted only application-id or application data as dictionary')
-
-    def set_up(self):
-        [setattr(self, k, v) for k, v in self.data.items() if k in self._fields and v is not None]
 
     @classmethod
     def create(cls, **data):
@@ -382,8 +314,7 @@ class Application(Resource):
         p_data = prepare_json(
             {k: v for k, v in data.items() if v is not None and k in cls._fields})
         resp = client.post(cls._path, data=p_data)
-        location = resp.headers['Location']
-        application_id = location.split('/')[-1]
+        application_id = get_location_id(resp)
         return cls(application_id=application_id, data=data)
 
     @classmethod
@@ -431,7 +362,7 @@ class Application(Resource):
         client.post(url, data=prepare_json(cleaned_data))
         if cleaned_data:
             self.data = cleaned_data
-            self.set_up()
+            self.set_up(self.data)
         return True
 
     def delete(self):
@@ -447,11 +378,10 @@ class Application(Resource):
     def refresh(self):
         url = '{}{}'.format(self._path, self.application_id)
         data = self.client.get(url).json()
-        self.data = from_api(data)
-        self.set_up()
+        self.set_up(from_api(data))
 
 
-class Bridge(Resource):
+class Bridge(AudioMixin, Resource):
     path = 'bridges'
     STATES = enum('created', 'active', 'hold', 'completed', 'error')
     id = None
@@ -472,11 +402,6 @@ class Bridge(Resource):
         self.id = id
         if 'data' in kwargs:
             self.set_up(from_api(kwargs['data']))
-
-    def set_up(self, data):
-        for k, v in six.iteritems(data):
-            if k in self._fields:
-                setattr(self, k, v)
 
     @classmethod
     def list(cls, page=1, size=20):
@@ -530,8 +455,7 @@ class Bridge(Resource):
         data["call_ids"] = [c.call_id for c in calls]
         data = to_api(data)
         r = client.post(cls.path, data=data)
-        location = r.headers['Location']
-        bridge_id = location.split('/')[-1]
+        bridge_id = get_location_id(r)
         return cls(bridge_id, *calls, data=data)
 
     @property
@@ -567,78 +491,8 @@ class Bridge(Resource):
         self.calls = [Call(v) for v in r.json()]
         return self.calls
 
-    # Audio part
-    def play_audio(self, file_url, **kwargs):
-        '''
-        Plays audio form the given url to the call associated with call_id
-
-        :param file_url: The location of an audio file to play (WAV and MP3 supported).
-
-        :param loop_enabled: When value is true, the audio will keep playing in a loop. Default: false.
-
-        :param tag:	A string that will be included in the events delivered when the audio playback starts or finishes.
-
-        :return: None
-        '''
-
-        url = '{}/{}/audio'.format(self.path, self.id)
-        kwargs['file_url'] = file_url
-        data = to_api(kwargs)
-        self.client.post(url, data=data)
-
-    def stop_audio(self):
-        '''
-        Stop an audio file playing
-        '''
-        url = '{}/{}/audio'.format(self.path, self.id)
-        self.client.post(url, data=to_api({'file_url': ''}))
-
-    def speak_sentence(self, sentence, **kwargs):
-        '''
-        :param sentence: The sentence to speak.
-
-        :param gender: The gender of the voice used to synthesize the sentence. It will be considered only if sentence
-                    is not null. The female gender will be used by default.
-
-        :param locale: The locale used to get the accent of the voice used to synthesize the sentence. Currently
-            Bandwidth API supports:
-
-            en_US or en_UK (English)
-            es or es_MX (Spanish)
-            fr or fr_FR (French)
-            de or de_DE (German)
-            it or it_IT (Italian)
-
-            It will be considered only if sentence is not null/empty. The en_US will be used by default.
-        :param voice: The voice to speak the sentence. The API currently supports the following voices:
-
-            English US: Kate, Susan, Julie, Dave, Paul
-            English UK: Bridget
-            Spanish: Esperanza, Violeta, Jorge
-            French: Jolie, Bernard
-            German: Katrin, Stefan
-            Italian: Paola, Luca
-
-            It will be considered only if sentence is not null/empty. Susan's voice will be used by default.
-
-        :param loop_enabled: When value is true, the audio will keep playing in a loop. Default: false.
-
-        :param tag:	A string that will be included in the events delivered when the audio playback starts or finishes.
-
-        :return: None
-        '''
-        url = '{}/{}/audio'.format(self.path, self.id)
-        kwargs['sentence'] = sentence
-        data = to_api(kwargs)
-        self.client.post(url, data=data)
-
-    def stop_sentence(self):
-        '''
-        Stop a current sentence
-        :return: None
-        '''
-        url = '{}/{}/audio'.format(self.path, self.id)
-        self.client.post(url, data=to_api({'sentence': ''}))
+    def get_audio_url(self):
+        return '{}/{}/audio'.format(self.path, self.id)
 
     def refresh(self):
         '''
@@ -654,14 +508,12 @@ class Account(Gettable):
     balance = None
     account_type = None
     _path = 'account/'
+    _fields = frozenset(('balance', 'account_type'))
 
     def __init__(self, data=None):
         self.client = Client()
         if data:
             self.set_up(data)
-
-    def set_up(self, data):
-        [setattr(self, k, v) for k, v in data.items() if v is not None]
 
     @classmethod
     def get(cls):
@@ -710,11 +562,6 @@ class Gather(Resource):
     def __init__(self, call_id, client=None):
         self.client = client or Client()
         self.path = 'calls/{}/gather'.format(call_id)
-
-    def set_up(self, data):
-        for k, v in six.iteritems(data):
-            if k in self._fields:
-                setattr(self, k, v)
 
     def get(self, gather_id):
         """
@@ -777,8 +624,7 @@ class Gather(Resource):
         client = self.client
         data = to_api(kwargs)
         r = client.post(self.path, data=data)
-        location = r.headers['Location']
-        self.id = location.split('/')[-1]
+        self.id = get_location_id(r)
         return self
 
     def stop(self):
@@ -789,3 +635,167 @@ class Gather(Resource):
         url = '{}/{}'.format(self.path, self.id)
         data = to_api({'state': 'completed'})
         self.client.post(url, data=data)
+
+
+class Conference(AudioMixin, Gettable):
+    """
+    The Conference resource allows you create conferences, add members to it,
+    play audio, speak text, mute/unmute members, hold/unhold members and other
+    things related to conferencing.
+    """
+    path = 'conferences'
+    STATES = enum('created', 'active', 'completed')
+    client = None
+
+    active_members = None
+    callback_url = None
+    callback_timeout = None
+    fallback_url = None
+    completed_time = None
+    created_time = None
+    from_ = None
+    id = None
+    state = None
+    _fields = frozenset(('id', 'state', 'from_', 'created_time', 'completed_time', 'fallback_url',
+                         'callback_timeout', 'callback_url', 'active_members'))
+
+    def __init__(self, data):
+        self.client = Client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.id = data
+        else:
+            raise TypeError('Accepted only id as string or data as dictionary')
+
+    def set_up(self, data):
+        self.from_ = self.from_ or data.get('from')
+        super(Conference, self).set_up(data)
+
+    def get_audio_url(self):
+        return '{}/{}/audio'.format(self.path, self.id)
+
+    @classmethod
+    def create(cls, from_, **params):
+        """
+        todo: docstring
+        """
+        client = cls.client or Client()
+        params['from'] = from_
+        json_data = to_api(params)
+        r = client.post(cls.path, data=json_data)
+        cid = get_location_id(r)
+        conference = cls(params)
+        conference.id = cid
+        return conference
+
+    @classmethod
+    def get(cls, conf_id):
+        """
+        Retrieve the conference information.
+
+        :param conf_id:
+
+        :return: new Conference instance with all provided fields.
+        """
+        client = cls.client or Client()
+        url = '{}/{}'.format(cls.path, conf_id)
+        data_as_dict = client.get(url).json()
+        return cls(data_as_dict)
+
+    def __repr__(self):
+        return 'Conference(%r, state=%r)' % (self.id, self.state or 'Unknown')
+
+    def update(self, **params):
+        """
+        Change the conference properties/status.
+        :return: the instance with updated fields.
+        """
+        client = self.client
+        url = '{}/{}'.format(self.path, self.id)
+        data = to_api(params)
+        client.post(url, data=data)
+        self.set_up(params)
+        return self
+
+    def get_members(self):
+        """
+        List all members from a conference. If a member had already hung up or removed from conference it will be
+        displayed as completed.
+        """
+        client = self.client
+        url = '{}/{}/members'.format(self.path, self.id)
+        member_list = client.get(url).json()
+        return [self.member(member) for member in member_list]
+
+    def add_member(self, call_id, **params):
+        """
+        Add members to a conference.
+        Important:-- The callId must refer to an active call that was created using this conferenceId.
+        """
+        client = self.client
+        url = '{}/{}/members'.format(self.path, self.id)
+        params['call_id'] = call_id
+        data = to_api(params)
+        r = client.post(url, data=data)
+        mid = get_location_id(r)
+        return self.member(mid)
+
+    @property
+    def member(self):
+        return partial(ConferenceMember, self.id)
+
+
+class ConferenceMember(AudioMixin, Resource):
+    """
+
+    """
+    sub_path = 'members'
+    id = None
+    added_time = None
+    hold = None
+    mute = None
+    state = None
+    join_tone = None
+    leaving_tone = None
+    conf_id = None
+
+    _fields = frozenset(('id', 'state', 'added_time', 'hold', 'mute', 'join_tone', 'leaving_tone'))
+
+    def __init__(self, conf_id, data):
+        self.client = Client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.id = data
+        else:
+            raise TypeError('Accepted only id as string or data as dictionary')
+        self.conf_id = conf_id
+
+    def get(self):
+        """
+        Retrieve a conference member attributes/properties.
+        :return: ConferenceMember instance.
+        """
+        client = self.client
+        url = 'conferences/{}/members/{}'.format(self.conf_id, self.id)
+        data = from_api(client.get(url).json())
+        self.set_up(data)
+        return self
+
+    def update(self, **params):
+        """
+        Update a member status/properties.
+        """
+        client = self.client
+        url = 'conferences/{}/members/{}'.format(self.conf_id, self.id)
+        data = to_api(params)
+        client.post(url, data=data).json()
+        self.set_up(params)
+        return self
+
+    def __repr__(self):
+        return 'ConferenceMember(%r, state=%r)' % (self.id, self.state or 'Unknown')
+
+    def get_audio_url(self):
+        return 'conferences/{}/members/{}/audio'.format(self.conf_id, self.id)
