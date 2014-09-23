@@ -1,3 +1,6 @@
+import os
+import six
+
 import responses
 import unittest
 
@@ -1229,4 +1232,34 @@ class RecordingTest(unittest.TestCase):
         self.assertIsInstance(recordings[1].call, Call)
         self.assertEqual(recordings[1].call.call_id, 'c-call-id1')
 
-        # TO DO test get_media_url
+    @responses.activate
+    def test_get_media_url(self):
+        """
+        Recording.get('r-id').get_media_file()
+        """
+        raw = """
+        {
+          "endTime": "2013-02-08T13:17:12.181Z",
+          "id": "r-id",
+          "media": "https://api.catapult.inetwork.com/v1/users/u-user-id/media/file.wav",
+          "call": "https://api.catapult.inetwork.com/v1/users/u-user-id/calls/c-call-id",
+          "startTime": "2013-02-08T13:15:47.587Z",
+          "state": "complete"
+        }
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/recordings/r-id',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        recording = Recording.get('r-id')
+        test_f = os.path.join(os.path.dirname(__file__), 'file.wav')
+        with open(test_f, 'rb+') as raw:
+            responses.add(responses.GET,
+                          'https://api.catapult.inetwork.com/v1/users/u-user-id/media/file.wav',
+                          body=raw.read(),
+                          status=200,
+                          content_type='audio/wav')
+        getted_data = recording.get_media_file()
+        self.assertEqual(getted_data[1], 'audio/wav')
+        self.assertIsInstance(getted_data[0], six.binary_type)

@@ -311,8 +311,7 @@ class Application(Resource):
         :return: Application instance
         """
         client = cls.client or Client()
-        p_data = to_api(
-            {k: v for k, v in data.items() if v is not None and k in cls._fields})
+        p_data = to_api(data)
         resp = client.post(cls._path, data=p_data)
         application_id = get_location_id(resp)
         return cls(application_id=application_id, data=data)
@@ -804,6 +803,9 @@ class ConferenceMember(AudioMixin, Resource):
 
 
 class Recording(Gettable):
+    """
+    Recording resource
+    """
     id = None
     media = None
     call = None
@@ -828,13 +830,28 @@ class Recording(Gettable):
 
     @classmethod
     def list(cls, page=None, size=None):
+        """
+        List all call recordings.
+
+        :param page: Used for pagination to indicate the page requested for querying a list of recordings.
+                     If no value is specified the default is 0.
+        :param size: Used for pagination to indicate the size of each page requested for querying a list of recordings.
+                     If no value is specified the default value is 25. (Maximum value 1000).
+        :return: List of recording instances.
+        """
         client = cls.client or Client()
         data_as_list = client.get(
-            cls._path, params=dict(page=page, size=size)).json()
+            cls._path, params=to_api(dict(page=page, size=size))).json()
         return [cls(data=v) for v in data_as_list]
 
     @classmethod
     def get(cls, recording_id):
+        """
+        Retrieve a specific call recording information instance by recording id
+
+        :param recording_id: recording id of recording that you want to retriev
+        :return: Recording instance
+        """
         client = cls.client or Client()
         url = '{}/{}'.format(cls._path, recording_id)
         data_as_dict = client.get(url).json()
@@ -842,6 +859,12 @@ class Recording(Gettable):
         return recording
 
     def get_media_file(self):
+        """
+        Downloads a recording file
+
+        :return: Tuple where first arg is content of media file in bytes,
+                 and second is content-type of file.
+        """
         client = self.client or Client()
         resp = client.get(self.media, join_endpoint=False)
         return resp.content, resp.headers['Content-Type']
