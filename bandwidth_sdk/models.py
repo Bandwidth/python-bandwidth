@@ -822,6 +822,9 @@ class Recording(Gettable):
         elif isinstance(data, six.string_types):
             self.id = data
 
+    def __repr__(self):
+        return "Recording({}, state={})".format(self.id, self.state or "Unknown")
+
     def set_up(self, data):
         call = data.pop('call', None)
         if call:
