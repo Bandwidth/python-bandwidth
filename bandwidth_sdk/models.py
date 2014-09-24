@@ -807,6 +807,7 @@ class Recording(Gettable):
     Recording resource
     """
     id = None
+    STATES = enum('recording', 'complete', 'saving', 'error')
     media = None
     call = None
     state = None
