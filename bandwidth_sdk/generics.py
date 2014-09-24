@@ -5,7 +5,7 @@ class AudioMixin(object):
     client = None
 
     def play_audio(self, file_url, **kwargs):
-        '''
+        """
         Plays audio form the given url to the call associated with call_id
 
         :param file_url: The location of an audio file to play (WAV and MP3 supported).
@@ -15,7 +15,7 @@ class AudioMixin(object):
         :param tag:	A string that will be included in the events delivered when the audio playback starts or finishes.
 
         :return: None
-        '''
+        """
 
         url = self.get_audio_url()
         kwargs['file_url'] = file_url
@@ -23,14 +23,14 @@ class AudioMixin(object):
         self.client.post(url, data=data)
 
     def stop_audio(self):
-        '''
+        """
         Stop an audio file playing
-        '''
+        """
         url = self.get_audio_url()
         self.client.post(url, data=to_api({'file_url': ''}))
 
     def speak_sentence(self, sentence, **kwargs):
-        '''
+        """
         :param sentence: The sentence to speak.
 
         :param gender: The gender of the voice used to synthesize the sentence. It will be considered only if sentence
@@ -62,17 +62,17 @@ class AudioMixin(object):
         :param tag:	A string that will be included in the events delivered when the audio playback starts or finishes.
 
         :return: None
-        '''
+        """
         url = self.get_audio_url()
         kwargs['sentence'] = sentence
         data = to_api(kwargs)
         self.client.post(url, data=data)
 
     def stop_sentence(self):
-        '''
+        """
         Stop a current sentence
         :return: None
-        '''
+        """
         url = self.get_audio_url()
         self.client.post(url, data=to_api({'sentence': ''}))
 

@@ -22,10 +22,10 @@ class RESTClientObject(object):
     log = None
 
     def _log_response(self, response):
-        '''
+        """
         Perform logging actions with the response object returned
         by Client using self.log_hook.
-        '''
+        """
         if callable(self.log_hook):
             self.log_hook(response)
 

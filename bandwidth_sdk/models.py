@@ -172,7 +172,7 @@ class Call(AudioMixin, Resource):
         :param callback_url: A URL where call events will be sent for an inbound call
         :param transfer_caller_id: A phone number that will be shown
         :param whisper_audio: Say something before bridging the calls:
-            {"sentence": "Hello {number}, thanks for calling"}
+            {'sentence': 'Hello {number}, thanks for calling'}
         :return: new Call instance
         """
         url = '{}/{}'.format(self.path, self.call_id)
@@ -452,7 +452,7 @@ class Bridge(AudioMixin, Resource):
         """
         client = cls.client or Client()
         data = to_api(kwargs)
-        data["call_ids"] = [c.call_id for c in calls]
+        data['call_ids'] = [c.call_id for c in calls]
         data = to_api(data)
         r = client.post(cls.path, data=data)
         bridge_id = get_location_id(r)
@@ -530,8 +530,8 @@ class Account(Gettable):
         """
         Get the transactions from Account.
         :max_items: Limit the number of transactions that will be returned
-        :to_date: Return only transactions that are newer than the parameter. Format: "yyyy-MM-dd'T'HH:mm:ssZ"
-        :from_date: Return only transactions that are older than the parameter. Format: "yyyy-MM-dd'T'HH:mm:ssZ"
+        :to_date: Return only transactions that are newer than the parameter. Format: 'yyyy-MM-dd'T'HH:mm:ssZ'
+        :from_date: Return only transactions that are older than the parameter. Format: 'yyyy-MM-dd'T'HH:mm:ssZ'
         :type: Return only transactions that are this type
         :page: Used for pagination to indicate the page requested for querying a list of transactions.
                If no value is specified the default is 0.
@@ -588,7 +588,7 @@ class Gather(Resource):
             (default 5.0; maximum 30.0)
 
         :param terminating_digits: A string of DTMF digits that end the gather operation immediately if any one of
-            them is detected (default "#"; an empty string means collect all DTMF until maxDigits or the timeout)
+            them is detected (default '#'; an empty string means collect all DTMF until maxDigits or the timeout)
 
             Example:
                 # : The gather ends if # is detected (this is the default behavior if the terminatingDigits property
@@ -858,7 +858,7 @@ class Recording(Gettable):
             self.id = data
 
     def __repr__(self):
-        return "Recording({}, state={})".format(self.id, self.state or "Unknown")
+        return 'Recording({}, state={})'.format(self.id, self.state or 'Unknown')
 
     def set_up(self, data):
         call = data.pop('call', None)

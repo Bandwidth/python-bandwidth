@@ -210,13 +210,13 @@ class RecordingCallEvent(EventType):
                          'end_time', 'tag'))
 
 
-_events = {"hangup": HangupCallEvent,
-           "answer": AnswerCallEvent,
-           "incomingcall": IncomingCallEvent,
-           "gather": GatherCallEvent,
-           "speak": SpeakCallEvent,
-           "playback": PlaybackCallEvent,
+_events = {'hangup': HangupCallEvent,
+           'answer': AnswerCallEvent,
+           'incomingcall': IncomingCallEvent,
+           'gather': GatherCallEvent,
+           'speak': SpeakCallEvent,
+           'playback': PlaybackCallEvent,
            'error': ErrorCallEvent,
            'timeout': TimeoutCallEvent,
            'recording': RecordingCallEvent,
-           "dtmf": DtmfCallEvent}
+           'dtmf': DtmfCallEvent}
