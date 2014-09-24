@@ -471,7 +471,7 @@ class Bridge(AudioMixin, Resource):
 
     def update(self, *calls, **kwargs):
         """
-        Change calls in a bridge and bridge/unbridge the audio
+        Change calls in a bridge and bridge/unbridge the audio.
         :return: None
         """
         kwargs['call_ids'] = [c.call_id for c in calls]
@@ -483,7 +483,7 @@ class Bridge(AudioMixin, Resource):
 
     def fetch_calls(self):
         """
-        Get the list of calls that are on the bridge
+        Get the list of calls that are on the bridge.
         """
         url = '{}/{}/calls'.format(self.path, self.id)
         r = self.client.get(url)
@@ -642,6 +642,17 @@ class Conference(AudioMixin, Gettable):
     The Conference resource allows you create conferences, add members to it,
     play audio, speak text, mute/unmute members, hold/unhold members and other
     things related to conferencing.
+
+    :param active_members : Number of active conference members
+    :param callback_url : URL where the events related to the Conference will be posted to
+    :param callback_timeout : Determine how long should the platform wait for callbackUrl's response before timing out
+        in milliseconds.
+    :param fallback_url : The URL used to send the callback event if the request to callbackUrl fails.
+    :param completed_time : The time that the Conference was completed
+    :param created_time : The time that the Conference was created
+    :param from : The number that will host the conference
+    :param id : Conference unique ID
+    :param state : Conference state.
     """
     path = 'conferences'
     STATES = enum('created', 'active', 'completed')
@@ -656,6 +667,7 @@ class Conference(AudioMixin, Gettable):
     from_ = None
     id = None
     state = None
+
     _fields = frozenset(('id', 'state', 'from_', 'created_time', 'completed_time', 'fallback_url',
                          'callback_timeout', 'callback_url', 'active_members'))
 
@@ -743,15 +755,30 @@ class Conference(AudioMixin, Gettable):
 
     @property
     def member(self):
+        """
+        Get member class closure.
+        >>> Conference('conf-id').member('m-id').get()
+        """
         return partial(ConferenceMember, self.id)
 
 
 class ConferenceMember(AudioMixin, Resource):
 
     """
+    Member of call conference.
 
+    :param added_time: Date when the member was added to the conference
+    :param call : The URL used to retrieve the call of the member
+    :param hold : true - member can't hear the conference / false - member can hear the conference.
+    :param id : Conference member ID
+    :param mute : true - member can't speak in the conference / false - member can speak in the conference.
+    :param removed_time 	 : Date when member was removed from conference
+    :param state : Member state: active, completed.
+    :param join_tone: true - play a tone when the new member joins the conference / false - don't play a tone when
+        the new member joins the conference
+    :param leaving_tone 	 : true - play a tone when the new member leaves the conference / false - don't play a tone
+        when the new member leaves the conference
     """
-    sub_path = 'members'
     id = None
     added_time = None
     hold = None
@@ -761,6 +788,7 @@ class ConferenceMember(AudioMixin, Resource):
     leaving_tone = None
     conf_id = None
 
+    STATES = enum('created', 'active', 'completed')
     _fields = frozenset(('id', 'state', 'added_time', 'hold', 'mute', 'join_tone', 'leaving_tone'))
 
     def __init__(self, conf_id, data):
@@ -787,6 +815,11 @@ class ConferenceMember(AudioMixin, Resource):
     def update(self, **params):
         """
         Update a member status/properties.
+        Allowed params:
+        :param mute: true - member can't speak in the conference / false - member can speak in the conference.
+        :param hold: true - member can't hear the conference / false - member can hear the conference.
+        :param state: Member state: active, completed.
+        :return updated object
         """
         client = self.client
         url = 'conferences/{}/members/{}'.format(self.conf_id, self.id)

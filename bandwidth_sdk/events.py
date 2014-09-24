@@ -48,6 +48,10 @@ class EventType(object):
 
 
 class IncomingCallEvent(EventType):
+    """
+    Bandwidth API sends this message to the application when an incoming call arrives.
+    For incoming call the callback set is the one related to the Application associated with the called number.
+    """
     event_type = None
     from_ = None
     to = None
@@ -61,6 +65,9 @@ class IncomingCallEvent(EventType):
 
 
 class AnswerCallEvent(EventType):
+    """
+    Bandwidth API sends this message to the application when the call is answered.
+    """
     event_type = None
     from_ = None
     to = None
@@ -74,6 +81,9 @@ class AnswerCallEvent(EventType):
 
 
 class HangupCallEvent(EventType):
+    """
+    Bandwidth API sends this message to the application when the call ends.
+    """
     event_type = None
     from_ = None
     to = None
@@ -86,6 +96,9 @@ class HangupCallEvent(EventType):
 
 
 class PlaybackCallEvent(EventType):
+    """
+    Bandwidth API sends this message to the application when audio file playback starts or stops.
+    """
     event_type = None
     call_id = None
     call_uri = None
@@ -100,6 +113,9 @@ class PlaybackCallEvent(EventType):
 
 
 class GatherCallEvent(EventType):
+    """
+    Bandwidth API sends this message to the application when the gather dtmf is completed or an error occurs.
+    """
     event_type = None
     call_id = None
     time = None
@@ -116,6 +132,9 @@ class GatherCallEvent(EventType):
 
 
 class DtmfCallEvent(EventType):
+    """
+    Bandwidth API sends this message to the application when audio file playback starts or stops.
+    """
     event_type = None
     call_id = None
     call_uri = None
@@ -127,6 +146,9 @@ class DtmfCallEvent(EventType):
 
 
 class SpeakCallEvent(EventType):
+    """
+    Bandwidth API sends this message to the application when text-to-speech starts or stops.
+    """
     event_type = None
     call_id = None
     call_uri = None
@@ -141,10 +163,60 @@ class SpeakCallEvent(EventType):
         return self.status == 'done'
 
 
+class ErrorCallEvent(EventType):
+    """
+    Bandwidth API sends this message to the application when an error occurs.
+    """
+    event_type = None
+    from_ = None
+    to = None
+    call_id = None
+    call_uri = None
+    call_state = None
+    time = None
+    tag = None
+    _fields = frozenset(('call_id', 'event_type', 'from_', 'to', 'call_uri', 'call_state', 'time', 'tag'))
+
+
+class TimeoutCallEvent(EventType):
+    """
+    Bandwidth API sends this message to the application when the call is not answered until the specified timeout.
+    """
+    event_type = None
+    from_ = None
+    to = None
+    call_id = None
+    call_uri = None
+    time = None
+    tag = None
+    _fields = frozenset(('call_id', 'event_type', 'from_', 'to', 'call_uri', 'time', 'tag'))
+
+
+class RecordingCallEvent(EventType):
+    """
+    Bandwidth API sends this event to the application when an the recording media file is saved or an error occurs
+    while saving it.
+    """
+    event_type = None
+    call_id = None
+    recording_id = None
+    recording_uri = None
+    state = None
+    status = None
+    start_time = None
+    end_time = None
+    tag = None
+    _fields = frozenset(('call_id', 'event_type', 'recording_id', 'recording_uri', 'state', 'status', 'start_time',
+                         'end_time', 'tag'))
+
+
 _events = {"hangup": HangupCallEvent,
            "answer": AnswerCallEvent,
            "incomingcall": IncomingCallEvent,
            "gather": GatherCallEvent,
            "speak": SpeakCallEvent,
            "playback": PlaybackCallEvent,
+           'error': ErrorCallEvent,
+           'timeout': TimeoutCallEvent,
+           'recording': RecordingCallEvent,
            "dtmf": DtmfCallEvent}
