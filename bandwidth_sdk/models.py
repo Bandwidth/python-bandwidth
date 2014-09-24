@@ -28,6 +28,9 @@ class Gettable(object):
             if k in self._fields:
                 setattr(self, k, v)
 
+    def __repr__(self):
+        return ''.format(self.__class__.__name__, self.id)
+
 
 class Resource(Gettable):
     client = None
@@ -264,7 +267,7 @@ class Call(AudioMixin, Resource):
 
 class Application(Resource):
 
-    application_id = None
+    id = None
     name = None
     incoming_call_url = None
     incoming_call_url_callback_timeout = None
@@ -275,21 +278,21 @@ class Application(Resource):
     callback_http_method = 'post'
     auto_answer = True
     _path = 'applications/'
-    _fields = ('application_id', 'name',
+    _fields = ('id', 'name',
                'incoming_call_url',
                'incoming_call_url_callback_timeout',
                'incoming_call_fallback_url',
                'incoming_sms_url',
                'incoming_sms_url_callback_timeout',
-               'incoming_sms_fallback_url', 'callback_http_method', 'auto_answer')
+               'incoming_sms_fallback_url',
+               'callback_http_method', 'auto_answer')
 
-    def __init__(self, application_id, data):
+    def __init__(self, data):
         self.client = Client()
-        self.application_id = application_id
-        if data:
-            self.data = data
-            # todo: drop data
-            self.set_up(data)
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.id = data
         else:
             raise TypeError('Accepted only application-id or application data as dictionary')
 
@@ -315,7 +318,8 @@ class Application(Resource):
         p_data = to_api(data)
         resp = client.post(cls._path, data=p_data)
         application_id = get_location_id(resp)
-        return cls(application_id=application_id, data=data)
+        data.update({'id': application_id})
+        return cls(data=data)
 
     @classmethod
     def list(cls, page=0, size=25):
@@ -330,7 +334,7 @@ class Application(Resource):
         client = cls.client or Client()
         data_as_list = client.get(
             cls._path, params=dict(page=page, size=size)).json()
-        return [cls(application_id=v['id'], data=from_api(v)) for v in data_as_list]
+        return [cls(data=from_api(v)) for v in data_as_list]
 
     @classmethod
     def get(cls, application_id):
@@ -342,7 +346,7 @@ class Application(Resource):
         client = cls.client or Client()
         url = '{}{}'.format(cls._path, application_id)
         data_as_dict = client.get(url).json()
-        application = cls(application_id=data_as_dict['id'], data=from_api(data_as_dict))
+        application = cls(data=from_api(data_as_dict))
         return application
 
     def patch(self, **data):
@@ -371,12 +375,12 @@ class Application(Resource):
         :return: True if it's deleted
         """
         client = self.client or Client()
-        url = '{}{}'.format(self._path, self.application_id)
+        url = '{}{}'.format(self._path, self.id)
         client.delete(url)
         return True
 
     def refresh(self):
-        url = '{}{}'.format(self._path, self.application_id)
+        url = '{}{}'.format(self._path, self.id)
         data = self.client.get(url).json()
         self.set_up(from_api(data))
 
@@ -514,6 +518,9 @@ class Account(Gettable):
         self.client = Client()
         if data:
             self.set_up(data)
+
+    def __repr__(self):
+        return 'Account(user_id={})'.format(self.client.uid)
 
     @classmethod
     def get(cls):
@@ -773,11 +780,11 @@ class ConferenceMember(AudioMixin, Resource):
     :param hold : true - member can't hear the conference / false - member can hear the conference.
     :param id : Conference member ID
     :param mute : true - member can't speak in the conference / false - member can speak in the conference.
-    :param removed_time 	 : Date when member was removed from conference
+    :param removed_time : Date when member was removed from conference
     :param state : Member state: active, completed.
     :param join_tone: true - play a tone when the new member joins the conference / false - don't play a tone when
         the new member joins the conference
-    :param leaving_tone 	 : true - play a tone when the new member leaves the conference / false - don't play a tone
+    :param leaving_tone : true - play a tone when the new member leaves the conference / false - don't play a tone
         when the new member leaves the conference
     """
     id = None

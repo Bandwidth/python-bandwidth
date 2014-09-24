@@ -5,7 +5,8 @@ import unittest
 
 from bandwidth_sdk import (Call, Bridge,
                            AppPlatformError, Application,
-                           Account, Conference, Recording)
+                           Account, Conference, Recording, ConferenceMember,
+                           Gather)
 from datetime import datetime
 
 
@@ -743,7 +744,7 @@ class ApplicationsTest(unittest.TestCase):
                       content_type='application/json')
         application = Application.get('a-application-id')
 
-        self.assertEqual(application.application_id, 'a-application-id')
+        self.assertEqual(application.id, 'a-application-id')
         self.assertEqual(application.incoming_call_url, 'http://callback.info')
         self.assertEqual(application.callback_http_method, 'post')
         self.assertEqual(application.name, 'test_application_name')
@@ -819,12 +820,12 @@ class ApplicationsTest(unittest.TestCase):
                       content_type='application/json')
         applications = Application.list()
 
-        self.assertEqual(applications[0].application_id, 'a-application-id')
+        self.assertEqual(applications[0].id, 'a-application-id')
         self.assertEqual(applications[0].incoming_call_url, 'http://callback.info')
         self.assertEqual(applications[0].callback_http_method, 'post')
         self.assertEqual(applications[0].name, 'test_application_name')
         self.assertEqual(applications[0].auto_answer, True)
-        self.assertEqual(applications[1].application_id, 'a-application-id1')
+        self.assertEqual(applications[1].id, 'a-application-id1')
         self.assertEqual(applications[1].incoming_call_url, 'http://callback1.info')
         self.assertEqual(applications[1].callback_http_method, 'get')
         self.assertEqual(applications[1].name, 'test_application_name1')
@@ -844,7 +845,7 @@ class ApplicationsTest(unittest.TestCase):
 
         application = Application.create(name='new-application', incoming_call_url='http://test.callback.info')
 
-        self.assertEqual(application.application_id, 'new-application-id')
+        self.assertEqual(application.id, 'new-application-id')
         self.assertEqual(application.incoming_call_url, 'http://test.callback.info')
         self.assertEqual(application.callback_http_method, 'post')
         self.assertEqual(application.name, 'new-application')
@@ -864,7 +865,7 @@ class ApplicationsTest(unittest.TestCase):
 
         application = Application.create(name='new-application', incoming_call_url='http://test.callback.info')
 
-        self.assertEqual(application.application_id, 'new-application-id')
+        self.assertEqual(application.id, 'new-application-id')
         self.assertEqual(application.incoming_call_url, 'http://test.callback.info')
         self.assertEqual(application.callback_http_method, 'post')
         self.assertEqual(application.name, 'new-application')
@@ -885,7 +886,7 @@ class ApplicationsTest(unittest.TestCase):
                       status=200,
                       content_type='application/json')
         application.refresh()
-        self.assertEqual(application.application_id, 'new-application-id')
+        self.assertEqual(application.id, 'new-application-id')
         self.assertEqual(application.incoming_call_url, 'http://callback.info')
         self.assertEqual(application.callback_http_method, 'post')
         self.assertEqual(application.name, 'test_application_name')
@@ -1261,3 +1262,64 @@ class RecordingTest(unittest.TestCase):
         getted_data = recording.get_media_file()
         self.assertEqual(getted_data[1], 'audio/wav')
         self.assertIsInstance(getted_data[0], six.binary_type)
+
+
+class CommonTest(unittest.TestCase):
+    """
+    Account
+    Application
+    Bridge
+    Call
+    Conference
+    ConferenceMember
+    Gather
+    Recording
+    """
+
+    def test_account_repr_not_failed(self):
+        """
+        Test Account __repr__
+        """
+        self.assertIsInstance(Account().__repr__(), six.string_types)
+
+    def test_application_repr_not_failed(self):
+        """
+        Test Application __repr__
+        """
+        self.assertIsInstance(Application('id').__repr__(), six.string_types)
+
+    def test_bridge_repr_not_failed(self):
+        """
+        Test Bridge __repr__
+        """
+        self.assertIsInstance(Bridge('id').__repr__(), six.string_types)
+
+    def test_call_repr_not_failed(self):
+        """
+        Test Call __repr__
+        """
+        self.assertIsInstance(Call('id').__repr__(), six.string_types)
+
+    def test_conference_repr_not_failed(self):
+        """
+        Test conference __repr__
+        """
+        self.assertIsInstance(Conference('id').__repr__(), six.string_types)
+
+    def test_conferencemember_repr_not_failed(self):
+        """
+        Test ConferenceMember __repr__
+        """
+        self.assertIsInstance(ConferenceMember('id', {'id': 'id'}).__repr__(), six.string_types)
+
+    def test_gather_repr_not_failed(self):
+        """
+        Test Gather __repr__
+        """
+        self.assertIsInstance(Gather('id').__repr__(), six.string_types)
+
+    def test_recording_repr_not_failed(self):
+        """
+        Test Recording __repr__
+        """
+        self.assertIsInstance(Recording('id').__repr__(), six.string_types)
