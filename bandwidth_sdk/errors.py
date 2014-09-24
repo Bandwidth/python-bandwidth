@@ -9,4 +9,3 @@ class AppPlatformError(Exception):
       - Have a malformed/missing header in the response.
 
     """
-

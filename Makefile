@@ -1,10 +1,10 @@
-FLAKE=flake8
-PEP=pep8
+FLAKE=flake8 --max-line-length=120 --exclude=./tests
 PACKAGE=bandwidth_sdk
+
+default: clean req test pep
 
 pep:
 	$(FLAKE) $(PACKAGE) tests
-	$(PEP) $(PACKAGE) tests
 
 test:
 	tox
@@ -24,5 +24,3 @@ clean:
 
 req:
 	pip install -r requirements.txt
-
-default: req test clean pep
