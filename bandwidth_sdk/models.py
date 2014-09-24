@@ -167,14 +167,14 @@ class Call(AudioMixin, Resource):
 
     # Call manipulation
     def transfer(self, phone, **kwargs):
-        '''
+        """
         :param phone:
         :param callback_url: A URL where call events will be sent for an inbound call
         :param transfer_caller_id: A phone number that will be shown
         :param whisper_audio: Say something before bridging the calls:
             {"sentence": "Hello {number}, thanks for calling"}
         :return: new Call instance
-        '''
+        """
         url = '{}/{}'.format(self.path, self.call_id)
         json_data = {'transfer_to': phone,
                      'state': Call.STATES.transferring}
@@ -191,28 +191,28 @@ class Call(AudioMixin, Resource):
         return self.client.post(url, data=to_api(kwargs))
 
     def bridge(self, *calls, **kwargs):
-        '''
+        """
         #todo: proper docstring
         :param calls:
         :param kwargs:
         :return:
-        '''
+        """
         _calls = (self,) + calls
         return Bridge.create(*_calls, **kwargs)
 
     def refresh(self):
-        '''
+        """
         Updates call fields internally for this call instance
         :return: None
-        '''
+        """
         url = '{}/{}'.format(self.path, self.call_id)
         data = self.client.get(url).json()
         self.set_up(from_api(data))
 
     def hangup(self):
-        '''
+        """
         Hangs up a call with the given call_id
-        '''
+        """
         url = '{}/{}'.format(self.path, self.call_id)
 
         json_data = {'state': Call.STATES.completed}
@@ -220,9 +220,9 @@ class Call(AudioMixin, Resource):
         self.set_up(json_data)
 
     def reject(self):
-        '''
+        """
         Hangs up a call with the given call_id
-        '''
+        """
         url = '{}/{}'.format(self.path, self.call_id)
 
         json_data = {'state': Call.STATES.rejected}
@@ -231,10 +231,10 @@ class Call(AudioMixin, Resource):
 
     # Dtmf section
     def send_dtmf(self, dtmf):
-        '''
+        """
         Sends a string of characters as DTMF on the given call_id
         Valid chars are '0123456789*#ABCD'
-        '''
+        """
         url = '{}/{}/dtmf'.format(self.path, self.call_id)
 
         json_data = to_api({'dtmf_out': dtmf})
@@ -246,17 +246,17 @@ class Call(AudioMixin, Resource):
         return Gather(self.call_id, client=self.client)
 
     def get_recordings(self, timeout=None):
-        '''
+        """
         Retrieves an array with all the recordings of the call_id
-        '''
+        """
         url = '{}/{}/recordings'.format(self.path, self.call_id)
         # todo: should be implement using Recording type
         return from_api(self.client.get(url, timeout=timeout).json())
 
     def get_events(self):
-        '''
+        """
         Gets the events that occurred during the call. No query parameters are supported.
-        '''
+        """
         url = '{}/{}/events'.format(self.path, self.call_id)
         data = self.client.get(url).json()
         return [from_api(e) for e in data]
@@ -298,16 +298,17 @@ class Application(Resource):
         """
         :name: A name you choose for this application
         :incoming_call_url: A URL where call events will be sent for an inbound call
-        :incoming_call_url_callback_timeout: Determine how long should the platform wait for incomingCallUrl's response before
-        timing out in milliseconds.
+        :incoming_call_url_callback_timeout: Determine how long should the platform wait for incomingCallUrl's response
+            before timing out in milliseconds.
         :incoming_call_fallback_url: The URL used to send the callback event if the request to incomingCallUrl fails.
-        :incoming_sms_url:  A URL where message events will be sent for an inbound SMS message.
-        :incoming_sms_url_callback_timeout: Determine how long should the platform wait for incomingSmsUrl's response before
-        timing out in milliseconds.
+        :incoming_sms_url: A URL where message events will be sent for an inbound SMS message.
+        :incoming_sms_url_callback_timeout: Determine how long should the platform wait for incomingSmsUrl's response
+            before timing out in milliseconds.
         :incoming_sms_fallback_url: The URL used to send the callback event if the request to incomingSmsUrl fails.
         :callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST.
-        (If not set the default is HTTP POST).
-        :auto_answer: Determines whether or not an incoming call should be automatically answered. Default value is 'true'.
+            (If not set the default is HTTP POST).
+        :auto_answer: Determines whether or not an incoming call should be automatically answered.
+            Default value is 'true'.
         :return: Application instance
         """
         client = cls.client or Client()
@@ -351,8 +352,8 @@ class Application(Resource):
         :name:    A name you choose for this application
         :callback_http_method:  Determine if the callback event should be sent via HTTP GET or HTTP POST.
         (If not set the default is HTTP POST)
-        :auto_answer:  Determines whether or not an incoming call should be automatically answered. Default value is 'true'.
-
+        :auto_answer:  Determines whether or not an incoming call should be automatically answered.
+            Default value is 'true'.
         :return: True if it's patched
         """
         client = self.client or Client()
@@ -459,9 +460,9 @@ class Bridge(AudioMixin, Resource):
 
     @property
     def call_ids(self):
-        '''
+        """
         :return: list of call-ids for local version
-        '''
+        """
         return [c.call_id for c in self.calls]
 
     def call_party(self, caller, callee, **kwargs):
@@ -494,10 +495,10 @@ class Bridge(AudioMixin, Resource):
         return '{}/{}/audio'.format(self.path, self.id)
 
     def refresh(self):
-        '''
+        """
         Updates bridge fields internally for this bridge instance
         :return: None
-        '''
+        """
         url = '{}/{}'.format(self.path, self.id)
         data = self.client.get(url).json()
         self.set_up(from_api(data))
