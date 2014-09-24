@@ -61,9 +61,9 @@ class RESTClientObject(object):
 
         return response
 
-    def get(self, url, params=None, timeout=None, **kwargs):
-        url = self._join_endpoint(url)
-
+    def get(self, url, params=None, timeout=None, join_endpoint=True, **kwargs):
+        if join_endpoint:
+            url = self._join_endpoint(url)
         kwargs['timeout'] = timeout or self.default_timeout
         response = self.request('get', url, auth=self.auth, headers=self.headers, params=params, **kwargs)
 

@@ -2,7 +2,7 @@
 import six
 from functools import partial
 from .client import Client
-from .utils import prepare_json, unpack_json_dct, to_api, from_api, enum, get_location_id
+from .utils import to_api, from_api, enum, get_location_id
 from.generics import AudioMixin
 
 # Sentinel value to mark that some of properties have been not synced.
@@ -288,7 +288,7 @@ class Application(Resource):
         self.application_id = application_id
         if data:
             self.data = data
-            #todo: drop data
+            # todo: drop data
             self.set_up(data)
         else:
             raise TypeError('Accepted only application-id or application data as dictionary')
@@ -311,8 +311,7 @@ class Application(Resource):
         :return: Application instance
         """
         client = cls.client or Client()
-        p_data = prepare_json(
-            {k: v for k, v in data.items() if v is not None and k in cls._fields})
+        p_data = to_api(data)
         resp = client.post(cls._path, data=p_data)
         application_id = get_location_id(resp)
         return cls(application_id=application_id, data=data)
@@ -330,7 +329,7 @@ class Application(Resource):
         client = cls.client or Client()
         data_as_list = client.get(
             cls._path, params=dict(page=page, size=size)).json()
-        return [cls(application_id=v['id'], data=unpack_json_dct(v)) for v in data_as_list]
+        return [cls(application_id=v['id'], data=from_api(v)) for v in data_as_list]
 
     @classmethod
     def get(cls, application_id):
@@ -342,7 +341,7 @@ class Application(Resource):
         client = cls.client or Client()
         url = '{}{}'.format(cls._path, application_id)
         data_as_dict = client.get(url).json()
-        application = cls(application_id=data_as_dict['id'], data=unpack_json_dct(data_as_dict))
+        application = cls(application_id=data_as_dict['id'], data=from_api(data_as_dict))
         return application
 
     def patch(self, **data):
@@ -359,7 +358,7 @@ class Application(Resource):
         client = self.client or Client()
         url = '{}{}'.format(self._path, self.application_id)
         cleaned_data = {k: v for k, v in data.items() if v is not None and k in self._fields}
-        client.post(url, data=prepare_json(cleaned_data))
+        client.post(url, data=to_api(cleaned_data))
         if cleaned_data:
             self.data = cleaned_data
             self.set_up(self.data)
@@ -638,6 +637,7 @@ class Gather(Resource):
 
 
 class Conference(AudioMixin, Gettable):
+
     """
     The Conference resource allows you create conferences, add members to it,
     play audio, speak text, mute/unmute members, hold/unhold members and other
@@ -747,6 +747,7 @@ class Conference(AudioMixin, Gettable):
 
 
 class ConferenceMember(AudioMixin, Resource):
+
     """
 
     """
@@ -799,3 +800,75 @@ class ConferenceMember(AudioMixin, Resource):
 
     def get_audio_url(self):
         return 'conferences/{}/members/{}/audio'.format(self.conf_id, self.id)
+
+
+class Recording(Gettable):
+    """
+    Recording resource
+    """
+    id = None
+    STATES = enum('recording', 'complete', 'saving', 'error')
+    media = None
+    call = None
+    state = None
+    start_time = None
+    end_time = None
+    _path = 'recordings'
+    _fields = frozenset(['id', 'media', 'call', 'state', 'start_time', 'end_time'])
+
+    def __init__(self, data):
+        self.client = Client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.id = data
+
+    def __repr__(self):
+        return "Recording({}, state={})".format(self.id, self.state or "Unknown")
+
+    def set_up(self, data):
+        call = data.pop('call', None)
+        if call:
+            data['call'] = Call(call.split('/')[-1])
+        super(Recording, self).set_up(data)
+
+    @classmethod
+    def list(cls, page=None, size=None):
+        """
+        List all call recordings.
+
+        :param page: Used for pagination to indicate the page requested for querying a list of recordings.
+                     If no value is specified the default is 0.
+        :param size: Used for pagination to indicate the size of each page requested for querying a list of recordings.
+                     If no value is specified the default value is 25. (Maximum value 1000).
+        :return: List of recording instances.
+        """
+        client = cls.client or Client()
+        data_as_list = client.get(
+            cls._path, params=to_api(dict(page=page, size=size))).json()
+        return [cls(data=v) for v in data_as_list]
+
+    @classmethod
+    def get(cls, recording_id):
+        """
+        Retrieve a specific call recording information instance by recording id
+
+        :param recording_id: recording id of recording that you want to retriev
+        :return: Recording instance
+        """
+        client = cls.client or Client()
+        url = '{}/{}'.format(cls._path, recording_id)
+        data_as_dict = client.get(url).json()
+        recording = cls(data=data_as_dict)
+        return recording
+
+    def get_media_file(self):
+        """
+        Downloads a recording file
+
+        :return: Tuple where first arg is content of media file in bytes,
+                 and second is content-type of file.
+        """
+        client = self.client or Client()
+        resp = client.get(self.media, join_endpoint=False)
+        return resp.content, resp.headers['Content-Type']
