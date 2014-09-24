@@ -141,10 +141,50 @@ class SpeakCallEvent(EventType):
         return self.status == 'done'
 
 
+class ErrorCallEvent(EventType):
+    event_type = None
+    from_ = None
+    to = None
+    call_id = None
+    call_uri = None
+    call_state = None
+    time = None
+    tag = None
+    _fields = frozenset(('call_id', 'event_type', 'from_', 'to', 'call_uri', 'call_state', 'time', 'tag'))
+
+
+class TimeoutCallEvent(EventType):
+    event_type = None
+    from_ = None
+    to = None
+    call_id = None
+    call_uri = None
+    time = None
+    tag = None
+    _fields = frozenset(('call_id', 'event_type', 'from_', 'to', 'call_uri', 'time', 'tag'))
+
+
+class RecordingCallEvent(EventType):
+    event_type = None
+    call_id = None
+    recording_id = None
+    recording_uri = None
+    state = None
+    status = None
+    start_time = None
+    end_time = None
+    tag = None
+    _fields = frozenset(('call_id', 'event_type', 'recording_id', 'recording_uri', 'state', 'status', 'start_time',
+                         'end_time', 'tag'))
+
+
 _events = {"hangup": HangupCallEvent,
            "answer": AnswerCallEvent,
            "incomingcall": IncomingCallEvent,
            "gather": GatherCallEvent,
            "speak": SpeakCallEvent,
            "playback": PlaybackCallEvent,
+           'error': ErrorCallEvent,
+           'timeout': TimeoutCallEvent,
+           'recording': RecordingCallEvent,
            "dtmf": DtmfCallEvent}
