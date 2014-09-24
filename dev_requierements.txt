@@ -1,5 +1,5 @@
 bpython==0.13.1
 green==1.6.0
 pep8==1.5.7
-pyflakes==0.8.1
+flake8
 tox==1.7.2

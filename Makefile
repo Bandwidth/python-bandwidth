@@ -1,4 +1,4 @@
-FLAKE=pyflakes
+FLAKE=flake8
 PEP=pep8
 PACKAGE=bandwidth_sdk
 
