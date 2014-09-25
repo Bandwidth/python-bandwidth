@@ -1,7 +1,12 @@
+import six
+
 import responses
 import unittest
 
-from bandwith_sdk import Call, Bridge, AppPlatformError, Application, Account
+from bandwidth_sdk import (Call, Bridge,
+                           AppPlatformError, Application,
+                           Account, Conference, Recording, ConferenceMember,
+                           Gather)
 from datetime import datetime
 
 
@@ -628,7 +633,8 @@ class BridgesTest(unittest.TestCase):
         bridge = Bridge('b-id')
         bridge.speak_sentence('Hello', gender='female', voice='Jorge', loop_enabled=True)
         request_message = responses.calls[0].request.body
-        assertJsonEq(request_message, '{"voice": "Jorge", "sentence": "Hello", "gender": "female", "loopEnabled": true}')
+        assertJsonEq(
+            request_message, '{"voice": "Jorge", "sentence": "Hello", "gender": "female", "loopEnabled": true}')
 
     @responses.activate
     def test_stop_sentence(self):
@@ -738,7 +744,7 @@ class ApplicationsTest(unittest.TestCase):
                       content_type='application/json')
         application = Application.get('a-application-id')
 
-        self.assertEqual(application.application_id, 'a-application-id')
+        self.assertEqual(application.id, 'a-application-id')
         self.assertEqual(application.incoming_call_url, 'http://callback.info')
         self.assertEqual(application.callback_http_method, 'post')
         self.assertEqual(application.name, 'test_application_name')
@@ -814,12 +820,12 @@ class ApplicationsTest(unittest.TestCase):
                       content_type='application/json')
         applications = Application.list()
 
-        self.assertEqual(applications[0].application_id, 'a-application-id')
+        self.assertEqual(applications[0].id, 'a-application-id')
         self.assertEqual(applications[0].incoming_call_url, 'http://callback.info')
         self.assertEqual(applications[0].callback_http_method, 'post')
         self.assertEqual(applications[0].name, 'test_application_name')
         self.assertEqual(applications[0].auto_answer, True)
-        self.assertEqual(applications[1].application_id, 'a-application-id1')
+        self.assertEqual(applications[1].id, 'a-application-id1')
         self.assertEqual(applications[1].incoming_call_url, 'http://callback1.info')
         self.assertEqual(applications[1].callback_http_method, 'get')
         self.assertEqual(applications[1].name, 'test_application_name1')
@@ -839,7 +845,7 @@ class ApplicationsTest(unittest.TestCase):
 
         application = Application.create(name='new-application', incoming_call_url='http://test.callback.info')
 
-        self.assertEqual(application.application_id, 'new-application-id')
+        self.assertEqual(application.id, 'new-application-id')
         self.assertEqual(application.incoming_call_url, 'http://test.callback.info')
         self.assertEqual(application.callback_http_method, 'post')
         self.assertEqual(application.name, 'new-application')
@@ -859,7 +865,7 @@ class ApplicationsTest(unittest.TestCase):
 
         application = Application.create(name='new-application', incoming_call_url='http://test.callback.info')
 
-        self.assertEqual(application.application_id, 'new-application-id')
+        self.assertEqual(application.id, 'new-application-id')
         self.assertEqual(application.incoming_call_url, 'http://test.callback.info')
         self.assertEqual(application.callback_http_method, 'post')
         self.assertEqual(application.name, 'new-application')
@@ -880,7 +886,7 @@ class ApplicationsTest(unittest.TestCase):
                       status=200,
                       content_type='application/json')
         application.refresh()
-        self.assertEqual(application.application_id, 'new-application-id')
+        self.assertEqual(application.id, 'new-application-id')
         self.assertEqual(application.incoming_call_url, 'http://callback.info')
         self.assertEqual(application.callback_http_method, 'post')
         self.assertEqual(application.name, 'test_application_name')
@@ -946,3 +952,374 @@ class AccountTests(unittest.TestCase):
         self.assertIsInstance(data[0]['time'], datetime)
         self.assertEqual(data[1]['id'], 'transaction_2')
         self.assertIsInstance(data[1]['time'], datetime)
+
+
+class ConferenceTest(unittest.TestCase):
+
+    @responses.activate
+    def test_get(self):
+        """
+        Conference.get('conf-id')
+        """
+        raw = """
+        {
+        "activeMembers": 0,
+        "createdTime": "2013-07-12T15:22:47-02",
+        "from": "+19703255647",
+        "id": "conf-id",
+        "state": "created"
+        }
+        """
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/conferences/conf-id',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        conf = Conference.get('conf-id')
+
+        self.assertEqual(conf.active_members, 0)
+        self.assertEqual(conf.from_, "+19703255647")
+        self.assertEqual(conf.id, 'conf-id')
+        self.assertEqual(conf.state, 'created')
+        self.assertIsInstance(conf.created_time, datetime)
+
+    @responses.activate
+    def test_get_members(self):
+        """
+        Conference('conf-id').get_members()
+        """
+        raw = """
+        [
+        {
+        "addedTime": "2013-07-12T15:54:47-02",
+        "hold": false,
+        "id": "{memberId1}",
+        "mute": false,
+        "state": "active",
+        "joinTone": false,
+        "leavingTone": false,
+        "call": "https://localhost:8444/v1/users/{userId}/calls/{callId1}"
+        },
+        {
+        "addedTime": "2013-07-12T15:55:12-02",
+        "hold": false,
+        "id": "{memberId2}",
+        "mute": false,
+        "state": "active",
+        "joinTone": false,
+        "leavingTone": false,
+        "call": "https://localhost:8444/v1/users/{userId}/calls/{callId2}"
+        },
+        {
+        "addedTime": "2013-07-12T15:56:12-02",
+        "hold": false,
+        "id": "{memberId3}",
+        "mute": false,
+        "removedTime": "2013-07-12T15:56:59-02",
+        "state": "completed",
+        "joinTone": false,
+        "leavingTone": false,
+        "call": "https://localhost:8444/v1/users/{userId}/calls/{callId3}"
+        }
+        ]
+        """
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/conferences/conf-id/members',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        members = Conference('conf-id').get_members()
+
+        self.assertEqual(members[0].id, "{memberId1}")
+        self.assertEqual(members[1].id, "{memberId2}")
+
+    @responses.activate
+    def test_create(self):
+        """
+        Conference.create("+1919000001")
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/conferences',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/conferences/new-conf-id'})
+
+        conference = Conference.create("+1919000001", callback_url="http://my.callback.url",
+                                       callback_timeout="2000",
+                                       fallback_url="http://my.fallback.url")
+
+        self.assertEqual(conference.id, 'new-conf-id')
+
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"callbackTimeout": "2000", "from": "+1919000001", '
+                                      '"callbackUrl": "http://my.callback.url", '
+                                      '"fallbackUrl": "http://my.fallback.url"}')
+
+    @responses.activate
+    def test_play_audio(self):
+        """
+        Conference('conf-id').play_audio('Hello.mp3')
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/conferences/conf-id/audio',
+                      body='',
+                      content_type='application/json'
+                      )
+
+        Conference('conf-id').play_audio('Hello.mp3', loop_enabled=True, tag='custom_tag')
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"loopEnabled": true, "tag": "custom_tag", "fileUrl": "Hello.mp3"}')
+
+    @responses.activate
+    def test_stop_audio(self):
+        """
+        Conference('conf-id').stop_audio()
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/conferences/conf-id/audio',
+                      body='',
+                      content_type='application/json'
+                      )
+
+        Conference('conf-id').stop_audio()
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"fileUrl": ""}')
+
+    @responses.activate
+    def test_update(self):
+        """
+        Conference('conf-id').update(state='completed')
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/conferences/conf-id',
+                      body='',
+                      content_type='application/json'
+                      )
+
+        Conference('conf-id').update(state='completed')
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"state": "completed"}')
+
+    @responses.activate
+    def test_add_member(self):
+        """
+        Conference('conf-id').add_member(call_id='foo', join_tone=False, leaving_tone=False)
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/conferences/conf-id/members',
+                      body='',
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/conferences/new-conf-id/members/m-id'}
+                      )
+        member = Conference('conf-id').add_member(call_id='foo', join_tone=False, leaving_tone=False)
+        self.assertEqual(member.id, 'm-id')
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"joinTone": false, "leavingTone": false, "callId": "foo"}')
+
+    @responses.activate
+    def test_get_member(self):
+        """
+        Conference('conf-id').member('m-id').get()
+        """
+        raw = """
+        {
+        "addedTime": "2013-07-12T15:54:47-02",
+        "hold": false,
+        "id": "m-id",
+        "mute": false,
+        "state": "active",
+        "joinTone": false,
+        "leavingTone": false,
+        "call": "https://localhost:8444/v1/users/{userId}/calls/{callId1}"
+        }
+        """
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/conferences/conf-id/members/m-id',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        member = Conference('conf-id').member('m-id').get()
+
+        self.assertEqual(member.id, "m-id")
+        self.assertEqual(member.hold, False)
+        self.assertEqual(member.mute, False)
+        self.assertEqual(member.state, "active")
+        self.assertEqual(member.join_tone, False)
+        self.assertEqual(member.leaving_tone, False)
+        self.assertIsInstance(member.added_time, datetime)
+
+
+class RecordingTest(unittest.TestCase):
+
+    @responses.activate
+    def test_get(self):
+        """
+        Recording.get('r-id')
+        """
+        raw = """
+        {
+          "endTime": "2013-02-08T13:17:12.181Z",
+          "id": "r-id",
+          "media": "https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-1.wav",
+          "call": "https://api.catapult.inetwork.com/v1/users/u-user-id/calls/c-call-id",
+          "startTime": "2013-02-08T13:15:47.587Z",
+          "state": "complete"
+        }
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/recordings/r-id',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        recording = Recording.get('r-id')
+        self.assertEqual(recording.state, 'complete')
+        self.assertEqual(recording.id, 'r-id')
+        self.assertEqual(recording.media,
+                         'https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-1.wav')
+        self.assertIsInstance(recording.start_time, datetime)
+        self.assertIsInstance(recording.end_time, datetime)
+        self.assertIsInstance(recording.call, Call)
+        self.assertEqual(recording.call.call_id, 'c-call-id')
+
+    @responses.activate
+    def test_list(self):
+        """
+        Recording.list()
+        """
+        raw = """
+        [
+        {
+          "endTime": "2013-02-08T13:17:12.181Z",
+          "id": "r-id",
+          "media": "https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-1.wav",
+          "call": "https://api.catapult.inetwork.com/v1/users/u-user-id/calls/c-call-id",
+          "startTime": "2013-02-08T13:15:47.587Z",
+          "state": "complete"
+        },
+        {
+          "id": "r-id2",
+          "media": "https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-2.wav",
+          "call": "https://api.catapult.inetwork.com/v1/users/u-user-id/calls/c-call-id1",
+          "startTime": "2013-02-08T13:15:47.587Z",
+          "state": "recording"
+        }
+        ]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/recordings',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        recordings = Recording.list()
+        self.assertEqual(recordings[0].state, 'complete')
+        self.assertEqual(recordings[0].id, 'r-id')
+        self.assertEqual(recordings[0].media,
+                         'https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-1.wav')
+        self.assertIsInstance(recordings[0].start_time, datetime)
+        self.assertIsInstance(recordings[0].end_time, datetime)
+        self.assertIsInstance(recordings[0].call, Call)
+        self.assertEqual(recordings[0].call.call_id, 'c-call-id')
+        self.assertEqual(recordings[1].state, 'recording')
+        self.assertEqual(recordings[1].id, 'r-id2')
+        self.assertEqual(recordings[1].media,
+                         'https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-2.wav')
+        self.assertIsInstance(recordings[1].start_time, datetime)
+        self.assertIsNone(recordings[1].end_time)
+        self.assertIsInstance(recordings[1].call, Call)
+        self.assertEqual(recordings[1].call.call_id, 'c-call-id1')
+
+    @responses.activate
+    def test_get_media_url(self):
+        """
+        Recording.get('r-id').get_media_file()
+        """
+        raw = """
+        {
+          "endTime": "2013-02-08T13:17:12.181Z",
+          "id": "r-id",
+          "media": "https://api.catapult.inetwork.com/v1/users/u-user-id/media/file.wav",
+          "call": "https://api.catapult.inetwork.com/v1/users/u-user-id/calls/c-call-id",
+          "startTime": "2013-02-08T13:15:47.587Z",
+          "state": "complete"
+        }
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/recordings/r-id',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        recording = Recording.get('r-id')
+        raw = b'testrecordingcontent'
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user-id/media/file.wav',
+                      body=raw,
+                      status=200,
+                      content_type='audio/wav')
+        getted_data = recording.get_media_file()
+        self.assertEqual(getted_data[1], 'audio/wav')
+        self.assertIsInstance(getted_data[0], six.binary_type)
+
+
+class CommonTest(unittest.TestCase):
+    """
+    Account
+    Application
+    Bridge
+    Call
+    Conference
+    ConferenceMember
+    Gather
+    Recording
+    """
+
+    def test_account_repr_not_failed(self):
+        """
+        Test Account __repr__
+        """
+        self.assertIsInstance(Account().__repr__(), six.string_types)
+
+    def test_application_repr_not_failed(self):
+        """
+        Test Application __repr__
+        """
+        self.assertIsInstance(Application('id').__repr__(), six.string_types)
+
+    def test_bridge_repr_not_failed(self):
+        """
+        Test Bridge __repr__
+        """
+        self.assertIsInstance(Bridge('id').__repr__(), six.string_types)
+
+    def test_call_repr_not_failed(self):
+        """
+        Test Call __repr__
+        """
+        self.assertIsInstance(Call('id').__repr__(), six.string_types)
+
+    def test_conference_repr_not_failed(self):
+        """
+        Test conference __repr__
+        """
+        self.assertIsInstance(Conference('id').__repr__(), six.string_types)
+
+    def test_conferencemember_repr_not_failed(self):
+        """
+        Test ConferenceMember __repr__
+        """
+        self.assertIsInstance(ConferenceMember('id', {'id': 'id'}).__repr__(), six.string_types)
+
+    def test_gather_repr_not_failed(self):
+        """
+        Test Gather __repr__
+        """
+        self.assertIsInstance(Gather('id').__repr__(), six.string_types)
+
+    def test_recording_repr_not_failed(self):
+        """
+        Test Recording __repr__
+        """
+        self.assertIsInstance(Recording('id').__repr__(), six.string_types)

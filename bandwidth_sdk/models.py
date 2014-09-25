@@ -1,7 +1,9 @@
 # Object models for SDK
 import six
+from functools import partial
 from .client import Client
-from .utils import prepare_json, unpack_json_dct, to_api, from_api, enum
+from .utils import to_api, from_api, enum, get_location_id
+from.generics import AudioMixin
 
 # Sentinel value to mark that some of properties have been not synced.
 UNEVALUATED = object()
@@ -9,6 +11,7 @@ UNEVALUATED = object()
 
 class Gettable(object):
     client = None
+    _fields = None
 
     @classmethod
     def get(cls, *args, **kwargs):
@@ -19,6 +22,14 @@ class Gettable(object):
         :return:
         """
         raise NotImplemented
+
+    def set_up(self, data):
+        for k, v in six.iteritems(data):
+            if k in self._fields:
+                setattr(self, k, v)
+
+    def __repr__(self):
+        return ''.format(self.__class__.__name__, self.id)
 
 
 class Resource(Gettable):
@@ -44,7 +55,7 @@ class Resource(Gettable):
         raise NotImplemented
 
 
-class Call(Resource):
+class Call(AudioMixin, Resource):
     path = 'calls'
     STATES = enum('started', 'rejected', 'active', 'completed', 'transferring')
     call_id = None
@@ -72,12 +83,10 @@ class Call(Resource):
     def set_up(self, data):
         self.from_ = self.from_ or data.get('from')
         self.call_id = self.call_id or data.get('id')
-        for k, v in six.iteritems(data):
-            if k in self._fields:
-                setattr(self, k, v)
+        super(Call, self).set_up(data)
 
     @classmethod
-    def create(cls, caller, callee, bridge_id=None, recording_enabled=None, timeout=30):
+    def create(cls, caller, callee, bridge_id=None, recording_enabled=None, callback_url=None, timeout=30, **kwargs):
         """
         Makes a phone call.
 
@@ -100,12 +109,14 @@ class Call(Resource):
             'to': callee,
             'call_timeout': timeout,  # seconds
             'bridge_id': bridge_id,
-            'recording_enabled': recording_enabled
+            'recording_enabled': recording_enabled,
+            'callback_url': callback_url
         }
+
+        data.update(kwargs)
         json_data = to_api(data)
-        data = client.post(cls.path, data=json_data)
-        location = data.headers['Location']
-        call_id = location.split('/')[-1]
+        r = client.post(cls.path, data=json_data)
+        call_id = get_location_id(r)
         call = cls(call_id)
         call.set_up(json_data)
         return call
@@ -154,97 +165,26 @@ class Call(Resource):
     def __repr__(self):
         return 'Call(%r, state=%r)' % (self.call_id, self.state or 'Unknown')
 
-    # Audio part
-    def play_audio(self, file_url, **kwargs):
-        '''
-        Plays audio form the given url to the call associated with call_id
-
-        :param file_url: The location of an audio file to play (WAV and MP3 supported).
-
-        :param loop_enabled: When value is true, the audio will keep playing in a loop. Default: false.
-
-        :param tag:	A string that will be included in the events delivered when the audio playback starts or finishes.
-
-        :return: None
-        '''
-
-        url = '{}/{}/audio'.format(self.path, self.call_id)
-        kwargs['file_url'] = file_url
-        data = to_api(kwargs)
-        self.client.post(url, data=data)
-
-    def stop_audio(self):
-        '''
-        Stop an audio file playing
-        '''
-        url = '{}/{}/audio'.format(self.path, self.call_id)
-        self.client.post(url, data=to_api({'file_url': ''}))
-
-    def speak_sentence(self, sentence, **kwargs):
-        '''
-        :param sentence: The sentence to speak.
-
-        :param gender: The gender of the voice used to synthesize the sentence. It will be considered only if sentence
-                    is not null. The female gender will be used by default.
-
-        :param locale: The locale used to get the accent of the voice used to synthesize the sentence. Currently
-            Bandwidth API supports:
-
-            en_US or en_UK (English)
-            es or es_MX (Spanish)
-            fr or fr_FR (French)
-            de or de_DE (German)
-            it or it_IT (Italian)
-
-            It will be considered only if sentence is not null/empty. The en_US will be used by default.
-        :param voice: The voice to speak the sentence. The API currently supports the following voices:
-
-            English US: Kate, Susan, Julie, Dave, Paul
-            English UK: Bridget
-            Spanish: Esperanza, Violeta, Jorge
-            French: Jolie, Bernard
-            German: Katrin, Stefan
-            Italian: Paola, Luca
-
-            It will be considered only if sentence is not null/empty. Susan's voice will be used by default.
-
-        :param loop_enabled: When value is true, the audio will keep playing in a loop. Default: false.
-
-        :param tag:	A string that will be included in the events delivered when the audio playback starts or finishes.
-
-        :return: None
-        '''
-        url = '{}/{}/audio'.format(self.path, self.call_id)
-        kwargs['sentence'] = sentence
-        data = to_api(kwargs)
-        self.client.post(url, data=data)
-
-    def stop_sentence(self):
-        '''
-        Stop a current sentence
-        :return: None
-        '''
-        url = '{}/{}/audio'.format(self.path, self.call_id)
-        self.client.post(url, data=to_api({'sentence': ''}))
+    def get_audio_url(self):
+        return '{}/{}/audio'.format(self.path, self.call_id)
 
     # Call manipulation
     def transfer(self, phone, **kwargs):
-        '''
+        """
         :param phone:
         :param callback_url: A URL where call events will be sent for an inbound call
         :param transfer_caller_id: A phone number that will be shown
         :param whisper_audio: Say something before bridging the calls:
-            {"sentence": "Hello {number}, thanks for calling"}
+            {'sentence': 'Hello {number}, thanks for calling'}
         :return: new Call instance
-        '''
+        """
         url = '{}/{}'.format(self.path, self.call_id)
         json_data = {'transfer_to': phone,
                      'state': Call.STATES.transferring}
         json_data.update(kwargs)
         json_data = to_api(json_data)
-        data = self.client.post(url, data=json_data)
-        location = data.headers['Location']
-        call_id = location.split('/')[-1]
+        r = self.client.post(url, data=json_data)
+        call_id = get_location_id(r)
         call = self.__class__(call_id)
         call.set_up(json_data)
         return call
@@ -254,28 +194,28 @@ class Call(Resource):
         return self.client.post(url, data=to_api(kwargs))
 
     def bridge(self, *calls, **kwargs):
-        '''
+        """
         #todo: proper docstring
         :param calls:
         :param kwargs:
         :return:
-        '''
+        """
         _calls = (self,) + calls
         return Bridge.create(*_calls, **kwargs)
 
     def refresh(self):
-        '''
+        """
         Updates call fields internally for this call instance
         :return: None
-        '''
+        """
         url = '{}/{}'.format(self.path, self.call_id)
         data = self.client.get(url).json()
         self.set_up(from_api(data))
 
     def hangup(self):
-        '''
+        """
         Hangs up a call with the given call_id
-        '''
+        """
         url = '{}/{}'.format(self.path, self.call_id)
 
         json_data = {'state': Call.STATES.completed}
@@ -283,9 +223,9 @@ class Call(Resource):
         self.set_up(json_data)
 
     def reject(self):
-        '''
+        """
         Hangs up a call with the given call_id
-        '''
+        """
         url = '{}/{}'.format(self.path, self.call_id)
 
         json_data = {'state': Call.STATES.rejected}
@@ -294,10 +234,10 @@ class Call(Resource):
 
     # Dtmf section
     def send_dtmf(self, dtmf):
-        '''
+        """
         Sends a string of characters as DTMF on the given call_id
         Valid chars are '0123456789*#ABCD'
-        '''
+        """
         url = '{}/{}/dtmf'.format(self.path, self.call_id)
 
         json_data = to_api({'dtmf_out': dtmf})
@@ -309,17 +249,17 @@ class Call(Resource):
         return Gather(self.call_id, client=self.client)
 
     def get_recordings(self, timeout=None):
-        '''
+        """
         Retrieves an array with all the recordings of the call_id
-        '''
+        """
         url = '{}/{}/recordings'.format(self.path, self.call_id)
         # todo: should be implement using Recording type
         return from_api(self.client.get(url, timeout=timeout).json())
 
     def get_events(self):
-        '''
+        """
         Gets the events that occurred during the call. No query parameters are supported.
-        '''
+        """
         url = '{}/{}/events'.format(self.path, self.call_id)
         data = self.client.get(url).json()
         return [from_api(e) for e in data]
@@ -327,7 +267,7 @@ class Call(Resource):
 
 class Application(Resource):
 
-    application_id = None
+    id = None
     name = None
     incoming_call_url = None
     incoming_call_url_callback_timeout = None
@@ -338,50 +278,48 @@ class Application(Resource):
     callback_http_method = 'post'
     auto_answer = True
     _path = 'applications/'
-    _fields = ('application_id', 'name',
+    _fields = ('id', 'name',
                'incoming_call_url',
                'incoming_call_url_callback_timeout',
                'incoming_call_fallback_url',
                'incoming_sms_url',
                'incoming_sms_url_callback_timeout',
-               'incoming_sms_fallback_url', 'callback_http_method', 'auto_answer')
+               'incoming_sms_fallback_url',
+               'callback_http_method', 'auto_answer')
 
-    def __init__(self, application_id, data):
+    def __init__(self, data):
         self.client = Client()
-        self.application_id = application_id
-        if data:
-            self.data = data
-            self.set_up()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.id = data
         else:
             raise TypeError('Accepted only application-id or application data as dictionary')
-
-    def set_up(self):
-        [setattr(self, k, v) for k, v in self.data.items() if k in self._fields and v is not None]
 
     @classmethod
     def create(cls, **data):
         """
         :name: A name you choose for this application
         :incoming_call_url: A URL where call events will be sent for an inbound call
-        :incoming_call_url_callback_timeout: Determine how long should the platform wait for incomingCallUrl's response before
-        timing out in milliseconds.
+        :incoming_call_url_callback_timeout: Determine how long should the platform wait for incomingCallUrl's response
+            before timing out in milliseconds.
         :incoming_call_fallback_url: The URL used to send the callback event if the request to incomingCallUrl fails.
-        :incoming_sms_url:  A URL where message events will be sent for an inbound SMS message.
-        :incoming_sms_url_callback_timeout: Determine how long should the platform wait for incomingSmsUrl's response before
-        timing out in milliseconds.
+        :incoming_sms_url: A URL where message events will be sent for an inbound SMS message.
+        :incoming_sms_url_callback_timeout: Determine how long should the platform wait for incomingSmsUrl's response
+            before timing out in milliseconds.
         :incoming_sms_fallback_url: The URL used to send the callback event if the request to incomingSmsUrl fails.
         :callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST.
-        (If not set the default is HTTP POST).
-        :auto_answer: Determines whether or not an incoming call should be automatically answered. Default value is 'true'.
+            (If not set the default is HTTP POST).
+        :auto_answer: Determines whether or not an incoming call should be automatically answered.
+            Default value is 'true'.
         :return: Application instance
         """
         client = cls.client or Client()
-        p_data = prepare_json(
-            {k: v for k, v in data.items() if v is not None and k in cls._fields})
+        p_data = to_api(data)
         resp = client.post(cls._path, data=p_data)
-        location = resp.headers['Location']
-        application_id = location.split('/')[-1]
-        return cls(application_id=application_id, data=data)
+        application_id = get_location_id(resp)
+        data.update({'id': application_id})
+        return cls(data=data)
 
     @classmethod
     def list(cls, page=0, size=25):
@@ -396,7 +334,7 @@ class Application(Resource):
         client = cls.client or Client()
         data_as_list = client.get(
             cls._path, params=dict(page=page, size=size)).json()
-        return [cls(application_id=v['id'], data=unpack_json_dct(v)) for v in data_as_list]
+        return [cls(data=from_api(v)) for v in data_as_list]
 
     @classmethod
     def get(cls, application_id):
@@ -408,7 +346,7 @@ class Application(Resource):
         client = cls.client or Client()
         url = '{}{}'.format(cls._path, application_id)
         data_as_dict = client.get(url).json()
-        application = cls(application_id=data_as_dict['id'], data=unpack_json_dct(data_as_dict))
+        application = cls(data=from_api(data_as_dict))
         return application
 
     def patch(self, **data):
@@ -418,17 +356,17 @@ class Application(Resource):
         :name:    A name you choose for this application
         :callback_http_method:  Determine if the callback event should be sent via HTTP GET or HTTP POST.
         (If not set the default is HTTP POST)
-        :auto_answer:  Determines whether or not an incoming call should be automatically answered. Default value is 'true'.
-
+        :auto_answer:  Determines whether or not an incoming call should be automatically answered.
+            Default value is 'true'.
         :return: True if it's patched
         """
         client = self.client or Client()
         url = '{}{}'.format(self._path, self.application_id)
         cleaned_data = {k: v for k, v in data.items() if v is not None and k in self._fields}
-        client.post(url, data=prepare_json(cleaned_data))
+        client.post(url, data=to_api(cleaned_data))
         if cleaned_data:
             self.data = cleaned_data
-            self.set_up()
+            self.set_up(self.data)
         return True
 
     def delete(self):
@@ -437,18 +375,17 @@ class Application(Resource):
         :return: True if it's deleted
         """
         client = self.client or Client()
-        url = '{}{}'.format(self._path, self.application_id)
+        url = '{}{}'.format(self._path, self.id)
         client.delete(url)
         return True
 
     def refresh(self):
-        url = '{}{}'.format(self._path, self.application_id)
+        url = '{}{}'.format(self._path, self.id)
         data = self.client.get(url).json()
-        self.data = from_api(data)
-        self.set_up()
+        self.set_up(from_api(data))
 
 
-class Bridge(Resource):
+class Bridge(AudioMixin, Resource):
     path = 'bridges'
     STATES = enum('created', 'active', 'hold', 'completed', 'error')
     id = None
@@ -469,11 +406,6 @@ class Bridge(Resource):
         self.id = id
         if 'data' in kwargs:
             self.set_up(from_api(kwargs['data']))
-
-    def set_up(self, data):
-        for k, v in six.iteritems(data):
-            if k in self._fields:
-                setattr(self, k, v)
 
     @classmethod
     def list(cls, page=1, size=20):
@@ -524,18 +456,17 @@ class Bridge(Resource):
         """
         client = cls.client or Client()
         data = to_api(kwargs)
-        data["call_ids"] = [c.call_id for c in calls]
+        data['call_ids'] = [c.call_id for c in calls]
         data = to_api(data)
         r = client.post(cls.path, data=data)
-        location = r.headers['Location']
-        bridge_id = location.split('/')[-1]
+        bridge_id = get_location_id(r)
         return cls(bridge_id, *calls, data=data)
 
     @property
     def call_ids(self):
-        '''
+        """
         :return: list of call-ids for local version
-        '''
+        """
         return [c.call_id for c in self.calls]
 
     def call_party(self, caller, callee, **kwargs):
@@ -545,7 +476,7 @@ class Bridge(Resource):
 
     def update(self, *calls, **kwargs):
         """
-        Change calls in a bridge and bridge/unbridge the audio
+        Change calls in a bridge and bridge/unbridge the audio.
         :return: None
         """
         kwargs['call_ids'] = [c.call_id for c in calls]
@@ -557,91 +488,21 @@ class Bridge(Resource):
 
     def fetch_calls(self):
         """
-        Get the list of calls that are on the bridge
+        Get the list of calls that are on the bridge.
         """
         url = '{}/{}/calls'.format(self.path, self.id)
         r = self.client.get(url)
         self.calls = [Call(v) for v in r.json()]
         return self.calls
 
-    # Audio part
-    def play_audio(self, file_url, **kwargs):
-        '''
-        Plays audio form the given url to the call associated with call_id
-
-        :param file_url: The location of an audio file to play (WAV and MP3 supported).
-
-        :param loop_enabled: When value is true, the audio will keep playing in a loop. Default: false.
-
-        :param tag:	A string that will be included in the events delivered when the audio playback starts or finishes.
-
-        :return: None
-        '''
-
-        url = '{}/{}/audio'.format(self.path, self.id)
-        kwargs['file_url'] = file_url
-        data = to_api(kwargs)
-        self.client.post(url, data=data)
-
-    def stop_audio(self):
-        '''
-        Stop an audio file playing
-        '''
-        url = '{}/{}/audio'.format(self.path, self.id)
-        self.client.post(url, data=to_api({'file_url': ''}))
-
-    def speak_sentence(self, sentence, **kwargs):
-        '''
-        :param sentence: The sentence to speak.
-
-        :param gender: The gender of the voice used to synthesize the sentence. It will be considered only if sentence
-                    is not null. The female gender will be used by default.
-
-        :param locale: The locale used to get the accent of the voice used to synthesize the sentence. Currently
-            Bandwidth API supports:
-
-            en_US or en_UK (English)
-            es or es_MX (Spanish)
-            fr or fr_FR (French)
-            de or de_DE (German)
-            it or it_IT (Italian)
-
-            It will be considered only if sentence is not null/empty. The en_US will be used by default.
-        :param voice: The voice to speak the sentence. The API currently supports the following voices:
-
-            English US: Kate, Susan, Julie, Dave, Paul
-            English UK: Bridget
-            Spanish: Esperanza, Violeta, Jorge
-            French: Jolie, Bernard
-            German: Katrin, Stefan
-            Italian: Paola, Luca
-
-            It will be considered only if sentence is not null/empty. Susan's voice will be used by default.
-
-        :param loop_enabled: When value is true, the audio will keep playing in a loop. Default: false.
-
-        :param tag:	A string that will be included in the events delivered when the audio playback starts or finishes.
-
-        :return: None
-        '''
-        url = '{}/{}/audio'.format(self.path, self.id)
-        kwargs['sentence'] = sentence
-        data = to_api(kwargs)
-        self.client.post(url, data=data)
-
-    def stop_sentence(self):
-        '''
-        Stop a current sentence
-        :return: None
-        '''
-        url = '{}/{}/audio'.format(self.path, self.id)
-        self.client.post(url, data=to_api({'sentence': ''}))
+    def get_audio_url(self):
+        return '{}/{}/audio'.format(self.path, self.id)
 
     def refresh(self):
-        '''
+        """
         Updates bridge fields internally for this bridge instance
         :return: None
-        '''
+        """
         url = '{}/{}'.format(self.path, self.id)
         data = self.client.get(url).json()
         self.set_up(from_api(data))
@@ -651,14 +512,15 @@ class Account(Gettable):
     balance = None
     account_type = None
     _path = 'account/'
+    _fields = frozenset(('balance', 'account_type'))
 
     def __init__(self, data=None):
         self.client = Client()
         if data:
             self.set_up(data)
 
-    def set_up(self, data):
-        [setattr(self, k, v) for k, v in data.items() if v is not None]
+    def __repr__(self):
+        return 'Account(user_id={})'.format(self.client.uid)
 
     @classmethod
     def get(cls):
@@ -675,8 +537,8 @@ class Account(Gettable):
         """
         Get the transactions from Account.
         :max_items: Limit the number of transactions that will be returned
-        :to_date: Return only transactions that are newer than the parameter. Format: "yyyy-MM-dd'T'HH:mm:ssZ"
-        :from_date: Return only transactions that are older than the parameter. Format: "yyyy-MM-dd'T'HH:mm:ssZ"
+        :to_date: Return only transactions that are newer than the parameter. Format: 'yyyy-MM-dd'T'HH:mm:ssZ'
+        :from_date: Return only transactions that are older than the parameter. Format: 'yyyy-MM-dd'T'HH:mm:ssZ'
         :type: Return only transactions that are this type
         :page: Used for pagination to indicate the page requested for querying a list of transactions.
                If no value is specified the default is 0.
@@ -708,11 +570,6 @@ class Gather(Resource):
         self.client = client or Client()
         self.path = 'calls/{}/gather'.format(call_id)
 
-    def set_up(self, data):
-        for k, v in six.iteritems(data):
-            if k in self._fields:
-                setattr(self, k, v)
-
     def get(self, gather_id):
         """
         Get the gather DTMF parameters and results
@@ -738,7 +595,7 @@ class Gather(Resource):
             (default 5.0; maximum 30.0)
 
         :param terminating_digits: A string of DTMF digits that end the gather operation immediately if any one of
-            them is detected (default "#"; an empty string means collect all DTMF until maxDigits or the timeout)
+            them is detected (default '#'; an empty string means collect all DTMF until maxDigits or the timeout)
 
             Example:
                 # : The gather ends if # is detected (this is the default behavior if the terminatingDigits property
@@ -774,8 +631,7 @@ class Gather(Resource):
         client = self.client
         data = to_api(kwargs)
         r = client.post(self.path, data=data)
-        location = r.headers['Location']
-        self.id = location.split('/')[-1]
+        self.id = get_location_id(r)
         return self
 
     def stop(self):
@@ -786,3 +642,274 @@ class Gather(Resource):
         url = '{}/{}'.format(self.path, self.id)
         data = to_api({'state': 'completed'})
         self.client.post(url, data=data)
+
+
+class Conference(AudioMixin, Gettable):
+
+    """
+    The Conference resource allows you create conferences, add members to it,
+    play audio, speak text, mute/unmute members, hold/unhold members and other
+    things related to conferencing.
+
+    :param active_members : Number of active conference members
+    :param callback_url : URL where the events related to the Conference will be posted to
+    :param callback_timeout : Determine how long should the platform wait for callbackUrl's response before timing out
+        in milliseconds.
+    :param fallback_url : The URL used to send the callback event if the request to callbackUrl fails.
+    :param completed_time : The time that the Conference was completed
+    :param created_time : The time that the Conference was created
+    :param from : The number that will host the conference
+    :param id : Conference unique ID
+    :param state : Conference state.
+    """
+    path = 'conferences'
+    STATES = enum('created', 'active', 'completed')
+    client = None
+
+    active_members = None
+    callback_url = None
+    callback_timeout = None
+    fallback_url = None
+    completed_time = None
+    created_time = None
+    from_ = None
+    id = None
+    state = None
+
+    _fields = frozenset(('id', 'state', 'from_', 'created_time', 'completed_time', 'fallback_url',
+                         'callback_timeout', 'callback_url', 'active_members'))
+
+    def __init__(self, data):
+        self.client = Client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.id = data
+        else:
+            raise TypeError('Accepted only id as string or data as dictionary')
+
+    def set_up(self, data):
+        self.from_ = self.from_ or data.get('from')
+        super(Conference, self).set_up(data)
+
+    def get_audio_url(self):
+        return '{}/{}/audio'.format(self.path, self.id)
+
+    @classmethod
+    def create(cls, from_, **params):
+        """
+        todo: docstring
+        """
+        client = cls.client or Client()
+        params['from'] = from_
+        json_data = to_api(params)
+        r = client.post(cls.path, data=json_data)
+        cid = get_location_id(r)
+        conference = cls(params)
+        conference.id = cid
+        return conference
+
+    @classmethod
+    def get(cls, conf_id):
+        """
+        Retrieve the conference information.
+
+        :param conf_id:
+
+        :return: new Conference instance with all provided fields.
+        """
+        client = cls.client or Client()
+        url = '{}/{}'.format(cls.path, conf_id)
+        data_as_dict = client.get(url).json()
+        return cls(data_as_dict)
+
+    def __repr__(self):
+        return 'Conference(%r, state=%r)' % (self.id, self.state or 'Unknown')
+
+    def update(self, **params):
+        """
+        Change the conference properties/status.
+        :return: the instance with updated fields.
+        """
+        client = self.client
+        url = '{}/{}'.format(self.path, self.id)
+        data = to_api(params)
+        client.post(url, data=data)
+        self.set_up(params)
+        return self
+
+    def get_members(self):
+        """
+        List all members from a conference. If a member had already hung up or removed from conference it will be
+        displayed as completed.
+        """
+        client = self.client
+        url = '{}/{}/members'.format(self.path, self.id)
+        member_list = client.get(url).json()
+        return [self.member(member) for member in member_list]
+
+    def add_member(self, call_id, **params):
+        """
+        Add members to a conference.
+        Important:-- The callId must refer to an active call that was created using this conferenceId.
+        """
+        client = self.client
+        url = '{}/{}/members'.format(self.path, self.id)
+        params['call_id'] = call_id
+        data = to_api(params)
+        r = client.post(url, data=data)
+        mid = get_location_id(r)
+        return self.member(mid)
+
+    @property
+    def member(self):
+        """
+        Get member class closure.
+        >>> Conference('conf-id').member('m-id').get()
+        """
+        return partial(ConferenceMember, self.id)
+
+
+class ConferenceMember(AudioMixin, Resource):
+
+    """
+    Member of call conference.
+
+    :param added_time: Date when the member was added to the conference
+    :param call : The URL used to retrieve the call of the member
+    :param hold : true - member can't hear the conference / false - member can hear the conference.
+    :param id : Conference member ID
+    :param mute : true - member can't speak in the conference / false - member can speak in the conference.
+    :param removed_time : Date when member was removed from conference
+    :param state : Member state: active, completed.
+    :param join_tone: true - play a tone when the new member joins the conference / false - don't play a tone when
+        the new member joins the conference
+    :param leaving_tone : true - play a tone when the new member leaves the conference / false - don't play a tone
+        when the new member leaves the conference
+    """
+    id = None
+    added_time = None
+    hold = None
+    mute = None
+    state = None
+    join_tone = None
+    leaving_tone = None
+    conf_id = None
+
+    STATES = enum('created', 'active', 'completed')
+    _fields = frozenset(('id', 'state', 'added_time', 'hold', 'mute', 'join_tone', 'leaving_tone'))
+
+    def __init__(self, conf_id, data):
+        self.client = Client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.id = data
+        else:
+            raise TypeError('Accepted only id as string or data as dictionary')
+        self.conf_id = conf_id
+
+    def get(self):
+        """
+        Retrieve a conference member attributes/properties.
+        :return: ConferenceMember instance.
+        """
+        client = self.client
+        url = 'conferences/{}/members/{}'.format(self.conf_id, self.id)
+        data = from_api(client.get(url).json())
+        self.set_up(data)
+        return self
+
+    def update(self, **params):
+        """
+        Update a member status/properties.
+        Allowed params:
+        :param mute: true - member can't speak in the conference / false - member can speak in the conference.
+        :param hold: true - member can't hear the conference / false - member can hear the conference.
+        :param state: Member state: active, completed.
+        :return updated object
+        """
+        client = self.client
+        url = 'conferences/{}/members/{}'.format(self.conf_id, self.id)
+        data = to_api(params)
+        client.post(url, data=data).json()
+        self.set_up(params)
+        return self
+
+    def __repr__(self):
+        return 'ConferenceMember(%r, state=%r)' % (self.id, self.state or 'Unknown')
+
+    def get_audio_url(self):
+        return 'conferences/{}/members/{}/audio'.format(self.conf_id, self.id)
+
+
+class Recording(Gettable):
+    """
+    Recording resource
+    """
+    id = None
+    STATES = enum('recording', 'complete', 'saving', 'error')
+    media = None
+    call = None
+    state = None
+    start_time = None
+    end_time = None
+    _path = 'recordings'
+    _fields = frozenset(['id', 'media', 'call', 'state', 'start_time', 'end_time'])
+
+    def __init__(self, data):
+        self.client = Client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.id = data
+
+    def __repr__(self):
+        return 'Recording({}, state={})'.format(self.id, self.state or 'Unknown')
+
+    def set_up(self, data):
+        call = data.pop('call', None)
+        if call:
+            data['call'] = Call(call.split('/')[-1])
+        super(Recording, self).set_up(data)
+
+    @classmethod
+    def list(cls, page=None, size=None):
+        """
+        List all call recordings.
+
+        :param page: Used for pagination to indicate the page requested for querying a list of recordings.
+                     If no value is specified the default is 0.
+        :param size: Used for pagination to indicate the size of each page requested for querying a list of recordings.
+                     If no value is specified the default value is 25. (Maximum value 1000).
+        :return: List of recording instances.
+        """
+        client = cls.client or Client()
+        data_as_list = client.get(
+            cls._path, params=to_api(dict(page=page, size=size))).json()
+        return [cls(data=v) for v in data_as_list]
+
+    @classmethod
+    def get(cls, recording_id):
+        """
+        Retrieve a specific call recording information instance by recording id
+
+        :param recording_id: recording id of recording that you want to retriev
+        :return: Recording instance
+        """
+        client = cls.client or Client()
+        url = '{}/{}'.format(cls._path, recording_id)
+        data_as_dict = client.get(url).json()
+        recording = cls(data=data_as_dict)
+        return recording
+
+    def get_media_file(self):
+        """
+        Downloads a recording file
+
+        :return: Tuple where first arg is content of media file in bytes,
+                 and second is content-type of file.
+        """
+        client = self.client or Client()
+        resp = client.get(self.media, join_endpoint=False)
+        return resp.content, resp.headers['Content-Type']

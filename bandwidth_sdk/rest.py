@@ -22,10 +22,10 @@ class RESTClientObject(object):
     log = None
 
     def _log_response(self, response):
-        '''
+        """
         Perform logging actions with the response object returned
         by Client using self.log_hook.
-        '''
+        """
         if callable(self.log_hook):
             self.log_hook(response)
 
@@ -39,7 +39,7 @@ class RESTClientObject(object):
             response.raise_for_status()
             return response
         except requests.exceptions.HTTPError:
-            self.log.exception('Error from bandwith api.')
+            self.log.exception('Error from bandwidth api.')
             template = '{} client error: {}' if response.status_code < 500 else '{} server error: {}'
             if response.headers['content-type'] == 'application/json':
                 message = template.format(response.status_code, response.json()['message'])
@@ -61,9 +61,9 @@ class RESTClientObject(object):
 
         return response
 
-    def get(self, url, params=None, timeout=None, **kwargs):
-        url = self._join_endpoint(url)
-
+    def get(self, url, params=None, timeout=None, join_endpoint=True, **kwargs):
+        if join_endpoint:
+            url = self._join_endpoint(url)
         kwargs['timeout'] = timeout or self.default_timeout
         response = self.request('get', url, auth=self.auth, headers=self.headers, params=params, **kwargs)
 

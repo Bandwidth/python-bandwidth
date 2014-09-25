@@ -3,8 +3,8 @@ import json
 from flask import Flask
 from flask import request
 
-from bandwith_sdk.client import Client as ClientV1
-from bandwith_sdk.client_v2 import Client as ClientV2
+from bandwidth_sdk.client import Client as ClientV1
+from bandwidth_sdk.client_v2 import Client as ClientV2
 
 
 app = Flask(__name__)

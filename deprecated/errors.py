@@ -1,4 +1,4 @@
-class BandwithError(Exception):
+class BandwidthError(Exception):
     """
     Raised by :meth:`Client.request()` for requests that:
 
