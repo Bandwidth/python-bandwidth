@@ -9,7 +9,8 @@ UNDERSCORES = re.compile(r'[a-z]_[a-z]{0,1}')
 
 time_fields = frozenset(
     ['time', 'completed_time', 'created_time', 'activated_time',
-     'start_time', 'active_time', 'end_time', 'created', 'updated', 'added_time'])
+     'start_time', 'active_time', 'end_time', 'created', 'updated',
+     'added_time'])
 
 
 def underscoreToCamel(match):
@@ -27,14 +28,6 @@ def camelize(value):
 def underscorize(value):
     partial_result = ALL_CAPITAL.sub(r'\1_\2', value)
     return CASE_SWITCH.sub(r'\1_\2', partial_result).lower()
-
-
-def make_camel(*args):
-    return [camelize(a) for a in args]
-
-
-def make_underscore(*args):
-    return list(map(underscorize, args))
 
 
 def drop_empty(data):
@@ -55,7 +48,9 @@ def to_api(data):
     for k, v in six.iteritems(data):
         if isinstance(v, (datetime, date)):
             data[k] = v.isoformat()
-    api_data = {camelize(k): to_api(v) if isinstance(v, dict) else v for k, v in six.iteritems(data)}
+    api_data = {camelize(k): to_api(v) if isinstance(v,
+                dict) else v for k,
+                v in six.iteritems(data)}
     return api_data
 
 
