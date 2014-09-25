@@ -64,5 +64,5 @@ django-colors-formatter
 # testing
 testing/
 local_env.sh
-bandwith_sdk.egg-info/
+*.egg-info/
 .tox/
