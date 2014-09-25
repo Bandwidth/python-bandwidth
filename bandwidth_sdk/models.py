@@ -29,7 +29,7 @@ class Gettable(object):
                 setattr(self, k, v)
 
     def __repr__(self):
-        return ''.format(self.__class__.__name__, self.id)
+        return '{}(id={})'.format(self.__class__.__name__, self.id)
 
 
 class Resource(Gettable):
@@ -916,7 +916,14 @@ class Recording(Gettable):
 
 
 class AvailableNumber(Gettable):
+    """
+    The Available Numbers resource lets you search
+    for numbers that are available for use with your application.
+    """
+
     _path = 'availableNumbers/'
+    _fields = frozenset(['number', 'national_number', 'pattern_match', 'city',
+                         'lata', 'rate_center', 'state', 'price'])
     number = None
     national_number = None
     pattern_match = None
@@ -925,3 +932,260 @@ class AvailableNumber(Gettable):
     rate_center = None
     state = None
     price = None
+
+    def __init__(self, data=None):
+        self.client = Client()
+        if data and isinstance(data, dict):
+            self.set_up(from_api(data))
+
+    def __repr__(self):
+        return 'AvailableNumber(number={})'.format(self.number or 'Unknown')
+
+    @classmethod
+    def list_local(cls, **params):
+        """
+        :param city: A city name
+        :param state: A two-letter US state abbreviation ("CA" for California)
+        :param zip: A 5-digit US ZIP code
+        :param area_code: A 3-digit telephone area code.
+        :param local_number: It is defined as the first digits of a telephone
+                             number inside an area code for filtering
+                             the results.
+                             It must have at least 3 digits and the area_code
+                             param must be not None.
+        :param in_local_calling_area: Boolean value to indicate that the search
+                                      for available numbers must consider
+                                      overlayed areas. Only applied for
+                                      local_number searching.
+        :param quantity: The maximum number of numbers to return
+                         (default 10, maximum 5000).
+
+        :param pattern: A number pattern that may include
+                        letters, digits, and the following
+                        wildcard characters:
+                            ? : matches any single digit
+                            * : matches zero or more digits
+        !Note:
+        1. state, zip and area_code are mutually exclusive,
+           you may use only one of them per calling list_local.
+        2. local_number and in_local_calling_area only applies
+           for searching numbers in specific area_code.
+
+        :return: List of AvailableNumber instances.
+        """
+        client = cls.client or Client()
+        url = cls._path + 'local/'
+        data = client.raw_get(url, params=to_api(params)).json()
+        return [cls(number) for number in data]
+
+    @classmethod
+    def list_tollfree(cls, **params):
+        """
+        Searches for available Toll Free numbers.
+        :param quantity: The maximum number of numbers to return
+                         (default 10, maximum 5000)
+        :param pattern: A number pattern that may include
+                        letters, digits, and the following wildcard characters:
+                            ? : matches any single digit
+                            * : matches zero or more digits
+        :return: List of AvailableNumber instances.
+        """
+        client = cls.client or Client()
+        url = cls._path + 'tollFree/'
+        data = client.raw_get(url, params=to_api(params)).json()
+        return [cls(number) for number in data]
+
+    @classmethod
+    def batch_allocate_local(cls, **params):
+        """
+        :param city: A city name
+        :param state: A two-letter US state abbreviation ("CA" for California)
+        :param zip: A 5-digit US ZIP code
+        :param area_code: A 3-digit telephone area code
+        :param local_number: It is defined as the first digits of a telephone
+                             number inside an area code for filtering
+                             the results.
+                             It must contain from 3 to 4 digits.
+        :param in_local_calling_area: Boolean value to indicate that the search
+                                      for available numbers must consider
+                                      overlayed areas.
+                                      Only applied for local_number searching.
+        :param quantity: The maximum quantity of numbers to search and order
+                         (default 1, maximum 10).
+        !Note:
+        1. state, zip and area_code are mutually exclusive,
+           you may use only one of them per calling list_local.
+        2. local_number and in_local_calling_area only applies
+           for searching numbers in specific area_code.
+
+        :return: List of PhoneNumber instances.
+        """
+        client = cls.client or Client()
+        url = cls._path + 'local'
+        data = client.raw_post(url, params=to_api(params)).json()
+        return [PhoneNumber(number) for number in data]
+
+    @classmethod
+    def batch_allocate_tollfree(cls, quantity=1):
+        """
+        Searches and order available Toll Free numbers.
+        :param quantity: The maximum quantity of numbers for seaching and order
+                         (default 1, maximum 10).
+        :return: List of PhoneNumber instances.
+        """
+        client = cls.client or Client()
+        url = cls._path + 'tollFree'
+        data = client.raw_post(url,
+                               data=to_api(dict(quantity=quantity))).json()
+        return [PhoneNumber(number) for number in data]
+
+    def allocate(self, application_id=None, name=None, fallback_number=None):
+        """
+        Allocate available number to yours account
+        :param application_id: The ID of an Application you want to associate
+                               with this number.
+        :param name: A name you choose for this number.
+        :param fallback_number: An available telephone number you want to use
+                                (must be in E.164 format, like +19195551212)
+
+        :return: PhoneNumber instance.
+        """
+        data = {'number': self.number,
+                'application_id': application_id,
+                'name': name,
+                'fallback_number': fallback_number}
+        return PhoneNumber.allocate(data)
+
+
+class PhoneNumber(Gettable):
+    _path = 'phoneNumbers'
+    _fields = frozenset(['id', 'application', 'number', 'national_number',
+                         'name', 'created_time', 'city', 'state', 'price',
+                         'number_state', 'fallback_number'])
+    NUMBER_STATES = enum('enabled', 'released')
+    id = None
+    application = None
+    number = None
+    national_number = None
+    name = None
+    created_time = None
+    city = None
+    state = None
+    price = None
+    number_state = None
+    fallback_number = None
+
+    def __init__(self, data):
+        self.client = Client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.id = data
+
+    def __repr__(self):
+        return 'PhoneNumber(number={})'.format(self.number or 'Unknown')
+
+    def set_up(self, data):
+        app_id = data.pop('application', None)
+        if app_id:
+            data['application'] = Application(data=app_id.split('/')[-1])
+        # option for creating phonenumber instance from available numbers
+        # batch allocate
+        self_id = data.pop('location', None)
+        if self_id:
+            data['id'] = self_id.split('/')[-1]
+        super(PhoneNumber, self).set_up(data)
+
+    @classmethod
+    def list(cls, page=0, size=25):
+        """
+        Gets a list of your numbers.
+
+        :param page: Used for pagination to indicate the page requested for
+                     querying a list of phone numbers. If no value is specified
+                     Default is 0.
+        :param size: Used for pagination to indicate the size of each list
+                     requested for querying a list of phone numbers.
+                     If no value is specified the default value is 25.
+                     (Maximum value 1000)
+        :return: List of PhoneNumber instances.
+        """
+        client = cls.client or Client()
+        data = client.get(cls._path, params=to_api(dict(page=page,
+                                                        size=size))).json()
+        return [cls(number) for number in data]
+
+    @classmethod
+    def get(cls, number_id):
+        """
+        Gets information about one of your numbers using the number's ID.
+        No query parameters are supported.
+        :return: PhoneNumber instance.
+        """
+        client = cls.client or Client()
+        url = '{}/{}'.format(cls._path, number_id)
+        data = client.get(url).json()
+        return cls(data=data)
+
+    @classmethod
+    def get_number_info(cls, number):
+        """
+        Gets information about one of your numbers
+        using the E.164 number string, like "+19195551212".
+        No query parameters are supported.
+        :return: PhoneNumber instance.
+        """
+        return cls.get(number)
+
+    def patch(self, **data):
+        """
+        Makes changes to a number instance on catapult side.
+        :param application_id: The ID of an Application you want to
+                               associate with this number.
+        :param name: A name you choose for this number.
+        :param fallback_number: Number to transfer an incoming call when the
+                                callback/fallback events can't be delivered
+        :return: True if it's patched
+        """
+        client = self.client or Client()
+        url = '{}/{}'.format(self._path, self.id)
+        client.post(url, data=to_api(data))
+        return True
+
+    def delete(self):
+        """
+        Removes a number from your account so you can no longer make or
+        receive calls, or send or receive messages with it.
+        When you remove a number from your account,
+        it will not immediately become available for re-use, so be careful.
+
+        :return: True if it's deleted.
+        """
+        client = self.client or Client()
+        url = '{}/{}'.format(self._path, self.id)
+        client.delete(url)
+        return True
+
+    @classmethod
+    def allocate(cls, **data):
+        """
+        Allocates a number so you can use it to make and receive calls and
+        send and receive messages.
+        :param number:  An available telephone number you want to use
+                (must be in E.164 format, like +19195551212)
+        :param application_id: The ID of an Application you want to
+                               associate with this number.
+        :param name: A name you choose for this number.
+        :param fallback_number:  Number to transfer an incoming call when the
+                                 callback/fallback events can't be delivered
+
+        :return: PhoneNumber instance.
+        """
+        client = cls.client or Client()
+        url = cls._path
+        resp = client.post(url, data=to_api(data))
+        resp_data = resp.json()
+        number_id = get_location_id(resp)
+        number = cls(number_id)
+        number.set_up(resp_data)
+        return number

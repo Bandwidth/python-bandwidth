@@ -92,11 +92,11 @@ class RESTClientObject(object):
 
         return response
 
-    def raw_post(self, url, params=None, timeout=None, **kwargs):
+    def raw_post(self, url, data=None, timeout=None, **kwargs):
         url = self.endpoint + '/v1/' + url
 
         kwargs['timeout'] = timeout or self.default_timeout
-        response = self.request('post', url, auth=self.auth, headers=self.headers, params=params, **kwargs)
+        response = self.request('post', url, auth=self.auth, headers=self.headers, data=data, **kwargs)
 
         self._log_response(response)
 
