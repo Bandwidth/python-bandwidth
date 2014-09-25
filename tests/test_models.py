@@ -6,7 +6,7 @@ import unittest
 from bandwidth_sdk import (Call, Bridge,
                            AppPlatformError, Application,
                            Account, Conference, Recording, ConferenceMember,
-                           Gather)
+                           Gather, PhoneNumber)
 from datetime import datetime
 
 
@@ -1263,6 +1263,39 @@ class RecordingTest(unittest.TestCase):
         self.assertEqual(getted_data[1], 'audio/wav')
         self.assertIsInstance(getted_data[0], six.binary_type)
 
+
+class PhoneNumberTest(unittest.TestCase):
+
+    @responses.activate
+    def test_phone_number_get(self):
+        """
+        PhoneNumber.get('numb-id')
+        """
+        raw = """
+        {
+           "id": "numb-id",
+           "application": "https://catapult.inetwork.com/v1/users/u-user/applications/a-j321",
+           "number":"+12323232",
+           "nationalNumber":"(232) 3232",
+           "name": "home phone",
+           "createdTime": "2013-02-13T17:46:08.374Z",
+           "state": "NC",
+           "price": "0.60",
+           "numberState": "enabled"
+        }
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers/numb-id',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        number = PhoneNumber.get('numb-id')
+        self.assertEqual(number.id, 'numb-id')
+        self.assertIsInstance(number.application, Application)
+        self.assertEqual(number.application.id, 'a-j321')
+        self.assertEqual(number.number, '+12323232')
+        self.assertEqual(number.national_number, '(232) 3232')
+        self.assertEqual(number.name, 'home phone')
 
 class CommonTest(unittest.TestCase):
     """
