@@ -37,9 +37,6 @@ class EventType(object):
             if attr in self._fields:
                 setattr(self, attr, val)
 
-    def __repr__(self):
-        return '{}({})'.format(self.__class__.__name__, self.call_id)
-
 
 class CallEvent(EventType):
     @property
@@ -47,6 +44,9 @@ class CallEvent(EventType):
         # avoid cyclic imports
         from .models import Call
         return Call(self.call_id)
+
+    def __repr__(self):
+        return '{}({})'.format(self.__class__.__name__, self.call_id)
 
 
 class IncomingCallEvent(CallEvent):
@@ -229,6 +229,9 @@ class SmsEvent(EventType):
     _fields = frozenset(('event_type', 'direction', 'message_id', 'message_uri', 'from_', 'to',
                          'text', 'application_id', 'time', 'state'))
 
+    def __repr__(self):
+        return 'Sms(message_id={})'.format(self.message_id)
+
 
 class ConferenceEventMixin(EventType):
     conference_id = None
@@ -237,6 +240,9 @@ class ConferenceEventMixin(EventType):
     def conference(self):
         from .models import Conference
         return Conference(self.conference_id)
+
+    def __repr__(self):
+        return '{}(conference_id={})'.format(self.__class__.__name__, self.conference_id)
 
 
 class ConferenceEvent(ConferenceEventMixin):
