@@ -30,7 +30,7 @@ class RESTClientObject(object):
             self.log_hook(response)
 
     def _join_endpoint(self, url):
-        return '{}{}'.format(self.endpoint, url)
+        return '{}/v1/users/{}/{}'.format(self.endpoint, self.uid, url)
 
     def request(self, method, *args, **kwargs):
         assert method in ('get', 'post', 'delete', 'patch')
@@ -77,6 +77,26 @@ class RESTClientObject(object):
         if data:
             data = json.dumps(data)
         response = self.request('post', url, auth=self.auth, headers=self.headers, data=data, **kwargs)
+
+        self._log_response(response)
+
+        return response
+
+    def raw_get(self, url, params=None, timeout=None, **kwargs):
+        url = self.endpoint + '/v1/' + url
+
+        kwargs['timeout'] = timeout or self.default_timeout
+        response = self.request('get', url, auth=self.auth, headers=self.headers, params=params, **kwargs)
+
+        self._log_response(response)
+
+        return response
+
+    def raw_post(self, url, params=None, timeout=None, **kwargs):
+        url = self.endpoint + '/v1/' + url
+
+        kwargs['timeout'] = timeout or self.default_timeout
+        response = self.request('post', url, auth=self.auth, headers=self.headers, params=params, **kwargs)
 
         self._log_response(response)
 

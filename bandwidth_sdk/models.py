@@ -913,3 +913,15 @@ class Recording(Gettable):
         client = self.client or Client()
         resp = client.get(self.media, join_endpoint=False)
         return resp.content, resp.headers['Content-Type']
+
+
+class AvailableNumber(Gettable):
+    _path = 'availableNumbers/'
+    number = None
+    national_number = None
+    pattern_match = None
+    city = None
+    lata = None
+    rate_center = None
+    state = None
+    price = None
