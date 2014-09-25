@@ -26,9 +26,6 @@ class Event(object):
 
 
 class EventType(object):
-    call_id = None
-    _fields = frozenset(('call_id',))
-
     def __init__(self, **kwargs):
         from_ = kwargs.pop('from', None)
         if from_:
@@ -36,6 +33,11 @@ class EventType(object):
         for attr, val in iteritems(kwargs):
             if attr in self._fields:
                 setattr(self, attr, val)
+
+
+class CallEvent(EventType):
+    call_id = None
+    _fields = frozenset(('call_id',))
 
     @property
     def call(self):
@@ -47,7 +49,7 @@ class EventType(object):
         return '{}({})'.format(self.__class__.__name__, self.call_id)
 
 
-class IncomingCallEvent(EventType):
+class IncomingCallEvent(CallEvent):
     """
     Bandwidth API sends this message to the application when an incoming call arrives.
     For incoming call the callback set is the one related to the Application associated with the called number.
@@ -64,7 +66,7 @@ class IncomingCallEvent(EventType):
                          'application_id', 'tag'))
 
 
-class AnswerCallEvent(EventType):
+class AnswerCallEvent(CallEvent):
     """
     Bandwidth API sends this message to the application when the call is answered.
     """
@@ -80,7 +82,7 @@ class AnswerCallEvent(EventType):
                          'application_id', 'tag'))
 
 
-class HangupCallEvent(EventType):
+class HangupCallEvent(CallEvent):
     """
     Bandwidth API sends this message to the application when the call ends.
     """
@@ -95,7 +97,7 @@ class HangupCallEvent(EventType):
     _fields = frozenset(('call_id', 'event_type', 'from_', 'to', 'call_uri', 'call_state', 'time', 'cause', 'tag'))
 
 
-class PlaybackCallEvent(EventType):
+class PlaybackCallEvent(CallEvent):
     """
     Bandwidth API sends this message to the application when audio file playback starts or stops.
     """
@@ -112,7 +114,7 @@ class PlaybackCallEvent(EventType):
         return self.status == 'done'
 
 
-class GatherCallEvent(EventType):
+class GatherCallEvent(CallEvent):
     """
     Bandwidth API sends this message to the application when the gather dtmf is completed or an error occurs.
     """
@@ -131,7 +133,7 @@ class GatherCallEvent(EventType):
         return self.call.gather.get(self.gather_id)
 
 
-class DtmfCallEvent(EventType):
+class DtmfCallEvent(CallEvent):
     """
     Bandwidth API sends this message to the application when audio file playback starts or stops.
     """
@@ -145,7 +147,7 @@ class DtmfCallEvent(EventType):
     _fields = frozenset(('event_type', 'call_id', 'call_uri', 'time', 'dtmf_digit', 'dtmf_duration', 'tag'))
 
 
-class SpeakCallEvent(EventType):
+class SpeakCallEvent(CallEvent):
     """
     Bandwidth API sends this message to the application when text-to-speech starts or stops.
     """
@@ -163,7 +165,7 @@ class SpeakCallEvent(EventType):
         return self.status == 'done'
 
 
-class ErrorCallEvent(EventType):
+class ErrorCallEvent(CallEvent):
     """
     Bandwidth API sends this message to the application when an error occurs.
     """
@@ -178,7 +180,7 @@ class ErrorCallEvent(EventType):
     _fields = frozenset(('call_id', 'event_type', 'from_', 'to', 'call_uri', 'call_state', 'time', 'tag'))
 
 
-class TimeoutCallEvent(EventType):
+class TimeoutCallEvent(CallEvent):
     """
     Bandwidth API sends this message to the application when the call is not answered until the specified timeout.
     """
@@ -192,7 +194,7 @@ class TimeoutCallEvent(EventType):
     _fields = frozenset(('call_id', 'event_type', 'from_', 'to', 'call_uri', 'time', 'tag'))
 
 
-class RecordingCallEvent(EventType):
+class RecordingCallEvent(CallEvent):
     """
     Bandwidth API sends this event to the application when an the recording media file is saved or an error occurs
     while saving it.
@@ -208,6 +210,97 @@ class RecordingCallEvent(EventType):
     tag = None
     _fields = frozenset(('call_id', 'event_type', 'recording_id', 'recording_uri', 'state', 'status', 'start_time',
                          'end_time', 'tag'))
+    # todo: recording property
+
+
+class SmsEvent(EventType):
+    """
+    Bandwidth API sends this event to the application when an SMS is sent or received.
+    """
+    event_type = None
+    direction = None
+    message_id = None
+    message_uri = None
+    from_ = None
+    to = None
+    text = None
+    application_id = None
+    time = None
+    state = None
+    _fields = frozenset(('event_type', 'direction', 'message_id', 'message_uri', 'from_', 'to',
+                         'text', 'application_id', 'time', 'state'))
+
+    def __repr__(self):
+        return 'Sms(message_id={})'.format(self.message_id)
+
+
+class ConferenceEventMixin(EventType):
+    conference_id = None
+
+    @property
+    def conference(self):
+        from .models import Conference
+        return Conference(self.conference_id)
+
+    def __repr__(self):
+        return '{}(conference_id={})'.format(self.__class__.__name__, self.conference_id)
+
+
+class ConferenceEvent(ConferenceEventMixin):
+    """
+    Bandwidth API sends this event to the application when a conference is created or completed.
+    """
+    event_type = None
+    conference_id = None
+    conference_uri = None
+    status = None
+    created_time = None
+    completed_time = None
+    _fields = frozenset(('event_type', 'conference_id', 'conference_uri', 'status', 'created_time', 'completed_time'))
+
+
+class ConferenceMemberEvent(ConferenceEventMixin, CallEvent):
+    """
+    Bandwidth API sends this message to the application when a conference member has joined / left the conference
+    or when it as muted or put on hold.
+    """
+    event_type = None
+    call_id = None
+    conference_id = None
+    active_members = None
+    hold = None
+    member_id = None
+    member_uri = None
+    mute = None
+    state = None
+    time = None
+    _fields = frozenset(('event_type', 'conference_id', 'call_id', 'active_members', 'hold', 'member_id',
+                         'member_uri', 'mute', 'state', 'time'))
+
+
+class ConferencePlaybackEvent(ConferenceEventMixin):
+    """
+    Bandwidth API sends this message to the application when audio playback is started or ended / stopped
+    in a conference.
+    """
+    event_type = None
+    conference_id = None
+    conference_uri = None
+    status = None
+    time = None
+    _fields = frozenset(('event_type', 'conference_id', 'conference_uri', 'status', 'time'))
+
+
+class ConferenceSpeakEvent(ConferenceEventMixin):
+    """
+    Bandwidth API sends this message to the application when speak is started or ended / stopped in a conference.
+    """
+    event_type = None
+    conference_id = None
+    conference_uri = None
+    status = None
+    time = None
+    _fields = frozenset(('event_type', 'conference_id', 'conference_uri', 'status', 'time'))
 
 
 _events = {'hangup': HangupCallEvent,
@@ -219,4 +312,9 @@ _events = {'hangup': HangupCallEvent,
            'error': ErrorCallEvent,
            'timeout': TimeoutCallEvent,
            'recording': RecordingCallEvent,
+           'sms': SmsEvent,
+           'conference': ConferenceEvent,
+           'conference-member': ConferenceMemberEvent,
+           'conference-speak': ConferenceSpeakEvent,
+           'conference-playback': ConferencePlaybackEvent,
            'dtmf': DtmfCallEvent}
