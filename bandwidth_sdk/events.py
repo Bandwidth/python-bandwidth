@@ -230,6 +230,72 @@ class SmsEvent(EventType):
                          'text', 'application_id', 'time', 'state'))
 
 
+class ConferenceEventMixin(EventType):
+    conference_id = None
+
+    @property
+    def conference(self):
+        from .models import Conference
+        return Conference(self.conference_id)
+
+
+class ConferenceEvent(ConferenceEventMixin):
+    """
+    Bandwidth API sends this event to the application when a conference is created or completed.
+    """
+    event_type = None
+    conference_id = None
+    conference_uri = None
+    status = None
+    created_time = None
+    completed_time = None
+    _fields = frozenset(('event_type', 'conference_id', 'conference_uri', 'status', 'created_time', 'completed_time'))
+
+
+class ConferenceMemberEvent(ConferenceEventMixin, CallEvent):
+    """
+    Bandwidth API sends this message to the application when a conference member has joined / left the conference
+    or when it as muted or put on hold.
+    """
+    event_type = None
+    call_id = None
+    conference_id = None
+    active_members = None
+    hold = None
+    member_id = None
+    member_uri = None
+    mute = None
+    state = None
+    time = None
+    _fields = frozenset(('event_type', 'conference_id', 'call_id', 'active_members', 'hold', 'member_id',
+                         'member_uri', 'mute', 'state', 'time'))
+
+
+class ConferencePlaybackEvent(ConferenceEventMixin):
+    """
+    Bandwidth API sends this message to the application when audio playback is started or ended / stopped
+    in a conference.
+    """
+    event_type = None
+    conference_id = None
+    conference_uri = None
+    status = None
+    time = None
+    _fields = frozenset(('event_type', 'conference_id', 'conference_uri', 'status', 'time'))
+
+
+class ConferenceSpeakEvent(ConferenceEventMixin):
+    """
+    Bandwidth API sends this message to the application when speak is started or ended / stopped in a conference.
+    """
+    event_type = None
+    conference_id = None
+    conference_uri = None
+    status = None
+    time = None
+    _fields = frozenset(('event_type', 'conference_id', 'conference_uri', 'status', 'time'))
+
+
 _events = {'hangup': HangupCallEvent,
            'answer': AnswerCallEvent,
            'incomingcall': IncomingCallEvent,
@@ -240,4 +306,8 @@ _events = {'hangup': HangupCallEvent,
            'timeout': TimeoutCallEvent,
            'recording': RecordingCallEvent,
            'sms': SmsEvent,
+           'conference': ConferenceEvent,
+           'conference-member': ConferenceMemberEvent,
+           'conference-speak': ConferenceSpeakEvent,
+           'conference-playback': ConferencePlaybackEvent,
            'dtmf': DtmfCallEvent}
