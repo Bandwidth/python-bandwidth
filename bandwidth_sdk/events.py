@@ -37,17 +37,19 @@ class EventType(object):
             if attr in self._fields:
                 setattr(self, attr, val)
 
+    def __repr__(self):
+        return '{}({})'.format(self.__class__.__name__, self.call_id)
+
+
+class CallEvent(EventType):
     @property
     def call(self):
         # avoid cyclic imports
         from .models import Call
         return Call(self.call_id)
 
-    def __repr__(self):
-        return '{}({})'.format(self.__class__.__name__, self.call_id)
 
-
-class IncomingCallEvent(EventType):
+class IncomingCallEvent(CallEvent):
     """
     Bandwidth API sends this message to the application when an incoming call arrives.
     For incoming call the callback set is the one related to the Application associated with the called number.
@@ -64,7 +66,7 @@ class IncomingCallEvent(EventType):
                          'application_id', 'tag'))
 
 
-class AnswerCallEvent(EventType):
+class AnswerCallEvent(CallEvent):
     """
     Bandwidth API sends this message to the application when the call is answered.
     """
@@ -80,7 +82,7 @@ class AnswerCallEvent(EventType):
                          'application_id', 'tag'))
 
 
-class HangupCallEvent(EventType):
+class HangupCallEvent(CallEvent):
     """
     Bandwidth API sends this message to the application when the call ends.
     """
@@ -95,7 +97,7 @@ class HangupCallEvent(EventType):
     _fields = frozenset(('call_id', 'event_type', 'from_', 'to', 'call_uri', 'call_state', 'time', 'cause', 'tag'))
 
 
-class PlaybackCallEvent(EventType):
+class PlaybackCallEvent(CallEvent):
     """
     Bandwidth API sends this message to the application when audio file playback starts or stops.
     """
@@ -112,7 +114,7 @@ class PlaybackCallEvent(EventType):
         return self.status == 'done'
 
 
-class GatherCallEvent(EventType):
+class GatherCallEvent(CallEvent):
     """
     Bandwidth API sends this message to the application when the gather dtmf is completed or an error occurs.
     """
@@ -131,7 +133,7 @@ class GatherCallEvent(EventType):
         return self.call.gather.get(self.gather_id)
 
 
-class DtmfCallEvent(EventType):
+class DtmfCallEvent(CallEvent):
     """
     Bandwidth API sends this message to the application when audio file playback starts or stops.
     """
@@ -145,7 +147,7 @@ class DtmfCallEvent(EventType):
     _fields = frozenset(('event_type', 'call_id', 'call_uri', 'time', 'dtmf_digit', 'dtmf_duration', 'tag'))
 
 
-class SpeakCallEvent(EventType):
+class SpeakCallEvent(CallEvent):
     """
     Bandwidth API sends this message to the application when text-to-speech starts or stops.
     """
@@ -163,7 +165,7 @@ class SpeakCallEvent(EventType):
         return self.status == 'done'
 
 
-class ErrorCallEvent(EventType):
+class ErrorCallEvent(CallEvent):
     """
     Bandwidth API sends this message to the application when an error occurs.
     """
@@ -178,7 +180,7 @@ class ErrorCallEvent(EventType):
     _fields = frozenset(('call_id', 'event_type', 'from_', 'to', 'call_uri', 'call_state', 'time', 'tag'))
 
 
-class TimeoutCallEvent(EventType):
+class TimeoutCallEvent(CallEvent):
     """
     Bandwidth API sends this message to the application when the call is not answered until the specified timeout.
     """
@@ -192,7 +194,7 @@ class TimeoutCallEvent(EventType):
     _fields = frozenset(('call_id', 'event_type', 'from_', 'to', 'call_uri', 'time', 'tag'))
 
 
-class RecordingCallEvent(EventType):
+class RecordingCallEvent(CallEvent):
     """
     Bandwidth API sends this event to the application when an the recording media file is saved or an error occurs
     while saving it.
@@ -210,6 +212,24 @@ class RecordingCallEvent(EventType):
                          'end_time', 'tag'))
 
 
+class SmsEvent(EventType):
+    """
+    Bandwidth API sends this event to the application when an SMS is sent or received.
+    """
+    event_type = None
+    direction = None
+    message_id = None
+    message_uri = None
+    from_ = None
+    to = None
+    text = None
+    application_id = None
+    time = None
+    state = None
+    _fields = frozenset(('event_type', 'direction', 'message_id', 'message_uri', 'from_', 'to',
+                         'text', 'application_id', 'time', 'state'))
+
+
 _events = {'hangup': HangupCallEvent,
            'answer': AnswerCallEvent,
            'incomingcall': IncomingCallEvent,
@@ -219,4 +239,5 @@ _events = {'hangup': HangupCallEvent,
            'error': ErrorCallEvent,
            'timeout': TimeoutCallEvent,
            'recording': RecordingCallEvent,
+           'sms': SmsEvent,
            'dtmf': DtmfCallEvent}
