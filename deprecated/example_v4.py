@@ -1,4 +1,4 @@
-from bandwith_sdk.client_v4 import Call, Bridge, Client
+from bandwidth_sdk.client_v4 import Call, Bridge, Client
 
 Client('u-**********', 't-******', 's-********')
 
@@ -62,7 +62,7 @@ call = Call('dfdfdfdfdf')
 import pickle
 d = pickle.dumps(call)
 print(d)
-# b'\x80\x03cbandwith_sdk.client_v4\nCall\nq\x00)\x81q\x01X\n\x00\x00\x00dfdfdfdfdfq\x02b.' 89 bytes
+# b'\x80\x03cbandwidth_sdk.client_v4\nCall\nq\x00)\x81q\x01X\n\x00\x00\x00dfdfdfdfdfq\x02b.' 89 bytes
 r = pickle.loads(d)
 print(r)
 #Call(dfdfdfdfdf)

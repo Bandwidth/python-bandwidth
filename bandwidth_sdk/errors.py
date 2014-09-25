@@ -1,4 +1,4 @@
-class BandwithError(Exception):
+class AppPlatformError(Exception):
     """
     Raised by :meth:`Client.request()` for requests that:
 
@@ -9,4 +9,3 @@ class BandwithError(Exception):
       - Have a malformed/missing header in the response.
 
     """
-

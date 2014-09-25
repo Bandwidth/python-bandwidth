@@ -1,27 +1,26 @@
 #!/usr/bin/env python
 from setuptools import setup
 
-exec(open('./version.py').read())
-
 setup(
-    name='bandwith_sdk',
-    version=__version__,
-    description='This client library is designed to support the Bandwith '
-                'API and the official Bandwith SDK',
-    author='Bandwith',
-    maintainer='Bandwith',
+    name='bandwidth_sdk',
+    version='1.0.0-alpha',
+    description='This client library is designed to support the Bandwidth '
+                'API and the official Bandwidth SDK',
+    author='Bandwidth',
+    maintainer='Bandwidth',
     maintainer_email='classifieds-admin@bandwidth.com',
     url='',
     license='Apache',
-    packages=["bandwith_sdk"],
-    long_description=open("README.md").read(),
+    packages=["bandwidth_sdk"],
+    long_description="Bandwidth Python API",
     classifiers=[
         'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.3',
     ],
     install_requires=[
         'requests',
+        'python-dateutil',
+        'six'
     ],
 )
