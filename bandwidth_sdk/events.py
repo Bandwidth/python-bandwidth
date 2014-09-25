@@ -26,9 +26,6 @@ class Event(object):
 
 
 class EventType(object):
-    call_id = None
-    _fields = frozenset(('call_id',))
-
     def __init__(self, **kwargs):
         from_ = kwargs.pop('from', None)
         if from_:
@@ -39,6 +36,9 @@ class EventType(object):
 
 
 class CallEvent(EventType):
+    call_id = None
+    _fields = frozenset(('call_id',))
+
     @property
     def call(self):
         # avoid cyclic imports
