@@ -7,6 +7,18 @@ from bandwidth_sdk import (EventType,
                            AnswerCallEvent,
                            HangupCallEvent,
                            PlaybackCallEvent,
+                           GatherCallEvent,
+                           ErrorCallEvent,
+                           TimeoutCallEvent,
+                           RecordingCallEvent,
+                           SpeakCallEvent,
+                           DtmfCallEvent,
+                           SmsEvent,
+                           ConferenceEvent,
+                           ConferenceMemberEvent,
+                           ConferenceSpeakEvent,
+                           ConferencePlaybackEvent,
+                           Call
                            )
 
 
@@ -124,3 +136,82 @@ class EventsTest(unittest.TestCase):
         self.assertIsInstance(event.time, datetime)
 
         self.assertFalse(event.done)
+
+    def test_factory_gather(self):
+        """
+        Event.create factory methods for gather
+        """
+        data_inc = {"time": "2014-06-13T22:40:34Z",
+                    "reason": "max-digits",
+                    "state": "completed",
+                    "digits": "1",
+                    "eventType": "gather",
+                    "callId": 'c-z572ntgyy2vnffwpa5bwrcy',
+                    "gatherId": "{gatherId}"
+                    }
+
+        event = Event.create(**data_inc)
+
+        self.assertEqual(str(event), 'GatherCallEvent(c-z572ntgyy2vnffwpa5bwrcy)')
+
+        self.assertIsInstance(event, EventType)
+        self.assertIsInstance(event, GatherCallEvent)
+
+        self.assertEqual(event.call_id, 'c-z572ntgyy2vnffwpa5bwrcy')
+
+        self.assertIsInstance(event.time, datetime)
+
+        self.assertEquals(event.digits, '1')
+        self.assertIsInstance(event.call, Call)
+
+        #todo: assert event gather
+
+    def test_factory_error(self):
+        """
+        Event.create factory methods for error
+        """
+        data_inc = {'to': '+16263882600',
+                    'callUri': 'https://api.catapult.inetwork.com/v1/users/u-2qep/calls/c-kmg',
+                    'callState': 'error',
+                    'eventType': 'error',
+                    'from': '+17146143600',
+                    'callId': 'c-kmg'}
+
+        event = Event.create(**data_inc)
+
+        self.assertEqual(str(event), 'ErrorCallEvent(c-kmg)')
+
+        self.assertIsInstance(event, EventType)
+        self.assertIsInstance(event, ErrorCallEvent)
+
+        self.assertEqual(event.call_id, 'c-kmg')
+
+        self.assertEquals(event.call_state, 'error')
+
+        self.assertIsInstance(event.call, Call)
+
+    def test_factory_timeout(self):
+        """
+        Event.create factory methods for timeout
+        """
+        data_inc = {'time': '2014-09-23T06:30:39Z',
+                    'from': '+16824595961',
+                    'callId': 'c-5nq',
+                    'to': '+12697047265',
+                    'callUri': 'https://api.catapult.inetwork.com/v1/users/u-2qi/calls/c-5nq',
+                    'tag': 'c-2mdp',
+                    'eventType': 'timeout'}
+
+        event = Event.create(**data_inc)
+
+        self.assertEqual(str(event), 'TimeoutCallEvent(c-5nq)')
+
+        self.assertIsInstance(event, EventType)
+        self.assertIsInstance(event, TimeoutCallEvent)
+
+        self.assertEqual(event.call_id, 'c-5nq')
+
+        self.assertEquals(event.tag, 'c-2mdp')
+
+        self.assertIsInstance(event.call, Call)
+        self.assertIsInstance(event.time, datetime)
