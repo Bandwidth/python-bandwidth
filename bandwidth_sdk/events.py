@@ -210,6 +210,7 @@ class RecordingCallEvent(CallEvent):
     tag = None
     _fields = frozenset(('call_id', 'event_type', 'recording_id', 'recording_uri', 'state', 'status', 'start_time',
                          'end_time', 'tag'))
+    # todo: recording property
 
 
 class SmsEvent(EventType):
