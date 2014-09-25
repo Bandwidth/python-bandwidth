@@ -7,6 +7,19 @@ from bandwidth_sdk import (EventType,
                            AnswerCallEvent,
                            HangupCallEvent,
                            PlaybackCallEvent,
+                           GatherCallEvent,
+                           ErrorCallEvent,
+                           TimeoutCallEvent,
+                           RecordingCallEvent,
+                           SpeakCallEvent,
+                           DtmfCallEvent,
+                           SmsEvent,
+                           ConferenceEvent,
+                           ConferenceMemberEvent,
+                           ConferenceSpeakEvent,
+                           ConferencePlaybackEvent,
+                           Call,
+                           Conference
                            )
 
 
@@ -124,3 +137,297 @@ class EventsTest(unittest.TestCase):
         self.assertIsInstance(event.time, datetime)
 
         self.assertFalse(event.done)
+
+    def test_factory_gather(self):
+        """
+        Event.create factory methods for gather
+        """
+        data_inc = {"time": "2014-06-13T22:40:34Z",
+                    "reason": "max-digits",
+                    "state": "completed",
+                    "digits": "1",
+                    "eventType": "gather",
+                    "callId": 'c-z572ntgyy2vnffwpa5bwrcy',
+                    "gatherId": "{gatherId}"
+                    }
+
+        event = Event.create(**data_inc)
+
+        self.assertEqual(str(event), 'GatherCallEvent(c-z572ntgyy2vnffwpa5bwrcy)')
+
+        self.assertIsInstance(event, EventType)
+        self.assertIsInstance(event, GatherCallEvent)
+
+        self.assertEqual(event.call_id, 'c-z572ntgyy2vnffwpa5bwrcy')
+
+        self.assertIsInstance(event.time, datetime)
+
+        self.assertEquals(event.digits, '1')
+        self.assertIsInstance(event.call, Call)
+
+        #todo: assert event gather
+
+    def test_factory_error(self):
+        """
+        Event.create factory methods for error
+        """
+        data_inc = {'to': '+16263882600',
+                    'callUri': 'https://api.catapult.inetwork.com/v1/users/u-2qep/calls/c-kmg',
+                    'callState': 'error',
+                    'eventType': 'error',
+                    'from': '+17146143600',
+                    'callId': 'c-kmg'}
+
+        event = Event.create(**data_inc)
+
+        self.assertEqual(str(event), 'ErrorCallEvent(c-kmg)')
+
+        self.assertIsInstance(event, EventType)
+        self.assertIsInstance(event, ErrorCallEvent)
+
+        self.assertEqual(event.call_id, 'c-kmg')
+
+        self.assertEquals(event.call_state, 'error')
+
+        self.assertIsInstance(event.call, Call)
+
+    def test_factory_timeout(self):
+        """
+        Event.create factory methods for timeout
+        """
+        data_inc = {'time': '2014-09-23T06:30:39Z',
+                    'from': '+16824595961',
+                    'callId': 'c-5nq',
+                    'to': '+12697047265',
+                    'callUri': 'https://api.catapult.inetwork.com/v1/users/u-2qi/calls/c-5nq',
+                    'tag': 'c-2mdp',
+                    'eventType': 'timeout'}
+
+        event = Event.create(**data_inc)
+
+        self.assertEqual(str(event), 'TimeoutCallEvent(c-5nq)')
+
+        self.assertIsInstance(event, EventType)
+        self.assertIsInstance(event, TimeoutCallEvent)
+
+        self.assertEqual(event.call_id, 'c-5nq')
+
+        self.assertEquals(event.tag, 'c-2mdp')
+
+        self.assertIsInstance(event.call, Call)
+        self.assertIsInstance(event.time, datetime)
+
+    def test_factory_recording(self):
+        """
+        Event.create factory methods for recording
+        """
+        data_inc = {'recordingUri': 'https://api.catapult.inetwork.com/v1/users/u-2q/recordings/rec-7k',
+                    'recordingId': 'rec-7k',
+                    'endTime': '2014-09-25T13:41:02Z',
+                    'callId': 'c-c5zk',
+                    'eventType': 'recording',
+                    'startTime': '2014-09-25T13:38:28Z',
+                    'status': 'complete',
+                    'state': 'complete'}
+
+        event = Event.create(**data_inc)
+
+        self.assertEqual(str(event), 'RecordingCallEvent(c-c5zk)')
+
+        self.assertIsInstance(event, EventType)
+        self.assertIsInstance(event, RecordingCallEvent)
+
+        self.assertEqual(event.call_id, 'c-c5zk')
+        self.assertEqual(event.recording_id, 'rec-7k')
+
+        self.assertIsInstance(event.call, Call)
+        self.assertIsInstance(event.start_time, datetime)
+        self.assertIsInstance(event.end_time, datetime)
+
+    def test_factory_speak(self):
+        """
+        Event.create factory methods for speak
+        """
+        data_inc = {"callId": "c-xx",
+                    "callUri": "https://api.catapult.inetwork.com/v1/users/u-ndh/calls/c-xx",
+                    "eventType": "speak",
+                    "state": "PLAYBACK_START",
+                    "status": "started",
+                    "time": "2013-06-26T17:55:45.748Z",
+                    "type": "speak"}
+
+        event = Event.create(**data_inc)
+
+        self.assertEqual(str(event), 'SpeakCallEvent(c-xx)')
+
+        self.assertIsInstance(event, EventType)
+        self.assertIsInstance(event, SpeakCallEvent)
+
+        self.assertEqual(event.call_id, 'c-xx')
+        self.assertEquals(event.state, 'PLAYBACK_START')
+        self.assertIsInstance(event.call, Call)
+        self.assertIsInstance(event.time, datetime)
+
+    def test_factory_dtmf(self):
+        """
+        Event.create factory methods for dtmf
+        """
+        data_inc = {'dtmfDigit': '2',
+                    'callId': 'c-xx',
+                    'callUri': 'https://api.catapult.inetwork.com/v1/users/u-2q/calls/c-xx',
+                    'dtmfDuration': '1400',
+                    'time': '2014-09-25T13:35:49Z',
+                    'eventType': 'dtmf'}
+
+        event = Event.create(**data_inc)
+
+        self.assertEqual(str(event), 'DtmfCallEvent(c-xx)')
+
+        self.assertIsInstance(event, EventType)
+        self.assertIsInstance(event, DtmfCallEvent)
+
+        self.assertEqual(event.call_id, 'c-xx')
+        self.assertEqual(event.dtmf_digit, '2')
+        self.assertEqual(event.dtmf_duration, '1400')
+
+        self.assertIsInstance(event.call, Call)
+        self.assertIsInstance(event.time, datetime)
+
+    def test_factory_sms(self):
+        """
+        Event.create factory methods for sms
+        """
+        data_inc = {"eventType": "sms",
+                    "direction": "in",
+                    "messageId": "m-xx",
+                    "messageUri": "https://api.catapult.inetwork.com/v1/"
+                                  "users/u-ndh7ecxejswersdu5g8zngvca/messages/m-xx",
+                    "from": "+13233326955",
+                    "to": "+13865245000",
+                    "text": "Example",
+                    "applicationId": "a-25nh2lj6qrxznkfu4b732jy",
+                    "time": "2012-11-14T16:13:06.076Z",
+                    "state": "received"}
+
+        event = Event.create(**data_inc)
+
+        self.assertEqual(str(event), 'Sms(message_id=m-xx)')
+
+        self.assertIsInstance(event, EventType)
+        self.assertIsInstance(event, SmsEvent)
+
+        self.assertEqual(event.direction, 'in')
+        self.assertEqual(event.message_id, 'm-xx')
+        self.assertEqual(event.from_, '+13233326955')
+        self.assertEqual(event.to, '+13865245000')
+        self.assertEqual(event.text, 'Example')
+        self.assertEqual(event.state, 'received')
+
+        self.assertIsInstance(event.time, datetime)
+
+    def test_factory_conference(self):
+        """
+        Event.create factory methods for conference
+        """
+        data_inc = {"conferenceId": "conf-xx",
+                    "conferenceUri": "https://api.catapult.inetwork.com/v1"
+                                     "/users/u-ndh7ecxejswersdu5g8zngvca/conferences/conf-xx",
+                    "eventType": "conference",
+                    "status": "completed",
+                    "createdTime": "2013-07-12T16:29:32.521-02:00",
+                    "completedTime": "2013-07-12T16:45:10.103-02:00"}
+
+        event = Event.create(**data_inc)
+
+        self.assertEqual(str(event), 'ConferenceEvent(conference_id=conf-xx)')
+
+        self.assertIsInstance(event, EventType)
+        self.assertIsInstance(event, ConferenceEvent)
+
+        self.assertIsInstance(event.created_time, datetime)
+        self.assertIsInstance(event.completed_time, datetime)
+        self.assertIsInstance(event.conference, Conference)
+
+        self.assertEqual(event.status, 'completed')
+        self.assertEqual(event.conference_id, 'conf-xx')
+
+    def test_factory_conference_member(self):
+        """
+        Event.create factory methods for conference member
+        """
+        data_inc = {"activeMembers": 1,
+                    "callId": "c-xx",
+                    "conferenceId": "conf-xx",
+                    "eventType": "conference-member",
+                    "hold": False,
+                    "memberId": "member-yy",
+                    "memberUri": "https://api.catapult.inetwork.com/v1/"
+                                 "users/u-ndh7ecxejswersdu5g8zngvca/"
+                                 "conferences/conf-xx/members/member-yy",
+                    "mute": False,
+                    "state": "active",
+                    "time": "2013-07-12T20:53:11.646Z"}
+
+        event = Event.create(**data_inc)
+
+        self.assertEqual(str(event), 'ConferenceMemberEvent(conference_id=conf-xx)')
+
+        self.assertIsInstance(event, EventType)
+        self.assertIsInstance(event, ConferenceMemberEvent)
+
+        self.assertEqual(event.call_id, 'c-xx')
+        self.assertEqual(event.conference_id, 'conf-xx')
+        self.assertEqual(event.active_members, 1)
+        self.assertEqual(event.hold, False)
+        self.assertEqual(event.mute, False)
+        self.assertEqual(event.state, 'active')
+
+        self.assertIsInstance(event.conference, Conference)
+        self.assertIsInstance(event.call, Call)
+        self.assertIsInstance(event.time, datetime)
+
+    def test_factory_conference_speak(self):
+        """
+        Event.create factory methods for conference speak
+        """
+        data_inc = {"eventType": "conference-speak",
+                    "conferenceId": "conf-xx",
+                    "conferenceUri": "https://api.catapult.inetwork.com/v1/"
+                                     "users/u-ndh7ecxejswersdu5g8zngvca/conferences/conf-xx",
+                    "status": "started",
+                    "time": "2013-07-12T21:22:55.046Z"}
+
+        event = Event.create(**data_inc)
+
+        self.assertEqual(str(event), 'ConferenceSpeakEvent(conference_id=conf-xx)')
+
+        self.assertIsInstance(event, EventType)
+        self.assertIsInstance(event, ConferenceSpeakEvent)
+
+        self.assertEqual(event.conference_id, 'conf-xx')
+        self.assertEqual(event.status, 'started')
+
+        self.assertIsInstance(event.time, datetime)
+
+    def test_factory_conference_playback(self):
+        """
+        Event.create factory methods for conference playback
+        """
+        data_inc = {"eventType": "conference-playback",
+                    "conferenceId": "conf-xx",
+                    "conferenceUri": "https://api.catapult.inetwork.com/v1/users"
+                                     "/u-ndh7ecxejswersdu5g8zngvca/conferences/conf-xx",
+                    "status": "started",
+                    "time": "2013-07-12T21:18:19.966Z"}
+
+        event = Event.create(**data_inc)
+
+        self.assertEqual(str(event), 'ConferencePlaybackEvent(conference_id=conf-xx)')
+
+        self.assertIsInstance(event, EventType)
+        self.assertIsInstance(event, ConferencePlaybackEvent)
+
+        self.assertEqual(event.conference_id, 'conf-xx')
+        self.assertEqual(event.status, 'started')
+
+        self.assertIsInstance(event.time, datetime)
