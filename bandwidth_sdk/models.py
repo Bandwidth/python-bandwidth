@@ -5,6 +5,10 @@ from .client import Client
 from .utils import to_api, from_api, enum, get_location_id
 from.generics import AudioMixin
 
+if six.PY3:
+    from urllib.parse import quote as urlquote
+elif six.PY2:
+    from urllib import quote as urlquote
 # Sentinel value to mark that some of properties have been not synced.
 UNEVALUATED = object()
 
@@ -361,7 +365,7 @@ class Application(Resource):
         :return: True if it's patched
         """
         client = self.client or Client()
-        url = '{}{}'.format(self._path, self.application_id)
+        url = '{}{}'.format(self._path, self.id)
         cleaned_data = {k: v for k, v in data.items() if v is not None and k in self._fields}
         client.post(url, data=to_api(cleaned_data))
         if cleaned_data:
@@ -1087,8 +1091,10 @@ class PhoneNumber(Gettable):
 
     def set_up(self, data):
         app_id = data.pop('application', None)
-        if app_id:
+        if isinstance(app_id, six.string_types):
             data['application'] = Application(data=app_id.split('/')[-1])
+        elif isinstance(app_id, Application):
+            data['application'] = app_id
         # option for creating phonenumber instance from available numbers
         # batch allocate
         self_id = data.pop('location', None)
@@ -1135,22 +1141,35 @@ class PhoneNumber(Gettable):
         No query parameters are supported.
         :return: PhoneNumber instance.
         """
+
+        number = urlquote(number)
         return cls.get(number)
 
     def patch(self, **data):
         """
         Makes changes to a number instance on catapult side.
-        :param application_id: The ID of an Application you want to
-                               associate with this number.
+        :param application: Application instance you want to
+                            associate with this number
+                            or The ID of an Application.
         :param name: A name you choose for this number.
         :param fallback_number: Number to transfer an incoming call when the
                                 callback/fallback events can't be delivered
-        :return: True if it's patched
+        :return: PhoneNumber instance
         """
         client = self.client or Client()
         url = '{}/{}'.format(self._path, self.id)
+        app = data.pop('application', None)
+        if isinstance(app, Application):
+            app_id = app.id
+            data['application_id'] = app_id
+        elif isinstance(app, six.string_types):
+            data['application_id'] = app
+
         client.post(url, data=to_api(data))
-        return True
+        data.pop('application_id')
+        data['application'] = app or None
+        self.set_up(data)
+        return self
 
     def delete(self):
         """
@@ -1172,9 +1191,10 @@ class PhoneNumber(Gettable):
         Allocates a number so you can use it to make and receive calls and
         send and receive messages.
         :param number:  An available telephone number you want to use
-                (must be in E.164 format, like +19195551212)
-        :param application_id: The ID of an Application you want to
-                               associate with this number.
+                (must be in E.164 format, like +19195551212). Mandatory field.
+        :param application: Application instance you want to
+                            associate with this number
+                            or The ID of an Application.
         :param name: A name you choose for this number.
         :param fallback_number:  Number to transfer an incoming call when the
                                  callback/fallback events can't be delivered
@@ -1183,9 +1203,15 @@ class PhoneNumber(Gettable):
         """
         client = cls.client or Client()
         url = cls._path
+        app = data.pop('application', None)
+        if isinstance(app, Application):
+            app_id = app.id
+            data['application_id'] = app_id
+        elif isinstance(app, six.string_types):
+            data['application_id'] = app
         resp = client.post(url, data=to_api(data))
-        resp_data = resp.json()
         number_id = get_location_id(resp)
         number = cls(number_id)
-        number.set_up(resp_data)
+        data['application'] = app
+        number.set_up(data)
         return number
