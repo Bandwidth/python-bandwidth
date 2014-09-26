@@ -1278,48 +1278,48 @@ class CommonTest(unittest.TestCase):
 
     def test_account_repr_not_failed(self):
         """
-        Test Account __repr__
+        Test Account representation
         """
-        self.assertIsInstance(Account().__repr__(), six.string_types)
+        self.assertIsInstance(repr(Account()), six.string_types)
 
     def test_application_repr_not_failed(self):
         """
-        Test Application __repr__
+        Test Application representation
         """
-        self.assertIsInstance(Application('id').__repr__(), six.string_types)
+        self.assertIsInstance(repr(Application('id')), six.string_types)
 
     def test_bridge_repr_not_failed(self):
         """
-        Test Bridge __repr__
+        Test Bridge representation
         """
-        self.assertIsInstance(Bridge('id').__repr__(), six.string_types)
+        self.assertIsInstance(repr(Bridge('id')), six.string_types)
 
     def test_call_repr_not_failed(self):
         """
-        Test Call __repr__
+        Test Call representation
         """
-        self.assertIsInstance(Call('id').__repr__(), six.string_types)
+        self.assertIsInstance(repr(Call('id')), six.string_types)
 
     def test_conference_repr_not_failed(self):
         """
-        Test conference __repr__
+        Test conference representation
         """
-        self.assertIsInstance(Conference('id').__repr__(), six.string_types)
+        self.assertIsInstance(repr(Conference('id')), six.string_types)
 
     def test_conferencemember_repr_not_failed(self):
         """
-        Test ConferenceMember __repr__
+        Test ConferenceMember representation
         """
-        self.assertIsInstance(ConferenceMember('id', {'id': 'id'}).__repr__(), six.string_types)
+        self.assertIsInstance(repr(ConferenceMember('id', {'id': 'id'})), six.string_types)
 
     def test_gather_repr_not_failed(self):
         """
-        Test Gather __repr__
+        Test Gather representation
         """
-        self.assertIsInstance(Gather('id').__repr__(), six.string_types)
+        self.assertIsInstance(repr(Gather('id')), six.string_types)
 
     def test_recording_repr_not_failed(self):
         """
-        Test Recording __repr__
+        Test Recording representation
         """
-        self.assertIsInstance(Recording('id').__repr__(), six.string_types)
+        self.assertIsInstance(repr(Recording('id')), six.string_types)
