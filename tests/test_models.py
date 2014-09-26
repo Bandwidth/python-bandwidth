@@ -1,4 +1,3 @@
-import sys
 import six
 
 import responses
@@ -9,8 +8,6 @@ from bandwidth_sdk import (Call, Bridge,
                            Account, Conference, Recording, ConferenceMember,
                            Gather, Media)
 from datetime import datetime
-
-PY3 = sys.version_info > (2, )
 
 
 def assertJsonEq(first, second, msg='Ouups'):
@@ -1422,7 +1419,7 @@ class MediaTest(unittest.TestCase):
                       body='',
                       status=200,
                       )
-        if PY3:
+        if six.PY3:
             content_line = b'lalalala'
         else:
             content_line = 'lalalala'
