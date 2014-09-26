@@ -30,7 +30,7 @@ class Gettable(object):
                 setattr(self, k, v)
 
     def __repr__(self):
-        return ''.format(self.__class__.__name__, self.id)
+        return '{}({})'.format(self.__class__.__name__, self.id)
 
 
 class Resource(Gettable):
@@ -992,12 +992,11 @@ class Media(Resource):
         if file_path:
             if not file_exists(file_path):
                 raise AppPlatformError('Provided file does not exists {}'.format(file_path))
-            with open(file_path, 'br') as fd:
-                content = fd.readall()
+            with open(file_path, 'r') as fd:
+                content = fd.read()
         elif fd:
-            assert fd.readable(), 'fd is not readable'
             fd.seek(0)
-            content = fd.readall()
+            content = fd.read()
         else:
             assert isinstance(content, six.binary_type), 'Only bytes accepted in content'
         url = '{}/{}'.format(self._path, media_name)

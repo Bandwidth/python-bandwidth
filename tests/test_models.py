@@ -1,3 +1,4 @@
+import sys
 import six
 
 import responses
@@ -6,8 +7,10 @@ import unittest
 from bandwidth_sdk import (Call, Bridge,
                            AppPlatformError, Application,
                            Account, Conference, Recording, ConferenceMember,
-                           Gather)
+                           Gather, Media)
 from datetime import datetime
+
+PY3 = sys.version_info > (2, )
 
 
 def assertJsonEq(first, second, msg='Ouups'):
@@ -1323,3 +1326,177 @@ class CommonTest(unittest.TestCase):
         Test Recording __repr__
         """
         self.assertIsInstance(Recording('id').__repr__(), six.string_types)
+
+
+class MediaTest(unittest.TestCase):
+
+    @responses.activate
+    def test_list(self):
+        """
+        Media.list()
+        """
+        raw = """
+        [
+        {
+         "contentLength": 561276,
+         "mediaName": "{mediaName1}",
+         "content": "https://catapult.inetwork.com/v1/users/users/{userId}/media/one"
+        },
+        {
+         "contentLength": 2703360,
+         "mediaName": "{mediaName2}",
+         "content": "https://catapult.inetwork.com/v1/users/users/{userId}/media/two"
+        },
+        {
+         "contentLength": 588,
+         "mediaName": "{mediaName3}",
+         "content": "https://catapult.inetwork.com/v1/users/users/{userId}/media/tree"
+        }
+        ]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/media',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+
+        medias = Media.list()
+
+        media = medias[0]
+
+        self.assertIsInstance(media, Media)
+        self.assertEqual(media.id, 'one')
+        self.assertEqual(media.media_name, '{mediaName1}')
+        self.assertEqual(media.content_length, 561276)
+
+        self.assertEqual(str(media), 'Media(one)')
+
+    @responses.activate
+    def test_download(self):
+        """
+        Media('media-id').download()
+        """
+        raw = b'testrecordingcontent'
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/media/media-id',
+                      body=raw,
+                      status=200,
+                      content_type='audio/wav')
+
+        content, mime = Media('media-id').download()
+        self.assertEqual(mime, 'audio/wav')
+        self.assertIsInstance(content, six.binary_type)
+        self.assertEqual(content, raw)
+
+    @responses.activate
+    def test_by_upload_file_name(self):
+        """
+        Media('media-id').upload('dolphin.mp3', file_path='./tests/fixtures/dolphin.mp3')
+        """
+        responses.add(responses.PUT,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/media/dolphin.mp3',
+                      body='',
+                      status=200,
+                      )
+
+        Media('media-id').upload('dolphin.mp3', file_path='./tests/fixtures/dolphin.mp3')
+        request_message = responses.calls[0].request.body  # decoded to str implicitly
+        self.assertEqual(request_message, 'thra\ntata\nrata')
+
+    @unittest.expectedFailure
+    @responses.activate
+    def test_by_upload_file_name(self):
+        """
+        Bad file name: Media('media-id').upload('dolphin.mp3', file_path='./tests/fixtures/')
+        """
+        Media('media-id').upload('dolphin.mp3', file_path='./tests/fixtures/')
+
+    @responses.activate
+    def test_by_upload_content(self):
+        """
+        Media('media-id').upload('dolphin.mp3', content=b'lalalala')
+        """
+        responses.add(responses.PUT,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/media/dolphin.mp3',
+                      body='',
+                      status=200,
+                      )
+        if PY3:
+            content_line = b'lalalala'
+        else:
+            content_line = 'lalalala'
+        Media('media-id').upload('dolphin.mp3', content=content_line)
+        request_message = responses.calls[0].request.body  # decoded to str implicitly
+        self.assertEqual(request_message, content_line)
+
+    @unittest.expectedFailure
+    @responses.activate
+    def test_by_upload_content_encoding(self):
+        """
+        Bad content encoding Media('media-id').upload('dolphin.mp3', content=u'lalalala')
+        """
+        content_line = u'lalalala'
+        Media('media-id').upload('dolphin.mp3', content=content_line)
+
+    @responses.activate
+    def test_by_upload_from_fd(self):
+        """
+        Media('media-id').upload('dolphin.mp3', fd=open('./tests/fixtures/dolphin.mp3'))
+        """
+        responses.add(responses.PUT,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/media/dolphin.mp3',
+                      body='',
+                      status=200,
+                      )
+
+        with open('./tests/fixtures/dolphin.mp3') as fd:
+            Media('media-id').upload('dolphin.mp3', fd=fd)
+
+        request_message = responses.calls[0].request.body  # decoded to str implicitly
+        self.assertEqual(request_message, 'thra\ntata\nrata')
+
+        responses.add(responses.PUT,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/media/dolphin.mp3',
+                      body='',
+                      status=200,
+                      )
+
+        file_like = six.StringIO('thra\ntata\nrata')
+        Media('media-id').upload('dolphin.mp3', fd=file_like)
+
+        request_message = responses.calls[0].request.body  # decoded to str implicitly
+        self.assertEqual(request_message, 'thra\ntata\nrata')
+
+    @responses.activate
+    def test_by_upload_file_seek(self):
+        """
+        Seek to EOF Media('media-id').upload('dolphin.mp3', fd=open('./tests/fixtures/dolphin.mp3'))
+        """
+        responses.add(responses.PUT,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/media/dolphin.mp3',
+                      body='',
+                      status=200,
+                      )
+
+        with open('./tests/fixtures/dolphin.mp3') as fd:
+            fd.seek(14)
+            Media('media-id').upload('dolphin.mp3', fd=fd)
+
+        request_message = responses.calls[0].request.body  # decoded to str implicitly
+        self.assertEqual(request_message, 'thra\ntata\nrata')
+
+    @unittest.expectedFailure
+    @responses.activate
+    def test_by_upload_file_seek(self):
+        """
+        Closed fd Media('media-id').upload('dolphin.mp3', fd=open('./tests/fixtures/dolphin.mp3'))
+        """
+        responses.add(responses.PUT,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/media/dolphin.mp3',
+                      body='',
+                      status=200,
+                      )
+
+        fd = open('./tests/fixtures/dolphin.mp3')
+        fd.close()
+        Media('media-id').upload('dolphin.mp3', fd=fd)

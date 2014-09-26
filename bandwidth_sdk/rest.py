@@ -33,7 +33,7 @@ class RESTClientObject(object):
         return '{}{}'.format(self.endpoint, url)
 
     def request(self, method, *args, **kwargs):
-        assert method in ('get', 'post', 'delete', 'patch')
+        assert method in ('get', 'post', 'delete', 'patch', 'put')
         try:
             response = requests.request(method, *args, **kwargs)
             response.raise_for_status()
