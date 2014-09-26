@@ -1000,5 +1000,5 @@ class Media(Resource):
             content = fd.readall()
         else:
             assert isinstance(content, six.binary_type), 'Only bytes accepted in content'
-        url = '{}/{}'.format(self._path, media_name, in_bytes=True)
-        self.client.patch(url, data=content)
+        url = '{}/{}'.format(self._path, media_name)
+        self.client.put(url, data=content, in_bytes=True)
