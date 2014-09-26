@@ -2,7 +2,8 @@
 import six
 from functools import partial
 from .client import Client
-from .utils import to_api, from_api, enum, get_location_id
+from .utils import to_api, from_api, enum, get_location_id, file_exists
+from .errors import AppPlatformError
 from.generics import AudioMixin
 
 # Sentinel value to mark that some of properties have been not synced.
@@ -913,3 +914,91 @@ class Recording(Gettable):
         client = self.client or Client()
         resp = client.get(self.media, join_endpoint=False)
         return resp.content, resp.headers['Content-Type']
+
+
+class Media(Resource):
+    """
+    The Media resource lets you upload your media files to Bandwidth API servers so they can be used in
+    application scripts without requiring a separate hosting provider. You can upload files up to 65 MB and
+    file storage is free for an unlimited number of files.
+    Files you upload can only be accessed by you when you supply your API access token and secret.
+    They are not available to anonymous users.
+    """
+
+    _path = 'media'
+
+    content_length = None
+    media_name = None
+    id = None
+
+    _fields = frozenset(('id', 'media_name', 'content_length'))
+
+    def __init__(self, data):
+        self.client = Client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.id = data
+        else:
+            raise TypeError('Accepted only id or media data as dictionary')
+
+    def set_up(self, data):
+        content = data.pop('content', None)
+        if content:
+            data['id'] = content.split('/')[-1]
+        return super(Media, self).set_up(data)
+
+    @classmethod
+    def list(cls):
+        """
+        Gets a list of your media files. No query parameters are supported.
+        :return: List of recording instances.
+        """
+        client = cls.client or Client()
+        data_as_list = client.get(cls._path).json()
+        return [cls(data=v) for v in data_as_list]
+
+    def delete(self):
+        """
+        Deletes a media file from Bandwidth API server. Make sure you don't have any application scripts still
+        using the media before you delete it. If you acccidentally delete a media file, you can immediately
+        upload a new file with the same name.
+        :return: None
+        """
+        assert self.id is not None, 'Id field is required for this action'
+        url = '{}/{}'.format(self._path, self.id)
+        self.client.delete(url)
+
+    def download(self):
+        """
+        Downloads a media file you previously uploaded.
+        :return: Tuple where first arg is content of media file in bytes,
+                and second is content-type of file.
+        """
+        url = '{}/{}'.format(self._path, self.id)
+        r = self.client.get(url)
+        return r.content, r.headers['Content-Type']
+
+    def upload(self, media_name, content=None, file_path=None, fd=None):
+        """
+        Uploads a file the normal HTTP way. You may add headers to the request in order
+        to provide some control to your media-file.
+        :return: None
+        """
+        assert sum((bool(content), bool(file_path), bool(fd))) == 1, 'Upload should be used either ' \
+                                                                     'with content buffer ' \
+                                                                     'or with path to file on local filesystem ' \
+                                                                     'or with open file descriptor'
+        if file_path:
+            if not file_exists(file_path):
+                raise AppPlatformError('Provided file does not exists {}'.format(file_path))
+            with open(file_path, 'br') as fd:
+                content = fd.readall()
+        elif fd:
+            assert fd.readable(), 'fd is not readable'
+            fd.seek(0)
+            content = fd.readall()
+        else:
+            assert isinstance(content, six.binary_type), 'Only bytes accepted in content'
+        url = '{}/{}'.format(self._path, media_name, in_bytes=True)
+        self.client.patch(url, data=content)

@@ -81,3 +81,14 @@ class RESTClientObject(object):
         self._log_response(response)
 
         return response
+
+    def patch(self, url, data=None, timeout=None, in_bytes=False, **kwargs):
+        url = self._join_endpoint(url)
+        kwargs['timeout'] = timeout or self.default_timeout
+        if data and not in_bytes:
+            data = json.dumps(data)
+        response = self.request('patch', url, auth=self.auth, headers=self.headers, data=data, **kwargs)
+
+        self._log_response(response)
+
+        return response
