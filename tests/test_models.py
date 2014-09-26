@@ -1429,6 +1429,9 @@ class MediaTest(unittest.TestCase):
         request_message = responses.calls[0].request.body  # decoded to str implicitly
         self.assertEqual(request_message, content_line)
 
+        request_headers = responses.calls[0].request.headers
+        self.assertEqual(request_headers['Content-Length'], '8')
+
     @unittest.expectedFailure
     @responses.activate
     def test_by_upload_content_encoding(self):
@@ -1467,6 +1470,9 @@ class MediaTest(unittest.TestCase):
         request_message = responses.calls[0].request.body  # decoded to str implicitly
         self.assertEqual(request_message, 'thra\ntata\nrata')
 
+        request_headers = responses.calls[0].request.headers
+        self.assertEqual(request_headers['Content-Length'], '14')
+
     @responses.activate
     def test_by_upload_file_seek(self):
         """
@@ -1485,9 +1491,12 @@ class MediaTest(unittest.TestCase):
         request_message = responses.calls[0].request.body  # decoded to str implicitly
         self.assertEqual(request_message, 'thra\ntata\nrata')
 
+        request_headers = responses.calls[0].request.headers
+        self.assertEqual(request_headers['Content-Length'], '14')
+
     @unittest.expectedFailure
     @responses.activate
-    def test_by_upload_file_seek(self):
+    def test_by_upload_file_closed(self):
         """
         Closed fd Media('media-id').upload('dolphin.mp3', fd=open('./tests/fixtures/dolphin.mp3'))
         """
