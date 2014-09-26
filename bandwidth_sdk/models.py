@@ -979,7 +979,7 @@ class Media(Resource):
         r = self.client.get(url)
         return r.content, r.headers['Content-Type']
 
-    def upload(self, media_name, content=None, file_path=None, fd=None):
+    def upload(self, media_name, content=None, file_path=None, fd=None, mime='audio/mpeg'):
         """
         Uploads a file the normal HTTP way. You may add headers to the request in order
         to provide some control to your media-file.
@@ -1000,4 +1000,4 @@ class Media(Resource):
         else:
             assert isinstance(content, six.binary_type), 'Only bytes accepted in content'
         url = '{}/{}'.format(self._path, media_name)
-        self.client.put(url, data=content, in_bytes=True)
+        self.client.build_request('put', url, data=content, headers={'content-type': mime})

@@ -1399,7 +1399,8 @@ class MediaTest(unittest.TestCase):
                       status=200,
                       )
 
-        Media('media-id').upload('dolphin.mp3', file_path='./tests/fixtures/dolphin.mp3')
+        Media('media-id').upload('dolphin.mp3', file_path='./tests/fixtures/dolphin.mp3',
+                                 mime='application/octet-stream')
         request_message = responses.calls[0].request.body  # decoded to str implicitly
         self.assertEqual(request_message, 'thra\ntata\nrata')
 
@@ -1425,12 +1426,13 @@ class MediaTest(unittest.TestCase):
             content_line = b'lalalala'
         else:
             content_line = 'lalalala'
-        Media('media-id').upload('dolphin.mp3', content=content_line)
+        Media('media-id').upload('dolphin.mp3', content=content_line, mime='application/octet-stream')
         request_message = responses.calls[0].request.body  # decoded to str implicitly
         self.assertEqual(request_message, content_line)
 
         request_headers = responses.calls[0].request.headers
         self.assertEqual(request_headers['Content-Length'], '8')
+        self.assertEqual(request_headers['Content-type'], 'application/octet-stream')
 
     @unittest.expectedFailure
     @responses.activate
@@ -1465,13 +1467,14 @@ class MediaTest(unittest.TestCase):
                       )
 
         file_like = six.StringIO('thra\ntata\nrata')
-        Media('media-id').upload('dolphin.mp3', fd=file_like)
+        Media('media-id').upload('dolphin.mp3', fd=file_like, mime='application/octet-stream')
 
-        request_message = responses.calls[0].request.body  # decoded to str implicitly
+        request_message = responses.calls[1].request.body  # decoded to str implicitly
         self.assertEqual(request_message, 'thra\ntata\nrata')
 
-        request_headers = responses.calls[0].request.headers
+        request_headers = responses.calls[1].request.headers
         self.assertEqual(request_headers['Content-Length'], '14')
+        self.assertEqual(request_headers['Content-type'], 'application/octet-stream')
 
     @responses.activate
     def test_by_upload_file_seek(self):
