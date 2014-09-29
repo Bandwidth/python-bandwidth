@@ -77,4 +77,4 @@ class AudioMixin(object):
         self.client.post(url, data=to_api({'sentence': ''}))
 
     def get_audio_url(self):
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover

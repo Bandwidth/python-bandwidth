@@ -1,3 +1,4 @@
+import responses
 from datetime import datetime
 
 from bandwidth_sdk import (EventType,
@@ -20,6 +21,7 @@ from bandwidth_sdk import (EventType,
                            RejectCallEvent,
                            Call,
                            Conference,
+                           Gather,
                            )
 
 from .utils import SdkTestCase
@@ -168,6 +170,7 @@ class EventsTest(SdkTestCase):
 
         self.assertFalse(event.done)
 
+    @responses.activate
     def test_factory_gather(self):
         """
         Event.create factory methods for gather
@@ -178,7 +181,7 @@ class EventsTest(SdkTestCase):
                     "digits": "1",
                     "eventType": "gather",
                     "callId": 'c-z572ntgyy2vnffwpa5bwrcy',
-                    "gatherId": "{gatherId}"
+                    "gatherId": "gatherId"
                     }
 
         event = Event.create(**data_inc)
@@ -189,13 +192,35 @@ class EventsTest(SdkTestCase):
         self.assertIsInstance(event, GatherCallEvent)
 
         self.assertEqual(event.call_id, 'c-z572ntgyy2vnffwpa5bwrcy')
+        self.assertEqual(event.gather_id, 'gatherId')
 
         self.assertIsInstance(event.time, datetime)
 
         self.assertEquals(event.digits, '1')
         self.assertIsInstance(event.call, Call)
 
-        #todo: assert event gather
+        raw = """
+        {
+        "id": "gatherId",
+        "state": "completed",
+        "reason": "max-digits",
+        "createdTime": "2014-02-12T19:33:56Z",
+        "completedTime": "2014-02-12T19:33:59Z",
+        "call": "https://api.catapult.inetwork.com/v1/users/u-xa2n3oxk6it4efbglisna6a/calls/c-isw3qup6gvr3ywcsentygnq",
+        "digits": "123"
+        }
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls/c-z572ntgyy2vnffwpa5bwrcy'
+                      '/gather/gatherId',
+                      body=raw,
+                      status=200,
+                      content_type='application/json',
+                      )
+        gather = event.gather
+        self.assertIsInstance(gather, Gather)
+
+        self.assertEqual(gather.reason, 'max-digits')
 
     def test_factory_error(self):
         """
@@ -297,6 +322,7 @@ class EventsTest(SdkTestCase):
         self.assertEquals(event.state, 'PLAYBACK_START')
         self.assertIsInstance(event.call, Call)
         self.assertIsInstance(event.time, datetime)
+        self.assertEqual(event.done, False)
 
     def test_factory_dtmf(self):
         """
@@ -461,3 +487,14 @@ class EventsTest(SdkTestCase):
         self.assertEqual(event.status, 'started')
 
         self.assertIsInstance(event.time, datetime)
+
+    def test_unknown_event(self):
+        """
+        Event.create for malformed event
+        """
+        data_inc = {"eventType": "unknown",
+                    "status": "started",
+                    "time": "2013-07-12T21:18:19.966Z"}
+
+        with self.assertRaises(ValueError):
+            Event.create(**data_inc)
