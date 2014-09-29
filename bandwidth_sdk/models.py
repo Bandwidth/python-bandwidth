@@ -836,7 +836,7 @@ class ConferenceMember(AudioMixin, Resource):
         client = self.client
         url = 'conferences/{}/members/{}'.format(self.conf_id, self.id)
         data = to_api(params)
-        client.post(url, data=data).json()
+        client.post(url, data=data)
         self.set_up(params)
         return self
 
