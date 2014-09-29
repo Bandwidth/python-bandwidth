@@ -5,10 +5,7 @@ from .client import Client
 from .utils import to_api, from_api, enum, get_location_id
 from.generics import AudioMixin
 
-if six.PY3:
-    from urllib.parse import quote as urlquote
-elif six.PY2:
-    from urllib import quote as urlquote
+
 # Sentinel value to mark that some of properties have been not synced.
 UNEVALUATED = object()
 
@@ -995,7 +992,7 @@ class AvailableNumber(Gettable):
         :return: List of AvailableNumber instances.
         """
         client = cls.client or Client()
-        url = cls._path + 'tollFree/'
+        url = cls._path + 'tollFree'
         data = client.raw_get(url, params=to_api(params)).json()
         return [cls(number) for number in data]
 
@@ -1142,7 +1139,7 @@ class PhoneNumber(Gettable):
         :return: PhoneNumber instance.
         """
 
-        number = urlquote(number)
+        number = six.moves.urllib.parse.quote(number)
         return cls.get(number)
 
     def patch(self, **data):
