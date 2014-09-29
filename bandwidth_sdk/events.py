@@ -1,6 +1,8 @@
 import json
 from six import iteritems
 from .utils import from_api, enum
+from .models import Recording, Call, Conference
+
 # Event abstraction
 
 CAUSES = enum('CALL_REJECTED')
@@ -43,8 +45,9 @@ class CallEvent(EventType):
 
     @property
     def call(self):
-        # avoid cyclic imports
-        from .models import Call
+        """
+        Get call resource.
+        """
         return Call(self.call_id)
 
     def __repr__(self):
@@ -221,7 +224,13 @@ class RecordingCallEvent(CallEvent):
     tag = None
     _fields = frozenset(('call_id', 'event_type', 'recording_id', 'recording_uri', 'state', 'status', 'start_time',
                          'end_time', 'tag'))
-    # todo: recording property
+
+    @property
+    def recording(self):
+        """
+        Get recording resource.
+        """
+        return Recording(self.recording_id)
 
 
 class SmsEvent(EventType):
@@ -250,7 +259,9 @@ class ConferenceEventMixin(EventType):
 
     @property
     def conference(self):
-        from .models import Conference
+        """
+        Get conference resource.
+        """
         return Conference(self.conference_id)
 
     def __repr__(self):
