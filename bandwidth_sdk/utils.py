@@ -1,3 +1,4 @@
+import os
 import six
 import re
 from dateutil import parser
@@ -78,3 +79,6 @@ def enum(*vals, **enums):
 def get_location_id(response):
     location = response.headers['Location']
     return location.split('/')[-1]
+
+
+file_exists = os.path.isfile

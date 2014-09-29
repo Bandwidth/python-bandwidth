@@ -33,7 +33,7 @@ class RESTClientObject(object):
         return '{}{}'.format(self.endpoint, url)
 
     def request(self, method, *args, **kwargs):
-        assert method in ('get', 'post', 'delete', 'patch')
+        assert method in ('get', 'post', 'delete', 'patch', 'put')
         try:
             response = requests.request(method, *args, **kwargs)
             response.raise_for_status()
@@ -80,4 +80,11 @@ class RESTClientObject(object):
 
         self._log_response(response)
 
+        return response
+
+    def build_request(self, method, url, headers={}, join_endpoint=True, **kwargs):
+        if join_endpoint:
+            url = self._join_endpoint(url)
+        response = self.request(method, url, auth=self.auth, headers=headers, **kwargs)
+        self._log_response(response)
         return response
