@@ -200,10 +200,10 @@ class Call(AudioMixin, Resource):
 
     def bridge(self, *calls, **kwargs):
         """
-        #todo: proper docstring
-        :param calls:
-        :param kwargs:
-        :return:
+        Bridge calls with this call.
+        :param calls: Call instances
+        :param kwargs: bridge_audio - Enable/Disable two way audio path (default = true)
+        :return: Bridge instance.
         """
         _calls = (self,) + calls
         return Bridge.create(*_calls, **kwargs)
@@ -703,7 +703,13 @@ class Conference(AudioMixin, Gettable):
     @classmethod
     def create(cls, from_, **params):
         """
-        todo: docstring
+        Creates a new conference.
+
+       :param from_: The number that will host the conference
+       :param callback_url: URL where the events related to the Conference will be posted to
+       :param callback_timeout: Determine how long should the platform wait for callbackUrl's response before
+            timing out in milliseconds.
+       :param fallback_url:  The URL used to send the callback event if the request to callbackUrl fails.
         """
         client = cls.client or get_client()
         params['from'] = from_
