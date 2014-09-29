@@ -20,6 +20,13 @@ class ClientTest(unittest.TestCase):
         self.assertIs(client, restored_client)
 
     @unittest.expectedFailure
+    def test_instantiation_without_env(self):
+        """
+        Basic client installation by get_client without configuration.
+        """
+        get_client()
+
+    @unittest.expectedFailure
     def test_instantiation_bad_args(self):
         """
         Not enough args in client constructor.
