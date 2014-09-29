@@ -396,6 +396,27 @@ class CallsTest(SdkTestCase):
         self.assertEqual(record.state, 'complete')
 
     @responses.activate
+    def test_bridge_from_call(self):
+        """
+        Call('c-foo').bridge(Call('c-bar'))
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/bridges/new-bridge-id'})
+
+        bridge = Call('c-foo').bridge(Call('c-bar'))
+        self.assertIsInstance(bridge, Bridge)
+        self.assertEqual(bridge.id, 'new-bridge-id')
+
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"callIds": ["c-foo", "c-bar"]}')
+
+        self.assertEqual(bridge.call_ids, ["c-foo", "c-bar"])
+
+    @responses.activate
     def test_refresh(self):
         """
         Call('c-call-id').refresh()
@@ -611,6 +632,7 @@ class BridgesTest(SdkTestCase):
         bridge = Bridge.create()
         self.assertIsInstance(bridge, Bridge)
         self.assertEqual(bridge.id, 'new-bridge-id')
+        self.assertEqual(bridge.call_ids, [])
 
     @responses.activate
     def test_create_form_call(self):
@@ -742,6 +764,64 @@ class BridgesTest(SdkTestCase):
 
         self.assertEqual(bridge.state, 'completed')
         self.assertEqual(bridge.bridge_audio, True)
+
+    @responses.activate
+    def test_fetch_calls(self):
+        """
+        Bridge('b-id').fetch_calls()
+        """
+        raw = """
+        [
+        {
+        "activeTime": "2013-05-22T19:49:39Z",
+        "direction": "out",
+        "from": "+1919000001",
+        "id": "c-xx",
+        "bridgeId": "b-id",
+        "startTime": "2013-05-22T19:49:35Z",
+        "state": "active",
+        "to": "+1919000002",
+        "recordingEnabled": false,
+        "events": "https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId1}/events",
+        "bridge": "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/{bridgeId}"
+        },
+        {
+        "activeTime": "2013-05-22T19:50:16Z",
+        "direction": "out",
+        "from": "+1919000003",
+        "id": "c-yy",
+        "bridgeId": "b-id",
+        "startTime": "2013-05-22T19:50:16Z",
+        "state": "active",
+        "to": "+1919000004",
+        "recordingEnabled": false,
+        "events": "https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId2}/events",
+        "bridge": "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/{bridgeId}"
+        }
+        ]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/b-id/calls',
+                      body=raw,
+                      status=200,
+                      content_type='application/json',
+                      )
+
+        bridge = Bridge('b-id')
+        calls = bridge.fetch_calls()
+
+        call = calls[0]
+
+        self.assertIsInstance(call, Call)
+        self.assertEqual(call.call_id, 'c-xx')
+        self.assertEqual(call.bridge_id, 'b-id')
+
+        call = calls[1]
+        self.assertIsInstance(call, Call)
+        self.assertEqual(call.call_id, 'c-yy')
+        self.assertEqual(call.bridge_id, 'b-id')
+
+        self.assertEqual(bridge.call_ids, ['c-xx', 'c-yy'])
 
     @responses.activate
     def test_call_party(self):
