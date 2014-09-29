@@ -1,7 +1,7 @@
 # Object models for SDK
 import six
 from functools import partial
-from .client import Client
+from .client import get_client
 from .utils import to_api, from_api, enum, get_location_id, file_exists
 from .errors import AppPlatformError
 from.generics import AudioMixin
@@ -74,7 +74,7 @@ class Call(AudioMixin, Resource):
                          'state', 'start_time', 'active_time'))
 
     def __init__(self, data):
-        self.client = Client()
+        self.client = get_client()
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
@@ -104,7 +104,7 @@ class Call(AudioMixin, Resource):
 
         :return: new Call instance with @call_id and @from_, @to fields.
         """
-        client = cls.client or Client()
+        client = cls.client or get_client()
 
         data = {
             'from': caller,
@@ -132,7 +132,7 @@ class Call(AudioMixin, Resource):
 
         :return: new Call instance with all provided fields.
         """
-        client = cls.client or Client()
+        client = cls.client or get_client()
         url = '{}/{}'.format(cls.path, call_id)
         data_as_dict = client.get(url).json()
         return cls(data_as_dict)
@@ -159,7 +159,7 @@ class Call(AudioMixin, Resource):
 
         :return: list of Call instances
         """
-        client = cls.client or Client()
+        client = cls.client or get_client()
         query = to_api(query)
         data_as_list = client.get(cls.path, params=query).json()
         return [cls(v) for v in data_as_list]
@@ -290,7 +290,7 @@ class Application(Resource):
                'callback_http_method', 'auto_answer')
 
     def __init__(self, data):
-        self.client = Client()
+        self.client = get_client()
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
@@ -316,7 +316,7 @@ class Application(Resource):
             Default value is 'true'.
         :return: Application instance
         """
-        client = cls.client or Client()
+        client = cls.client or get_client()
         p_data = to_api(data)
         resp = client.post(cls._path, data=p_data)
         application_id = get_location_id(resp)
@@ -333,7 +333,7 @@ class Application(Resource):
         If no value is specified the default value is 25. (Maximum value 1000).
         :return: List of Application instances
         """
-        client = cls.client or Client()
+        client = cls.client or get_client()
         data_as_list = client.get(
             cls._path, params=dict(page=page, size=size)).json()
         return [cls(data=from_api(v)) for v in data_as_list]
@@ -345,7 +345,7 @@ class Application(Resource):
         Gets information about one of your applications. No query parameters are supported.
         :return: Application instance
         """
-        client = cls.client or Client()
+        client = cls.client or get_client()
         url = '{}{}'.format(cls._path, application_id)
         data_as_dict = client.get(url).json()
         application = cls(data=from_api(data_as_dict))
@@ -362,7 +362,7 @@ class Application(Resource):
             Default value is 'true'.
         :return: True if it's patched
         """
-        client = self.client or Client()
+        client = self.client or get_client()
         url = '{}{}'.format(self._path, self.id)
         cleaned_data = {k: v for k, v in data.items() if v is not None and k in self._fields}
         client.post(url, data=to_api(cleaned_data))
@@ -376,7 +376,7 @@ class Application(Resource):
         Delete application instance on catapult side.
         :return: True if it's deleted
         """
-        client = self.client or Client()
+        client = self.client or get_client()
         url = '{}{}'.format(self._path, self.id)
         client.delete(url)
         return True
@@ -403,7 +403,7 @@ class Bridge(AudioMixin, Resource):
 
     def __init__(self, id, *calls, **kwargs):
         self.calls = calls
-        self.client = Client()
+        self.client = get_client()
         self.bridge_audio = kwargs.pop('bridge_audio', None)
         self.id = id
         if 'data' in kwargs:
@@ -423,7 +423,7 @@ class Bridge(AudioMixin, Resource):
 
         :return: list of Bridge instances
         """
-        client = cls.client or Client()
+        client = cls.client or get_client()
         query = to_api({'page': page, 'size': size})
         data_as_list = client.get(cls.path, params=query).json()
         return [cls(v['id'], data=v) for v in data_as_list]
@@ -437,7 +437,7 @@ class Bridge(AudioMixin, Resource):
 
         :return: Bridge instance
         """
-        client = cls.client or Client()
+        client = cls.client or get_client()
         url = '{}/{}'.format(cls.path, bridge_id)
         data_as_dict = client.get(url).json()
         bridge = cls(data_as_dict['id'], data=data_as_dict)
@@ -456,7 +456,7 @@ class Bridge(AudioMixin, Resource):
 
         :return: new Bridge instance
         """
-        client = cls.client or Client()
+        client = cls.client or get_client()
         data = to_api(kwargs)
         data['call_ids'] = [c.call_id for c in calls]
         data = to_api(data)
@@ -517,7 +517,7 @@ class Account(Gettable):
     _fields = frozenset(('balance', 'account_type'))
 
     def __init__(self, data=None):
-        self.client = Client()
+        self.client = get_client()
         if data:
             self.set_up(data)
 
@@ -530,7 +530,7 @@ class Account(Gettable):
         Get an Account object. No query parameters are supported
         :return: Account instance.
         """
-        client = cls.client or Client()
+        client = cls.client or get_client()
         data = from_api(client.get(cls._path).json())
         return cls(data=data)
 
@@ -549,7 +549,7 @@ class Account(Gettable):
 
         :return: list of dictionaries that contains information about transaction
         """
-        client = cls.client or Client()
+        client = cls.client or get_client()
         url = '{}{}'.format(cls._path, 'transactions')
         json_resp = client.get(url, params=to_api(query_params)).json()
         data = [from_api(d) for d in json_resp]
@@ -569,7 +569,7 @@ class Gather(Resource):
                          'digits'))
 
     def __init__(self, call_id, client=None):
-        self.client = client or Client()
+        self.client = client or get_client()
         self.path = 'calls/{}/gather'.format(call_id)
 
     def get(self, gather_id):
@@ -682,7 +682,7 @@ class Conference(AudioMixin, Gettable):
                          'callback_timeout', 'callback_url', 'active_members'))
 
     def __init__(self, data):
-        self.client = Client()
+        self.client = get_client()
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
@@ -702,7 +702,7 @@ class Conference(AudioMixin, Gettable):
         """
         todo: docstring
         """
-        client = cls.client or Client()
+        client = cls.client or get_client()
         params['from'] = from_
         json_data = to_api(params)
         r = client.post(cls.path, data=json_data)
@@ -720,7 +720,7 @@ class Conference(AudioMixin, Gettable):
 
         :return: new Conference instance with all provided fields.
         """
-        client = cls.client or Client()
+        client = cls.client or get_client()
         url = '{}/{}'.format(cls.path, conf_id)
         data_as_dict = client.get(url).json()
         return cls(data_as_dict)
@@ -802,7 +802,7 @@ class ConferenceMember(AudioMixin, Resource):
     _fields = frozenset(('id', 'state', 'added_time', 'hold', 'mute', 'join_tone', 'leaving_tone'))
 
     def __init__(self, conf_id, data):
-        self.client = Client()
+        self.client = get_client()
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
@@ -860,7 +860,7 @@ class Recording(Gettable):
     _fields = frozenset(('id', 'media', 'call', 'state', 'start_time', 'end_time'))
 
     def __init__(self, data):
-        self.client = Client()
+        self.client = get_client()
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
@@ -886,7 +886,7 @@ class Recording(Gettable):
                      If no value is specified the default value is 25. (Maximum value 1000).
         :return: List of recording instances.
         """
-        client = cls.client or Client()
+        client = cls.client or get_client()
         data_as_list = client.get(
             cls._path, params=to_api(dict(page=page, size=size))).json()
         return [cls(data=v) for v in data_as_list]
@@ -899,7 +899,7 @@ class Recording(Gettable):
         :param recording_id: recording id of recording that you want to retriev
         :return: Recording instance
         """
-        client = cls.client or Client()
+        client = cls.client or get_client()
         url = '{}/{}'.format(cls._path, recording_id)
         data_as_dict = client.get(url).json()
         recording = cls(data=data_as_dict)
@@ -912,7 +912,7 @@ class Recording(Gettable):
         :return: Tuple where first arg is content of media file in bytes,
                  and second is content-type of file.
         """
-        client = self.client or Client()
+        client = self.client or get_client()
         resp = client.get(self.media, join_endpoint=False)
         return resp.content, resp.headers['Content-Type']
 
@@ -936,7 +936,7 @@ class AvailableNumber(Gettable):
     price = None
 
     def __init__(self, data=None):
-        self.client = Client()
+        self.client = get_client()
         if data and isinstance(data, dict):
             self.set_up(from_api(data))
 
@@ -975,7 +975,7 @@ class AvailableNumber(Gettable):
 
         :return: List of AvailableNumber instances.
         """
-        client = cls.client or Client()
+        client = get_client()
         url = client.endpoint + '/v1/' + cls._path + 'local'
         data = client.build_request('get', url, params=to_api(params), join_endpoint=False).json()
         return [cls(number) for number in data]
@@ -992,7 +992,7 @@ class AvailableNumber(Gettable):
                             * : matches zero or more digits
         :return: List of AvailableNumber instances.
         """
-        client = cls.client or Client()
+        client = get_client()
         url = client.endpoint + '/v1/' + cls._path + 'tollFree'
         data = client.build_request('get', url, params=to_api(params), join_endpoint=False).json()
         return [cls(number) for number in data]
@@ -1022,7 +1022,7 @@ class AvailableNumber(Gettable):
 
         :return: List of PhoneNumber instances.
         """
-        client = cls.client or Client()
+        client = get_client()
         url = client.endpoint + '/v1/' + cls._path + 'local'
         data = client.build_request('post', url, params=to_api(params), join_endpoint=False).json()
         return [PhoneNumber(number) for number in data]
@@ -1035,7 +1035,7 @@ class AvailableNumber(Gettable):
                          (default 1, maximum 10).
         :return: List of PhoneNumber instances.
         """
-        client = cls.client or Client()
+        client = get_client()
         url = client.endpoint + '/v1/' + cls._path + 'tollFree'
         data = client.build_request('post', url,
                                     data=to_api(dict(quantity=quantity)), join_endpoint=False).json()
@@ -1080,7 +1080,7 @@ class PhoneNumber(Gettable):
     fallback_number = None
 
     def __init__(self, data):
-        self.client = Client()
+        self.client = get_client()
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
@@ -1116,7 +1116,7 @@ class PhoneNumber(Gettable):
                      (Maximum value 1000)
         :return: List of PhoneNumber instances.
         """
-        client = cls.client or Client()
+        client = get_client()
         data = client.get(cls._path, params=to_api(dict(page=page,
                                                         size=size))).json()
         return [cls(number) for number in data]
@@ -1128,7 +1128,7 @@ class PhoneNumber(Gettable):
         No query parameters are supported.
         :return: PhoneNumber instance.
         """
-        client = cls.client or Client()
+        client = get_client()
         url = '{}/{}'.format(cls._path, number_id)
         data = client.get(url).json()
         return cls(data=data)
@@ -1156,7 +1156,7 @@ class PhoneNumber(Gettable):
                                 callback/fallback events can't be delivered
         :return: PhoneNumber instance
         """
-        client = self.client or Client()
+        client = get_client()
         url = '{}/{}'.format(self._path, self.id)
         app = data.pop('application', None)
         if isinstance(app, Application):
@@ -1180,7 +1180,7 @@ class PhoneNumber(Gettable):
 
         :return: True if it's deleted.
         """
-        client = self.client or Client()
+        client = get_client()
         url = '{}/{}'.format(self._path, self.id)
         client.delete(url)
         return True
@@ -1206,7 +1206,7 @@ class PhoneNumber(Gettable):
 
         :return: PhoneNumber instance.
         """
-        client = cls.client or Client()
+        client = get_client()
         url = cls._path
         app = data.pop('application', None)
         if isinstance(app, Application):
@@ -1240,7 +1240,7 @@ class Media(Resource):
     _fields = frozenset(('id', 'media_name', 'content_length'))
 
     def __init__(self, data):
-        self.client = Client()
+        self.client = get_client()
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
@@ -1260,7 +1260,7 @@ class Media(Resource):
         Gets a list of your media files. No query parameters are supported.
         :return: List of recording instances.
         """
-        client = cls.client or Client()
+        client = cls.client or get_client()
         data_as_list = client.get(cls._path).json()
         return [cls(data=v) for v in data_as_list]
 

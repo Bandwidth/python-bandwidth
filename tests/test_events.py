@@ -1,4 +1,3 @@
-import unittest
 from datetime import datetime
 
 from bandwidth_sdk import (EventType,
@@ -18,12 +17,15 @@ from bandwidth_sdk import (EventType,
                            ConferenceMemberEvent,
                            ConferenceSpeakEvent,
                            ConferencePlaybackEvent,
+                           RejectCallEvent,
                            Call,
-                           Conference
+                           Conference,
                            )
 
+from .utils import SdkTestCase
 
-class EventsTest(unittest.TestCase):
+
+class EventsTest(SdkTestCase):
 
     def test_factory_incoming(self):
         """
@@ -105,6 +107,34 @@ class EventsTest(unittest.TestCase):
 
         self.assertIsInstance(event, EventType)
         self.assertIsInstance(event, HangupCallEvent)
+
+        self.assertEqual(event.from_, '+13233326955')
+        self.assertEqual(event.call_id, 'c-z572ntgyy2vnffwpa5bwrcy')
+
+        self.assertIsInstance(event.time, datetime)
+
+    def test_factory_reject(self):
+        """
+        Event.create factory methods for reject event
+        """
+        data_inc = b'''
+        {
+        "eventType":"hangup",
+        "callId":"c-z572ntgyy2vnffwpa5bwrcy",
+        "callUri": "https://api.catapult.inetwork.com/v1/users/u-ndh7ecxejswersdu5g8zngvca/calls/c-z572ntgyy2vnffwpa5bwrcy",
+        "from":"+13233326955",
+        "to":"+13233326955",
+        "cause":"CALL_REJECTED",
+        "time":"2012-11-14T15:56:12.636Z"
+        }
+        '''
+
+        event = Event.create(data=data_inc)
+
+        self.assertEqual(str(event), 'RejectCallEvent(c-z572ntgyy2vnffwpa5bwrcy)')
+
+        self.assertIsInstance(event, EventType)
+        self.assertIsInstance(event, RejectCallEvent)
 
         self.assertEqual(event.from_, '+13233326955')
         self.assertEqual(event.call_id, 'c-z572ntgyy2vnffwpa5bwrcy')

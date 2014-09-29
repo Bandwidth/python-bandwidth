@@ -9,12 +9,14 @@ from bandwidth_sdk import (Call, Bridge,
                            Gather, PhoneNumber, AvailableNumber, Media)
 from datetime import datetime
 
+from .utils import SdkTestCase
+
 
 def assertJsonEq(first, second, msg='Ouups'):
     assert sorted(first) == sorted(second), '%r != %r\n%s' % (first, second, msg)
 
 
-class CallsTest(unittest.TestCase):
+class CallsTest(SdkTestCase):
 
     @responses.activate
     def test_get(self):
@@ -425,7 +427,7 @@ class CallsTest(unittest.TestCase):
         self.assertEqual(gather.digits, '123')
 
 
-class BridgesTest(unittest.TestCase):
+class BridgesTest(SdkTestCase):
 
     @responses.activate
     def test_get(self):
@@ -720,7 +722,7 @@ class BridgesTest(unittest.TestCase):
         assertJsonEq(request_message, '{"bridgeAudio": false, "callIds": ["a-id", "b-id"]}')
 
 
-class ApplicationsTest(unittest.TestCase):
+class ApplicationsTest(SdkTestCase):
 
     @responses.activate
     def test_get(self):
@@ -893,7 +895,7 @@ class ApplicationsTest(unittest.TestCase):
         self.assertEqual(application.auto_answer, True)
 
 
-class AccountTests(unittest.TestCase):
+class AccountTests(SdkTestCase):
 
     @responses.activate
     def test_get(self):
@@ -954,7 +956,7 @@ class AccountTests(unittest.TestCase):
         self.assertIsInstance(data[1]['time'], datetime)
 
 
-class ConferenceTest(unittest.TestCase):
+class ConferenceTest(SdkTestCase):
 
     @responses.activate
     def test_get(self):
@@ -1153,7 +1155,7 @@ class ConferenceTest(unittest.TestCase):
         self.assertIsInstance(member.added_time, datetime)
 
 
-class RecordingTest(unittest.TestCase):
+class RecordingTest(SdkTestCase):
 
     @responses.activate
     def test_get(self):
@@ -1264,7 +1266,7 @@ class RecordingTest(unittest.TestCase):
         self.assertIsInstance(getted_data[0], six.binary_type)
 
 
-class PhoneNumberTest(unittest.TestCase):
+class PhoneNumberTest(SdkTestCase):
 
     @responses.activate
     def test_phone_number_get(self):
@@ -1501,7 +1503,7 @@ class PhoneNumberTest(unittest.TestCase):
         self.assertEqual(number.application.id, 'app-id')
 
 
-class AvailableNumberTest(unittest.TestCase):
+class AvailableNumberTest(SdkTestCase):
 
     @responses.activate
     def test_list_local(self):
@@ -1722,7 +1724,7 @@ class AvailableNumberTest(unittest.TestCase):
         self.assertEqual(number.application.incoming_call_url, 'http://callback.info')
 
 
-class CommonTest(unittest.TestCase):
+class CommonTest(SdkTestCase):
     """
     Account
     Application
@@ -1783,7 +1785,7 @@ class CommonTest(unittest.TestCase):
         self.assertIsInstance(repr(Recording('id')), six.string_types)
 
 
-class MediaTest(unittest.TestCase):
+class MediaTest(SdkTestCase):
 
     @responses.activate
     def test_list(self):
