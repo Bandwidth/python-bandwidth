@@ -22,6 +22,7 @@ from bandwidth_sdk import (EventType,
                            Call,
                            Conference,
                            Gather,
+                           Recording,
                            )
 
 from .utils import SdkTestCase
@@ -298,6 +299,10 @@ class EventsTest(SdkTestCase):
         self.assertIsInstance(event.call, Call)
         self.assertIsInstance(event.start_time, datetime)
         self.assertIsInstance(event.end_time, datetime)
+
+        rec = event.recording
+        self.assertIsInstance(rec, Recording)
+        self.assertEqual(rec.id, event.recording_id)
 
     def test_factory_speak(self):
         """
