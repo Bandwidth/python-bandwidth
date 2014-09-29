@@ -1,4 +1,3 @@
-import unittest
 from datetime import datetime
 
 from bandwidth_sdk import (EventType,
@@ -20,11 +19,13 @@ from bandwidth_sdk import (EventType,
                            ConferencePlaybackEvent,
                            RejectCallEvent,
                            Call,
-                           Conference
+                           Conference,
                            )
 
+from .utils import SdkTestCase
 
-class EventsTest(unittest.TestCase):
+
+class EventsTest(SdkTestCase):
 
     def test_factory_incoming(self):
         """

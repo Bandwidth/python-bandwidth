@@ -1,16 +1,22 @@
 import unittest
 
-from bandwidth_sdk import Client
+from bandwidth_sdk import Client, get_client, set_client, _Client
 
 
 class ClientTest(unittest.TestCase):
+
+    def setUp(self):
+        set_client(None)
+
+    def tearDown(self):
+        set_client(None)
 
     def test_instantiation(self):
         """
         Basic client installation.
         """
         client = Client('u-user', 't-token', 's-secret')
-        restored_client = Client()
+        restored_client = get_client()
         self.assertIs(client, restored_client)
 
     @unittest.expectedFailure
@@ -20,10 +26,10 @@ class ClientTest(unittest.TestCase):
         """
         Client('u-**********', 't-******')
 
-    @unittest.expectedFailure
-    def test_instantiation_again(self):
+    def test_re_instantiation(self):
         """
-        Client should be instantiated only once.
+        Client re installation.
         """
-        Client('u-**********', 't-******', 's-********')
-        Client('u-**********', 't-******', 's-********')
+        previous = Client('u-**********', 't-******', 's-********')
+        old_client = set_client(_Client('u-**********', 't-******', 's-********'))
+        self.assertIs(previous, old_client)
