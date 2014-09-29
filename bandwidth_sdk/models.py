@@ -70,8 +70,9 @@ class Call(AudioMixin, Resource):
     start_time = None
     active_time = None
     client = None
+    bridge_id = None
     _fields = frozenset(('call_id', 'direction', 'from_', 'to', 'recording_enabled', 'callback_url',
-                         'state', 'start_time', 'active_time'))
+                         'state', 'start_time', 'active_time', 'bridge_id'))
 
     def __init__(self, data):
         self.client = get_client()
