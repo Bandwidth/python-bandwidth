@@ -18,6 +18,10 @@ def assertJsonEq(first, second, msg='Ouups'):
 
 class CallsTest(SdkTestCase):
 
+    def test_bad_init(self):
+        with self.assertRaises(TypeError):
+            Call(['data'])
+
     @responses.activate
     def test_get(self):
         """
@@ -263,6 +267,24 @@ class CallsTest(SdkTestCase):
         assertJsonEq(request_message, '{"state": "completed"}')
 
         self.assertEqual(call.state, 'completed')
+
+    @responses.activate
+    def test_set_call_property(self):
+        """
+        Call(dict(id='new-call-id', recording_enabled=True)).set_call_property(recording_enabled=False)
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls/new-call-id',
+                      body='',
+                      status=200,
+                      content_type='application/json',
+                      )
+        call = Call(dict(id='new-call-id', recording_enabled=True))
+        self.assertEqual(call.call_id, 'new-call-id')
+        self.assertTrue(call.recording_enabled)
+
+        call = call.set_call_property(recording_enabled=False)
+        self.assertFalse(call.recording_enabled)
 
     @responses.activate
     def test_reject(self):
@@ -724,6 +746,10 @@ class BridgesTest(SdkTestCase):
 
 class ApplicationsTest(SdkTestCase):
 
+    def test_bad_init(self):
+        with self.assertRaises(TypeError):
+            Application(['wrong_data'])
+
     @responses.activate
     def test_get(self):
         """
@@ -854,6 +880,29 @@ class ApplicationsTest(SdkTestCase):
         self.assertEqual(application.auto_answer, True)
 
     @responses.activate
+    def test_patch(self):
+        """
+        Application('new-application').patch(incoming_call_url='http://test.callback.info')
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/applications/new-application',
+                      body='',
+                      status=200,
+                      content_type='application/json')
+
+        application = Application('new-application')
+        self.assertEqual(application.id, 'new-application')
+        self.assertIsNone(application.incoming_call_url)
+        self.assertEqual(application.callback_http_method, 'post')
+
+        application.patch(incoming_call_url='http://test.callback.info',
+                          callback_http_method='get')
+        self.assertEqual(application.incoming_call_url, 'http://test.callback.info')
+        self.assertEqual(application.callback_http_method, 'get')
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"callbackHttpMethod": "get", "incomingCallUrl": "http://test.callback.info"}')
+
+    @responses.activate
     def test_create_refresh(self):
         """
         Application.refresh()
@@ -894,6 +943,21 @@ class ApplicationsTest(SdkTestCase):
         self.assertEqual(application.name, 'test_application_name')
         self.assertEqual(application.auto_answer, True)
 
+    @responses.activate
+    def test_delete_application(self):
+        """
+        Application('app-id').delete()
+        """
+        responses.add(responses.DELETE,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/applications/app-id',
+                      body='',
+                      status=200,
+                      content_type='application/json')
+        app = Application('app-id')
+        d_app = app.delete()
+        self.assertTrue(d_app)
+        self.assertEquals(responses.calls[0].request.method, 'DELETE')
+        self.assertEquals(responses.calls[0].request.url.split('/')[-1], app.id)
 
 class AccountTests(SdkTestCase):
 
@@ -1450,6 +1514,32 @@ class PhoneNumberTest(SdkTestCase):
                                       '"applicationId": "app-id"}')
 
     @responses.activate
+    def test_patch_phone_number_with_app_id(self):
+        """
+        PhoneNumber('phone-id').patch(
+            application='app-id', name='home phone')
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers/phone-id',
+                      body='',
+                      status=200,
+                      content_type='application/json')
+        phone = PhoneNumber('phone-id')
+        self.assertEqual(phone.id, 'phone-id')
+        self.assertIsNone(phone.application)
+
+        phone = phone.patch(application='app-id', name='home phone')
+
+        self.assertEqual(phone.id, 'phone-id')
+        self.assertIsInstance(phone.application, Application)
+        self.assertEqual(phone.application.id, 'app-id')
+        self.assertEqual(phone.name, 'home phone')
+
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"name": "home phone", '
+                                      '"applicationId": "app-id"}')
+
+    @responses.activate
     def test_delete_phone_number(self):
         """
         PhoneNumber('phone-id').delete()
@@ -1496,7 +1586,7 @@ class PhoneNumberTest(SdkTestCase):
                       status=201,
                       content_type='application/json',
                       adding_headers={'Location': '/v1/users/u-user/phoneNumber/new-number-id'})
-        application = Application({'id': 'app-id', 'incoming_call_url': 'http://callback.info'})
+        application = 'app-id'
         number = PhoneNumber.allocate(number='+19195551212', application=application)
         self.assertEqual(number.id, 'new-number-id')
         self.assertEqual(number.number, '+19195551212')

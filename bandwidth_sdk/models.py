@@ -16,7 +16,7 @@ class Gettable(object):
     _fields = None
 
     @classmethod
-    def get(cls, *args, **kwargs):
+    def get(cls, *args, **kwargs):  # pragma: no cover
         """
 
         :param args:
@@ -38,7 +38,7 @@ class Resource(Gettable):
     client = None
 
     @classmethod
-    def create(cls, *args, **kwargs):
+    def create(cls, *args, **kwargs):  # pragma: no cover
         """
         :param args:
         :param kwargs:
@@ -47,7 +47,7 @@ class Resource(Gettable):
         raise NotImplemented
 
     @classmethod
-    def list(cls, *args, **kwargs):
+    def list(cls, *args, **kwargs):  # pragma: no cover
         """
 
         :param args:
@@ -193,7 +193,9 @@ class Call(AudioMixin, Resource):
 
     def set_call_property(self, **kwargs):
         url = '{}/{}'.format(self.path, self.call_id)
-        return self.client.post(url, data=to_api(kwargs))
+        self.client.post(url, data=to_api(kwargs))
+        self.set_up(from_api(kwargs))
+        return self
 
     def bridge(self, *calls, **kwargs):
         """
@@ -360,7 +362,7 @@ class Application(Resource):
         (If not set the default is HTTP POST)
         :auto_answer:  Determines whether or not an incoming call should be automatically answered.
             Default value is 'true'.
-        :return: True if it's patched
+        :return: self if it's patched
         """
         client = self.client or get_client()
         url = '{}{}'.format(self._path, self.id)
@@ -369,7 +371,7 @@ class Application(Resource):
         if cleaned_data:
             self.data = cleaned_data
             self.set_up(self.data)
-        return True
+        return self
 
     def delete(self):
         """
@@ -681,7 +683,7 @@ class Conference(AudioMixin, Gettable):
     _fields = frozenset(('id', 'state', 'from_', 'created_time', 'completed_time', 'fallback_url',
                          'callback_timeout', 'callback_url', 'active_members'))
 
-    def __init__(self, data):
+    def __init__(self, data):  # pragma: no cover
         self.client = get_client()
         if isinstance(data, dict):
             self.set_up(from_api(data))
@@ -801,7 +803,7 @@ class ConferenceMember(AudioMixin, Resource):
     STATES = enum('created', 'active', 'completed')
     _fields = frozenset(('id', 'state', 'added_time', 'hold', 'mute', 'join_tone', 'leaving_tone'))
 
-    def __init__(self, conf_id, data):
+    def __init__(self, conf_id, data):  # pragma: no cover
         self.client = get_client()
         if isinstance(data, dict):
             self.set_up(from_api(data))
@@ -838,7 +840,7 @@ class ConferenceMember(AudioMixin, Resource):
         self.set_up(params)
         return self
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return 'ConferenceMember(%r, state=%r)' % (self.id, self.state or 'Unknown')
 
     def get_audio_url(self):
@@ -940,7 +942,7 @@ class AvailableNumber(Gettable):
         if data and isinstance(data, dict):
             self.set_up(from_api(data))
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return 'AvailableNumber(number={})'.format(self.number or 'Unknown')
 
     @classmethod
@@ -1086,7 +1088,7 @@ class PhoneNumber(Gettable):
         elif isinstance(data, six.string_types):
             self.id = data
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return 'PhoneNumber(number={})'.format(self.number or 'Unknown')
 
     def set_up(self, data):
@@ -1239,7 +1241,7 @@ class Media(Resource):
 
     _fields = frozenset(('id', 'media_name', 'content_length'))
 
-    def __init__(self, data):
+    def __init__(self, data):  # pragma: no cover
         self.client = get_client()
         if isinstance(data, dict):
             self.set_up(from_api(data))
