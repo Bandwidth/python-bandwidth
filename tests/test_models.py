@@ -507,6 +507,38 @@ class CallsTest(SdkTestCase):
         self.assertEqual(gather.reason, 'max-digits')
         self.assertEqual(gather.digits, '123')
 
+    @responses.activate
+    def test_gather_stop(self):
+        """
+        Gather(call_id='test_call_id').stop()
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls/test_call_id/gather/g-foo',
+                      body='',
+                      status=200,
+                      content_type='application/json',
+                      )
+        gather = Gather(call_id='test_call_id')
+        gather.id = 'g-foo'
+        gather.stop()
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"state": "completed"}')
+
+    @responses.activate
+    def test_gather_stop_failed(self):
+        """
+        Gather(call_id='test_call_id').stop()
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls/test_call_id/gather/g-foo',
+                      body='',
+                      status=200,
+                      content_type='application/json',
+                      )
+        gather = Gather(call_id='test_call_id')
+        with self.assertRaises(AssertionError):
+            gather.stop()
+
 
 class BridgesTest(SdkTestCase):
 
@@ -1077,6 +1109,7 @@ class ApplicationsTest(SdkTestCase):
         self.assertEquals(responses.calls[0].request.method, 'DELETE')
         self.assertEquals(responses.calls[0].request.url.split('/')[-1], app.id)
 
+
 class AccountTests(SdkTestCase):
 
     @responses.activate
@@ -1335,6 +1368,79 @@ class ConferenceTest(SdkTestCase):
         self.assertEqual(member.join_tone, False)
         self.assertEqual(member.leaving_tone, False)
         self.assertIsInstance(member.added_time, datetime)
+
+    @responses.activate
+    def test_update_member(self):
+        """
+        Conference('conf-id').member('m-id').update(mute=True, hold=True)
+        """
+        raw = """
+        {
+        "addedTime": "2013-07-12T15:54:47-02",
+        "hold": false,
+        "id": "m-id",
+        "mute": false,
+        "state": "active",
+        "joinTone": false,
+        "leavingTone": false,
+        "call": "https://localhost:8444/v1/users/{userId}/calls/{callId1}"
+        }
+        """
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/conferences/conf-id/members/m-id',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        member = Conference('conf-id').member('m-id').get()
+
+        self.assertEqual(member.id, "m-id")
+        self.assertEqual(member.hold, False)
+        self.assertEqual(member.mute, False)
+        self.assertEqual(member.state, "active")
+        self.assertEqual(member.join_tone, False)
+        self.assertEqual(member.leaving_tone, False)
+        self.assertIsInstance(member.added_time, datetime)
+
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/conferences/conf-id/members/m-id',
+                      body='',
+                      status=200,
+                      content_type='application/json')
+
+        member.update(mute=True, hold=True)
+
+        request_message = responses.calls[1].request.body
+        assertJsonEq(request_message, '{"hold": true, "mute": true}')
+        self.assertTrue(member.hold)
+        self.assertTrue(member.mute)
+
+    @responses.activate
+    def test_conf_member_audio_url(self):
+        """
+        Conference('conf-id').member('m-id').get().get_audio_url()
+        """
+        raw = """
+        {
+        "addedTime": "2013-07-12T15:54:47-02",
+        "hold": false,
+        "id": "m-id",
+        "mute": false,
+        "state": "active",
+        "joinTone": false,
+        "leavingTone": false,
+        "call": "https://localhost:8444/v1/users/{userId}/calls/{callId1}"
+        }
+        """
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/conferences/conf-id/members/m-id',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        member = Conference('conf-id').member('m-id').get()
+        a_url = member.get_audio_url()
+        self.assertEqual(a_url, 'conferences/conf-id/members/m-id/audio')
 
 
 class RecordingTest(SdkTestCase):
@@ -2052,6 +2158,21 @@ class MediaTest(SdkTestCase):
         self.assertEqual(mime, 'audio/wav')
         self.assertIsInstance(content, six.binary_type)
         self.assertEqual(content, raw)
+
+    @responses.activate
+    def test_delete(self):
+        """
+        Media('media-id').delete()
+        """
+        responses.add(responses.DELETE,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/media/media-id',
+                      body='',
+                      status=200,
+                      content_type='application/json')
+        media = Media('media-id')
+        media.delete()
+        self.assertEquals(responses.calls[0].request.method, 'DELETE')
+        self.assertEquals(responses.calls[0].request.url.split('/')[-1], media.id)
 
     @responses.activate
     def test_by_upload_file_name(self):
