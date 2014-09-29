@@ -27,7 +27,7 @@ class RESTClientObject(object):
         by Client using self.log_hook.
         """
         if callable(self.log_hook):
-            self.log_hook(response)
+            self.log_hook(response)  # pragma: no cover
 
     def _join_endpoint(self, url):
         return '{}/v1/users/{}/{}'.format(self.endpoint, self.uid, url)
