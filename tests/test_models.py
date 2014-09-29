@@ -6,7 +6,7 @@ import unittest
 from bandwidth_sdk import (Call, Bridge,
                            AppPlatformError, Application,
                            Account, Conference, Recording, ConferenceMember,
-                           Gather, Media)
+                           Gather, PhoneNumber, AvailableNumber, Media)
 from datetime import datetime
 
 from .utils import SdkTestCase
@@ -1266,6 +1266,464 @@ class RecordingTest(SdkTestCase):
         self.assertIsInstance(getted_data[0], six.binary_type)
 
 
+class PhoneNumberTest(SdkTestCase):
+
+    @responses.activate
+    def test_phone_number_get(self):
+        """
+        PhoneNumber.get('numb-id')
+        """
+        raw = """
+        {
+           "id": "numb-id",
+           "application": "https://catapult.inetwork.com/v1/users/u-user/applications/a-j321",
+           "number":"+12323232",
+           "nationalNumber":"(232) 3232",
+           "name": "home phone",
+           "createdTime": "2013-02-13T17:46:08.374Z",
+           "state": "NC",
+           "price": "0.60",
+           "numberState": "enabled"
+        }
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers/numb-id',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        number = PhoneNumber.get('numb-id')
+        self.assertEqual(number.id, 'numb-id')
+        self.assertIsInstance(number.application, Application)
+        self.assertEqual(number.application.id, 'a-j321')
+        self.assertEqual(number.number, '+12323232')
+        self.assertEqual(number.national_number, '(232) 3232')
+        self.assertEqual(number.name, 'home phone')
+        self.assertEqual(number.state, 'NC')
+        self.assertEqual(number.number_state, 'enabled')
+        self.assertEqual(number.price, '0.60')
+        self.assertIsInstance(number.created_time, datetime)
+
+    @responses.activate
+    def test_refresh_number(self):
+        """
+        number = PhoneNumber('numb-id')
+        number.refresh()
+        """
+        raw = """
+        {
+           "id": "numb-id",
+           "application": "https://catapult.inetwork.com/v1/users/u-user/applications/a-j321",
+           "number":"+12323232",
+           "nationalNumber":"(232) 3232",
+           "name": "home phone",
+           "createdTime": "2013-02-13T17:46:08.374Z",
+           "state": "NC",
+           "price": "0.60",
+           "numberState": "enabled"
+        }
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers/numb-id',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        number = PhoneNumber('numb-id')
+        number.refresh()
+        self.assertEqual(number.id, 'numb-id')
+        self.assertIsInstance(number.application, Application)
+        self.assertEqual(number.application.id, 'a-j321')
+        self.assertEqual(number.number, '+12323232')
+        self.assertEqual(number.national_number, '(232) 3232')
+        self.assertEqual(number.name, 'home phone')
+        self.assertEqual(number.state, 'NC')
+        self.assertEqual(number.number_state, 'enabled')
+        self.assertEqual(number.price, '0.60')
+        self.assertIsInstance(number.created_time, datetime)
+
+    @responses.activate
+    def test_phone_number_list(self):
+        """
+        PhoneNumber.list()
+        """
+        raw = """
+        [
+        {
+           "id": "numb-id",
+           "application": "https://catapult.inetwork.com/v1/users/u-user/applications/a-j321",
+           "number":"+123456789",
+           "nationalNumber":"(234) 56789",
+           "name": "home phone",
+           "createdTime": "2013-02-13T17:46:08.374Z",
+           "state": "NC",
+           "price": "0.60",
+           "numberState": "enabled"
+        },
+        {
+           "id": "numb-id2",
+           "application": "https://catapult.inetwork.com/v1/users/u-user/applications/a-j322",
+           "number":"+1987654321",
+           "nationalNumber":"(987) 7654321",
+           "name": "work phone",
+           "createdTime": "2013-02-13T18:32:05.223Z",
+           "state": "NC",
+           "price": "0.60",
+           "numberState": "enabled"
+        }
+        ]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        numbers = PhoneNumber.list()
+        self.assertEqual(numbers[0].id, 'numb-id')
+        self.assertIsInstance(numbers[0].application, Application)
+        self.assertEqual(numbers[0].application.id, 'a-j321')
+        self.assertEqual(numbers[0].number, '+123456789')
+        self.assertEqual(numbers[0].national_number, '(234) 56789')
+        self.assertEqual(numbers[0].name, 'home phone')
+        self.assertEqual(numbers[0].number_state, 'enabled')
+        self.assertEqual(numbers[0].price, '0.60')
+        self.assertEqual(numbers[0].state, 'NC')
+        self.assertIsInstance(numbers[0].created_time, datetime)
+        self.assertEqual(numbers[1].id, 'numb-id2')
+        self.assertIsInstance(numbers[1].application, Application)
+        self.assertEqual(numbers[1].application.id, 'a-j322')
+        self.assertEqual(numbers[1].number, '+1987654321')
+        self.assertEqual(numbers[1].national_number, '(987) 7654321')
+        self.assertEqual(numbers[1].name, 'work phone')
+        self.assertEqual(numbers[1].number_state, 'enabled')
+        self.assertEqual(numbers[1].price, '0.60')
+        self.assertEqual(numbers[1].state, 'NC')
+        self.assertIsInstance(numbers[1].created_time, datetime)
+
+    @responses.activate
+    def test_get_number_info(self):
+        """
+        PhoneNumber.get_number_info('+19195551212')
+        """
+        raw = """
+        {
+        "id": "n-numb-id",
+        "application": "https://catapult.inetwork.com/v1/users/u-user/applications/a-j322",
+        "number":"+19195551212",
+        "nationalNumber":"(919) 555-1212",
+        "name": "home phone",
+        "createdTime": "2013-02-13T17:46:08.374Z",
+        "state": "NC",
+        "price": "0.60",
+        "numberState": "enabled"
+         }
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers/%2B19195551212',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        PhoneNumber.get_number_info('+19195551212')
+
+    @responses.activate
+    def test_patch_phone_number(self):
+        """
+        PhoneNumber('phone-id').patch(
+            application=Application('app-id'), name='home phone')
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers/phone-id',
+                      body='',
+                      status=200,
+                      content_type='application/json')
+        phone = PhoneNumber('phone-id')
+        self.assertEqual(phone.id, 'phone-id')
+        self.assertIsNone(phone.application)
+
+        phone = phone.patch(application=Application('app-id'), name='home phone')
+
+        self.assertEqual(phone.id, 'phone-id')
+        self.assertIsInstance(phone.application, Application)
+        self.assertEqual(phone.application.id, 'app-id')
+        self.assertEqual(phone.name, 'home phone')
+
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"name": "home phone", '
+                                      '"applicationId": "app-id"}')
+
+    @responses.activate
+    def test_delete_phone_number(self):
+        """
+        PhoneNumber('phone-id').delete()
+        """
+        responses.add(responses.DELETE,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers/phone-id',
+                      body='',
+                      status=200,
+                      content_type='application/json')
+        phone = PhoneNumber('phone-id')
+        d_phone = phone.delete()
+        self.assertTrue(d_phone)
+        self.assertEquals(responses.calls[0].request.method, 'DELETE')
+        self.assertEquals(responses.calls[0].request.url.split('/')[-1], phone.id)
+
+    @responses.activate
+    def test_allocate_phone_number_by_number_with_app_instance(self):
+        """
+        PhoneNumber.allocate(number='+19195551212', application=Application('app-id'))
+        application as Application instance
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/phoneNumber/new-number-id'})
+        application = Application({'id': 'app-id', 'incoming_call_url': 'http://callback.info'})
+        number = PhoneNumber.allocate(number='+19195551212', application=application)
+        self.assertEqual(number.id, 'new-number-id')
+        self.assertEqual(number.number, '+19195551212')
+        self.assertEqual(number.application.id, 'app-id')
+        self.assertEqual(number.application.incoming_call_url, 'http://callback.info')
+
+    @responses.activate
+    def test_allocate_number_with_app_id_as_string(self):
+        """
+        PhoneNumber.allocate(number='+19195551212', application='app-id')
+        id of application as string
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/phoneNumber/new-number-id'})
+        application = Application({'id': 'app-id', 'incoming_call_url': 'http://callback.info'})
+        number = PhoneNumber.allocate(number='+19195551212', application=application)
+        self.assertEqual(number.id, 'new-number-id')
+        self.assertEqual(number.number, '+19195551212')
+        self.assertEqual(number.application.id, 'app-id')
+
+
+class AvailableNumberTest(SdkTestCase):
+
+    @responses.activate
+    def test_list_local(self):
+        """
+        AvailableNumber.list_local(state='Cary', state='NC', pattern='*2%3F9*', quantity=2)
+        """
+        raw = """[
+          {
+            "number": "ava-1",
+            "nationalNumber": "(919) 323-2393",
+            "patternMatch": "          2 9 ",
+            "city": "CARY",
+            "lata": "426",
+            "rateCenter": "CARY",
+            "state": "NC",
+            "price": "0.60"
+          },
+          {
+            "number": "ava-2",
+            "nationalNumber": "(919) 323-2394",
+            "patternMatch": "          2 9 ",
+            "city": "CARY",
+            "lata": "426",
+            "rateCenter": "CARY",
+            "state": "NC",
+            "price": "0.60"
+          }
+        ]
+        """
+        responses.add(responses.GET,
+                      url='https://api.catapult.inetwork.com/v1/availableNumbers/local',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        a_numbers = AvailableNumber.list_local(city='Cary', state='NC', pattern='*2?9*', quantity=2)
+        self.assertIsInstance(a_numbers[0], AvailableNumber)
+        self.assertEqual(a_numbers[0].number, 'ava-1')
+        self.assertEqual(a_numbers[0].national_number, '(919) 323-2393')
+        self.assertEqual(a_numbers[0].pattern_match, '          2 9 ')
+        self.assertEqual(a_numbers[0].city, 'CARY')
+        self.assertEqual(a_numbers[0].lata, '426')
+        self.assertEqual(a_numbers[0].rate_center, 'CARY')
+        self.assertEqual(a_numbers[0].state, 'NC')
+        self.assertEqual(a_numbers[0].price, '0.60')
+
+        self.assertIsInstance(a_numbers[1], AvailableNumber)
+        self.assertEqual(a_numbers[1].number, 'ava-2')
+        self.assertEqual(a_numbers[1].national_number, '(919) 323-2394')
+        self.assertEqual(a_numbers[1].pattern_match, '          2 9 ')
+        self.assertEqual(a_numbers[1].city, 'CARY')
+        self.assertEqual(a_numbers[1].lata, '426')
+        self.assertEqual(a_numbers[1].rate_center, 'CARY')
+        self.assertEqual(a_numbers[1].state, 'NC')
+        self.assertEqual(a_numbers[1].price, '0.60')
+
+    @responses.activate
+    def test_list_toll_free(self):
+        """
+        AvailableNumber.list_tollfree(quantity=2, pattern='*2?9*')
+
+        """
+        raw = """
+        [
+          {
+            "number":"toll-free-numb1",
+            "nationalNumber":"(919) 323-2393",
+            "patternMatch":"        2 9 ",
+            "price":"2.00"
+          },
+          {
+            "number":"toll-free-numb2",
+            "nationalNumber":"(919) 323-2394",
+            "patternMatch":"          2 9 ",
+            "price":"2.00"
+          }
+        ]
+        """
+        responses.add(responses.GET,
+                      url='https://api.catapult.inetwork.com/v1/availableNumbers/tollFree',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        t_free_numbers = AvailableNumber.list_tollfree(quantity=2, pattern='*2?9*')
+        self.assertIsInstance(t_free_numbers[0], AvailableNumber)
+        self.assertEqual(t_free_numbers[0].number, 'toll-free-numb1')
+        self.assertEqual(t_free_numbers[0].national_number, '(919) 323-2393')
+        self.assertEqual(t_free_numbers[0].pattern_match, '        2 9 ')
+        self.assertEqual(t_free_numbers[0].price, '2.00')
+
+        self.assertIsInstance(t_free_numbers[1], AvailableNumber)
+        self.assertEqual(t_free_numbers[1].number, 'toll-free-numb2')
+        self.assertEqual(t_free_numbers[1].national_number, '(919) 323-2394')
+        self.assertEqual(t_free_numbers[1].pattern_match, '          2 9 ')
+        self.assertEqual(t_free_numbers[1].price, '2.00')
+
+    @responses.activate
+    def test_batch_allocate_local(self):
+        """
+        AvailableNumber.batch_allocate_local(city='Cary', state='NC', quantity=2)
+        """
+        raw = """
+        [
+            {
+                "number": "+19191919191",
+                "nationalNumber": "(919) 191-9191",
+                "price": "0.60",
+                "location": "https://.../v1/users/u-user/phoneNumber/new-number-id"
+            },
+            {
+                "number": "+19191919192",
+                "nationalNumber": "(919) 191-9192",
+                "price": "0.80",
+                "location": "https://.../v1/users/u-user/phoneNumber/new-number-id2"
+            }
+        ]
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/availableNumbers/local',
+                      body=raw,
+                      status=201,
+                      content_type='application/json')
+        numbers = AvailableNumber.batch_allocate_local(city='Cary', state='NC', quantity=2)
+
+        self.assertIsInstance(numbers[0], PhoneNumber)
+        self.assertEqual(numbers[0].id, 'new-number-id')
+        self.assertEqual(numbers[0].number, '+19191919191')
+        self.assertEqual(numbers[0].national_number, '(919) 191-9191')
+        self.assertEqual(numbers[0].price, '0.60')
+
+        self.assertIsInstance(numbers[1], PhoneNumber)
+        self.assertEqual(numbers[1].id, 'new-number-id2')
+        self.assertEqual(numbers[1].number, '+19191919192')
+        self.assertEqual(numbers[1].national_number, '(919) 191-9192')
+        self.assertEqual(numbers[1].price, '0.80')
+
+    @responses.activate
+    def test_batch_allocate_tollfree(self):
+        """
+        AvailableNumber.batch_allocate_tollfree(quantity=2)
+        """
+        raw = """
+        [
+            {
+                "number": "+19191919191",
+                "nationalNumber": "(919) 191-9191",
+                "price": "2.00",
+                "location": "https://.../v1/users/u-user/phoneNumber/new-number-id"
+            },
+            {
+                "number": "+19191919192",
+                "nationalNumber": "(919) 191-9192",
+                "price": "2.00",
+                "location": "https://.../v1/users/u-user/phoneNumber/new-number-id2"
+            }
+        ]
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/availableNumbers/tollFree',
+                      body=raw,
+                      status=201,
+                      content_type='application/json')
+        numbers = AvailableNumber.batch_allocate_tollfree(quantity=2)
+
+        self.assertIsInstance(numbers[0], PhoneNumber)
+        self.assertEqual(numbers[0].id, 'new-number-id')
+        self.assertEqual(numbers[0].number, '+19191919191')
+        self.assertEqual(numbers[0].national_number, '(919) 191-9191')
+        self.assertEqual(numbers[0].price, '2.00')
+
+        self.assertIsInstance(numbers[1], PhoneNumber)
+        self.assertEqual(numbers[1].id, 'new-number-id2')
+        self.assertEqual(numbers[1].number, '+19191919192')
+        self.assertEqual(numbers[1].national_number, '(919) 191-9192')
+        self.assertEqual(numbers[1].price, '2.00')
+
+    @responses.activate
+    def test_allocate_available_number(self):
+        """
+
+        a_number = AvailableNumber.list_tollfree(quantity=2)
+        a_number.allocate(application=Application('app-id'))
+        """
+        raw = """
+        [
+            {
+                "number": "+19191919191",
+                "nationalNumber": "(919) 191-9191",
+                "price": "2.00",
+                "location": "https://.../v1/users/u-user/phoneNumber/new-number-id"
+            },
+            {
+                "number": "+19191919192",
+                "nationalNumber": "(919) 191-9192",
+                "price": "2.00",
+                "location": "https://.../v1/users/u-user/phoneNumber/new-number-id2"
+            }
+        ]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/availableNumbers/tollFree',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        av_number = AvailableNumber.list_tollfree(quantity=2)[0]
+        self.assertIsInstance(av_number, AvailableNumber)
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/phoneNumber/new-number-id'})
+        application = Application({'id': 'app-id', 'incoming_call_url': 'http://callback.info'})
+        number = av_number.allocate(application=application)
+        self.assertIsInstance(number, PhoneNumber)
+        self.assertEqual(number.id, 'new-number-id')
+        self.assertEqual(number.number, '+19191919191')
+        self.assertEqual(number.application.id, 'app-id')
+        self.assertEqual(number.application.incoming_call_url, 'http://callback.info')
+
+
 class CommonTest(SdkTestCase):
     """
     Account
@@ -1405,7 +1863,7 @@ class MediaTest(SdkTestCase):
 
     @unittest.expectedFailure
     @responses.activate
-    def test_by_upload_file_name(self):
+    def test_by_upload_file_name_fail(self):
         """
         Bad file name: Media('media-id').upload('dolphin.mp3', file_path='./tests/fixtures/')
         """

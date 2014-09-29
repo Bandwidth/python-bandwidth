@@ -30,7 +30,7 @@ class RESTClientObject(object):
             self.log_hook(response)
 
     def _join_endpoint(self, url):
-        return '{}{}'.format(self.endpoint, url)
+        return '{}/v1/users/{}/{}'.format(self.endpoint, self.uid, url)
 
     def request(self, method, *args, **kwargs):
         assert method in ('get', 'post', 'delete', 'patch', 'put')

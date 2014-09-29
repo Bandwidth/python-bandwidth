@@ -57,7 +57,7 @@ class _Client(RESTClientObject):
 
     def __init__(self, user_id, auth, endpoint='https://api.catapult.inetwork.com',
                  log=None, log_hook=None):
-        self.endpoint = endpoint + '/v1/users/{}/'.format(user_id)
+        self.endpoint = endpoint
         self.log_hook = log_hook
         self.uid = user_id
         self.auth = auth
