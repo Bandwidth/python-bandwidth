@@ -358,6 +358,44 @@ class CallsTest(SdkTestCase):
         self.assertEqual(len(events), 3)
 
     @responses.activate
+    def test_get_recording(self):
+        """
+        Call('new-call-id').get_recordings()
+        """
+        raw = """
+        [{
+        "endTime": "2013-02-08T12:06:55.007Z",
+        "id": "rec-1",
+        "media": "https://.../v1/users/.../media/{callId}-1.wav",
+        "call": "https://.../v1/users/.../calls/{callId}",
+        "startTime": "2013-02-08T12:05:17.807Z",
+        "state": "complete"
+        },
+        {
+        "endTime": "2013-02-08T13:15:55.887Z",
+        "id": "rec-2",
+        "media": "https://.../v1/users/.../media/{callId}-2.wav",
+        "call": "https://.../v1/users/.../calls/{callId}",
+        "startTime": "2013-02-08T13:15:45.887Z",
+        "state": "complete"
+        }]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls/new-call-id/recordings',
+                      body=raw,
+                      status=200,
+                      content_type='application/json',
+                      )
+
+        recordings = Call('new-call-id').get_recordings()
+        self.assertEqual(len(recordings), 2)
+
+        record = recordings[0]
+
+        self.assertEqual(record.id, 'rec-1')
+        self.assertEqual(record.state, 'complete')
+
+    @responses.activate
     def test_refresh(self):
         """
         Call('c-call-id').refresh()

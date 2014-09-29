@@ -252,13 +252,13 @@ class Call(AudioMixin, Resource):
     def gather(self):
         return Gather(self.call_id, client=self.client)
 
-    def get_recordings(self, timeout=None):
+    def get_recordings(self):
         """
         Retrieves an array with all the recordings of the call_id
         """
         url = '{}/{}/recordings'.format(self.path, self.call_id)
-        # todo: should be implement using Recording type
-        return from_api(self.client.get(url, timeout=timeout).json())
+        recordings = self.client.get(url).json()
+        return [Recording(d) for d in recordings]
 
     def get_events(self):
         """
