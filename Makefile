@@ -10,7 +10,7 @@ test:
 	tox
 
 local_test:
-	green tests -vvv
+	green tests -vvv -r
 
 clean:
 	rm -rf `find . -name __pycache__`

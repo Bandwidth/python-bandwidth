@@ -857,7 +857,7 @@ class Recording(Gettable):
     start_time = None
     end_time = None
     _path = 'recordings'
-    _fields = frozenset(['id', 'media', 'call', 'state', 'start_time', 'end_time'])
+    _fields = frozenset(('id', 'media', 'call', 'state', 'start_time', 'end_time'))
 
     def __init__(self, data):
         self.client = Client()
@@ -924,8 +924,8 @@ class AvailableNumber(Gettable):
     """
 
     _path = 'availableNumbers/'
-    _fields = frozenset(['number', 'national_number', 'pattern_match', 'city',
-                         'lata', 'rate_center', 'state', 'price'])
+    _fields = frozenset(('number', 'national_number', 'pattern_match', 'city',
+                         'lata', 'rate_center', 'state', 'price'))
     number = None
     national_number = None
     pattern_match = None
@@ -976,8 +976,8 @@ class AvailableNumber(Gettable):
         :return: List of AvailableNumber instances.
         """
         client = cls.client or Client()
-        url = cls._path + 'local/'
-        data = client.raw_get(url, params=to_api(params)).json()
+        url = client.endpoint + '/v1/' + cls._path + 'local'
+        data = client.build_request('get', url, params=to_api(params), join_endpoint=False).json()
         return [cls(number) for number in data]
 
     @classmethod
@@ -993,8 +993,8 @@ class AvailableNumber(Gettable):
         :return: List of AvailableNumber instances.
         """
         client = cls.client or Client()
-        url = cls._path + 'tollFree'
-        data = client.raw_get(url, params=to_api(params)).json()
+        url = client.endpoint + '/v1/' + cls._path + 'tollFree'
+        data = client.build_request('get', url, params=to_api(params), join_endpoint=False).json()
         return [cls(number) for number in data]
 
     @classmethod
@@ -1023,8 +1023,8 @@ class AvailableNumber(Gettable):
         :return: List of PhoneNumber instances.
         """
         client = cls.client or Client()
-        url = cls._path + 'local'
-        data = client.raw_post(url, params=to_api(params)).json()
+        url = client.endpoint + '/v1/' + cls._path + 'local'
+        data = client.build_request('post', url, params=to_api(params), join_endpoint=False).json()
         return [PhoneNumber(number) for number in data]
 
     @classmethod
@@ -1036,34 +1036,36 @@ class AvailableNumber(Gettable):
         :return: List of PhoneNumber instances.
         """
         client = cls.client or Client()
-        url = cls._path + 'tollFree'
-        data = client.raw_post(url,
-                               data=to_api(dict(quantity=quantity))).json()
+        url = client.endpoint + '/v1/' + cls._path + 'tollFree'
+        data = client.build_request('post', url,
+                                    data=to_api(dict(quantity=quantity)), join_endpoint=False).json()
         return [PhoneNumber(number) for number in data]
 
-    def allocate(self, application_id=None, name=None, fallback_number=None):
+    def allocate(self, application=None, name=None, fallback_number=None):
         """
         Allocate available number to yours account
-        :param application_id: The ID of an Application you want to associate
-                               with this number.
+        :param application: Application instance you want to
+                            associate with this number
+                            or The ID of an Application.
         :param name: A name you choose for this number.
         :param fallback_number: An available telephone number you want to use
                                 (must be in E.164 format, like +19195551212)
 
         :return: PhoneNumber instance.
         """
+
         data = {'number': self.number,
-                'application_id': application_id,
+                'application': application,
                 'name': name,
                 'fallback_number': fallback_number}
-        return PhoneNumber.allocate(data)
+        return PhoneNumber.allocate(**data)
 
 
 class PhoneNumber(Gettable):
     _path = 'phoneNumbers'
-    _fields = frozenset(['id', 'application', 'number', 'national_number',
+    _fields = frozenset(('id', 'application', 'number', 'national_number',
                          'name', 'created_time', 'city', 'state', 'price',
-                         'number_state', 'fallback_number'])
+                         'number_state', 'fallback_number'))
     NUMBER_STATES = enum('enabled', 'released')
     id = None
     application = None
@@ -1182,6 +1184,11 @@ class PhoneNumber(Gettable):
         url = '{}/{}'.format(self._path, self.id)
         client.delete(url)
         return True
+
+    def refresh(self):
+        url = url = '{}/{}'.format(self._path, self.id)
+        data = self.client.get(url).json()
+        self.set_up(from_api(data))
 
     @classmethod
     def allocate(cls, **data):

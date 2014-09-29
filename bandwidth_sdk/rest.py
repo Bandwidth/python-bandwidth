@@ -82,24 +82,6 @@ class RESTClientObject(object):
 
         return response
 
-    def raw_get(self, url, params=None, timeout=None, **kwargs):
-        url = self.endpoint + '/v1/' + url
-
-        kwargs['timeout'] = timeout or self.default_timeout
-        response = self.request('get', url, auth=self.auth, headers=self.headers, params=params, **kwargs)
-
-        self._log_response(response)
-
-        return response
-
-    def raw_post(self, url, data=None, timeout=None, **kwargs):
-        url = self.endpoint + '/v1/' + url
-
-        kwargs['timeout'] = timeout or self.default_timeout
-        response = self.request('post', url, auth=self.auth, headers=self.headers, data=data, **kwargs)
-
-        self._log_response(response)
-
     def build_request(self, method, url, headers={}, join_endpoint=True, **kwargs):
         if join_endpoint:
             url = self._join_endpoint(url)
