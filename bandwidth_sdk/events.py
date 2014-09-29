@@ -1,7 +1,9 @@
 import json
 from six import iteritems
-from .utils import from_api
+from .utils import from_api, enum
 # Event abstraction
+
+CAUSES = enum('CALL_REJECTED')
 
 
 class Event(object):
@@ -95,6 +97,15 @@ class HangupCallEvent(CallEvent):
     time = None
     tag = None
     _fields = frozenset(('call_id', 'event_type', 'from_', 'to', 'call_uri', 'call_state', 'time', 'cause', 'tag'))
+
+
+class RejectCallEvent(HangupCallEvent):
+    """
+    Bandwidth API sends this message to the application when the call is rejected.
+    * Consistent with the API
+    """
+
+    cause = CAUSES.CALL_REJECTED
 
 
 class PlaybackCallEvent(CallEvent):
@@ -303,7 +314,17 @@ class ConferenceSpeakEvent(ConferenceEventMixin):
     _fields = frozenset(('event_type', 'conference_id', 'conference_uri', 'status', 'time'))
 
 
-_events = {'hangup': HangupCallEvent,
+def _end_of_call(**kwargs):
+    """
+    Dispatch function for hangup event type.
+    """
+    cause = kwargs.get('cause')
+    if cause == CAUSES.CALL_REJECTED:
+        return RejectCallEvent(**kwargs)
+    return HangupCallEvent(**kwargs)
+
+
+_events = {'hangup': _end_of_call,
            'answer': AnswerCallEvent,
            'incomingcall': IncomingCallEvent,
            'gather': GatherCallEvent,
