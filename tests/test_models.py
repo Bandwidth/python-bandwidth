@@ -396,6 +396,27 @@ class CallsTest(SdkTestCase):
         self.assertEqual(record.state, 'complete')
 
     @responses.activate
+    def test_bridge_from_call(self):
+        """
+        Call('c-foo').bridge(Call('c-bar'))
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/bridges/new-bridge-id'})
+
+        bridge = Call('c-foo').bridge(Call('c-bar'))
+        self.assertIsInstance(bridge, Bridge)
+        self.assertEqual(bridge.id, 'new-bridge-id')
+
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"callIds": ["c-foo", "c-bar"]}')
+
+        self.assertEqual(bridge.call_ids, ["c-foo", "c-bar"])
+
+    @responses.activate
     def test_refresh(self):
         """
         Call('c-call-id').refresh()
@@ -485,6 +506,38 @@ class CallsTest(SdkTestCase):
         self.assertEqual(gather.id, 'g-foo')
         self.assertEqual(gather.reason, 'max-digits')
         self.assertEqual(gather.digits, '123')
+
+    @responses.activate
+    def test_gather_stop(self):
+        """
+        Gather(call_id='test_call_id').stop()
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls/test_call_id/gather/g-foo',
+                      body='',
+                      status=200,
+                      content_type='application/json',
+                      )
+        gather = Gather(call_id='test_call_id')
+        gather.id = 'g-foo'
+        gather.stop()
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"state": "completed"}')
+
+    @responses.activate
+    def test_gather_stop_failed(self):
+        """
+        Gather(call_id='test_call_id').stop()
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls/test_call_id/gather/g-foo',
+                      body='',
+                      status=200,
+                      content_type='application/json',
+                      )
+        gather = Gather(call_id='test_call_id')
+        with self.assertRaises(AssertionError):
+            gather.stop()
 
 
 class BridgesTest(SdkTestCase):
@@ -611,6 +664,7 @@ class BridgesTest(SdkTestCase):
         bridge = Bridge.create()
         self.assertIsInstance(bridge, Bridge)
         self.assertEqual(bridge.id, 'new-bridge-id')
+        self.assertEqual(bridge.call_ids, [])
 
     @responses.activate
     def test_create_form_call(self):
@@ -742,6 +796,64 @@ class BridgesTest(SdkTestCase):
 
         self.assertEqual(bridge.state, 'completed')
         self.assertEqual(bridge.bridge_audio, True)
+
+    @responses.activate
+    def test_fetch_calls(self):
+        """
+        Bridge('b-id').fetch_calls()
+        """
+        raw = """
+        [
+        {
+        "activeTime": "2013-05-22T19:49:39Z",
+        "direction": "out",
+        "from": "+1919000001",
+        "id": "c-xx",
+        "bridgeId": "b-id",
+        "startTime": "2013-05-22T19:49:35Z",
+        "state": "active",
+        "to": "+1919000002",
+        "recordingEnabled": false,
+        "events": "https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId1}/events",
+        "bridge": "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/{bridgeId}"
+        },
+        {
+        "activeTime": "2013-05-22T19:50:16Z",
+        "direction": "out",
+        "from": "+1919000003",
+        "id": "c-yy",
+        "bridgeId": "b-id",
+        "startTime": "2013-05-22T19:50:16Z",
+        "state": "active",
+        "to": "+1919000004",
+        "recordingEnabled": false,
+        "events": "https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId2}/events",
+        "bridge": "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/{bridgeId}"
+        }
+        ]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/b-id/calls',
+                      body=raw,
+                      status=200,
+                      content_type='application/json',
+                      )
+
+        bridge = Bridge('b-id')
+        calls = bridge.fetch_calls()
+
+        call = calls[0]
+
+        self.assertIsInstance(call, Call)
+        self.assertEqual(call.call_id, 'c-xx')
+        self.assertEqual(call.bridge_id, 'b-id')
+
+        call = calls[1]
+        self.assertIsInstance(call, Call)
+        self.assertEqual(call.call_id, 'c-yy')
+        self.assertEqual(call.bridge_id, 'b-id')
+
+        self.assertEqual(bridge.call_ids, ['c-xx', 'c-yy'])
 
     @responses.activate
     def test_call_party(self):
@@ -996,6 +1108,7 @@ class ApplicationsTest(SdkTestCase):
         self.assertTrue(d_app)
         self.assertEquals(responses.calls[0].request.method, 'DELETE')
         self.assertEquals(responses.calls[0].request.url.split('/')[-1], app.id)
+
 
 class AccountTests(SdkTestCase):
 
@@ -1255,6 +1368,79 @@ class ConferenceTest(SdkTestCase):
         self.assertEqual(member.join_tone, False)
         self.assertEqual(member.leaving_tone, False)
         self.assertIsInstance(member.added_time, datetime)
+
+    @responses.activate
+    def test_update_member(self):
+        """
+        Conference('conf-id').member('m-id').update(mute=True, hold=True)
+        """
+        raw = """
+        {
+        "addedTime": "2013-07-12T15:54:47-02",
+        "hold": false,
+        "id": "m-id",
+        "mute": false,
+        "state": "active",
+        "joinTone": false,
+        "leavingTone": false,
+        "call": "https://localhost:8444/v1/users/{userId}/calls/{callId1}"
+        }
+        """
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/conferences/conf-id/members/m-id',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        member = Conference('conf-id').member('m-id').get()
+
+        self.assertEqual(member.id, "m-id")
+        self.assertEqual(member.hold, False)
+        self.assertEqual(member.mute, False)
+        self.assertEqual(member.state, "active")
+        self.assertEqual(member.join_tone, False)
+        self.assertEqual(member.leaving_tone, False)
+        self.assertIsInstance(member.added_time, datetime)
+
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/conferences/conf-id/members/m-id',
+                      body='',
+                      status=200,
+                      content_type='application/json')
+
+        member.update(mute=True, hold=True)
+
+        request_message = responses.calls[1].request.body
+        assertJsonEq(request_message, '{"hold": true, "mute": true}')
+        self.assertTrue(member.hold)
+        self.assertTrue(member.mute)
+
+    @responses.activate
+    def test_conf_member_audio_url(self):
+        """
+        Conference('conf-id').member('m-id').get().get_audio_url()
+        """
+        raw = """
+        {
+        "addedTime": "2013-07-12T15:54:47-02",
+        "hold": false,
+        "id": "m-id",
+        "mute": false,
+        "state": "active",
+        "joinTone": false,
+        "leavingTone": false,
+        "call": "https://localhost:8444/v1/users/{userId}/calls/{callId1}"
+        }
+        """
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/conferences/conf-id/members/m-id',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        member = Conference('conf-id').member('m-id').get()
+        a_url = member.get_audio_url()
+        self.assertEqual(a_url, 'conferences/conf-id/members/m-id/audio')
 
 
 class RecordingTest(SdkTestCase):
@@ -1972,6 +2158,21 @@ class MediaTest(SdkTestCase):
         self.assertEqual(mime, 'audio/wav')
         self.assertIsInstance(content, six.binary_type)
         self.assertEqual(content, raw)
+
+    @responses.activate
+    def test_delete(self):
+        """
+        Media('media-id').delete()
+        """
+        responses.add(responses.DELETE,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/media/media-id',
+                      body='',
+                      status=200,
+                      content_type='application/json')
+        media = Media('media-id')
+        media.delete()
+        self.assertEquals(responses.calls[0].request.method, 'DELETE')
+        self.assertEquals(responses.calls[0].request.url.split('/')[-1], media.id)
 
     @responses.activate
     def test_by_upload_file_name(self):

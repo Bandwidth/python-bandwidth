@@ -70,8 +70,9 @@ class Call(AudioMixin, Resource):
     start_time = None
     active_time = None
     client = None
+    bridge_id = None
     _fields = frozenset(('call_id', 'direction', 'from_', 'to', 'recording_enabled', 'callback_url',
-                         'state', 'start_time', 'active_time'))
+                         'state', 'start_time', 'active_time', 'bridge_id'))
 
     def __init__(self, data):
         self.client = get_client()
@@ -199,10 +200,10 @@ class Call(AudioMixin, Resource):
 
     def bridge(self, *calls, **kwargs):
         """
-        #todo: proper docstring
-        :param calls:
-        :param kwargs:
-        :return:
+        Bridge calls with this call.
+        :param calls: Call instances
+        :param kwargs: bridge_audio - Enable/Disable two way audio path (default = true)
+        :return: Bridge instance.
         """
         _calls = (self,) + calls
         return Bridge.create(*_calls, **kwargs)
@@ -702,7 +703,13 @@ class Conference(AudioMixin, Gettable):
     @classmethod
     def create(cls, from_, **params):
         """
-        todo: docstring
+        Creates a new conference.
+
+       :param from_: The number that will host the conference
+       :param callback_url: URL where the events related to the Conference will be posted to
+       :param callback_timeout: Determine how long should the platform wait for callbackUrl's response before
+            timing out in milliseconds.
+       :param fallback_url:  The URL used to send the callback event if the request to callbackUrl fails.
         """
         client = cls.client or get_client()
         params['from'] = from_
@@ -836,7 +843,7 @@ class ConferenceMember(AudioMixin, Resource):
         client = self.client
         url = 'conferences/{}/members/{}'.format(self.conf_id, self.id)
         data = to_api(params)
-        client.post(url, data=data).json()
+        client.post(url, data=data)
         self.set_up(params)
         return self
 

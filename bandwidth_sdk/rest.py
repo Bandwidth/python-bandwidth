@@ -53,7 +53,7 @@ class RESTClientObject(object):
         url = self._join_endpoint(url)
 
         if timeout is not None:
-            kwargs['timeout'] = timeout
+            kwargs['timeout'] = timeout  # pragma: no cover
 
         response = self.request('delete', url, auth=self.auth, headers=self.headers, **kwargs)
 
