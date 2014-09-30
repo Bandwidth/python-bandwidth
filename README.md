@@ -20,7 +20,7 @@ Simply use the following command to install the latest released version:
 	
 	pip install bandwidth_sdk
 
-If you want the cutting edge version (that may well be broken), use this:
+If you want the cutting edge version (that may be broken), use this:
 
 	pip install -e git+https://github.com/bandwidthcom/python-bandwidth.git#egg=bandwidth_sdk
 
@@ -53,12 +53,12 @@ Calls basic usage
     
     	call.speak_sentence("Hello", gender="female")
 
-    * Transferring a call and say something before bridging the calls:
+    * Transferring a call and saying something before bridging the calls:
 
     	call.transfer('+1919000008', whisper_audio={"sentence": "Hello {number}, thanks for calling"})
     	>>> Call(c-yyyyy, state=started)
 
-    * Retrieve list of calls:
+    * Retrieving list of calls:
 
     	Call.list()
     	>>> [Call(c-xxxx, state=completed), Call(c-yyyyy, state=comleted), Call(c-zzzz, state=started)]
@@ -74,4 +74,4 @@ or
 
 ## Contribution guidelines
 
-Create a topic branch. Fix the issue. Cover with tests. Add documentation. Send pull request with commentary.
+Create a topic branch. Fix the issue. Cover with tests. Add documentation. Send pull request with a comment.
