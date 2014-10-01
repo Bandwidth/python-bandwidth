@@ -1265,6 +1265,9 @@ class Media(Resource):
             data['id'] = content.split('/')[-1]
         return super(Media, self).set_up(data)
 
+    def get_full_media_url(self):
+        return self.client._join_endpoint(self.media_url)
+
     @classmethod
     def list(cls):
         """

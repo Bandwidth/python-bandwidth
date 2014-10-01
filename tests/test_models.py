@@ -2190,6 +2190,9 @@ class MediaTest(SdkTestCase):
         request_message = responses.calls[0].request.body  # decoded to str implicitly
         self.assertEqual(request_message, 'thra\ntata\nrata')
 
+        self.assertEqual(Media('media-id').get_full_media_url(), 'https://api.catapult.inetwork.com/v1/users/'
+                                                                 'u-user/media/media-id')
+
     @unittest.expectedFailure
     @responses.activate
     def test_by_upload_file_name_fail(self):
