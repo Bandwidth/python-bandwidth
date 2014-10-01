@@ -121,7 +121,7 @@ class PlaybackCallEvent(CallEvent):
     status = None
     time = None
     tag = None
-    _fields = frozenset(('call_id', 'event_type', 'from_', 'to', 'call_uri', 'tag', 'time'))
+    _fields = frozenset(('call_id', 'event_type', 'call_uri', 'tag', 'time', 'status'))
 
     @property
     def done(self):
@@ -172,7 +172,7 @@ class SpeakCallEvent(CallEvent):
     state = None
     time = None
     tag = None
-    _fields = frozenset(('call_id', 'event_type', 'status', 'state', 'call_uri', 'tag', 'time'))
+    _fields = frozenset(('call_id', 'event_type', 'status', 'state', 'call_uri', 'tag', 'time', 'call_uri'))
 
     @property
     def done(self):
@@ -247,8 +247,9 @@ class SmsEvent(EventType):
     application_id = None
     time = None
     state = None
+    tag = None
     _fields = frozenset(('event_type', 'direction', 'message_id', 'message_uri', 'from_', 'to',
-                         'text', 'application_id', 'time', 'state'))
+                         'text', 'application_id', 'time', 'state', 'tag'))
 
     def __repr__(self):
         return 'Sms(message_id={})'.format(self.message_id)
@@ -278,7 +279,9 @@ class ConferenceEvent(ConferenceEventMixin):
     status = None
     created_time = None
     completed_time = None
-    _fields = frozenset(('event_type', 'conference_id', 'conference_uri', 'status', 'created_time', 'completed_time'))
+    tag = None
+    _fields = frozenset(('event_type', 'conference_id', 'conference_uri', 'status', 'created_time',
+                         'completed_time', 'tag'))
 
 
 class ConferenceMemberEvent(ConferenceEventMixin, CallEvent):
@@ -296,8 +299,9 @@ class ConferenceMemberEvent(ConferenceEventMixin, CallEvent):
     mute = None
     state = None
     time = None
+    tag = None
     _fields = frozenset(('event_type', 'conference_id', 'call_id', 'active_members', 'hold', 'member_id',
-                         'member_uri', 'mute', 'state', 'time'))
+                         'member_uri', 'mute', 'state', 'time', 'tag'))
 
 
 class ConferencePlaybackEvent(ConferenceEventMixin):
@@ -310,7 +314,8 @@ class ConferencePlaybackEvent(ConferenceEventMixin):
     conference_uri = None
     status = None
     time = None
-    _fields = frozenset(('event_type', 'conference_id', 'conference_uri', 'status', 'time'))
+    tag = None
+    _fields = frozenset(('event_type', 'conference_id', 'conference_uri', 'status', 'time', 'tag'))
 
 
 class ConferenceSpeakEvent(ConferenceEventMixin):
@@ -322,7 +327,8 @@ class ConferenceSpeakEvent(ConferenceEventMixin):
     conference_uri = None
     status = None
     time = None
-    _fields = frozenset(('event_type', 'conference_id', 'conference_uri', 'status', 'time'))
+    tag = None
+    _fields = frozenset(('event_type', 'conference_id', 'conference_uri', 'status', 'time', 'tag'))
 
 
 def _end_of_call(**kwargs):
