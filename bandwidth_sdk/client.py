@@ -20,9 +20,9 @@ def Client(*args):
         assert len(args) == 3, 'Not enough args'
         user_id, token, secret = args
     else:
-        user_id = os.environ.get('BANDWITH_USER_ID')
-        token = os.environ.get('BANDWITH_TOKEN')
-        secret = os.environ.get('BANDWITH_SECRET')
+        user_id = os.environ.get('BANDWIDTH_USER_ID')
+        token = os.environ.get('BANDWIDTH_TOKEN')
+        secret = os.environ.get('BANDWIDTH_SECRET')
     if not all((user_id, token, secret)):
         raise ValueError('Credentials were improperly configured')
     _global_client = _Client(user_id, (token, secret))
