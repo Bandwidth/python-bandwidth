@@ -55,7 +55,10 @@ class EventsTest(SdkTestCase):
         self.assertIsInstance(event, IncomingCallEvent)
 
         self.assertEqual(event.from_, '+13233326955')
+        self.assertEqual(event.to, '+13865245000')
         self.assertEqual(event.call_id, 'c-oexifypjlh5ygjr7qi4nesq')
+        self.assertEqual(event.call_state, 'active')
+        self.assertEqual(event.application_id, 'a-25nh2lj6qrxznkfu4b732jy')
 
         self.assertIsInstance(event.time, datetime)
 
@@ -84,7 +87,10 @@ class EventsTest(SdkTestCase):
         self.assertIsInstance(event, AnswerCallEvent)
 
         self.assertEqual(event.from_, '+15753222083')
+        self.assertEqual(event.to, '+13865245000')
         self.assertEqual(event.call_id, 'c-jjm3aiicnpngixjjelyomda')
+        self.assertEqual(event.call_state, 'active')
+        self.assertEqual(event.application_id, 'a-25nh2lj6qrxznkfu4b732jy')
 
         self.assertIsInstance(event.time, datetime)
 
@@ -112,6 +118,8 @@ class EventsTest(SdkTestCase):
         self.assertIsInstance(event, HangupCallEvent)
 
         self.assertEqual(event.from_, '+13233326955')
+        self.assertEqual(event.to, '+13233326955')
+        self.assertEqual(event.cause, 'NORMAL_CLEARING')
         self.assertEqual(event.call_id, 'c-z572ntgyy2vnffwpa5bwrcy')
 
         self.assertIsInstance(event.time, datetime)
@@ -140,6 +148,8 @@ class EventsTest(SdkTestCase):
         self.assertIsInstance(event, RejectCallEvent)
 
         self.assertEqual(event.from_, '+13233326955')
+        self.assertEqual(event.to, '+13233326955')
+        self.assertEqual(event.cause, 'CALL_REJECTED')
         self.assertEqual(event.call_id, 'c-z572ntgyy2vnffwpa5bwrcy')
 
         self.assertIsInstance(event.time, datetime)
@@ -166,6 +176,7 @@ class EventsTest(SdkTestCase):
         self.assertIsInstance(event, PlaybackCallEvent)
 
         self.assertEqual(event.call_id, 'c-z572ntgyy2vnffwpa5bwrcy')
+        self.assertEqual(event.status, 'started')
 
         self.assertIsInstance(event.time, datetime)
 
@@ -194,6 +205,8 @@ class EventsTest(SdkTestCase):
 
         self.assertEqual(event.call_id, 'c-z572ntgyy2vnffwpa5bwrcy')
         self.assertEqual(event.gather_id, 'gatherId')
+        self.assertEqual(event.reason, 'max-digits')
+        self.assertEqual(event.state, 'completed')
 
         self.assertIsInstance(event.time, datetime)
 
@@ -244,6 +257,8 @@ class EventsTest(SdkTestCase):
         self.assertEqual(event.call_id, 'c-kmg')
 
         self.assertEquals(event.call_state, 'error')
+        self.assertEquals(event.to, '+16263882600')
+        self.assertEquals(event.from_, '+17146143600')
 
         self.assertIsInstance(event.call, Call)
 
