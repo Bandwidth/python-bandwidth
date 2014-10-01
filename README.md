@@ -30,9 +30,9 @@ The SDK setup
 
     * Default setup from environment variables in UNIX shell:
 
-        export BANDWITH_USER_ID=u-your-user-id
-        export BANDWITH_TOKEN=t-your-token
-        export BANDWITH_SECRET=s-your-secret
+        export BANDWIDTH_USER_ID=u-your-user-id
+        export BANDWIDTH_TOKEN=t-your-token
+        export BANDWIDTH_SECRET=s-your-secret
 
     * Explicitly set up in code:
 
