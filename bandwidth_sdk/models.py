@@ -1245,6 +1245,7 @@ class Media(Resource):
     content_length = None
     media_name = None
     id = None
+    media_url = None
 
     _fields = frozenset(('id', 'media_name', 'content_length'))
 
@@ -1254,6 +1255,7 @@ class Media(Resource):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
             self.id = data
+            self.media_url = '{}/{}'.format(self._path, self.id)
         else:
             raise TypeError('Accepted only id or media data as dictionary')
 
@@ -1290,8 +1292,7 @@ class Media(Resource):
         :return: Tuple where first arg is content of media file in bytes,
                 and second is content-type of file.
         """
-        url = '{}/{}'.format(self._path, self.id)
-        r = self.client.get(url)
+        r = self.client.get(self.media_url)
         return r.content, r.headers['Content-Type']
 
     def upload(self, media_name, content=None, file_path=None, fd=None, mime='audio/mpeg'):
