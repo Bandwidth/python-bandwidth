@@ -1,7 +1,7 @@
 # Bandwidth Python API
 
 [![Build Status](https://travis-ci.org/bandwidthcom/python-bandwidth.svg?branch=master)](https://travis-ci.org/bandwidthcom/python-bandwidth)
-[![Can I Use Python 3?](https://caniusepython3.com/project/bandwidth-sdk.png)](https://caniusepython3.com/project/bandwidth-sdk)
+[![Can I Use Python 3?](https://caniusepython3.com/project/bandwidth-sdk.svg)](https://caniusepython3.com/project/bandwidth-sdk)
 
 Bandwidth SDK is Python library for working with [Bandwidth](https://catapult.inetwork.com/pages/home.jsf) platform API.
 It should be integrated in your python web application easily.
@@ -37,8 +37,10 @@ The SDK setup
 
     * Explicitly set up in code:
 
+        ```python
         from bandwidth_sdk import Client
         Client('u-user', 't-token', 's-secret')
+        ```
 
 Calls basic usage
 
