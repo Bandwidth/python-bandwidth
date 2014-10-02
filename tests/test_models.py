@@ -2110,7 +2110,7 @@ class MediaTest(SdkTestCase):
         [
         {
          "contentLength": 561276,
-         "mediaName": "{mediaName1}",
+         "mediaName": "one",
          "content": "https://catapult.inetwork.com/v1/users/users/{userId}/media/one"
         },
         {
@@ -2136,8 +2136,7 @@ class MediaTest(SdkTestCase):
         media = medias[0]
 
         self.assertIsInstance(media, Media)
-        self.assertEqual(media.id, 'one')
-        self.assertEqual(media.media_name, '{mediaName1}')
+        self.assertEqual(media.media_name, 'one')
         self.assertEqual(media.content_length, 561276)
 
         self.assertEqual(str(media), 'Media(one)')
@@ -2172,12 +2171,12 @@ class MediaTest(SdkTestCase):
         media = Media('media-id')
         media.delete()
         self.assertEquals(responses.calls[0].request.method, 'DELETE')
-        self.assertEquals(responses.calls[0].request.url.split('/')[-1], media.id)
+        self.assertEquals(responses.calls[0].request.url.split('/')[-1], media.media_name)
 
     @responses.activate
     def test_by_upload_file_name(self):
         """
-        Media('media-id').upload('dolphin.mp3', file_path='./tests/fixtures/dolphin.mp3')
+        Media.upload('dolphin.mp3', file_path='./tests/fixtures/dolphin.mp3')
         """
         responses.add(responses.PUT,
                       'https://api.catapult.inetwork.com/v1/users/u-user/media/dolphin.mp3',
@@ -2185,8 +2184,8 @@ class MediaTest(SdkTestCase):
                       status=200,
                       )
 
-        Media('media-id').upload('dolphin.mp3', file_path='./tests/fixtures/dolphin.mp3',
-                                 mime='application/octet-stream')
+        Media.upload('dolphin.mp3', file_path='./tests/fixtures/dolphin.mp3',
+                     mime='application/octet-stream')
         request_message = responses.calls[0].request.body  # decoded to str implicitly
         self.assertEqual(request_message, 'thra\ntata\nrata')
 
@@ -2199,12 +2198,12 @@ class MediaTest(SdkTestCase):
         """
         Bad file name: Media('media-id').upload('dolphin.mp3', file_path='./tests/fixtures/')
         """
-        Media('media-id').upload('dolphin.mp3', file_path='./tests/fixtures/')
+        Media.upload('dolphin.mp3', file_path='./tests/fixtures/')
 
     @responses.activate
     def test_by_upload_content(self):
         """
-        Media('media-id').upload('dolphin.mp3', content=b'lalalala')
+        Media.upload('dolphin.mp3', content=b'lalalala')
         """
         responses.add(responses.PUT,
                       'https://api.catapult.inetwork.com/v1/users/u-user/media/dolphin.mp3',
@@ -2215,7 +2214,7 @@ class MediaTest(SdkTestCase):
             content_line = b'lalalala'
         else:
             content_line = 'lalalala'
-        Media('media-id').upload('dolphin.mp3', content=content_line, mime='application/octet-stream')
+        Media.upload('dolphin.mp3', content=content_line, mime='application/octet-stream')
         request_message = responses.calls[0].request.body  # decoded to str implicitly
         self.assertEqual(request_message, content_line)
 
@@ -2230,12 +2229,12 @@ class MediaTest(SdkTestCase):
         Bad content encoding Media('media-id').upload('dolphin.mp3', content=u'lalalala')
         """
         content_line = u'lalalala'
-        Media('media-id').upload('dolphin.mp3', content=content_line)
+        Media.upload('dolphin.mp3', content=content_line)
 
     @responses.activate
     def test_by_upload_from_fd(self):
         """
-        Media('media-id').upload('dolphin.mp3', fd=open('./tests/fixtures/dolphin.mp3'))
+        Media.upload('dolphin.mp3', fd=open('./tests/fixtures/dolphin.mp3'))
         """
         responses.add(responses.PUT,
                       'https://api.catapult.inetwork.com/v1/users/u-user/media/dolphin.mp3',
@@ -2244,7 +2243,7 @@ class MediaTest(SdkTestCase):
                       )
 
         with open('./tests/fixtures/dolphin.mp3') as fd:
-            Media('media-id').upload('dolphin.mp3', fd=fd)
+            Media.upload('dolphin.mp3', fd=fd)
 
         request_message = responses.calls[0].request.body  # decoded to str implicitly
         self.assertEqual(request_message, 'thra\ntata\nrata')
@@ -2256,7 +2255,7 @@ class MediaTest(SdkTestCase):
                       )
 
         file_like = six.StringIO('thra\ntata\nrata')
-        Media('media-id').upload('dolphin.mp3', fd=file_like, mime='application/octet-stream')
+        Media.upload('dolphin.mp3', fd=file_like, mime='application/octet-stream')
 
         request_message = responses.calls[1].request.body  # decoded to str implicitly
         self.assertEqual(request_message, 'thra\ntata\nrata')
@@ -2268,7 +2267,7 @@ class MediaTest(SdkTestCase):
     @responses.activate
     def test_by_upload_file_seek(self):
         """
-        Seek to EOF Media('media-id').upload('dolphin.mp3', fd=open('./tests/fixtures/dolphin.mp3'))
+        Seek to EOF Media.upload('dolphin.mp3', fd=open('./tests/fixtures/dolphin.mp3'))
         """
         responses.add(responses.PUT,
                       'https://api.catapult.inetwork.com/v1/users/u-user/media/dolphin.mp3',
@@ -2290,7 +2289,7 @@ class MediaTest(SdkTestCase):
     @responses.activate
     def test_by_upload_file_closed(self):
         """
-        Closed fd Media('media-id').upload('dolphin.mp3', fd=open('./tests/fixtures/dolphin.mp3'))
+        Closed fd Media.upload('dolphin.mp3', fd=open('./tests/fixtures/dolphin.mp3'))
         """
         responses.add(responses.PUT,
                       'https://api.catapult.inetwork.com/v1/users/u-user/media/dolphin.mp3',
@@ -2300,4 +2299,4 @@ class MediaTest(SdkTestCase):
 
         fd = open('./tests/fixtures/dolphin.mp3')
         fd.close()
-        Media('media-id').upload('dolphin.mp3', fd=fd)
+        Media.upload('dolphin.mp3', fd=fd)
