@@ -63,6 +63,10 @@ Calls basic usage
         Call.list()
         >>> [Call(c-xxxx, state=completed), Call(c-yyyyy, state=comleted), Call(c-zzzz, state=started)]
 
+####More examples:
+
+Take a look of [python bandwidth examples repository](https://github.com/bandwidthcom/python-bandwidth-examples).
+
 ## Running tests
 
     make req

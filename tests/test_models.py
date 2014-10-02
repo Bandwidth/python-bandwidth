@@ -1822,7 +1822,7 @@ class AvailableNumberTest(SdkTestCase):
     @responses.activate
     def test_list_local(self):
         """
-        AvailableNumber.list_local(state='Cary', state='NC', pattern='*2%3F9*', quantity=2)
+        AvailableNumber.list_local(city='Cary', state='NC', pattern='*2%3F9*', quantity=2)
         """
         raw = """[
           {
