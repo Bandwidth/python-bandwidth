@@ -45,6 +45,33 @@ from bandwidth_sdk import Client
 Client('u-user', 't-token', 's-secret')
 ```
 
+###Allocate phone number basic
+
+Import AvailableNumber from sdk
+```python
+from bandwidth_sdk import AvailableNumber
+```
+Get available number for yours search criteria:
+
+```python
+available_numbers = AvailableNumber.list_local(city='San Francisco', state='CA')
+available_numbers[0].allocate()
+>>> PhoneNumber(number=+14158000000)
+```
+
+You can also create Application before (or update current), to use your endpoint to handle events related to this Phonenumber.
+
+```python
+from bandwidth_sdk import Application
+application = Application.create(name='new-application',
+                                 incoming_call_url='http://test.callback.info')
+# getting number that we allocated before
+number = PhoneNumber.get_number_info(number=+14158000000)
+number.patch(application=application)
+```
+
+Now this number is attached to your application, and all events will deliver to `incoming_call_url` that your point in Application.
+
 ###Calls basic usage
 
 Import Call from sdk
