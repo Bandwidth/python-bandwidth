@@ -1244,18 +1244,17 @@ class Media(Resource):
 
     content_length = None
     media_name = None
-    id = None
     media_url = None
 
-    _fields = frozenset(('id', 'media_name', 'content_length'))
+    _fields = frozenset(('media_name', 'content_length'))
 
     def __init__(self, data):  # pragma: no cover
         self.client = get_client()
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
-            self.id = data
-            self.media_url = '{}/{}'.format(self._path, self.id)
+            self.media_name = data
+            self.media_url = '{}/{}'.format(self._path, self.media_name)
         else:
             raise TypeError('Accepted only id or media data as dictionary')
 
@@ -1285,8 +1284,8 @@ class Media(Resource):
         upload a new file with the same name.
         :return: None
         """
-        assert self.id is not None, 'Id field is required for this action'
-        url = '{}/{}'.format(self._path, self.id)
+        assert self.media_name is not None, 'Id field is required for this action'
+        url = '{}/{}'.format(self._path, self.media_name)
         self.client.delete(url)
 
     def download(self):
@@ -1298,7 +1297,8 @@ class Media(Resource):
         r = self.client.get(self.media_url)
         return r.content, r.headers['Content-Type']
 
-    def upload(self, media_name, content=None, file_path=None, fd=None, mime='audio/mpeg'):
+    @classmethod
+    def upload(cls, media_name, content=None, file_path=None, fd=None, mime='audio/mpeg'):
         """
         Uploads a file the normal HTTP way. You may add headers to the request in order
         to provide some control to your media-file.
@@ -1318,5 +1318,10 @@ class Media(Resource):
             content = fd.read()
         else:
             assert isinstance(content, six.binary_type), 'Only bytes accepted in content'
-        url = '{}/{}'.format(self._path, media_name)
-        self.client.build_request('put', url, data=content, headers={'content-type': mime})
+        url = '{}/{}'.format(cls._path, media_name)
+        client = get_client()
+        client.build_request('put', url, data=content, headers={'content-type': mime})
+        return cls(media_name)
+
+    def __repr__(self):
+        return 'Media({})'.format(self.media_name)
