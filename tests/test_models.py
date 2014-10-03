@@ -1774,8 +1774,7 @@ class PhoneNumberTest(SdkTestCase):
                       status=200,
                       content_type='application/json')
         phone = PhoneNumber('phone-id')
-        d_phone = phone.delete()
-        self.assertTrue(d_phone)
+        phone.delete()
         self.assertEquals(responses.calls[0].request.method, 'DELETE')
         self.assertEquals(responses.calls[0].request.url.split('/')[-1], phone.id)
 

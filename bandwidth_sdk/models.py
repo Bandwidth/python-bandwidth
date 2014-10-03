@@ -1187,15 +1187,14 @@ class PhoneNumber(Gettable):
         When you remove a number from your account,
         it will not immediately become available for re-use, so be careful.
 
-        :return: True if it's deleted.
+        :return: None.
         """
         client = get_client()
         url = '{}/{}'.format(self._path, self.id)
         client.delete(url)
-        return True
 
     def refresh(self):
-        url = url = '{}/{}'.format(self._path, self.id)
+        url = '{}/{}'.format(self._path, self.id)
         data = self.client.get(url).json()
         self.set_up(from_api(data))
 
