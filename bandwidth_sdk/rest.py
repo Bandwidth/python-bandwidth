@@ -1,6 +1,12 @@
 import json
+import logging
 import requests
 from .errors import AppPlatformError
+
+
+logger = logging.getLogger(__package__)
+
+ENDPOINT = 'https://api.catapult.inetwork.com'
 
 
 class RESTClientObject(object):
@@ -20,6 +26,18 @@ class RESTClientObject(object):
     headers = {'content-type': 'application/json'}
     log_hook = None
     log = None
+    endpoint = None
+    uid = None
+    auth = None
+
+    def __init__(self, user_id, auth, endpoint=ENDPOINT,
+                 log=None, log_hook=None):
+        self.endpoint = endpoint
+        self.log_hook = log_hook
+        self.uid = user_id
+        self.auth = auth
+        self.application_id = None
+        self.log = log or logger
 
     def _log_response(self, response):
         """

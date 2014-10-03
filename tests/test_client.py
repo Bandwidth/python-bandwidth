@@ -1,7 +1,7 @@
 import unittest
 import responses
 
-from bandwidth_sdk import Client, get_client, set_client, _Client, AppPlatformError
+from bandwidth_sdk import Client, get_client, set_client, RESTClientObject, AppPlatformError
 from .utils import SdkTestCase
 
 
@@ -40,7 +40,7 @@ class ClientTest(SdkTestCase):
         Client re installation.
         """
         previous = Client('u-**********', 't-******', 's-********')
-        old_client = set_client(_Client('u-**********', 't-******', 's-********'))
+        old_client = set_client(RESTClientObject('u-**********', 't-******', 's-********'))
         self.assertIs(previous, old_client)
 
 

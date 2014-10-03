@@ -5,7 +5,7 @@ from .rest import RESTClientObject
 
 logger = logging.getLogger(__package__)
 
-__all__ = ('Client', '_Client', 'get_client', 'set_client')
+__all__ = ('Client', 'get_client', 'set_client')
 
 
 _global_client = None
@@ -25,7 +25,7 @@ def Client(*args):
         secret = os.environ.get('BANDWIDTH_SECRET')
     if not all((user_id, token, secret)):
         raise ValueError('Credentials were improperly configured')
-    _global_client = _Client(user_id, (token, secret))
+    _global_client = RESTClientObject(user_id, (token, secret))
     return _global_client
 
 
@@ -45,21 +45,3 @@ def set_client(client):
     previous = _global_client
     _global_client = client
     return previous
-
-
-class _Client(RESTClientObject):
-    endpoint = None
-    uid = None
-    auth = None
-    log_hook = None
-    default_timeout = 60
-    headers = {'content-type': 'application/json'}
-
-    def __init__(self, user_id, auth, endpoint='https://api.catapult.inetwork.com',
-                 log=None, log_hook=None):
-        self.endpoint = endpoint
-        self.log_hook = log_hook
-        self.uid = user_id
-        self.auth = auth
-        self.application_id = None
-        self.log = log or logger
