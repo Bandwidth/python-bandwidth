@@ -27,6 +27,8 @@ If you want the cutting edge version (that may be broken), use this:
 ```console
 pip install -e git+https://github.com/bandwidthcom/python-bandwidth.git#egg=bandwidth_sdk
 ```
+Note: This may have to be run as `root` or with `--user` flag if you are not using python virtual environment.
+
 ## Usage
 
 The SDK setup
@@ -35,8 +37,8 @@ Default setup from environment variables in UNIX shell:
 
 ```console
 export BANDWIDTH_USER_ID=u-your-user-id
-export BANDWIDTH_TOKEN=t-your-token
-export BANDWIDTH_SECRET=s-your-secret
+export BANDWIDTH_API_TOKEN=t-your-token
+export BANDWIDTH_API_SECRET=s-your-secret
 ```
 Or explicitly set up in code:
 

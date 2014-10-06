@@ -21,8 +21,8 @@ def Client(*args):
         user_id, token, secret = args
     else:
         user_id = os.environ.get('BANDWIDTH_USER_ID')
-        token = os.environ.get('BANDWIDTH_TOKEN')
-        secret = os.environ.get('BANDWIDTH_SECRET')
+        token = os.environ.get('BANDWIDTH_API_TOKEN')
+        secret = os.environ.get('BANDWIDTH_API_SECRET')
     if not all((user_id, token, secret)):
         raise ValueError('Credentials were improperly configured')
     _global_client = RESTClientObject(user_id, (token, secret))
