@@ -1687,6 +1687,60 @@ class PhoneNumberTest(SdkTestCase):
         self.assertIsInstance(numbers[1].created_time, datetime)
 
     @responses.activate
+    def test_phone_number_as_iterator(self):
+        """
+        PhoneNumber.as_iterator()
+        """
+        page_1 = """
+        [
+        {
+           "id": "numb-id-1",
+           "number":"+1987000001"
+        },
+        {
+           "id": "numb-id2",
+           "number":"+1987000002"
+        }
+        ]
+        """
+
+        page_2 = """
+        [
+        {
+           "id": "numb-id3",
+           "number":"+1987000003"
+        },
+        {
+           "id": "numb-id2",
+           "number":"+1987000004"
+        }
+        ]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers?size=100&page=0',
+                      body=page_1,
+                      status=200,
+                      content_type='application/json',
+                      match_querystring=True)
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers?size=100&page=1',
+                      body=page_2,
+                      status=200,
+                      content_type='application/json',
+                      match_querystring=True)
+
+        numbers = PhoneNumber.as_iterator()
+        numbers_list = list(numbers)
+
+        self.assertEqual(len(numbers_list), 4)
+
+        self.assertEqual(numbers_list[0].number, "+1987000001")
+        self.assertEqual(numbers_list[1].number, "+1987000002")
+        self.assertEqual(numbers_list[2].number, "+1987000003")
+        self.assertEqual(numbers_list[3].number, "+1987000004")
+
+    @responses.activate
     def test_get_number_info(self):
         """
         PhoneNumber.get_number_info('+19195551212')
