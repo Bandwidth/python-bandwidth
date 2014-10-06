@@ -72,13 +72,13 @@ class ListResource(BaseResource):
                 yield val
 
 
-class Resource(ListResource, CreateResource):
+class GenericResource(ListResource, CreateResource):
     """
     General abstraction of API resource.
     """
 
 
-class Call(AudioMixin, Resource):
+class Call(AudioMixin, GenericResource):
     path = 'calls'
     STATES = enum('started', 'rejected', 'active', 'completed', 'transferring')
     call_id = None
@@ -291,7 +291,7 @@ class Call(AudioMixin, Resource):
         return [from_api(e) for e in data]
 
 
-class Application(Resource):
+class Application(GenericResource):
 
     id = None
     name = None
@@ -411,7 +411,7 @@ class Application(Resource):
         self.set_up(from_api(data))
 
 
-class Bridge(AudioMixin, Resource):
+class Bridge(AudioMixin, GenericResource):
     path = 'bridges'
     STATES = enum('created', 'active', 'hold', 'completed', 'error')
     id = None
