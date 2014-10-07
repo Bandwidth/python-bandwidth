@@ -7,11 +7,7 @@ from .errors import AppPlatformError
 from.generics import AudioMixin
 
 
-# Sentinel value to mark that some of properties have been not synced.
-UNEVALUATED = object()
-
-
-class Gettable(object):
+class BaseResource(object):
     client = None
     _fields = None
 
@@ -34,9 +30,10 @@ class Gettable(object):
         return '{}({})'.format(self.__class__.__name__, self.id)
 
 
-class Resource(Gettable):
-    client = None
-
+class CreateResource(BaseResource):
+    """
+    Supports create interface.
+    """
     @classmethod
     def create(cls, *args, **kwargs):  # pragma: no cover
         """
@@ -46,6 +43,11 @@ class Resource(Gettable):
         """
         raise NotImplemented
 
+
+class ListResource(BaseResource):
+    """
+    Supports list interface.
+    """
     @classmethod
     def list(cls, *args, **kwargs):  # pragma: no cover
         """
@@ -56,8 +58,27 @@ class Resource(Gettable):
         """
         raise NotImplemented
 
+    @classmethod
+    def as_iterator(cls, chunk=100):
+        page = 0
+        while True:
+            try:
+                results = cls.list(page, chunk)
+            except Exception:
+                break
+            # todo: probably break on has-next == False
+            page += 1
+            for val in results:
+                yield val
 
-class Call(AudioMixin, Resource):
+
+class GenericResource(ListResource, CreateResource):
+    """
+    General abstraction of API resource.
+    """
+
+
+class Call(AudioMixin, GenericResource):
     path = 'calls'
     STATES = enum('started', 'rejected', 'active', 'completed', 'transferring')
     call_id = None
@@ -270,7 +291,7 @@ class Call(AudioMixin, Resource):
         return [from_api(e) for e in data]
 
 
-class Application(Resource):
+class Application(GenericResource):
 
     id = None
     name = None
@@ -390,7 +411,7 @@ class Application(Resource):
         self.set_up(from_api(data))
 
 
-class Bridge(AudioMixin, Resource):
+class Bridge(AudioMixin, GenericResource):
     path = 'bridges'
     STATES = enum('created', 'active', 'hold', 'completed', 'error')
     id = None
@@ -513,7 +534,7 @@ class Bridge(AudioMixin, Resource):
         self.set_up(from_api(data))
 
 
-class Account(Gettable):
+class Account(BaseResource):
     balance = None
     account_type = None
     _path = 'account/'
@@ -559,7 +580,7 @@ class Account(Gettable):
         return data
 
 
-class Gather(Resource):
+class Gather(CreateResource):
     path = 'calls'
     id = None
     reason = None
@@ -649,7 +670,7 @@ class Gather(Resource):
         self.client.post(url, data=data)
 
 
-class Conference(AudioMixin, Gettable):
+class Conference(AudioMixin, CreateResource):
 
     """
     The Conference resource allows you create conferences, add members to it,
@@ -781,7 +802,7 @@ class Conference(AudioMixin, Gettable):
         return partial(ConferenceMember, self.id)
 
 
-class ConferenceMember(AudioMixin, Resource):
+class ConferenceMember(AudioMixin, BaseResource):
 
     """
     Member of call conference.
@@ -854,7 +875,7 @@ class ConferenceMember(AudioMixin, Resource):
         return 'conferences/{}/members/{}/audio'.format(self.conf_id, self.id)
 
 
-class Recording(Gettable):
+class Recording(ListResource):
     """
     Recording resource
     """
@@ -926,7 +947,7 @@ class Recording(Gettable):
         return resp.content, resp.headers['Content-Type']
 
 
-class AvailableNumber(Gettable):
+class AvailableNumber(ListResource):
     """
     The Available Numbers resource lets you search
     for numbers that are available for use with your application.
@@ -1070,7 +1091,7 @@ class AvailableNumber(Gettable):
         return PhoneNumber.allocate(**data)
 
 
-class PhoneNumber(Gettable):
+class PhoneNumber(ListResource):
     _path = 'phoneNumbers'
     _fields = frozenset(('id', 'application', 'number', 'national_number',
                          'name', 'created_time', 'city', 'state', 'price',
@@ -1230,7 +1251,7 @@ class PhoneNumber(Gettable):
         return number
 
 
-class Media(Resource):
+class Media(ListResource):
     """
     The Media resource lets you upload your media files to Bandwidth API servers so they can be used in
     application scripts without requiring a separate hosting provider. You can upload files up to 65 MB and
