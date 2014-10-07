@@ -6,7 +6,7 @@ import unittest
 from bandwidth_sdk import (Call, Bridge,
                            AppPlatformError, Application,
                            Account, Conference, Recording, ConferenceMember,
-                           Gather, PhoneNumber, AvailableNumber, Media)
+                           Gather, PhoneNumber, AvailableNumber, Media, Message)
 from datetime import datetime
 
 from .utils import SdkTestCase
@@ -2354,3 +2354,189 @@ class MediaTest(SdkTestCase):
         fd = open('./tests/fixtures/dolphin.mp3')
         fd.close()
         Media.upload('dolphin.mp3', fd=fd)
+
+
+class MessageTestCase(SdkTestCase):
+
+    @responses.activate
+    def test_message_get(self):
+        """
+        Messages.get('message-id')
+        """
+        raw = """
+            {
+          "id": "message-id",
+          "messageId": "message-id",
+          "from": "+191912345678",
+          "to": "+19199876543",
+          "text": "Good morning, this is a test message",
+          "time": "2012-10-05T20:37:38.048Z",
+          "direction": "out",
+          "state": "sent",
+          "callbackUrl": "http://my.callback.url"
+        }
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/messages/message-id',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        message = Message.get('message-id')
+        self.assertIsInstance(message, Message)
+        self.assertEqual(message.id, 'message-id')
+        self.assertEqual(message.from_, '+191912345678')
+        self.assertEqual(message.to, '+19199876543')
+        self.assertEqual(message.text, 'Good morning, this is a test message')
+        self.assertIsInstance(message.time, datetime)
+        self.assertEqual(message.direction, 'out')
+        self.assertEqual(message.state, Message.STATES.sent)
+        self.assertEqual(message.callback_url, 'http://my.callback.url')
+
+    @responses.activate
+    def test_list_messages(self):
+        """
+        Messages.list(sender='+19796543211', receiver='+19796543212')
+        """
+        raw = """
+        [
+          {
+            "id": "mess-id1",
+            "messageId": "mess-id1",
+            "from": "+19796543211",
+            "to": "+19796543212",
+            "text": "Good morning, this is a test message",
+            "time": "2012-10-05T20:37:38.048Z",
+            "direction": "out",
+            "state": "sent"
+          },
+          {
+            "id": "mess-id2",
+            "messageId": "mess-id2",
+            "from": "+19796543211",
+            "to": "+19796543212",
+            "text": "I received your test message",
+            "time": "2012-10-05T20:38:11.023Z",
+            "direction": "in",
+            "state": "sent"
+          }
+        ]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/messages',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        messages = Message.list(sender='+19796543211', receiver='+19796543212')
+        self.assertIsInstance(messages[0], Message)
+        self.assertEqual(messages[0].id, 'mess-id1')
+        self.assertEqual(messages[0].from_, '+19796543211')
+        self.assertEqual(messages[0].to, '+19796543212')
+        self.assertEqual(messages[0].text, 'Good morning, this is a test message')
+        self.assertIsInstance(messages[0].time, datetime)
+        self.assertEqual(messages[0].direction, 'out')
+        self.assertEqual(messages[0].state, Message.STATES.sent)
+        self.assertIsInstance(messages[1], Message)
+        self.assertEqual(messages[1].id, 'mess-id2')
+        self.assertEqual(messages[1].from_, '+19796543211')
+        self.assertEqual(messages[1].to, '+19796543212')
+        self.assertEqual(messages[1].text, 'I received your test message')
+        self.assertIsInstance(messages[1].time, datetime)
+        self.assertEqual(messages[1].direction, 'in')
+        self.assertEqual(messages[1].state, Message.STATES.sent)
+
+    @responses.activate
+    def test_send_message(self):
+        """
+        Message.send(sender='+19796543211',
+                     receiver='+19796543212',
+                     text='Good morning,
+                     this is a test message',
+                     tag='test tag')
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/messages',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/messages/new-mess-id'})
+        number = PhoneNumber({'id': 'phone_id', 'number': '+19796543211'})
+        message = Message.send(sender=number,
+                               receiver='+19796543212',
+                               text='Good morning, '
+                                    'this is a test message',
+                               tag='test tag')
+        self.assertIsInstance(message, Message)
+        self.assertEqual(message.id, 'new-mess-id')
+        self.assertEqual(message.from_, '+19796543211')
+        self.assertEqual(message.text, 'Good morning, this is a test message')
+        self.assertEqual(message.tag, 'test tag')
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"to": "+19796543212", "from": "+19796543211", '
+                                      '"text": "Good morning, this is a test message", '
+                                      '"tag": "test tag"}')
+
+    @responses.activate
+    def test_send_batch_messages(self):
+        """
+        sender = Message.send_batch()
+        sender.push_message('+19195551212', '+19195551213', 'Hello this is test')
+        sender.execute()
+        """
+        sender = Message.send_batch()
+        self.assertIsInstance(sender, Message._message_multi)
+        self.assertEqual(len(responses.calls), 0)
+        sender.push_message(sender='+1900000001',
+                            receiver='+1900000002',
+                            text='Good morning, '
+                                 'this is a test message',
+                            tag='test tag')
+        self.assertEqual(len(responses.calls), 0)
+        sender.push_message(sender='+1900000002',
+                            receiver='+1900000003',
+                            text='Good morning, '
+                                 'this is a second test message',
+                            tag='test tag2')
+        self.assertEqual(len(responses.calls), 0)
+        sender.push_message(sender='+1900000002',
+                            receiver='+1900000003',
+                            text='',
+                            tag='test tag3')
+        self.assertEqual(len(responses.calls), 0)
+
+        raw = """
+            [
+              {
+                "result": "accepted",
+                "location": "https://.../v1/users/.../messages/mess-id-1"
+              },
+              {
+                "result": "accepted",
+                "location": "https://.../v1/users/.../messages/mess-id-2"
+              },
+              {
+                "result": "error",
+                "error": {
+                  "category": "bad-request",
+                  "code": "blank-property",
+                  "message": "The 'message' resource property 'text' can't be blank",
+                  "details": []
+                 }
+              }
+            ]
+            """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/messages',
+                      body=raw,
+                      status=202,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/messages/new-mess-id'})
+        messages = sender.execute()
+        self.assertEqual(len(responses.calls), 1)
+        self.assertIsInstance(messages[0], Message)
+        self.assertEqual(messages[0].id, 'mess-id-1')
+        self.assertIsInstance(messages[1], Message)
+        self.assertEqual(messages[1].id, 'mess-id-2')
+        self.assertIsInstance(messages[2], AppPlatformError)
+        execute_again = sender.execute()
+        self.assertIsNone(execute_again)
+        self.assertEqual(len(responses.calls), 1)

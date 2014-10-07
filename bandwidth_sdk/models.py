@@ -1345,3 +1345,166 @@ class Media(ListResource):
 
     def __repr__(self):
         return 'Media({})'.format(self.media_name)
+
+
+class Message(GenericResource):
+    _path = 'messages'
+    STATES = enum('received', 'queued', 'sending', 'sent', 'error')
+    id = None
+    direction = None
+    callback_url = None
+    callback_timeout = None
+    fallback_url = None
+    from_ = None
+    to = None
+    state = None
+    time = None
+    text = None
+    tag = None
+    _fields = frozenset(('id', 'direction', 'callback_url', 'callback_timeout',
+                         'fallback_url', 'from_', 'to', 'state', 'time', 'text', 'tag'))
+    _multi = False
+    _batch_messages = None
+
+    class _message_multi(object):
+
+        def __init__(self):
+            self.messages = []
+            self.done = False
+
+        def _post_messages(self):
+            post_data = [to_api(v) for v in self.messages]
+            client = get_client()
+            url = Message._path
+            r = client.post(url, data=post_data).json()
+            return r
+
+        @classmethod
+        def _parse_resp_data(cls, resp_dct):
+            if 'location' in resp_dct:
+                return Message(resp_dct['location'].split('/')[-1])
+            elif 'error' in resp_dct:
+                return AppPlatformError(resp_dct['error'].get('message'))
+
+        def push_message(self, sender, receiver, text, callback_url=None, tag=None):
+            message = Message._prepare_message(sender=sender, receiver=receiver, text=text,
+                                               callback_url=callback_url, tag=tag)
+            self.messages.append(message)
+
+        def execute(self):
+            if self.done:
+                return
+            self.done = True
+            val = self._post_messages()
+            val = list(map(self._parse_resp_data, val))
+            self.messages = []
+            return val
+
+    def __init__(self, data):  # pragma: no cover
+        self.client = get_client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.id = data
+        else:
+            raise TypeError('Accepted only message-id or message data as dictionary')
+
+    def set_up(self, data):
+        self.from_ = self.from_ or data.get('from')
+        super(Message, self).set_up(data)
+
+    @classmethod
+    def _prepare_message(cls, sender, receiver, text, callback_url=None, tag=None):
+        if isinstance(sender, PhoneNumber):
+            sender = sender.number
+        data = {
+            'from': sender,
+            'to': receiver,
+            'text': text,
+            'callback_url': callback_url,
+            'tag': tag
+        }
+        return data
+
+    @classmethod
+    def list(cls, **query):
+        """
+        :param sender: The phone number to filter the messages that came from
+                     (must be in E.164 format, like +19195551212).
+        :param receiver: The phone number to filter the messages that was sent to
+                   (must be in E.164 format, like +19195551212).
+        :param page: Used for pagination to indicate the page requested for
+                     querying a list of messages.
+                     If no value is specified the default is 0.
+        :param size: Used for pagination to indicate the size of each page
+                     requested for querying a list of messages.
+                     If no value is specified the default value is 25. (Maximum value 1000)
+        """
+        client = cls.client or get_client()
+        if 'sender' in query:
+            query['from'] = query.pop('sender')
+        if 'receiver' in query:
+            query['to'] = query.pop('receiver')
+        query = to_api(query)
+        data_as_list = client.get(cls._path, params=query).json()
+        return [cls(v) for v in data_as_list]
+
+    @classmethod
+    def get(cls, message_id):
+        """
+        Gets information about a previously sent or received message
+        :param message_id: id of message that you want to retrieve
+        :return: new Message instance with all provided fields.
+        """
+        client = cls.client or get_client()
+        url = '{}/{}'.format(cls._path, message_id)
+        data_as_dict = client.get(url).json()
+        return cls(data_as_dict)
+
+    @classmethod
+    def send(cls, sender, receiver, text, callback_url=None, tag=None):
+        """
+        :param sender: One of your telephone numbers the message should come from.
+                       Must be PhoneNumber instance or in E.164 format, like +19195551212.
+        :param receiver: The phone number the message should be sent to
+                         (must be in E.164 format, like +19195551212)
+        :param text: The contents of the text message.
+        :param callback_url: URL where the events related to the outgoing message will be posted to.
+        :param tag: A string that will be included in the callback events of the message.
+        :return: New message instance with filled data.
+        """
+        data = cls._prepare_message(sender=sender, receiver=receiver, text=text,
+                                    callback_url=callback_url, tag=tag)
+
+        json_data = to_api(data)
+        client = cls.client or get_client()
+        r = client.post(cls._path, data=json_data)
+
+        message_id = get_location_id(r)
+        message = cls(message_id)
+        message.set_up(data)
+        return message
+
+    @classmethod
+    def send_batch(cls):
+        """
+        Method that return sender instance for sending batch of messages
+        with different params.
+
+        sender instance have 2 methods:
+         1. push_message(), that is similar to method send of Message class, and
+                           takes same arguments
+         2. execute(), that execute request to catapult with pushed messages, returns
+            list of Messages instance or errors, if something went wrong.
+
+        Usage:
+        sender = Message.send_batch()
+        sender.push_message('+19195551212', '+19195551213', 'Hello this is test')
+        sender.push_message('+19195551213', '+19195551214', 'Hello this is test1')
+        sender.push_message('+19195551214', '+19195551215', '')
+        sender.execute()
+
+        :return: [Message('some-id'), Message('some-id2'), AppPlatformError('Body of text can not be empty')]
+
+        """
+        return cls._message_multi()
