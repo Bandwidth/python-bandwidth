@@ -1686,6 +1686,7 @@ class PhoneNumberTest(SdkTestCase):
         self.assertEqual(numbers[1].state, 'NC')
         self.assertIsInstance(numbers[1].created_time, datetime)
 
+    @unittest.skip('as_iterator commented')
     @responses.activate
     def test_phone_number_as_iterator(self):
         """
