@@ -4,7 +4,7 @@ import responses
 import unittest
 
 from bandwidth_sdk import (Call, Bridge,
-                           AppPlatformError, Application,
+                           AppPlatformError, MessageCreationError, Application,
                            Account, Conference, Recording, ConferenceMember,
                            Gather, PhoneNumber, AvailableNumber, Media, Message)
 from datetime import datetime
@@ -2152,6 +2152,12 @@ class CommonTest(SdkTestCase):
         """
         self.assertIsInstance(repr(Recording('id')), six.string_types)
 
+    def test_message_repr_not_failed(self):
+        """
+        Test Message representation
+        """
+        self.assertIsInstance(repr(Message({'id': None, 'state': Message.STATES.error})), six.string_types)
+
 
 class MediaTest(SdkTestCase):
 
@@ -2483,7 +2489,7 @@ class MessageTestCase(SdkTestCase):
         sender.execute()
         """
         sender = Message.send_batch()
-        self.assertIsInstance(sender, Message._message_multi)
+        self.assertIsInstance(sender, Message._Multi)
         self.assertEqual(len(responses.calls), 0)
         sender.push_message(sender='+1900000001',
                             receiver='+1900000002',
@@ -2536,7 +2542,11 @@ class MessageTestCase(SdkTestCase):
         self.assertEqual(messages[0].id, 'mess-id-1')
         self.assertIsInstance(messages[1], Message)
         self.assertEqual(messages[1].id, 'mess-id-2')
-        self.assertIsInstance(messages[2], AppPlatformError)
-        execute_again = sender.execute()
-        self.assertIsNone(execute_again)
+        self.assertIsNotNone(sender.errors)
+        self.assertIsInstance(sender.errors, list)
+        self.assertIsInstance(sender.errors[0], MessageCreationError)
+        self.assertEqual(repr(sender.errors[0]), "MessageCreationError(The 'message' resource property 'text' can't be blank)")
+
+        with self.assertRaises(AppPlatformError):
+            sender.execute()
         self.assertEqual(len(responses.calls), 1)

@@ -3,7 +3,7 @@ import six
 from functools import partial
 from .client import get_client
 from .utils import to_api, from_api, enum, get_location_id, file_exists
-from .errors import AppPlatformError
+from .errors import AppPlatformError, MessageCreationError
 from.generics import AudioMixin
 
 
@@ -1361,30 +1361,25 @@ class Message(GenericResource):
     time = None
     text = None
     tag = None
+
     _fields = frozenset(('id', 'direction', 'callback_url', 'callback_timeout',
                          'fallback_url', 'from_', 'to', 'state', 'time', 'text', 'tag'))
     _multi = False
     _batch_messages = None
 
-    class _message_multi(object):
+    class _Multi(object):
 
         def __init__(self):
             self.messages = []
+            self.errors = []
             self.done = False
 
         def _post_messages(self):
-            post_data = [to_api(v) for v in self.messages]
+            post_data = self.messages
             client = get_client()
             url = Message._path
             r = client.post(url, data=post_data).json()
             return r
-
-        @classmethod
-        def _parse_resp_data(cls, resp_dct):
-            if 'location' in resp_dct:
-                return Message(resp_dct['location'].split('/')[-1])
-            elif 'error' in resp_dct:
-                return AppPlatformError(resp_dct['error'].get('message'))
 
         def push_message(self, sender, receiver, text, callback_url=None, tag=None):
             message = Message._prepare_message(sender=sender, receiver=receiver, text=text,
@@ -1393,12 +1388,18 @@ class Message(GenericResource):
 
         def execute(self):
             if self.done:
-                return
+                raise AppPlatformError('You have already executed this queue')
             self.done = True
             val = self._post_messages()
-            val = list(map(self._parse_resp_data, val))
+
+            messages = []
+            for answer in val:
+                if 'location' in answer:
+                    messages.append(Message(answer['location'].split('/')[-1]))
+                elif 'error' in answer:
+                    self.errors.append(MessageCreationError(answer['error']['message']))
             self.messages = []
-            return val
+            return messages
 
     def __init__(self, data):  # pragma: no cover
         self.client = get_client()
@@ -1408,6 +1409,9 @@ class Message(GenericResource):
             self.id = data
         else:
             raise TypeError('Accepted only message-id or message data as dictionary')
+
+    def __repr__(self):
+        return 'Message({}, state={})'.format(self.id, self.state)
 
     def set_up(self, data):
         self.from_ = self.from_ or data.get('from')
@@ -1424,7 +1428,7 @@ class Message(GenericResource):
             'callback_url': callback_url,
             'tag': tag
         }
-        return data
+        return to_api(data)
 
     @classmethod
     def list(cls, **query):
@@ -1476,9 +1480,8 @@ class Message(GenericResource):
         data = cls._prepare_message(sender=sender, receiver=receiver, text=text,
                                     callback_url=callback_url, tag=tag)
 
-        json_data = to_api(data)
         client = cls.client or get_client()
-        r = client.post(cls._path, data=json_data)
+        r = client.post(cls._path, data=data)
 
         message_id = get_location_id(r)
         message = cls(message_id)
@@ -1494,8 +1497,14 @@ class Message(GenericResource):
         sender instance have 2 methods:
          1. push_message(), that is similar to method send of Message class, and
                            takes same arguments
+            :return: None
          2. execute(), that execute request to catapult with pushed messages, returns
-            list of Messages instance or errors, if something went wrong.
+            list of Messages instance.
+            :return: [Message('some-id'), Message('some-id2')]
+
+
+        sender have attribute "errors" that can contains list MessageCreationError with
+        error_messages (what actually went wrong in batch creation)
 
         Usage:
         sender = Message.send_batch()
@@ -1503,8 +1512,8 @@ class Message(GenericResource):
         sender.push_message('+19195551213', '+19195551214', 'Hello this is test1')
         sender.push_message('+19195551214', '+19195551215', '')
         sender.execute()
-
-        :return: [Message('some-id'), Message('some-id2'), AppPlatformError('Body of text can not be empty')]
+        if sender.errors:
+            ...
 
         """
-        return cls._message_multi()
+        return cls._Multi()
