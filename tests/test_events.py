@@ -13,7 +13,7 @@ from bandwidth_sdk import (EventType,
                            RecordingCallEvent,
                            SpeakCallEvent,
                            DtmfCallEvent,
-                           SmsEvent,
+                           MessageEvent,
                            ConferenceEvent,
                            ConferenceMemberEvent,
                            ConferenceSpeakEvent,
@@ -23,6 +23,7 @@ from bandwidth_sdk import (EventType,
                            Conference,
                            Gather,
                            Recording,
+                           Message
                            )
 
 from .utils import SdkTestCase
@@ -387,10 +388,10 @@ class EventsTest(SdkTestCase):
 
         event = Event.create(**data_inc)
 
-        self.assertEqual(str(event), 'Sms(message_id=m-xx)')
+        self.assertEqual(str(event), 'MessageEvent(message_id=m-xx)')
 
         self.assertIsInstance(event, EventType)
-        self.assertIsInstance(event, SmsEvent)
+        self.assertIsInstance(event, MessageEvent)
 
         self.assertEqual(event.direction, 'in')
         self.assertEqual(event.message_id, 'm-xx')
@@ -398,8 +399,11 @@ class EventsTest(SdkTestCase):
         self.assertEqual(event.to, '+13865245000')
         self.assertEqual(event.text, 'Example')
         self.assertEqual(event.state, 'received')
-
         self.assertIsInstance(event.time, datetime)
+
+        self.assertIsInstance(event.message, Message)
+        self.assertEqual(event.message.id, 'm-xx')
+        self.assertEqual(event.state, 'received')
 
     def test_factory_conference(self):
         """
