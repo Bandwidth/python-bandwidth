@@ -3,7 +3,7 @@ import six
 from functools import partial
 from .client import get_client
 from .utils import to_api, from_api, enum, get_location_id, file_exists
-from .errors import AppPlatformError, MessageCreationError
+from .errors import AppPlatformError
 from.generics import AudioMixin
 
 
@@ -1361,9 +1361,11 @@ class Message(GenericResource):
     time = None
     text = None
     tag = None
+    error_message = None
 
     _fields = frozenset(('id', 'direction', 'callback_url', 'callback_timeout',
-                         'fallback_url', 'from_', 'to', 'state', 'time', 'text', 'tag'))
+                         'fallback_url', 'from_', 'to', 'state', 'time', 'text',
+                         'error_message', 'tag'))
     _multi = False
     _batch_messages = None
 
@@ -1391,14 +1393,17 @@ class Message(GenericResource):
                 raise AppPlatformError('You have already executed this queue')
             self.done = True
             val = self._post_messages()
-
+            self.messages.reverse()
             messages = []
             for answer in val:
+                data = self.messages.pop()
                 if 'location' in answer:
-                    messages.append(Message(answer['location'].split('/')[-1]))
+                    data.update({'id': answer['location'].split('/')[-1]})
+                    messages.append(Message(data))
                 elif 'error' in answer:
-                    self.errors.append(MessageCreationError(answer['error']['message']))
-            self.messages = []
+                    data.update({'error_message': answer['error']['message'],
+                                 'state': Message.STATES.error})
+                    self.errors.append(Message(data))
             return messages
 
     def __init__(self, data):  # pragma: no cover
@@ -1500,11 +1505,11 @@ class Message(GenericResource):
             :return: None
          2. execute(), that execute request to catapult with pushed messages, returns
             list of Messages instance.
-            :return: [Message('some-id'), Message('some-id2')]
+            :return: [Message('some-id', state='sent'), Message('some-id2', state='sent')]
 
 
-        sender have attribute "errors" that can contains list MessageCreationError with
-        error_messages (what actually went wrong in batch creation)
+        sender have attribute "errors" that can contains list Messages with state=error and with
+        error_messages attribute (what actually went wrong in batch creation)
 
         Usage:
         sender = Message.send_batch()

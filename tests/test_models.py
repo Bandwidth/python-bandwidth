@@ -4,7 +4,7 @@ import responses
 import unittest
 
 from bandwidth_sdk import (Call, Bridge,
-                           AppPlatformError, MessageCreationError, Application,
+                           AppPlatformError, Application,
                            Account, Conference, Recording, ConferenceMember,
                            Gather, PhoneNumber, AvailableNumber, Media, Message)
 from datetime import datetime
@@ -2540,12 +2540,27 @@ class MessageTestCase(SdkTestCase):
         self.assertEqual(len(responses.calls), 1)
         self.assertIsInstance(messages[0], Message)
         self.assertEqual(messages[0].id, 'mess-id-1')
+        self.assertEqual(messages[0].from_, '+1900000001')
+        self.assertEqual(messages[0].to, '+1900000002')
+        self.assertEqual(messages[0].text, 'Good morning, '
+                                           'this is a test message')
+        self.assertEqual(messages[0].tag, 'test tag')
         self.assertIsInstance(messages[1], Message)
         self.assertEqual(messages[1].id, 'mess-id-2')
-        self.assertIsNotNone(sender.errors)
+        self.assertEqual(messages[1].from_, '+1900000002')
+        self.assertEqual(messages[1].to, '+1900000003')
+        self.assertEqual(messages[1].text, 'Good morning, '
+                                           'this is a second test message')
+        self.assertEqual(messages[1].tag, 'test tag2')
+
+        self.assertTrue(sender.errors)
         self.assertIsInstance(sender.errors, list)
-        self.assertIsInstance(sender.errors[0], MessageCreationError)
-        self.assertEqual(repr(sender.errors[0]), "MessageCreationError(The 'message' resource property 'text' can't be blank)")
+        self.assertIsInstance(sender.errors[0], Message)
+        self.assertEqual(sender.errors[0].tag, 'test tag3')
+        self.assertEqual(sender.errors[0].from_, '+1900000002')
+        self.assertEqual(sender.errors[0].to, '+1900000003')
+        self.assertEqual(sender.errors[0].text, '')
+        self.assertEqual(sender.errors[0].error_message, "The 'message' resource property 'text' can't be blank")
 
         with self.assertRaises(AppPlatformError):
             sender.execute()
