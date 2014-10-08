@@ -1,7 +1,7 @@
 import json
 from six import iteritems
 from .utils import from_api, enum
-from .models import Recording, Call, Conference
+from .models import Recording, Call, Conference, Message
 
 # Event abstraction
 
@@ -233,7 +233,7 @@ class RecordingCallEvent(CallEvent):
         return Recording(self.recording_id)
 
 
-class SmsEvent(EventType):
+class MessageEvent(EventType):
     """
     Bandwidth API sends this event to the application when an SMS is sent or received.
     """
@@ -252,7 +252,11 @@ class SmsEvent(EventType):
                          'text', 'application_id', 'time', 'state', 'tag'))
 
     def __repr__(self):
-        return 'Sms(message_id={})'.format(self.message_id)
+        return 'MessageEvent(message_id={})'.format(self.message_id)
+
+    @property
+    def message(self):
+        return Message({'id': self.message_id, 'state': self.state})
 
 
 class ConferenceEventMixin(EventType):
@@ -350,7 +354,7 @@ _events = {'hangup': _end_of_call,
            'error': ErrorCallEvent,
            'timeout': TimeoutCallEvent,
            'recording': RecordingCallEvent,
-           'sms': SmsEvent,
+           'sms': MessageEvent,
            'conference': ConferenceEvent,
            'conference-member': ConferenceMemberEvent,
            'conference-speak': ConferenceSpeakEvent,
