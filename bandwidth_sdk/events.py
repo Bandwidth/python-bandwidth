@@ -5,7 +5,15 @@ from .models import Recording, Call, Conference, Message
 
 # Event abstraction
 
-CAUSES = enum('CALL_REJECTED')
+CAUSES = enum('CALL_REJECTED',
+              'UNSPECIFIED',
+              'CALL_AWARDED_DELIVERED',
+              'NORMAL_CLEARING',
+              'USER_BUSY',
+              'NO_ANSWER',
+              'NORMAL_UNSPECIFIED',
+              'NORMAL_CIRCUIT_CONGESTION',
+              'SWITCH_CONGESTION')
 
 
 class Event(object):
