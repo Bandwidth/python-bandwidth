@@ -1522,3 +1522,80 @@ class Message(GenericResource):
 
         """
         return cls._Multi()
+
+
+from collections import namedtuple
+
+
+class UserError(ListResource):
+    """
+    The User Errors resource lets you see information about errors that happened in your API calls
+    and during applications callbacks. This error information can be very helpful
+    when you're debugging an application.
+    """
+    id = None
+    time = None
+    category = None
+    code = None
+    message = None
+    details = None
+    version = None
+    user = None
+    _fields = frozenset(('id', 'time', 'category', 'code', 'message', 'details', 'version', 'user'))
+
+    # Additional details that may help you debug the error
+    Detail = namedtuple('Detail', ['id', 'name', 'value'])
+    User = namedtuple('UserInfo', ['id', 'account_non_expired', 'account_non_locked',
+                                   'company_name', 'credentials_non_provided', 'email',
+                                   'enabled', 'first_name', 'last_name', 'password', 'username'])
+
+    _path = 'errors'
+
+    def __init__(self, data):  # pragma: no cover
+        self.client = get_client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.id = data
+        else:
+            raise TypeError('Accepted only error-id or error data as dictionary')
+
+    def __repr__(self):
+        return 'UserError({}, state={})'.format(self.id, self.message)
+
+    def set_up(self, data):
+        details = data.pop('details', [])
+        self.details = [self.Detail(**d) for d in details]
+        user = data.pop('user', None)
+        self.user = user if not user else self.User(**user)
+        super(UserError, self).set_up(data)
+
+    @classmethod
+    def list(cls, **query):
+        """
+        Gets the most recent user errors for the user.
+
+        Since this operation uses HTTP GET, all the properties are specified as HTTP request parameters.
+        :param page: Used for pagination to indicate the page requested for
+                     querying a list of errors.
+                     If no value is specified the default is 0.
+        :param size: Used for pagination to indicate the size of each page
+                     requested for querying a list of errors.
+                     If no value is specified the default value is 25. (Maximum value 1000)
+        """
+        client = cls.client or get_client()
+        query = to_api(query)
+        data_as_list = client.get(cls._path, params=query).json()
+        return [cls(v) for v in data_as_list]
+
+    @classmethod
+    def get(cls, error_id):
+        """
+        Gets information about one user error.
+        :param error_id: id of error that you want to retrieve
+        :return: new UserError instance with all provided fields.
+        """
+        client = cls.client or get_client()
+        url = '{}/{}'.format(cls._path, error_id)
+        data_as_dict = client.get(url).json()
+        return cls(data_as_dict)
