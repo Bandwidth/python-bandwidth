@@ -1,6 +1,7 @@
 # Object models for SDK
 import six
 from functools import partial
+from collections import namedtuple
 from .client import get_client
 from .utils import to_api, from_api, enum, get_location_id, file_exists
 from .errors import AppPlatformError
@@ -1522,3 +1523,112 @@ class Message(GenericResource):
 
         """
         return cls._Multi()
+
+
+class UserError(ListResource):
+    """
+    The User Errors resource lets you see information about errors that happened in your API calls
+    and during applications callbacks. This error information can be very helpful
+    when you're debugging an application.
+
+    :param id: 	The user error ID
+    :param time: 	The time the error ocurred
+    :param category: The error category, one of:
+
+        authentication
+            The requestor could not be authenticated. Incorrect or disabled credentials are common causes
+            of these errors.
+        authorization
+            The requestor does not have sufficient permissions to perform the operation or access the resource,
+            or some other authorization error occurred.
+        not-found
+            The resource could not be found
+        bad-request
+            The request information sent could not be understood or contained values that are not allowed.
+        conflict
+            The resource could not be modified because it was already modified by a different request.
+        unavailable
+            The resource or service is currently unavailable. It may become available shortly, or the request may have
+                to be modified to succeed.
+        credit
+            The requestor has insufficient credit to perform the operation or access the resource.
+        limit
+            A usage limit or rate limit for a resource or service has been exceeded.
+        payment
+            There was an error processing a payment.
+
+    :param code: A specific error code string that identifies the type of error
+    :param message: A message that describes the error condition in detail
+    :param details: A list of additional details that may help you debug the error; see the User Error Detail
+        Properties table
+    """
+    id = None
+    time = None
+    category = None
+    code = None
+    message = None
+    details = None
+    version = None
+    user = None
+    _fields = frozenset(('id', 'time', 'category', 'code', 'message', 'details', 'version', 'user'))
+
+    # Additional details that may help you debug the error
+    Detail = namedtuple('Detail', ['id', 'name', 'value'])
+    User = namedtuple('UserInfo', ['id', 'account_non_expired', 'account_non_locked',
+                                   'company_name', 'credentials_non_expired', 'email',
+                                   'enabled', 'first_name', 'last_name', 'password', 'username'])
+
+    _path = 'errors'
+    CATEGORIES = enum('authentication', 'authorization', 'conflict', 'unavailable', 'credit', 'limit', 'payment',
+                      not_found='not-found', bad_request='bad-request')
+
+    def __init__(self, data):  # pragma: no cover
+        self.client = get_client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.id = data
+        else:
+            raise TypeError('Accepted only error-id or error data as dictionary')
+
+    def __repr__(self):
+        return 'UserError({}, message={})'.format(self.id, self.message)
+
+    def set_up(self, data):
+        details = data.pop('details', [])
+        self.details = [self.Detail(**from_api(d)) for d in details]
+        user = data.pop('user', None)
+        if user:
+            user.pop('@id', None)  # what is that?
+            self.user = self.User(**from_api(user))
+        super(UserError, self).set_up(data)
+
+    @classmethod
+    def list(cls, **query):
+        """
+        Gets the most recent user errors for the user.
+
+        Since this operation uses HTTP GET, all the properties are specified as HTTP request parameters.
+        :param page: Used for pagination to indicate the page requested for
+                     querying a list of errors.
+                     If no value is specified the default is 0.
+        :param size: Used for pagination to indicate the size of each page
+                     requested for querying a list of errors.
+                     If no value is specified the default value is 25. (Maximum value 1000)
+        """
+        client = cls.client or get_client()
+        query = to_api(query)
+        data_as_list = client.get(cls._path, params=query).json()
+        return [cls(v) for v in data_as_list]
+
+    @classmethod
+    def get(cls, error_id):
+        """
+        Gets information about one user error.
+        :param error_id: id of error that you want to retrieve
+        :return: new UserError instance with all provided fields.
+        """
+        client = cls.client or get_client()
+        url = '{}/{}'.format(cls._path, error_id)
+        data_as_dict = client.get(url).json()
+        return cls(data_as_dict)
