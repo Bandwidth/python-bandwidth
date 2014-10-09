@@ -1532,6 +1532,37 @@ class UserError(ListResource):
     The User Errors resource lets you see information about errors that happened in your API calls
     and during applications callbacks. This error information can be very helpful
     when you're debugging an application.
+
+    :param id: 	The user error ID
+    :param time: 	The time the error ocurred
+    :param category: The error category, one of:
+
+        authentication
+            The requestor could not be authenticated. Incorrect or disabled credentials are common causes
+            of these errors.
+        authorization
+            The requestor does not have sufficient permissions to perform the operation or access the resource,
+            or some other authorization error occurred.
+        not-found
+            The resource could not be found
+        bad-request
+            The request information sent could not be understood or contained values that are not allowed.
+        conflict
+            The resource could not be modified because it was already modified by a different request.
+        unavailable
+            The resource or service is currently unavailable. It may become available shortly, or the request may have
+                to be modified to succeed.
+        credit
+            The requestor has insufficient credit to perform the operation or access the resource.
+        limit
+            A usage limit or rate limit for a resource or service has been exceeded.
+        payment
+            There was an error processing a payment.
+
+    :param code: A specific error code string that identifies the type of error
+    :param message: A message that describes the error condition in detail
+    :param details: A list of additional details that may help you debug the error; see the User Error Detail
+        Properties table
     """
     id = None
     time = None
@@ -1550,6 +1581,8 @@ class UserError(ListResource):
                                    'enabled', 'first_name', 'last_name', 'password', 'username'])
 
     _path = 'errors'
+    CATEGORIES = enum('authentication', 'authorization', 'conflict', 'unavailable', 'credit', 'limit', 'payment',
+                      not_found='not-found', bad_request='bad-request')
 
     def __init__(self, data):  # pragma: no cover
         self.client = get_client()
