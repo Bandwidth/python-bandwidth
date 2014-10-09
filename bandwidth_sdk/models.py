@@ -1577,7 +1577,7 @@ class UserError(ListResource):
     # Additional details that may help you debug the error
     Detail = namedtuple('Detail', ['id', 'name', 'value'])
     User = namedtuple('UserInfo', ['id', 'account_non_expired', 'account_non_locked',
-                                   'company_name', 'credentials_non_provided', 'email',
+                                   'company_name', 'credentials_non_expired', 'email',
                                    'enabled', 'first_name', 'last_name', 'password', 'username'])
 
     _path = 'errors'
@@ -1594,13 +1594,15 @@ class UserError(ListResource):
             raise TypeError('Accepted only error-id or error data as dictionary')
 
     def __repr__(self):
-        return 'UserError({}, state={})'.format(self.id, self.message)
+        return 'UserError({}, message={})'.format(self.id, self.message)
 
     def set_up(self, data):
         details = data.pop('details', [])
-        self.details = [self.Detail(**d) for d in details]
+        self.details = [self.Detail(**from_api(d)) for d in details]
         user = data.pop('user', None)
-        self.user = user if not user else self.User(**user)
+        if user:
+            user.pop('@id', None)  # what is that?
+            self.user = self.User(**from_api(user))
         super(UserError, self).set_up(data)
 
     @classmethod

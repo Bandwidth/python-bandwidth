@@ -6,7 +6,7 @@ import unittest
 from bandwidth_sdk import (Call, Bridge,
                            AppPlatformError, Application,
                            Account, Conference, Recording, ConferenceMember,
-                           Gather, PhoneNumber, AvailableNumber, Media, Message)
+                           Gather, PhoneNumber, AvailableNumber, Media, Message, UserError)
 from datetime import datetime
 
 from .utils import SdkTestCase
@@ -2565,3 +2565,175 @@ class MessageTestCase(SdkTestCase):
         with self.assertRaises(AppPlatformError):
             sender.execute()
         self.assertEqual(len(responses.calls), 1)
+
+
+class UserErrorTest(SdkTestCase):
+
+    @responses.activate
+    def test_get(self):
+        """
+        UserError.get('e-id')
+        """
+        raw = """
+        {
+          "id": "e-id",
+          "version": 0,
+          "user": {
+            "@id": 1,
+            "accountNonExpired": true,
+            "accountNonLocked": true,
+            "companyName": "{companyName}",
+            "credentialsNonExpired": true,
+            "email": "{email}",
+            "enabled": true,
+            "firstName": "{firstName}",
+            "id": "{userId}",
+            "lastName": "{lastName}",
+            "password": "{password}",
+            "username": "{username}"
+          },
+          "time": "2012-10-05T20:38:11.023Z",
+          "category": "bad-request",
+          "code": "missing-property",
+          "message": "The 'call' resource property 'transferTo' is required but was not specified",
+          "details": [
+            {
+              "id": "{userErrorDetailId1}",
+              "name": "requestPath",
+              "value": "users/{userId}/calls/{callId}"
+            },
+            {
+              "id": "{userErrorDetailId2}",
+              "name": "remoteAddress",
+              "value": "{remoteAddress}"
+            },
+            {
+              "id": "{userErrorDetailId3}",
+              "name": "requestMethod",
+              "value": "POST"
+            }
+          ]
+        }
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/errors/e-id',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        error = UserError.get('e-id')
+        self.assertEqual(error.id, 'e-id')
+        self.assertEqual(error.code, 'missing-property')
+
+        self.assertIsInstance(error.time, datetime)
+
+        self.assertEqual(error.category, UserError.CATEGORIES.bad_request)
+        self.assertEqual(error.message, "The 'call' resource property 'transferTo' is required but was not specified")
+
+        self.assertIsInstance(error.details, list)
+
+        self.assertEqual(len(error.details), 3)
+
+        first_detail = error.details[0]
+
+        self.assertIsInstance(first_detail, UserError.Detail)
+        self.assertEqual(first_detail.id, "{userErrorDetailId1}")
+        self.assertEqual(first_detail.name, "requestPath")
+        self.assertEqual(first_detail.value, "users/{userId}/calls/{callId}")
+
+        user = error.user
+
+        self.assertIsInstance(user, UserError.User)
+
+        self.assertEqual(user.id, "{userId}")
+        self.assertEqual(user.enabled, True)
+        self.assertEqual(user.first_name, "{firstName}")
+
+        self.assertEqual(str(error), "UserError(e-id, message=The 'call' resource property 'transferTo' "
+                                     "is required but was not specified)")
+
+    @responses.activate
+    def test_list(self):
+        """
+        UserError.list()
+        """
+        raw = """
+        [{
+            "time": "2012-11-15T01:30:16.208Z",
+            "category": "unavailable",
+            "id": "e-id",
+            "details": [{
+                "id": "{userErrorDetailId1}",
+                "name": "applicationId",
+                "value": "{applicationId}"
+            }, {
+                "id": "{userErrorDetailId2}",
+                "name": "number",
+                "value": "{number}"
+            }, {
+                "id": "{userErrorDetailId3}",
+                "name": "callId",
+                "value": "{callId}"
+            }],
+            "message": "Application {applicationId} for number{number} does not specify a URL for call events",
+            "code": "no-callback-for-call"
+        }, {
+            "time": "2012-11-15T01:29:24.512Z",
+            "category": "unavailable",
+            "id": "{userErrorId2}",
+            "message": "No application is configured for number +19195556666",
+            "code": "no-application-for-number"
+        }]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/errors',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+
+        errors = UserError.list()
+
+        self.assertEqual(len(errors), 2)
+
+        error = errors[0]
+
+        self.assertEqual(error.id, 'e-id')
+        self.assertEqual(error.code, 'no-callback-for-call')
+
+        self.assertIsInstance(error.time, datetime)
+
+        self.assertEqual(error.category, UserError.CATEGORIES.unavailable)
+        self.assertEqual(error.message, "Application {applicationId} for "
+                                        "number{number} does not specify a URL for call events")
+
+        self.assertIsInstance(error.details, list)
+
+        self.assertEqual(len(error.details), 3)
+
+        first_detail = error.details[0]
+
+        self.assertIsInstance(first_detail, UserError.Detail)
+        self.assertEqual(first_detail.id, "{userErrorDetailId1}")
+        self.assertEqual(first_detail.name, "applicationId")
+        self.assertEqual(first_detail.value, "{applicationId}")
+
+        user = error.user
+
+        self.assertIsNone(user)
+
+        error = errors[1]
+
+        self.assertEqual(error.id, '{userErrorId2}')
+        self.assertEqual(error.code, 'no-application-for-number')
+
+        self.assertIsInstance(error.time, datetime)
+
+        self.assertEqual(error.category, UserError.CATEGORIES.unavailable)
+        self.assertEqual(error.message, "No application is configured for number +19195556666")
+
+        self.assertIsInstance(error.details, list)
+
+        self.assertEqual(len(error.details), 0)
+
+        user = error.user
+
+        self.assertIsNone(user)
