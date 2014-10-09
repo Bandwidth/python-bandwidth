@@ -1,6 +1,7 @@
 # Object models for SDK
 import six
 from functools import partial
+from collections import namedtuple
 from .client import get_client
 from .utils import to_api, from_api, enum, get_location_id, file_exists
 from .errors import AppPlatformError
@@ -1522,9 +1523,6 @@ class Message(GenericResource):
 
         """
         return cls._Multi()
-
-
-from collections import namedtuple
 
 
 class UserError(ListResource):
