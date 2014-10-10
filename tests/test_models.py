@@ -16,6 +16,16 @@ def assertJsonEq(first, second, msg='Ouups'):
     assert sorted(first) == sorted(second), '%r != %r\n%s' % (first, second, msg)
 
 
+def in_bytes(string):
+    if isinstance(string, six.binary_type):
+        return string
+    elif isinstance(string, six.string_types):
+        if six.PY3:
+            return bytes(string, encoding='ascii')
+        return string
+    raise ValueError
+
+
 class CallsTest(SdkTestCase):
 
     def test_bad_init(self):
@@ -2247,7 +2257,26 @@ class MediaTest(SdkTestCase):
         Media.upload('dolphin.mp3', file_path='./tests/fixtures/dolphin.mp3',
                      mime='application/octet-stream')
         request_message = responses.calls[0].request.body  # decoded to str implicitly
-        self.assertEqual(request_message, 'thra\ntata\nrata')
+        self.assertEqual(request_message, in_bytes('thra\ntata\nrata'))
+
+        self.assertEqual(Media('media-id').get_full_media_url(), 'https://api.catapult.inetwork.com/v1/users/'
+                                                                 'u-user/media/media-id')
+
+    @responses.activate
+    def test_by_upload_file_name_unencoded(self):
+        """
+        Media.upload('chunk.mp3', file_path='./tests/fixtures/chunk.mp3')
+        """
+        responses.add(responses.PUT,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/media/chunk.mp3',
+                      body='',
+                      status=200,
+                      )
+
+        Media.upload('chunk.mp3', file_path='./tests/fixtures/chunk.mp3',
+                     mime='application/octet-stream')
+        request_message = responses.calls[0].request.body  # decoded to str implicitly
+        self.assertEqual(len(request_message), 4546)
 
         self.assertEqual(Media('media-id').get_full_media_url(), 'https://api.catapult.inetwork.com/v1/users/'
                                                                  'u-user/media/media-id')
@@ -2270,10 +2299,7 @@ class MediaTest(SdkTestCase):
                       body='',
                       status=200,
                       )
-        if six.PY3:
-            content_line = b'lalalala'
-        else:
-            content_line = 'lalalala'
+        content_line = in_bytes('lalalala')
         Media.upload('dolphin.mp3', content=content_line, mime='application/octet-stream')
         request_message = responses.calls[0].request.body  # decoded to str implicitly
         self.assertEqual(request_message, content_line)
