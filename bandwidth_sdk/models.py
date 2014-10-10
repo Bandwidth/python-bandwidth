@@ -1331,7 +1331,7 @@ class Media(ListResource):
         if file_path:
             if not file_exists(file_path):
                 raise AppPlatformError('Provided file does not exists {}'.format(file_path))
-            with open(file_path, 'r') as fd:
+            with open(file_path, 'rb') as fd:
                 content = fd.read()
         elif fd:
             fd.seek(0)
