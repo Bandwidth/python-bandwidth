@@ -3,7 +3,7 @@
 
 - Initially released version.
 
-### 1.0.2-stabel:
+### 1.0.2-stable:
 (October 23, 2014)
 
 - Released stable version with all resources.
