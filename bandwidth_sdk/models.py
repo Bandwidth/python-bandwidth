@@ -1094,10 +1094,11 @@ class AvailableNumber(ListResource):
 
 class PhoneNumber(ListResource):
     _path = 'phoneNumbers'
+    _available_numbers_path = 'availableNumbers'
     _fields = frozenset(('id', 'application', 'number', 'national_number',
                          'name', 'created_time', 'city', 'state', 'price',
-                         'number_state', 'fallback_number'))
-    NUMBER_STATES = enum('enabled', 'released')
+                         'number_state', 'fallback_number', 'pattern_match', 'lata', 'rate_center'))
+    NUMBER_STATES = enum('enabled', 'released', 'available')
     id = None
     application = None
     number = None
@@ -1110,18 +1111,26 @@ class PhoneNumber(ListResource):
     number_state = None
     fallback_number = None
 
-    def __init__(self, data):
+    # Available number attributes
+    pattern_match = None
+    lata = None
+    rate_center = None
+
+    def __init__(self, data, available=False):
         self.client = get_client()
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
             self.id = data
+        if available:
+            self.number_state = self.state
+            self.state = self.NUMBER_STATES.available
 
     def __repr__(self):  # pragma: no cover
         return 'PhoneNumber(number={})'.format(self.number or 'Unknown')
 
     def set_up(self, data):
-        app_id = data.pop('application', None)
+        app_id = data.pop('application', None) or data.pop('application_id', None)
         if isinstance(app_id, six.string_types):
             data['application'] = Application(data=app_id.split('/')[-1])
         elif isinstance(app_id, Application):
@@ -1220,8 +1229,7 @@ class PhoneNumber(ListResource):
         data = self.client.get(url).json()
         self.set_up(from_api(data))
 
-    @classmethod
-    def allocate(cls, **data):
+    def allocate(self, application=None, name=None, fallback_number=None):
         """
         Allocates a number so you can use it to make and receive calls and
         send and receive messages.
@@ -1237,19 +1245,123 @@ class PhoneNumber(ListResource):
         :return: PhoneNumber instance.
         """
         client = get_client()
-        url = cls._path
-        app = data.pop('application', None)
-        if isinstance(app, Application):
-            app_id = app.id
+        url = self._path
+        data = {'number': self.number,
+                'name': name,
+                'fallback_number': fallback_number}
+        to_update = data.copy()
+        if isinstance(application, Application):
+            app_id = application.id
             data['application_id'] = app_id
-        elif isinstance(app, six.string_types):
-            data['application_id'] = app
+        elif isinstance(application, six.string_types):
+            data['application_id'] = application
         resp = client.post(url, data=to_api(data))
         number_id = get_location_id(resp)
-        number = cls(number_id)
-        data['application'] = app
-        number.set_up(data)
-        return number
+        self.id = number_id
+        to_update['application'] = application
+        self.set_up(to_update)
+        return self
+
+    #Avaible number resource section
+
+    @classmethod
+    def list_local(cls, **params):
+        """
+        :param city: A city name
+        :param state: A two-letter US state abbreviation ("CA" for California)
+        :param zip: A 5-digit US ZIP code
+        :param area_code: A 3-digit telephone area code.
+        :param local_number: It is defined as the first digits of a telephone
+                             number inside an area code for filtering
+                             the results.
+                             It must have at least 3 digits and the area_code
+                             param must be not None.
+        :param in_local_calling_area: Boolean value to indicate that the search
+                                      for available numbers must consider
+                                      overlayed areas. Only applied for
+                                      local_number searching.
+        :param quantity: The maximum number of numbers to return
+                         (default 10, maximum 5000).
+
+        :param pattern: A number pattern that may include
+                        letters, digits, and the following
+                        wildcard characters:
+                            ? : matches any single digit
+                            * : matches zero or more digits
+        !Note:
+        1. state, zip and area_code are mutually exclusive,
+           you may use only one of them per calling list_local.
+        2. local_number and in_local_calling_area only applies
+           for searching numbers in specific area_code.
+
+        :return: List of AvailableNumber instances.
+        """
+        client = get_client()
+        url = client.endpoint + '/v1/{}/local'.format(cls._available_numbers_path)
+        print(url)
+        data = client.build_request('get', url, params=to_api(params), join_endpoint=False).json()
+        return [cls(number, available=True) for number in data]
+
+    @classmethod
+    def list_tollfree(cls, **params):
+        """
+        Searches for available Toll Free numbers.
+        :param quantity: The maximum number of numbers to return
+                         (default 10, maximum 5000)
+        :param pattern: A number pattern that may include
+                        letters, digits, and the following wildcard characters:
+                            ? : matches any single digit
+                            * : matches zero or more digits
+        :return: List of AvailableNumber instances.
+        """
+        client = get_client()
+        url = client.endpoint + '/v1/{}/tollFree'.format(cls._available_numbers_path)
+        data = client.build_request('get', url, params=to_api(params), join_endpoint=False).json()
+        return [cls(number, available=True) for number in data]
+
+    @classmethod
+    def batch_allocate_local(cls, **params):
+        """
+        :param city: A city name
+        :param state: A two-letter US state abbreviation ("CA" for California)
+        :param zip: A 5-digit US ZIP code
+        :param area_code: A 3-digit telephone area code
+        :param local_number: It is defined as the first digits of a telephone
+                             number inside an area code for filtering
+                             the results.
+                             It must contain from 3 to 4 digits.
+        :param in_local_calling_area: Boolean value to indicate that the search
+                                      for available numbers must consider
+                                      overlayed areas.
+                                      Only applied for local_number searching.
+        :param quantity: The maximum quantity of numbers to search and order
+                         (default 1, maximum 10).
+        !Note:
+        1. state, zip and area_code are mutually exclusive,
+           you may use only one of them per calling list_local.
+        2. local_number and in_local_calling_area only applies
+           for searching numbers in specific area_code.
+
+        :return: List of PhoneNumber instances.
+        """
+        client = get_client()
+        url = client.endpoint + '/v1/{}/local'.format(cls._available_numbers_path)
+        data = client.build_request('post', url, params=to_api(params), join_endpoint=False).json()
+        return [cls(number) for number in data]
+
+    @classmethod
+    def batch_allocate_tollfree(cls, quantity=1):
+        """
+        Searches and order available Toll Free numbers.
+        :param quantity: The maximum quantity of numbers for seaching and order
+                         (default 1, maximum 10).
+        :return: List of PhoneNumber instances.
+        """
+        client = get_client()
+        url = client.endpoint + '/v1/{}/tollFree'.format(cls._available_numbers_path)
+        data = client.build_request('post', url,
+                                    data=to_api(dict(quantity=quantity)), join_endpoint=False).json()
+        return [cls(number) for number in data]
 
 
 class Media(ListResource):
