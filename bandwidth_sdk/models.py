@@ -1154,7 +1154,6 @@ class PhoneNumber(ListResource):
         """
         client = get_client()
         url = client.endpoint + '/v1/{}/local'.format(cls._available_numbers_path)
-        print(url)
         data = client.build_request('get', url, params=to_api(params), join_endpoint=False).json()
         return [cls(number, available=True) for number in data]
 
