@@ -1118,7 +1118,7 @@ class PhoneNumber(ListResource):
         self.set_up(to_update)
         return self
 
-    #Avaible number resource section
+    # Avaible number resource section
 
     @classmethod
     def validate_search_query(cls, params):
@@ -1236,6 +1236,44 @@ class PhoneNumber(ListResource):
         data = client.build_request('post', url,
                                     data=to_api(dict(quantity=quantity)), join_endpoint=False).json()
         return [cls(number) for number in data]
+
+
+class NumberInfo(BaseResource):
+    """
+    This resource provides a CNAM number info. CNAM is an acronym which stands for Caller ID Name.
+    CNAM can be used to display the calling party's name alongside the phone number, to help users easily
+    identify a caller. CNAM API allows the user to get the CNAM information of a particular number
+
+    :param name:  The Caller ID name information
+    :param number:  The full phone number, specified in E.164 format
+    :param created:  The time this Caller ID information was first queried
+    :param updated:  The time this Caller ID information was last updated
+    """
+    _path = 'phoneNumbers/numberInfo'
+    name = None
+    number = None
+    created = None
+    updated = None
+    _fields = frozenset(('name', 'number', 'created', 'updated'))
+
+    def __init__(self, data):  # pragma: no cover
+        self.client = get_client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        else:
+            raise ValueError('Invalid data')
+
+    @classmethod
+    def get(cls, number):
+        """
+        Get the CNAM of the number.
+        :return: NumberInfo instance.
+        """
+        client = get_client()
+        number = six.moves.urllib.parse.quote(number)
+        url = 'v1/{}/{}'.format(cls._path, number)
+        data = client.get(url, join_endpoint=False).json()
+        return cls(data=data)
 
 
 class Media(ListResource):
