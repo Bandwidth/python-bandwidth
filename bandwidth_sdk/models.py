@@ -1121,6 +1121,23 @@ class PhoneNumber(ListResource):
     #Avaible number resource section
 
     @classmethod
+    def validate_search_query(cls, params):
+        """
+        Validating params for available local numbers search.
+        Rules:
+        1) state, zip and areaCode are mutually exclusive, you may use only one of them per request.
+        2) localNumber and inLocalCallingArea only applies for searching and order numbers in specific areaCode.
+        """
+        mandatory_params = sum(('area_code' in params, 'zip' in params, 'state' in params))
+        if mandatory_params > 1:
+            raise ValueError('state, zip and areaCode are mutually exclusive, you may use only one of them per request')
+        elif mandatory_params == 0:
+            raise ValueError('Specify a State, ZIP Code, or Area Code with your query')
+        if 'area_code' not in params and 'in_local_calling_area' in params or 'local_number' in params:
+            raise ValueError('localNumber and inLocalCallingArea only applies '
+                             'for searching numbers in specific areaCode')
+
+    @classmethod
     def list_local(cls, **params):
         """
         :param city: A city name
@@ -1152,6 +1169,7 @@ class PhoneNumber(ListResource):
 
         :return: List of AvailableNumber instances.
         """
+        cls.validate_search_query(params)
         client = get_client()
         url = client.endpoint + '/v1/{}/local'.format(cls._available_numbers_path)
         data = client.build_request('get', url, params=to_api(params), join_endpoint=False).json()
@@ -1199,6 +1217,7 @@ class PhoneNumber(ListResource):
 
         :return: List of PhoneNumber instances.
         """
+        cls.validate_search_query(params)
         client = get_client()
         url = client.endpoint + '/v1/{}/local'.format(cls._available_numbers_path)
         data = client.build_request('post', url, params=to_api(params), join_endpoint=False).json()

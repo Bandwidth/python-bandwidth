@@ -1934,6 +1934,27 @@ class PhoneNumberTest(SdkTestCase):
         self.assertEqual(a_numbers[1].number_state, 'NC')
         self.assertEqual(a_numbers[1].price, '0.60')
 
+    def test_list_local_without_query(self):
+        """
+        PhoneNumber.list_local()
+        """
+        with self.assertRaises(ValueError):
+            PhoneNumber.list_local()
+
+    def test_list_local_mutually_exclusive(self):
+        """
+        PhoneNumber.list_local(state='A', zip='B')
+        """
+        with self.assertRaises(ValueError):
+            PhoneNumber.list_local(state='A', zip='B')
+
+    def test_list_local_not_applicable(self):
+        """
+        PhoneNumber.list_local(state='A', in_local_calling_area=True)
+        """
+        with self.assertRaises(ValueError):
+            PhoneNumber.list_local(state='A', in_local_calling_area=True)
+
     @responses.activate
     def test_list_toll_free(self):
         """
@@ -2013,6 +2034,13 @@ class PhoneNumberTest(SdkTestCase):
         self.assertEqual(numbers[1].number, '+19191919192')
         self.assertEqual(numbers[1].national_number, '(919) 191-9192')
         self.assertEqual(numbers[1].price, '0.80')
+
+    def test_batch_allocate_local_bad_query(self):
+        """
+        PhoneNumber.batch_allocate_local(city='Cary', state='NC', quantity=2, zip=119)
+        """
+        with self.assertRaises(ValueError):
+            PhoneNumber.batch_allocate_local(city='Cary', state='NC', quantity=2, zip=119)
 
     @responses.activate
     def test_batch_allocate_tollfree(self):
