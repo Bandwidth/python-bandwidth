@@ -6,7 +6,7 @@ import unittest
 from bandwidth_sdk import (Call, Bridge,
                            AppPlatformError, Application,
                            Account, Conference, Recording, ConferenceMember,
-                           Gather, PhoneNumber, Media, Message, UserError)
+                           Gather, PhoneNumber, Media, Message, UserError, NumberInfo)
 from datetime import datetime
 
 from .utils import SdkTestCase
@@ -2788,3 +2788,32 @@ class UserErrorTest(SdkTestCase):
         user = error.user
 
         self.assertIsNone(user)
+
+
+class NumberInfoTest(SdkTestCase):
+
+    @responses.activate
+    def test_get(self):
+        """
+        NumberInfo.get('+1900000001')
+        """
+        raw = """
+        {
+          "created": "2013-09-23T16:31:15Z",
+          "name": "Name",
+          "number": "+1900000001",
+          "updated": "2013-09-23T16:42:18Z"
+        }
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/phoneNumbers/numberInfo/%2B1900000001',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        number = NumberInfo.get('+1900000001')
+
+        self.assertIsInstance(number, NumberInfo)
+        self.assertEqual(number.name, 'Name')
+        self.assertEqual(number.number, '+1900000001')
+        self.assertIsInstance(number.created, datetime)
+        self.assertIsInstance(number.updated, datetime)

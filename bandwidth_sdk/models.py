@@ -1271,7 +1271,7 @@ class NumberInfo(BaseResource):
         """
         client = get_client()
         number = six.moves.urllib.parse.quote(number)
-        url = 'v1/{}/{}'.format(cls._path, number)
+        url = '{}/v1/{}/{}'.format(client.endpoint, cls._path, number)
         data = client.get(url, join_endpoint=False).json()
         return cls(data=data)
 
