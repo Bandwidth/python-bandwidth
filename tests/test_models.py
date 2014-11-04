@@ -6,7 +6,7 @@ import unittest
 from bandwidth_sdk import (Call, Bridge,
                            AppPlatformError, Application,
                            Account, Conference, Recording, ConferenceMember,
-                           Gather, PhoneNumber, AvailableNumber, Media, Message, UserError)
+                           Gather, PhoneNumber, Media, Message, UserError, NumberInfo)
 from datetime import datetime
 
 from .utils import SdkTestCase
@@ -1856,7 +1856,7 @@ class PhoneNumberTest(SdkTestCase):
                       content_type='application/json',
                       adding_headers={'Location': '/v1/users/u-user/phoneNumber/new-number-id'})
         application = Application({'id': 'app-id', 'incoming_call_url': 'http://callback.info'})
-        number = PhoneNumber.allocate(number='+19195551212', application=application)
+        number = PhoneNumber({'number': '+19195551212'}).allocate(application=application)
         self.assertEqual(number.id, 'new-number-id')
         self.assertEqual(number.number, '+19195551212')
         self.assertEqual(number.application.id, 'app-id')
@@ -1875,18 +1875,15 @@ class PhoneNumberTest(SdkTestCase):
                       content_type='application/json',
                       adding_headers={'Location': '/v1/users/u-user/phoneNumber/new-number-id'})
         application = 'app-id'
-        number = PhoneNumber.allocate(number='+19195551212', application=application)
+        number = PhoneNumber({'number': '+19195551212'}).allocate(application=application)
         self.assertEqual(number.id, 'new-number-id')
         self.assertEqual(number.number, '+19195551212')
         self.assertEqual(number.application.id, 'app-id')
 
-
-class AvailableNumberTest(SdkTestCase):
-
     @responses.activate
     def test_list_local(self):
         """
-        AvailableNumber.list_local(city='Cary', state='NC', pattern='*2%3F9*', quantity=2)
+        PhoneNumber.list_local(city='Cary', state='NC', pattern='*2%3F9*', quantity=2)
         """
         raw = """[
           {
@@ -1916,31 +1913,52 @@ class AvailableNumberTest(SdkTestCase):
                       body=raw,
                       status=200,
                       content_type='application/json')
-        a_numbers = AvailableNumber.list_local(city='Cary', state='NC', pattern='*2?9*', quantity=2)
-        self.assertIsInstance(a_numbers[0], AvailableNumber)
+        a_numbers = PhoneNumber.list_local(city='Cary', state='NC', pattern='*2?9*', quantity=2)
+        self.assertIsInstance(a_numbers[0], PhoneNumber)
         self.assertEqual(a_numbers[0].number, 'ava-1')
         self.assertEqual(a_numbers[0].national_number, '(919) 323-2393')
         self.assertEqual(a_numbers[0].pattern_match, '          2 9 ')
         self.assertEqual(a_numbers[0].city, 'CARY')
         self.assertEqual(a_numbers[0].lata, '426')
         self.assertEqual(a_numbers[0].rate_center, 'CARY')
-        self.assertEqual(a_numbers[0].state, 'NC')
+        self.assertEqual(a_numbers[0].number_state, 'NC')
         self.assertEqual(a_numbers[0].price, '0.60')
 
-        self.assertIsInstance(a_numbers[1], AvailableNumber)
+        self.assertIsInstance(a_numbers[1], PhoneNumber)
         self.assertEqual(a_numbers[1].number, 'ava-2')
         self.assertEqual(a_numbers[1].national_number, '(919) 323-2394')
         self.assertEqual(a_numbers[1].pattern_match, '          2 9 ')
         self.assertEqual(a_numbers[1].city, 'CARY')
         self.assertEqual(a_numbers[1].lata, '426')
         self.assertEqual(a_numbers[1].rate_center, 'CARY')
-        self.assertEqual(a_numbers[1].state, 'NC')
+        self.assertEqual(a_numbers[1].number_state, 'NC')
         self.assertEqual(a_numbers[1].price, '0.60')
+
+    def test_list_local_without_query(self):
+        """
+        PhoneNumber.list_local()
+        """
+        with self.assertRaises(ValueError):
+            PhoneNumber.list_local()
+
+    def test_list_local_mutually_exclusive(self):
+        """
+        PhoneNumber.list_local(state='A', zip='B')
+        """
+        with self.assertRaises(ValueError):
+            PhoneNumber.list_local(state='A', zip='B')
+
+    def test_list_local_not_applicable(self):
+        """
+        PhoneNumber.list_local(state='A', in_local_calling_area=True)
+        """
+        with self.assertRaises(ValueError):
+            PhoneNumber.list_local(state='A', in_local_calling_area=True)
 
     @responses.activate
     def test_list_toll_free(self):
         """
-        AvailableNumber.list_tollfree(quantity=2, pattern='*2?9*')
+        PhoneNumber.list_tollfree(quantity=2, pattern='*2?9*')
 
         """
         raw = """
@@ -1964,14 +1982,14 @@ class AvailableNumberTest(SdkTestCase):
                       body=raw,
                       status=200,
                       content_type='application/json')
-        t_free_numbers = AvailableNumber.list_tollfree(quantity=2, pattern='*2?9*')
-        self.assertIsInstance(t_free_numbers[0], AvailableNumber)
+        t_free_numbers = PhoneNumber.list_tollfree(quantity=2, pattern='*2?9*')
+        self.assertIsInstance(t_free_numbers[0], PhoneNumber)
         self.assertEqual(t_free_numbers[0].number, 'toll-free-numb1')
         self.assertEqual(t_free_numbers[0].national_number, '(919) 323-2393')
         self.assertEqual(t_free_numbers[0].pattern_match, '        2 9 ')
         self.assertEqual(t_free_numbers[0].price, '2.00')
 
-        self.assertIsInstance(t_free_numbers[1], AvailableNumber)
+        self.assertIsInstance(t_free_numbers[1], PhoneNumber)
         self.assertEqual(t_free_numbers[1].number, 'toll-free-numb2')
         self.assertEqual(t_free_numbers[1].national_number, '(919) 323-2394')
         self.assertEqual(t_free_numbers[1].pattern_match, '          2 9 ')
@@ -1980,7 +1998,7 @@ class AvailableNumberTest(SdkTestCase):
     @responses.activate
     def test_batch_allocate_local(self):
         """
-        AvailableNumber.batch_allocate_local(city='Cary', state='NC', quantity=2)
+        PhoneNumber.batch_allocate_local(city='Cary', state='NC', quantity=2)
         """
         raw = """
         [
@@ -2003,7 +2021,7 @@ class AvailableNumberTest(SdkTestCase):
                       body=raw,
                       status=201,
                       content_type='application/json')
-        numbers = AvailableNumber.batch_allocate_local(city='Cary', state='NC', quantity=2)
+        numbers = PhoneNumber.batch_allocate_local(city='Cary', state='NC', quantity=2)
 
         self.assertIsInstance(numbers[0], PhoneNumber)
         self.assertEqual(numbers[0].id, 'new-number-id')
@@ -2017,10 +2035,17 @@ class AvailableNumberTest(SdkTestCase):
         self.assertEqual(numbers[1].national_number, '(919) 191-9192')
         self.assertEqual(numbers[1].price, '0.80')
 
+    def test_batch_allocate_local_bad_query(self):
+        """
+        PhoneNumber.batch_allocate_local(city='Cary', state='NC', quantity=2, zip=119)
+        """
+        with self.assertRaises(ValueError):
+            PhoneNumber.batch_allocate_local(city='Cary', state='NC', quantity=2, zip=119)
+
     @responses.activate
     def test_batch_allocate_tollfree(self):
         """
-        AvailableNumber.batch_allocate_tollfree(quantity=2)
+        PhoneNumber.batch_allocate_tollfree(quantity=2)
         """
         raw = """
         [
@@ -2043,7 +2068,7 @@ class AvailableNumberTest(SdkTestCase):
                       body=raw,
                       status=201,
                       content_type='application/json')
-        numbers = AvailableNumber.batch_allocate_tollfree(quantity=2)
+        numbers = PhoneNumber.batch_allocate_tollfree(quantity=2)
 
         self.assertIsInstance(numbers[0], PhoneNumber)
         self.assertEqual(numbers[0].id, 'new-number-id')
@@ -2061,7 +2086,7 @@ class AvailableNumberTest(SdkTestCase):
     def test_allocate_available_number(self):
         """
 
-        a_number = AvailableNumber.list_tollfree(quantity=2)
+        a_number = PhoneNumber.list_tollfree(quantity=2);
         a_number.allocate(application=Application('app-id'))
         """
         raw = """
@@ -2085,8 +2110,8 @@ class AvailableNumberTest(SdkTestCase):
                       body=raw,
                       status=200,
                       content_type='application/json')
-        av_number = AvailableNumber.list_tollfree(quantity=2)[0]
-        self.assertIsInstance(av_number, AvailableNumber)
+        av_number = PhoneNumber.list_tollfree(quantity=2)[0]
+        self.assertIsInstance(av_number, PhoneNumber)
         responses.add(responses.POST,
                       'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers',
                       body='',
@@ -2763,3 +2788,32 @@ class UserErrorTest(SdkTestCase):
         user = error.user
 
         self.assertIsNone(user)
+
+
+class NumberInfoTest(SdkTestCase):
+
+    @responses.activate
+    def test_get(self):
+        """
+        NumberInfo.get('+1900000001')
+        """
+        raw = """
+        {
+          "created": "2013-09-23T16:31:15Z",
+          "name": "Name",
+          "number": "+1900000001",
+          "updated": "2013-09-23T16:42:18Z"
+        }
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/phoneNumbers/numberInfo/%2B1900000001',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        number = NumberInfo.get('+1900000001')
+
+        self.assertIsInstance(number, NumberInfo)
+        self.assertEqual(number.name, 'Name')
+        self.assertEqual(number.number, '+1900000001')
+        self.assertIsInstance(number.created, datetime)
+        self.assertIsInstance(number.updated, datetime)

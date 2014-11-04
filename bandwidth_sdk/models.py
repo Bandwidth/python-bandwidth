@@ -948,156 +948,13 @@ class Recording(ListResource):
         return resp.content, resp.headers['Content-Type']
 
 
-class AvailableNumber(ListResource):
-    """
-    The Available Numbers resource lets you search
-    for numbers that are available for use with your application.
-    """
-
-    _path = 'availableNumbers/'
-    _fields = frozenset(('number', 'national_number', 'pattern_match', 'city',
-                         'lata', 'rate_center', 'state', 'price'))
-    number = None
-    national_number = None
-    pattern_match = None
-    city = None
-    lata = None
-    rate_center = None
-    state = None
-    price = None
-
-    def __init__(self, data=None):
-        self.client = get_client()
-        if data and isinstance(data, dict):
-            self.set_up(from_api(data))
-
-    def __repr__(self):  # pragma: no cover
-        return 'AvailableNumber(number={})'.format(self.number or 'Unknown')
-
-    @classmethod
-    def list_local(cls, **params):
-        """
-        :param city: A city name
-        :param state: A two-letter US state abbreviation ("CA" for California)
-        :param zip: A 5-digit US ZIP code
-        :param area_code: A 3-digit telephone area code.
-        :param local_number: It is defined as the first digits of a telephone
-                             number inside an area code for filtering
-                             the results.
-                             It must have at least 3 digits and the area_code
-                             param must be not None.
-        :param in_local_calling_area: Boolean value to indicate that the search
-                                      for available numbers must consider
-                                      overlayed areas. Only applied for
-                                      local_number searching.
-        :param quantity: The maximum number of numbers to return
-                         (default 10, maximum 5000).
-
-        :param pattern: A number pattern that may include
-                        letters, digits, and the following
-                        wildcard characters:
-                            ? : matches any single digit
-                            * : matches zero or more digits
-        !Note:
-        1. state, zip and area_code are mutually exclusive,
-           you may use only one of them per calling list_local.
-        2. local_number and in_local_calling_area only applies
-           for searching numbers in specific area_code.
-
-        :return: List of AvailableNumber instances.
-        """
-        client = get_client()
-        url = client.endpoint + '/v1/' + cls._path + 'local'
-        data = client.build_request('get', url, params=to_api(params), join_endpoint=False).json()
-        return [cls(number) for number in data]
-
-    @classmethod
-    def list_tollfree(cls, **params):
-        """
-        Searches for available Toll Free numbers.
-        :param quantity: The maximum number of numbers to return
-                         (default 10, maximum 5000)
-        :param pattern: A number pattern that may include
-                        letters, digits, and the following wildcard characters:
-                            ? : matches any single digit
-                            * : matches zero or more digits
-        :return: List of AvailableNumber instances.
-        """
-        client = get_client()
-        url = client.endpoint + '/v1/' + cls._path + 'tollFree'
-        data = client.build_request('get', url, params=to_api(params), join_endpoint=False).json()
-        return [cls(number) for number in data]
-
-    @classmethod
-    def batch_allocate_local(cls, **params):
-        """
-        :param city: A city name
-        :param state: A two-letter US state abbreviation ("CA" for California)
-        :param zip: A 5-digit US ZIP code
-        :param area_code: A 3-digit telephone area code
-        :param local_number: It is defined as the first digits of a telephone
-                             number inside an area code for filtering
-                             the results.
-                             It must contain from 3 to 4 digits.
-        :param in_local_calling_area: Boolean value to indicate that the search
-                                      for available numbers must consider
-                                      overlayed areas.
-                                      Only applied for local_number searching.
-        :param quantity: The maximum quantity of numbers to search and order
-                         (default 1, maximum 10).
-        !Note:
-        1. state, zip and area_code are mutually exclusive,
-           you may use only one of them per calling list_local.
-        2. local_number and in_local_calling_area only applies
-           for searching numbers in specific area_code.
-
-        :return: List of PhoneNumber instances.
-        """
-        client = get_client()
-        url = client.endpoint + '/v1/' + cls._path + 'local'
-        data = client.build_request('post', url, params=to_api(params), join_endpoint=False).json()
-        return [PhoneNumber(number) for number in data]
-
-    @classmethod
-    def batch_allocate_tollfree(cls, quantity=1):
-        """
-        Searches and order available Toll Free numbers.
-        :param quantity: The maximum quantity of numbers for seaching and order
-                         (default 1, maximum 10).
-        :return: List of PhoneNumber instances.
-        """
-        client = get_client()
-        url = client.endpoint + '/v1/' + cls._path + 'tollFree'
-        data = client.build_request('post', url,
-                                    data=to_api(dict(quantity=quantity)), join_endpoint=False).json()
-        return [PhoneNumber(number) for number in data]
-
-    def allocate(self, application=None, name=None, fallback_number=None):
-        """
-        Allocate available number to yours account
-        :param application: Application instance you want to
-                            associate with this number
-                            or The ID of an Application.
-        :param name: A name you choose for this number.
-        :param fallback_number: An available telephone number you want to use
-                                (must be in E.164 format, like +19195551212)
-
-        :return: PhoneNumber instance.
-        """
-
-        data = {'number': self.number,
-                'application': application,
-                'name': name,
-                'fallback_number': fallback_number}
-        return PhoneNumber.allocate(**data)
-
-
 class PhoneNumber(ListResource):
     _path = 'phoneNumbers'
+    _available_numbers_path = 'availableNumbers'
     _fields = frozenset(('id', 'application', 'number', 'national_number',
                          'name', 'created_time', 'city', 'state', 'price',
-                         'number_state', 'fallback_number'))
-    NUMBER_STATES = enum('enabled', 'released')
+                         'number_state', 'fallback_number', 'pattern_match', 'lata', 'rate_center'))
+    NUMBER_STATES = enum('enabled', 'released', 'available')
     id = None
     application = None
     number = None
@@ -1110,18 +967,26 @@ class PhoneNumber(ListResource):
     number_state = None
     fallback_number = None
 
-    def __init__(self, data):
+    # Available number attributes
+    pattern_match = None
+    lata = None
+    rate_center = None
+
+    def __init__(self, data, available=False):
         self.client = get_client()
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
             self.id = data
+        if available:
+            self.number_state = self.state
+            self.state = self.NUMBER_STATES.available
 
     def __repr__(self):  # pragma: no cover
         return 'PhoneNumber(number={})'.format(self.number or 'Unknown')
 
     def set_up(self, data):
-        app_id = data.pop('application', None)
+        app_id = data.pop('application', None) or data.pop('application_id', None)
         if isinstance(app_id, six.string_types):
             data['application'] = Application(data=app_id.split('/')[-1])
         elif isinstance(app_id, Application):
@@ -1220,8 +1085,7 @@ class PhoneNumber(ListResource):
         data = self.client.get(url).json()
         self.set_up(from_api(data))
 
-    @classmethod
-    def allocate(cls, **data):
+    def allocate(self, application=None, name=None, fallback_number=None):
         """
         Allocates a number so you can use it to make and receive calls and
         send and receive messages.
@@ -1237,19 +1101,179 @@ class PhoneNumber(ListResource):
         :return: PhoneNumber instance.
         """
         client = get_client()
-        url = cls._path
-        app = data.pop('application', None)
-        if isinstance(app, Application):
-            app_id = app.id
+        url = self._path
+        data = {'number': self.number,
+                'name': name,
+                'fallback_number': fallback_number}
+        to_update = data.copy()
+        if isinstance(application, Application):
+            app_id = application.id
             data['application_id'] = app_id
-        elif isinstance(app, six.string_types):
-            data['application_id'] = app
+        elif isinstance(application, six.string_types):
+            data['application_id'] = application
         resp = client.post(url, data=to_api(data))
         number_id = get_location_id(resp)
-        number = cls(number_id)
-        data['application'] = app
-        number.set_up(data)
-        return number
+        self.id = number_id
+        to_update['application'] = application
+        self.set_up(to_update)
+        return self
+
+    # Avaible number resource section
+
+    @classmethod
+    def validate_search_query(cls, params):
+        """
+        Validating params for available local numbers search.
+        Rules:
+        1) state, zip and areaCode are mutually exclusive, you may use only one of them per request.
+        2) localNumber and inLocalCallingArea only applies for searching and order numbers in specific areaCode.
+        """
+        mandatory_params = sum(('area_code' in params, 'zip' in params, 'state' in params))
+        if mandatory_params > 1:
+            raise ValueError('state, zip and areaCode are mutually exclusive, you may use only one of them per request')
+        elif mandatory_params == 0:
+            raise ValueError('Specify a State, ZIP Code, or Area Code with your query')
+        if 'area_code' not in params and 'in_local_calling_area' in params or 'local_number' in params:
+            raise ValueError('localNumber and inLocalCallingArea only applies '
+                             'for searching numbers in specific areaCode')
+
+    @classmethod
+    def list_local(cls, **params):
+        """
+        :param city: A city name
+        :param state: A two-letter US state abbreviation ("CA" for California)
+        :param zip: A 5-digit US ZIP code
+        :param area_code: A 3-digit telephone area code.
+        :param local_number: It is defined as the first digits of a telephone
+                             number inside an area code for filtering
+                             the results.
+                             It must have at least 3 digits and the area_code
+                             param must be not None.
+        :param in_local_calling_area: Boolean value to indicate that the search
+                                      for available numbers must consider
+                                      overlayed areas. Only applied for
+                                      local_number searching.
+        :param quantity: The maximum number of numbers to return
+                         (default 10, maximum 5000).
+
+        :param pattern: A number pattern that may include
+                        letters, digits, and the following
+                        wildcard characters:
+                            ? : matches any single digit
+                            * : matches zero or more digits
+        !Note:
+        1. state, zip and area_code are mutually exclusive,
+           you may use only one of them per calling list_local.
+        2. local_number and in_local_calling_area only applies
+           for searching numbers in specific area_code.
+
+        :return: List of AvailableNumber instances.
+        """
+        cls.validate_search_query(params)
+        client = get_client()
+        url = client.endpoint + '/v1/{}/local'.format(cls._available_numbers_path)
+        data = client.build_request('get', url, params=to_api(params), join_endpoint=False).json()
+        return [cls(number, available=True) for number in data]
+
+    @classmethod
+    def list_tollfree(cls, **params):
+        """
+        Searches for available Toll Free numbers.
+        :param quantity: The maximum number of numbers to return
+                         (default 10, maximum 5000)
+        :param pattern: A number pattern that may include
+                        letters, digits, and the following wildcard characters:
+                            ? : matches any single digit
+                            * : matches zero or more digits
+        :return: List of AvailableNumber instances.
+        """
+        client = get_client()
+        url = client.endpoint + '/v1/{}/tollFree'.format(cls._available_numbers_path)
+        data = client.build_request('get', url, params=to_api(params), join_endpoint=False).json()
+        return [cls(number, available=True) for number in data]
+
+    @classmethod
+    def batch_allocate_local(cls, **params):
+        """
+        :param city: A city name
+        :param state: A two-letter US state abbreviation ("CA" for California)
+        :param zip: A 5-digit US ZIP code
+        :param area_code: A 3-digit telephone area code
+        :param local_number: It is defined as the first digits of a telephone
+                             number inside an area code for filtering
+                             the results.
+                             It must contain from 3 to 4 digits.
+        :param in_local_calling_area: Boolean value to indicate that the search
+                                      for available numbers must consider
+                                      overlayed areas.
+                                      Only applied for local_number searching.
+        :param quantity: The maximum quantity of numbers to search and order
+                         (default 1, maximum 10).
+        !Note:
+        1. state, zip and area_code are mutually exclusive,
+           you may use only one of them per calling list_local.
+        2. local_number and in_local_calling_area only applies
+           for searching numbers in specific area_code.
+
+        :return: List of PhoneNumber instances.
+        """
+        cls.validate_search_query(params)
+        client = get_client()
+        url = client.endpoint + '/v1/{}/local'.format(cls._available_numbers_path)
+        data = client.build_request('post', url, params=to_api(params), join_endpoint=False).json()
+        return [cls(number) for number in data]
+
+    @classmethod
+    def batch_allocate_tollfree(cls, quantity=1):
+        """
+        Searches and order available Toll Free numbers.
+        :param quantity: The maximum quantity of numbers for seaching and order
+                         (default 1, maximum 10).
+        :return: List of PhoneNumber instances.
+        """
+        client = get_client()
+        url = client.endpoint + '/v1/{}/tollFree'.format(cls._available_numbers_path)
+        data = client.build_request('post', url,
+                                    data=to_api(dict(quantity=quantity)), join_endpoint=False).json()
+        return [cls(number) for number in data]
+
+
+class NumberInfo(BaseResource):
+    """
+    This resource provides a CNAM number info. CNAM is an acronym which stands for Caller ID Name.
+    CNAM can be used to display the calling party's name alongside the phone number, to help users easily
+    identify a caller. CNAM API allows the user to get the CNAM information of a particular number
+
+    :param name:  The Caller ID name information
+    :param number:  The full phone number, specified in E.164 format
+    :param created:  The time this Caller ID information was first queried
+    :param updated:  The time this Caller ID information was last updated
+    """
+    _path = 'phoneNumbers/numberInfo'
+    name = None
+    number = None
+    created = None
+    updated = None
+    _fields = frozenset(('name', 'number', 'created', 'updated'))
+
+    def __init__(self, data):  # pragma: no cover
+        self.client = get_client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        else:
+            raise ValueError('Invalid data')
+
+    @classmethod
+    def get(cls, number):
+        """
+        Get the CNAM of the number.
+        :return: NumberInfo instance.
+        """
+        client = get_client()
+        number = six.moves.urllib.parse.quote(number)
+        url = '{}/v1/{}/{}'.format(client.endpoint, cls._path, number)
+        data = client.get(url, join_endpoint=False).json()
+        return cls(data=data)
 
 
 class Media(ListResource):
