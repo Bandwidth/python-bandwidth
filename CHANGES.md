@@ -7,3 +7,8 @@
 (October 23, 2014)
 
 - Released stable version with all resources.
+
+### 1.0.3-stable:
+(November 04, 2014):
+
+- Removed AvailableNumber resourse. Moved all logic to PhoneNumber resource.

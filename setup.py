@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='bandwidth_sdk',
-    version='1.0.2-stable',
+    version='1.0.3-stable',
     description='This client library is designed to support the Bandwidth '
                 'API and the official Bandwidth SDK',
     author='bandwidth',
