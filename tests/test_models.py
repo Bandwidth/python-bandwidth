@@ -1,4 +1,5 @@
 import six
+import types
 
 import responses
 import unittest
@@ -6,14 +7,17 @@ import unittest
 from bandwidth_sdk import (Call, Bridge,
                            AppPlatformError, Application,
                            Account, Conference, Recording, ConferenceMember,
-                           Gather, PhoneNumber, Media, Message, UserError, NumberInfo)
+                           Gather, PhoneNumber, Media, Message, UserError,
+                           NumberInfo)
 from datetime import datetime
 
 from .utils import SdkTestCase
 
 
 def assertJsonEq(first, second, msg='Ouups'):
-    assert sorted(first) == sorted(second), '%r != %r\n%s' % (first, second, msg)
+    assert sorted(first) == sorted(second), '%r != %r\n%s' % (first,
+                                                              second,
+                                                              msg)
 
 
 def in_bytes(string):
@@ -148,6 +152,113 @@ class CallsTest(SdkTestCase):
 
         self.assertEqual(calls[0].call_id, 'c-call-id')
         self.assertEqual(calls[1].call_id, 'c-call-id-1')
+
+    @responses.activate
+    def test_as_iterator(self):
+        """
+        Call.as_iterator(chunk_size=2)
+        """
+        raw = """
+        [{
+        "id": "c-call-id",
+        "direction": "out",
+        "from": "+1919000001",
+        "to": "+1919000002",
+        "recordingEnabled": false,
+        "callbackUrl": "",
+        "state": "active",
+        "startTime": "2013-02-08T13:15:47.587Z",
+        "activeTime": "2013-02-08T13:15:52.347Z",
+        "events": "https://.../calls/{callId}/events"
+        },
+        {
+        "id": "c-call-id-1",
+        "direction": "out",
+        "from": "+1919000001",
+        "to": "+1919000002",
+        "recordingEnabled": false,
+        "callbackUrl": "",
+        "state": "active",
+        "startTime": "2013-02-08T13:15:47.587Z",
+        "activeTime": "2013-02-08T13:15:52.347Z",
+        "events": "https://.../calls/{callId}/events"
+        }]
+        """
+        raw1 = """[
+            {
+            "id": "c-call-id-2",
+            "direction": "out",
+            "from": "+1919000001",
+            "to": "+1919000002",
+            "recordingEnabled": false,
+            "callbackUrl": "",
+            "state": "active",
+            "startTime": "2013-02-08T13:15:47.587Z",
+            "activeTime": "2013-02-08T13:15:52.347Z",
+            "events": "https://.../calls/{callId}/events"
+            },
+            {
+            "id": "c-call-id-3",
+            "direction": "out",
+            "from": "+1919000001",
+            "to": "+1919000002",
+            "recordingEnabled": false,
+            "callbackUrl": "",
+            "state": "active",
+            "startTime": "2013-02-08T13:15:47.587Z",
+            "activeTime": "2013-02-08T13:15:52.347Z",
+            "events": "https://.../calls/{callId}/events"
+            }]
+        """
+        raw2 = """[
+            {
+            "id": "c-call-id-4",
+            "direction": "out",
+            "from": "+1919000001",
+            "to": "+1919000002",
+            "recordingEnabled": false,
+            "callbackUrl": "",
+            "state": "active",
+            "startTime": "2013-02-08T13:15:47.587Z",
+            "activeTime": "2013-02-08T13:15:52.347Z",
+            "events": "https://.../calls/{callId}/events"
+            }
+            ]
+            """
+        responses.add(responses.GET,
+            'https://api.catapult.inetwork.com/v1/users/u-user/calls',
+            body=raw,
+            status=200,
+            content_type='application/json')
+        call_iterator = Call.as_iterator(chunk_size=2)
+        self.assertIsInstance(call_iterator, types.GeneratorType)
+        first_two_calls = next(call_iterator)
+        self.assertEquals(first_two_calls[0].call_id, "c-call-id")
+        self.assertEquals(first_two_calls[1].call_id, "c-call-id-1")
+        responses.reset()
+
+        responses.add(responses.GET,
+            'https://api.catapult.inetwork.com/v1/users/u-user/calls',
+            body=raw1,
+            status=200,
+            content_type='application/json')
+
+        next_two_calls = next(call_iterator)
+        self.assertEquals(next_two_calls[0].call_id, "c-call-id-2")
+        self.assertEquals(next_two_calls[1].call_id, "c-call-id-3")
+        responses.reset()
+
+        responses.add(responses.GET,
+            'https://api.catapult.inetwork.com/v1/users/u-user/calls',
+            body=raw2,
+            status=200,
+            content_type='application/json')
+        last_chunk = next(call_iterator)
+        self.assertEquals(len(last_chunk), 1)
+        self.assertEqual(last_chunk[0].call_id, 'c-call-id-4')
+
+        with self.assertRaises(StopIteration):
+            next(call_iterator)
 
     @responses.activate
     def test_create(self):
@@ -1696,7 +1807,7 @@ class PhoneNumberTest(SdkTestCase):
         self.assertEqual(numbers[1].state, 'NC')
         self.assertIsInstance(numbers[1].created_time, datetime)
 
-    @unittest.skip('as_iterator commented')
+    @unittest.skip('as iterator')
     @responses.activate
     def test_phone_number_as_iterator(self):
         """
@@ -1741,7 +1852,7 @@ class PhoneNumberTest(SdkTestCase):
                       content_type='application/json',
                       match_querystring=True)
 
-        numbers = PhoneNumber.as_iterator()
+        numbers = PhoneNumber.as_iterator(chunk_size=2)
         numbers_list = list(numbers)
 
         self.assertEqual(len(numbers_list), 4)

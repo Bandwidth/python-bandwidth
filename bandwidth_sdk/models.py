@@ -59,18 +59,18 @@ class ListResource(BaseResource):
         """
         raise NotImplemented
 
-    # @classmethod
-    # def as_iterator(cls, chunk=100):
-    #     page = 0
-    #     while True:
-    #         try:
-    #             results = cls.list(page, chunk)
-    #         except Exception:
-    #             break
-    #         # todo: probably break on has-next == False
-    #         page += 1
-    #         for val in results:
-    #             yield val
+    @classmethod
+    def as_iterator(cls, chunk_size=100, **kwargs):
+        page = 0
+        while True:
+            results = cls.list(page=page, size=chunk_size, **kwargs)
+
+            if len(results) < chunk_size:
+                yield results
+                break
+            else:
+                yield results
+                page += 1
 
 
 class GenericResource(ListResource, CreateResource):
