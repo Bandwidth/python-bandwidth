@@ -47,6 +47,15 @@ from bandwidth_sdk import Client
 Client('u-user', 't-token', 's-secret')
 ```
 
+Or using the config file `.bndsdkrc` that by default is getting from existing path 
+or you can set up path to file using environment variable `BANDWIDTH_CONFIG_FILE`:
+```file
+[catapult]
+user_id = u-your-user-id
+token = t-your-token
+secret = s-your-secret
+```
+
 ###Allocate phone number basic
 
 Import AvailableNumber from sdk

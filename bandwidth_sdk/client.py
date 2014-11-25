@@ -1,5 +1,6 @@
 import os
 import logging
+from six.moves import configparser
 
 from .rest import RESTClientObject
 
@@ -19,10 +20,22 @@ def Client(*args):
     if args:
         assert len(args) == 3, 'Not enough args'
         user_id, token, secret = args
-    else:
+    elif 'BANDWIDTH_USER_ID' in os.environ:
         user_id = os.environ.get('BANDWIDTH_USER_ID')
         token = os.environ.get('BANDWIDTH_API_TOKEN')
         secret = os.environ.get('BANDWIDTH_API_SECRET')
+    else:
+        config_path = os.environ.get('BANDWIDTH_CONFIG_FILE', '.bndsdkrc')
+        if os.path.isfile(config_path):
+            cfg_parser = configparser.RawConfigParser()
+            cfg_parser.read(config_path)
+            user_id = cfg_parser.get('catapult', 'user_id')
+            token = cfg_parser.get('catapult', 'token')
+            secret = cfg_parser.get('catapult', 'secret')
+        else:
+            user_id = None
+            token = None
+            secret = None
     if not all((user_id, token, secret)):
         raise ValueError('Credentials were improperly configured')
     _global_client = RESTClientObject(user_id, (token, secret))
