@@ -60,10 +60,19 @@ class ListResource(BaseResource):
         raise NotImplemented
 
     @classmethod
-    def as_iterator(cls, chunk_size=100, **kwargs):
+    def as_iterator(cls, chunk_size=100, chunks_amount=5, **query_params):
+        """
+        Makes a generator that returns chunked pieces of data.
+
+        :param chunk_size: Size of chunk that you want to receive over one iteration.
+                           Default is 100.
+        :param chunks_amount: Maximum amount of chunks that you want to receive.
+                              Default is 5.
+        :param query_params: Keyword arguments that can receive list() method
+        """
         page = 0
-        while True:
-            results = cls.list(page=page, size=chunk_size, **kwargs)
+        while page <= chunks_amount:
+            results = cls.list(page=page, size=chunk_size, **query_params)
 
             if len(results) < chunk_size:
                 yield results

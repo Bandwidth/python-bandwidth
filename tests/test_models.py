@@ -108,7 +108,9 @@ class CallsTest(SdkTestCase):
         with self.assertRaises(AppPlatformError) as be:
             Call.get('c-call-id')
         the_exception = be.exception
-        self.assertEqual(str(the_exception), '404 client error: The call c-call-id could not be found')
+        self.assertEqual(
+            str(the_exception),
+            '404 client error: The call c-call-id could not be found')
 
     @responses.activate
     def test_list(self):
@@ -226,22 +228,23 @@ class CallsTest(SdkTestCase):
             ]
             """
         responses.add(responses.GET,
-            'https://api.catapult.inetwork.com/v1/users/u-user/calls',
-            body=raw,
-            status=200,
-            content_type='application/json')
-        call_iterator = Call.as_iterator(chunk_size=2)
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        call_iterator = Call.as_iterator(chunk_size=2, from_='+1901')
         self.assertIsInstance(call_iterator, types.GeneratorType)
         first_two_calls = next(call_iterator)
         self.assertEquals(first_two_calls[0].call_id, "c-call-id")
         self.assertEquals(first_two_calls[1].call_id, "c-call-id-1")
+        print(vars(responses.calls[0].request))
         responses.reset()
 
         responses.add(responses.GET,
-            'https://api.catapult.inetwork.com/v1/users/u-user/calls',
-            body=raw1,
-            status=200,
-            content_type='application/json')
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls',
+                      body=raw1,
+                      status=200,
+                      content_type='application/json')
 
         next_two_calls = next(call_iterator)
         self.assertEquals(next_two_calls[0].call_id, "c-call-id-2")
@@ -249,10 +252,10 @@ class CallsTest(SdkTestCase):
         responses.reset()
 
         responses.add(responses.GET,
-            'https://api.catapult.inetwork.com/v1/users/u-user/calls',
-            body=raw2,
-            status=200,
-            content_type='application/json')
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls',
+                      body=raw2,
+                      status=200,
+                      content_type='application/json')
         last_chunk = next(call_iterator)
         self.assertEquals(len(last_chunk), 1)
         self.assertEqual(last_chunk[0].call_id, 'c-call-id-4')
@@ -295,7 +298,9 @@ class CallsTest(SdkTestCase):
         call = Call('new-call-id')
         call.play_audio('Hello.mp3', loop_enabled=True, tag='custom_tag')
         request_message = responses.calls[0].request.body
-        assertJsonEq(request_message, '{"loopEnabled": true, "tag": "custom_tag", "fileUrl": "Hello.mp3"}')
+        assertJsonEq(
+            request_message,
+            '{"loopEnabled": true, "tag": "custom_tag", "fileUrl": "Hello.mp3"}')
 
     @responses.activate
     def test_stop_audio(self):
@@ -327,7 +332,11 @@ class CallsTest(SdkTestCase):
                       adding_headers={'Location': '/v1/users/u-user/calls/new-call-id'})
 
         call = Call('new-call-id')
-        call.speak_sentence('Hello', gender='female', voice='Jorge', loop_enabled=True)
+        call.speak_sentence(
+            'Hello',
+            gender='female',
+            voice='Jorge',
+            loop_enabled=True)
         request_message = responses.calls[0].request.body
         assertJsonEq(
             request_message, '{"voice": "Jorge", "sentence": "Hello", "gender": "female", "loopEnabled": true}')
@@ -362,7 +371,10 @@ class CallsTest(SdkTestCase):
                       adding_headers={'Location': '/v1/users/u-user/calls/tr-call-id'})
 
         call = Call('new-call-id')
-        new_call = call.transfer('+1919000008', whisper_audio={"sentence": "Hello {number}, thanks for calling"})
+        new_call = call.transfer(
+            '+1919000008',
+            whisper_audio={
+                "sentence": "Hello {number}, thanks for calling"})
         request_message = responses.calls[0].request.body
         assertJsonEq(request_message, '{"transferTo": "+1919000008", "state": "transferring", '
                                       '"whisperAudio": {"sentence": "Hello {number}, thanks for calling"}}')
@@ -729,7 +741,9 @@ class BridgesTest(SdkTestCase):
         with self.assertRaises(AppPlatformError) as be:
             Bridge.get('by-bridge-id')
         the_exception = be.exception
-        self.assertEqual(str(the_exception), '404 client error: The bridge by-bridge-id could not be found')
+        self.assertEqual(
+            str(the_exception),
+            '404 client error: The bridge by-bridge-id could not be found')
 
     @responses.activate
     def test_list(self):
@@ -836,7 +850,9 @@ class BridgesTest(SdkTestCase):
         bridge = Bridge('b-id')
         bridge.play_audio('Hello.mp3', loop_enabled=True, tag='custom_tag')
         request_message = responses.calls[0].request.body
-        assertJsonEq(request_message, '{"loopEnabled": true, "tag": "custom_tag", "fileUrl": "Hello.mp3"}')
+        assertJsonEq(
+            request_message,
+            '{"loopEnabled": true, "tag": "custom_tag", "fileUrl": "Hello.mp3"}')
 
     @responses.activate
     def test_stop_audio(self):
@@ -868,7 +884,11 @@ class BridgesTest(SdkTestCase):
                       adding_headers={'Location': '/v1/users/u-user/bridges/b-id'})
 
         bridge = Bridge('b-id')
-        bridge.speak_sentence('Hello', gender='female', voice='Jorge', loop_enabled=True)
+        bridge.speak_sentence(
+            'Hello',
+            gender='female',
+            voice='Jorge',
+            loop_enabled=True)
         request_message = responses.calls[0].request.body
         assertJsonEq(
             request_message, '{"voice": "Jorge", "sentence": "Hello", "gender": "female", "loopEnabled": true}')
@@ -1012,7 +1032,9 @@ class BridgesTest(SdkTestCase):
         Bridge('b-id').update(Call('a-id'), Call('b-id'), bridge_audio=False)
 
         request_message = responses.calls[0].request.body
-        assertJsonEq(request_message, '{"bridgeAudio": false, "callIds": ["a-id", "b-id"]}')
+        assertJsonEq(
+            request_message,
+            '{"bridgeAudio": false, "callIds": ["a-id", "b-id"]}')
 
 
 class ApplicationsTest(SdkTestCase):
@@ -1087,7 +1109,9 @@ class ApplicationsTest(SdkTestCase):
         with self.assertRaises(AppPlatformError) as be:
             Application.get('by-application_id')
         the_exception = be.exception
-        self.assertEqual(str(the_exception), '404 client error: The application by-application_id could not be found')
+        self.assertEqual(
+            str(the_exception),
+            '404 client error: The application by-application_id could not be found')
 
     @responses.activate
     def test_list(self):
@@ -1120,12 +1144,16 @@ class ApplicationsTest(SdkTestCase):
         applications = Application.list()
 
         self.assertEqual(applications[0].id, 'a-application-id')
-        self.assertEqual(applications[0].incoming_call_url, 'http://callback.info')
+        self.assertEqual(
+            applications[0].incoming_call_url,
+            'http://callback.info')
         self.assertEqual(applications[0].callback_http_method, 'post')
         self.assertEqual(applications[0].name, 'test_application_name')
         self.assertEqual(applications[0].auto_answer, True)
         self.assertEqual(applications[1].id, 'a-application-id1')
-        self.assertEqual(applications[1].incoming_call_url, 'http://callback1.info')
+        self.assertEqual(
+            applications[1].incoming_call_url,
+            'http://callback1.info')
         self.assertEqual(applications[1].callback_http_method, 'get')
         self.assertEqual(applications[1].name, 'test_application_name1')
         self.assertEqual(applications[1].auto_answer, False)
@@ -1142,10 +1170,14 @@ class ApplicationsTest(SdkTestCase):
                       content_type='application/json',
                       adding_headers={'Location': '/v1/users/u-user/applications/new-application-id'})
 
-        application = Application.create(name='new-application', incoming_call_url='http://test.callback.info')
+        application = Application.create(
+            name='new-application',
+            incoming_call_url='http://test.callback.info')
 
         self.assertEqual(application.id, 'new-application-id')
-        self.assertEqual(application.incoming_call_url, 'http://test.callback.info')
+        self.assertEqual(
+            application.incoming_call_url,
+            'http://test.callback.info')
         self.assertEqual(application.callback_http_method, 'post')
         self.assertEqual(application.name, 'new-application')
         self.assertEqual(application.auto_answer, True)
@@ -1168,10 +1200,14 @@ class ApplicationsTest(SdkTestCase):
 
         application.patch(incoming_call_url='http://test.callback.info',
                           callback_http_method='get')
-        self.assertEqual(application.incoming_call_url, 'http://test.callback.info')
+        self.assertEqual(
+            application.incoming_call_url,
+            'http://test.callback.info')
         self.assertEqual(application.callback_http_method, 'get')
         request_message = responses.calls[0].request.body
-        assertJsonEq(request_message, '{"callbackHttpMethod": "get", "incomingCallUrl": "http://test.callback.info"}')
+        assertJsonEq(
+            request_message,
+            '{"callbackHttpMethod": "get", "incomingCallUrl": "http://test.callback.info"}')
 
     @responses.activate
     def test_create_refresh(self):
@@ -1185,10 +1221,14 @@ class ApplicationsTest(SdkTestCase):
                       content_type='application/json',
                       adding_headers={'Location': '/v1/users/u-user/applications/new-application-id'})
 
-        application = Application.create(name='new-application', incoming_call_url='http://test.callback.info')
+        application = Application.create(
+            name='new-application',
+            incoming_call_url='http://test.callback.info')
 
         self.assertEqual(application.id, 'new-application-id')
-        self.assertEqual(application.incoming_call_url, 'http://test.callback.info')
+        self.assertEqual(
+            application.incoming_call_url,
+            'http://test.callback.info')
         self.assertEqual(application.callback_http_method, 'post')
         self.assertEqual(application.name, 'new-application')
         self.assertEqual(application.auto_answer, True)
@@ -1228,7 +1268,8 @@ class ApplicationsTest(SdkTestCase):
         d_app = app.delete()
         self.assertTrue(d_app)
         self.assertEquals(responses.calls[0].request.method, 'DELETE')
-        self.assertEquals(responses.calls[0].request.url.split('/')[-1], app.id)
+        self.assertEquals(
+            responses.calls[0].request.url.split('/')[-1], app.id)
 
 
 class AccountTests(SdkTestCase):
@@ -1407,9 +1448,13 @@ class ConferenceTest(SdkTestCase):
                       content_type='application/json'
                       )
 
-        Conference('conf-id').play_audio('Hello.mp3', loop_enabled=True, tag='custom_tag')
+        Conference('conf-id').play_audio('Hello.mp3',
+                                         loop_enabled=True,
+                                         tag='custom_tag')
         request_message = responses.calls[0].request.body
-        assertJsonEq(request_message, '{"loopEnabled": true, "tag": "custom_tag", "fileUrl": "Hello.mp3"}')
+        assertJsonEq(
+            request_message,
+            '{"loopEnabled": true, "tag": "custom_tag", "fileUrl": "Hello.mp3"}')
 
     @responses.activate
     def test_stop_audio(self):
@@ -1450,12 +1495,16 @@ class ConferenceTest(SdkTestCase):
                       'https://api.catapult.inetwork.com/v1/users/u-user/conferences/conf-id/members',
                       body='',
                       content_type='application/json',
-                      adding_headers={'Location': '/v1/users/u-user/conferences/new-conf-id/members/m-id'}
+                      adding_headers={
+                          'Location': '/v1/users/u-user/conferences/new-conf-id/members/m-id'}
                       )
-        member = Conference('conf-id').add_member(call_id='foo', join_tone=False, leaving_tone=False)
+        member = Conference(
+            'conf-id').add_member(call_id='foo', join_tone=False, leaving_tone=False)
         self.assertEqual(member.id, 'm-id')
         request_message = responses.calls[0].request.body
-        assertJsonEq(request_message, '{"joinTone": false, "leavingTone": false, "callId": "foo"}')
+        assertJsonEq(
+            request_message,
+            '{"joinTone": false, "leavingTone": false, "callId": "foo"}')
 
     @responses.activate
     def test_get_member(self):
@@ -1902,7 +1951,9 @@ class PhoneNumberTest(SdkTestCase):
         self.assertEqual(phone.id, 'phone-id')
         self.assertIsNone(phone.application)
 
-        phone = phone.patch(application=Application('app-id'), name='home phone')
+        phone = phone.patch(
+            application=Application('app-id'),
+            name='home phone')
 
         self.assertEqual(phone.id, 'phone-id')
         self.assertIsInstance(phone.application, Application)
@@ -1952,7 +2003,8 @@ class PhoneNumberTest(SdkTestCase):
         phone = PhoneNumber('phone-id')
         phone.delete()
         self.assertEquals(responses.calls[0].request.method, 'DELETE')
-        self.assertEquals(responses.calls[0].request.url.split('/')[-1], phone.id)
+        self.assertEquals(
+            responses.calls[0].request.url.split('/')[-1], phone.id)
 
     @responses.activate
     def test_allocate_phone_number_by_number_with_app_instance(self):
@@ -1966,12 +2018,16 @@ class PhoneNumberTest(SdkTestCase):
                       status=201,
                       content_type='application/json',
                       adding_headers={'Location': '/v1/users/u-user/phoneNumber/new-number-id'})
-        application = Application({'id': 'app-id', 'incoming_call_url': 'http://callback.info'})
-        number = PhoneNumber({'number': '+19195551212'}).allocate(application=application)
+        application = Application(
+            {'id': 'app-id', 'incoming_call_url': 'http://callback.info'})
+        number = PhoneNumber(
+            {'number': '+19195551212'}).allocate(application=application)
         self.assertEqual(number.id, 'new-number-id')
         self.assertEqual(number.number, '+19195551212')
         self.assertEqual(number.application.id, 'app-id')
-        self.assertEqual(number.application.incoming_call_url, 'http://callback.info')
+        self.assertEqual(
+            number.application.incoming_call_url,
+            'http://callback.info')
 
     @responses.activate
     def test_allocate_number_with_app_id_as_string(self):
@@ -1986,7 +2042,8 @@ class PhoneNumberTest(SdkTestCase):
                       content_type='application/json',
                       adding_headers={'Location': '/v1/users/u-user/phoneNumber/new-number-id'})
         application = 'app-id'
-        number = PhoneNumber({'number': '+19195551212'}).allocate(application=application)
+        number = PhoneNumber(
+            {'number': '+19195551212'}).allocate(application=application)
         self.assertEqual(number.id, 'new-number-id')
         self.assertEqual(number.number, '+19195551212')
         self.assertEqual(number.application.id, 'app-id')
@@ -2024,7 +2081,11 @@ class PhoneNumberTest(SdkTestCase):
                       body=raw,
                       status=200,
                       content_type='application/json')
-        a_numbers = PhoneNumber.list_local(city='Cary', state='NC', pattern='*2?9*', quantity=2)
+        a_numbers = PhoneNumber.list_local(
+            city='Cary',
+            state='NC',
+            pattern='*2?9*',
+            quantity=2)
         self.assertIsInstance(a_numbers[0], PhoneNumber)
         self.assertEqual(a_numbers[0].number, 'ava-1')
         self.assertEqual(a_numbers[0].national_number, '(919) 323-2393')
@@ -2132,7 +2193,10 @@ class PhoneNumberTest(SdkTestCase):
                       body=raw,
                       status=201,
                       content_type='application/json')
-        numbers = PhoneNumber.batch_allocate_local(city='Cary', state='NC', quantity=2)
+        numbers = PhoneNumber.batch_allocate_local(
+            city='Cary',
+            state='NC',
+            quantity=2)
 
         self.assertIsInstance(numbers[0], PhoneNumber)
         self.assertEqual(numbers[0].id, 'new-number-id')
@@ -2151,7 +2215,11 @@ class PhoneNumberTest(SdkTestCase):
         PhoneNumber.batch_allocate_local(city='Cary', state='NC', quantity=2, zip=119)
         """
         with self.assertRaises(ValueError):
-            PhoneNumber.batch_allocate_local(city='Cary', state='NC', quantity=2, zip=119)
+            PhoneNumber.batch_allocate_local(
+                city='Cary',
+                state='NC',
+                quantity=2,
+                zip=119)
 
     @responses.activate
     def test_batch_allocate_tollfree(self):
@@ -2229,16 +2297,20 @@ class PhoneNumberTest(SdkTestCase):
                       status=201,
                       content_type='application/json',
                       adding_headers={'Location': '/v1/users/u-user/phoneNumber/new-number-id'})
-        application = Application({'id': 'app-id', 'incoming_call_url': 'http://callback.info'})
+        application = Application(
+            {'id': 'app-id', 'incoming_call_url': 'http://callback.info'})
         number = av_number.allocate(application=application)
         self.assertIsInstance(number, PhoneNumber)
         self.assertEqual(number.id, 'new-number-id')
         self.assertEqual(number.number, '+19191919191')
         self.assertEqual(number.application.id, 'app-id')
-        self.assertEqual(number.application.incoming_call_url, 'http://callback.info')
+        self.assertEqual(
+            number.application.incoming_call_url,
+            'http://callback.info')
 
 
 class CommonTest(SdkTestCase):
+
     """
     Account
     Application
@@ -2284,7 +2356,11 @@ class CommonTest(SdkTestCase):
         """
         Test ConferenceMember representation
         """
-        self.assertIsInstance(repr(ConferenceMember('id', {'id': 'id'})), six.string_types)
+        self.assertIsInstance(
+            repr(
+                ConferenceMember(
+                    'id', {
+                        'id': 'id'})), six.string_types)
 
     def test_gather_repr_not_failed(self):
         """
@@ -2302,7 +2378,8 @@ class CommonTest(SdkTestCase):
         """
         Test Message representation
         """
-        self.assertIsInstance(repr(Message({'id': None, 'state': Message.STATES.error})), six.string_types)
+        self.assertIsInstance(
+            repr(Message({'id': None, 'state': Message.STATES.error})), six.string_types)
 
 
 class MediaTest(SdkTestCase):
@@ -2377,7 +2454,8 @@ class MediaTest(SdkTestCase):
         media = Media('media-id')
         media.delete()
         self.assertEquals(responses.calls[0].request.method, 'DELETE')
-        self.assertEquals(responses.calls[0].request.url.split('/')[-1], media.media_name)
+        self.assertEquals(
+            responses.calls[0].request.url.split('/')[-1], media.media_name)
 
     @responses.activate
     def test_by_upload_file_name(self):
@@ -2392,7 +2470,8 @@ class MediaTest(SdkTestCase):
 
         Media.upload('dolphin.mp3', file_path='./tests/fixtures/dolphin.mp3',
                      mime='application/octet-stream')
-        request_message = responses.calls[0].request.body  # decoded to str implicitly
+        # decoded to str implicitly
+        request_message = responses.calls[0].request.body
         self.assertEqual(request_message, in_bytes('thra\ntata\nrata'))
 
         self.assertEqual(Media('media-id').get_full_media_url(), 'https://api.catapult.inetwork.com/v1/users/'
@@ -2411,7 +2490,8 @@ class MediaTest(SdkTestCase):
 
         Media.upload('chunk.mp3', file_path='./tests/fixtures/chunk.mp3',
                      mime='application/octet-stream')
-        request_message = responses.calls[0].request.body  # decoded to str implicitly
+        # decoded to str implicitly
+        request_message = responses.calls[0].request.body
         self.assertEqual(len(request_message), 4546)
 
         self.assertEqual(Media('media-id').get_full_media_url(), 'https://api.catapult.inetwork.com/v1/users/'
@@ -2436,13 +2516,19 @@ class MediaTest(SdkTestCase):
                       status=200,
                       )
         content_line = in_bytes('lalalala')
-        Media.upload('dolphin.mp3', content=content_line, mime='application/octet-stream')
-        request_message = responses.calls[0].request.body  # decoded to str implicitly
+        Media.upload(
+            'dolphin.mp3',
+            content=content_line,
+            mime='application/octet-stream')
+        # decoded to str implicitly
+        request_message = responses.calls[0].request.body
         self.assertEqual(request_message, content_line)
 
         request_headers = responses.calls[0].request.headers
         self.assertEqual(request_headers['Content-Length'], '8')
-        self.assertEqual(request_headers['Content-type'], 'application/octet-stream')
+        self.assertEqual(
+            request_headers['Content-type'],
+            'application/octet-stream')
 
     @unittest.expectedFailure
     @responses.activate
@@ -2467,7 +2553,8 @@ class MediaTest(SdkTestCase):
         with open('./tests/fixtures/dolphin.mp3') as fd:
             Media.upload('dolphin.mp3', fd=fd)
 
-        request_message = responses.calls[0].request.body  # decoded to str implicitly
+        # decoded to str implicitly
+        request_message = responses.calls[0].request.body
         self.assertEqual(request_message, 'thra\ntata\nrata')
 
         responses.add(responses.PUT,
@@ -2477,14 +2564,20 @@ class MediaTest(SdkTestCase):
                       )
 
         file_like = six.StringIO('thra\ntata\nrata')
-        Media.upload('dolphin.mp3', fd=file_like, mime='application/octet-stream')
+        Media.upload(
+            'dolphin.mp3',
+            fd=file_like,
+            mime='application/octet-stream')
 
-        request_message = responses.calls[1].request.body  # decoded to str implicitly
+        # decoded to str implicitly
+        request_message = responses.calls[1].request.body
         self.assertEqual(request_message, 'thra\ntata\nrata')
 
         request_headers = responses.calls[1].request.headers
         self.assertEqual(request_headers['Content-Length'], '14')
-        self.assertEqual(request_headers['Content-type'], 'application/octet-stream')
+        self.assertEqual(
+            request_headers['Content-type'],
+            'application/octet-stream')
 
     @responses.activate
     def test_by_upload_file_seek(self):
@@ -2501,7 +2594,8 @@ class MediaTest(SdkTestCase):
             fd.seek(14)
             Media('media-id').upload('dolphin.mp3', fd=fd)
 
-        request_message = responses.calls[0].request.body  # decoded to str implicitly
+        # decoded to str implicitly
+        request_message = responses.calls[0].request.body
         self.assertEqual(request_message, 'thra\ntata\nrata')
 
         request_headers = responses.calls[0].request.headers
@@ -2599,7 +2693,9 @@ class MessageTestCase(SdkTestCase):
         self.assertEqual(messages[0].id, 'mess-id1')
         self.assertEqual(messages[0].from_, '+19796543211')
         self.assertEqual(messages[0].to, '+19796543212')
-        self.assertEqual(messages[0].text, 'Good morning, this is a test message')
+        self.assertEqual(
+            messages[0].text,
+            'Good morning, this is a test message')
         self.assertIsInstance(messages[0].time, datetime)
         self.assertEqual(messages[0].direction, 'out')
         self.assertEqual(messages[0].state, Message.STATES.sent)
@@ -2722,7 +2818,9 @@ class MessageTestCase(SdkTestCase):
         self.assertEqual(sender.errors[0].from_, '+1900000002')
         self.assertEqual(sender.errors[0].to, '+1900000003')
         self.assertEqual(sender.errors[0].text, '')
-        self.assertEqual(sender.errors[0].error_message, "The 'message' resource property 'text' can't be blank")
+        self.assertEqual(
+            sender.errors[0].error_message,
+            "The 'message' resource property 'text' can't be blank")
 
         with self.assertRaises(AppPlatformError):
             sender.execute()
@@ -2789,7 +2887,9 @@ class UserErrorTest(SdkTestCase):
         self.assertIsInstance(error.time, datetime)
 
         self.assertEqual(error.category, UserError.CATEGORIES.bad_request)
-        self.assertEqual(error.message, "The 'call' resource property 'transferTo' is required but was not specified")
+        self.assertEqual(
+            error.message,
+            "The 'call' resource property 'transferTo' is required but was not specified")
 
         self.assertIsInstance(error.details, list)
 
@@ -2890,7 +2990,9 @@ class UserErrorTest(SdkTestCase):
         self.assertIsInstance(error.time, datetime)
 
         self.assertEqual(error.category, UserError.CATEGORIES.unavailable)
-        self.assertEqual(error.message, "No application is configured for number +19195556666")
+        self.assertEqual(
+            error.message,
+            "No application is configured for number +19195556666")
 
         self.assertIsInstance(error.details, list)
 
