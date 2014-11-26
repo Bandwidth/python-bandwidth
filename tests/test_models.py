@@ -10,6 +10,7 @@ from bandwidth_sdk import (Call, Bridge,
                            Gather, PhoneNumber, Media, Message, UserError,
                            NumberInfo)
 from datetime import datetime
+import json
 
 from .utils import SdkTestCase
 
@@ -784,6 +785,111 @@ class BridgesTest(SdkTestCase):
         self.assertEqual(bridges[0].id, 'bridge-1')
         self.assertEqual(bridges[1].id, 'bridge-2')
 
+
+    @responses.activate
+    def test_as_iterator(self):
+        """
+        Bridge.as_iterator()
+        """
+        raw_one = """
+        [
+          {
+            "id": "bridge-11",
+            "state": "completed",
+            "bridgeAudio": "true",
+            "calls":"https://.../v1/users/{userId}/bridges/{bridgeId}/calls",
+            "createdTime": "2013-04-22T13:55:30.279Z",
+            "activatedTime": "2013-04-22T13:55:30.280Z",
+            "completedTime": "2013-04-22T13:56:30.122Z"
+          },
+          {
+            "id": "bridge-12",
+            "state": "completed",
+            "bridgeAudio": "true",
+            "calls":"https://.../v1/users/{userId}/bridges/{bridgeId}/calls",
+            "createdTime": "2013-04-22T13:58:30.121Z",
+            "activatedTime": "2013-04-22T13:58:30.122Z",
+            "completedTime": "2013-04-22T13:59:30.122Z"
+          }
+        ]
+
+        """
+        raw_two = """
+        [
+          {
+            "id": "bridge-21",
+            "state": "completed",
+            "bridgeAudio": "true",
+            "calls":"https://.../v1/users/{userId}/bridges/{bridgeId}/calls",
+            "createdTime": "2013-04-22T13:55:30.279Z",
+            "activatedTime": "2013-04-22T13:55:30.280Z",
+            "completedTime": "2013-04-22T13:56:30.122Z"
+          },
+          {
+            "id": "bridge-22",
+            "state": "completed",
+            "bridgeAudio": "true",
+            "calls":"https://.../v1/users/{userId}/bridges/{bridgeId}/calls",
+            "createdTime": "2013-04-22T13:58:30.121Z",
+            "activatedTime": "2013-04-22T13:58:30.122Z",
+            "completedTime": "2013-04-22T13:59:30.122Z"
+          }
+        ]
+
+        """
+
+        raw_three = """
+        [
+          {
+            "id": "bridge-31",
+            "state": "completed",
+            "bridgeAudio": "true",
+            "calls":"https://.../v1/users/{userId}/bridges/{bridgeId}/calls",
+            "createdTime": "2013-04-22T13:55:30.279Z",
+            "activatedTime": "2013-04-22T13:55:30.280Z",
+            "completedTime": "2013-04-22T13:56:30.122Z"
+          }
+        ]
+
+        """
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges',
+                      body=raw_one,
+                      status=200,
+                      content_type='application/json')
+        bridge_iterator = Bridge.as_iterator(chunk_size=2)
+        first_two_bridge = next(bridge_iterator)
+
+        self.assertEqual(first_two_bridge[0].id, 'bridge-11')
+        self.assertEqual(first_two_bridge[1].id, 'bridge-12')
+        responses.reset()
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges',
+                      body=raw_two,
+                      status=200,
+                      content_type='application/json')
+        next_two_bridge = next(bridge_iterator)
+
+        self.assertEqual(next_two_bridge[0].id, 'bridge-21')
+        self.assertEqual(next_two_bridge[1].id, 'bridge-22')
+        responses.reset()
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges',
+                      body=raw_three,
+                      status=200,
+                      content_type='application/json')
+        last_chunk_bridge = next(bridge_iterator)
+
+        self.assertEqual(last_chunk_bridge[0].id, 'bridge-31')
+
+
+        with self.assertRaises(StopIteration):
+            next(bridge_iterator)
+
+
     @responses.activate
     def test_create(self):
         """
@@ -1157,6 +1263,96 @@ class ApplicationsTest(SdkTestCase):
         self.assertEqual(applications[1].callback_http_method, 'get')
         self.assertEqual(applications[1].name, 'test_application_name1')
         self.assertEqual(applications[1].auto_answer, False)
+
+
+    @responses.activate
+    def test_as_iterator(self):
+        """
+        Application.as_iterator()
+        """
+
+        raw_one = """
+        [{
+        "id": "a-application-id11",
+        "callbackHttpMethod": "post",
+        "incomingCallUrl": "http://callback.info",
+        "name": "test_application_name",
+        "autoAnswer": true
+        },
+        {
+        "id": "a-application-id12",
+        "callbackHttpMethod": "get",
+        "incomingCallUrl": "http://callback1.info",
+        "name": "test_application_name1",
+        "autoAnswer": false
+        }
+        ]
+        """
+        raw_two = """
+        [{
+        "id": "a-application-id21",
+        "callbackHttpMethod": "post",
+        "incomingCallUrl": "http://callback.info",
+        "name": "test_application_name",
+        "autoAnswer": true
+        },
+        {
+        "id": "a-application-id22",
+        "callbackHttpMethod": "get",
+        "incomingCallUrl": "http://callback1.info",
+        "name": "test_application_name1",
+        "autoAnswer": false
+        }
+        ]
+        """
+        raw_three = """
+        [{
+        "id": "a-application-id31",
+        "callbackHttpMethod": "post",
+        "incomingCallUrl": "http://callback.info",
+        "name": "test_application_name",
+        "autoAnswer": true
+        }
+        ]
+        """
+
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/applications/',
+                      body=raw_one,
+                      status=200,
+                      content_type='application/json')
+
+        application_iterator = Application.as_iterator(chunk_size=2)
+        self.assertIsInstance(application_iterator, types.GeneratorType)
+        first_two_applications = next(application_iterator)
+        self.assertEqual(first_two_applications[0].id, "a-application-id11")
+        self.assertEqual(first_two_applications[1].id, "a-application-id12")
+        responses.reset()
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/applications/',
+                      body=raw_two,
+                      status=200,
+                      content_type='application/json')
+        next_two_applications = next(application_iterator)
+        self.assertEqual(next_two_applications[0].id, "a-application-id21")
+        self.assertEqual(next_two_applications[1].id, "a-application-id22")
+        responses.reset()
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/applications/',
+                      body=raw_three,
+                      status=200,
+                      content_type='application/json')
+        last_chunk = next(application_iterator)
+        self.assertEqual(last_chunk[0].id, "a-application-id31")
+
+        with self.assertRaises(StopIteration):
+            next(application_iterator)
+
+
+
 
     @responses.activate
     def test_create(self):
@@ -1692,6 +1888,137 @@ class RecordingTest(SdkTestCase):
         self.assertIsInstance(recordings[1].call, Call)
         self.assertEqual(recordings[1].call.call_id, 'c-call-id1')
 
+
+    @responses.activate
+    def as_iterator(self):
+        """
+        Recording.as_iterator()
+        """
+        raw_one = """
+        [
+        {
+          "endTime": "2013-02-08T13:17:12.181Z",
+          "id": "r-id11",
+          "media": "https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-1.wav",
+          "call": "https://api.catapult.inetwork.com/v1/users/u-user-id/calls/c-call-id11",
+          "startTime": "2013-02-08T13:15:47.587Z",
+          "state": "complete"
+        },
+        {
+          "id": "r-id12",
+          "media": "https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-2.wav",
+          "call": "https://api.catapult.inetwork.com/v1/users/u-user-id/calls/c-call-id12",
+          "startTime": "2013-02-08T13:15:47.587Z",
+          "state": "recording"
+        }
+        ]
+        """
+
+
+        raw_two = """
+        [
+        {
+          "endTime": "2013-02-08T13:17:12.181Z",
+          "id": "r-id21",
+          "media": "https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-1.wav",
+          "call": "https://api.catapult.inetwork.com/v1/users/u-user-id/calls/c-call-id21",
+          "startTime": "2013-02-08T13:15:47.587Z",
+          "state": "complete"
+        },
+        {
+          "id": "r-id22",
+          "media": "https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-2.wav",
+          "call": "https://api.catapult.inetwork.com/v1/users/u-user-id/calls/c-call-id22",
+          "startTime": "2013-02-08T13:15:47.587Z",
+          "state": "recording"
+        }
+        ]
+        """
+
+        raw_three = """
+        [
+        {
+          "endTime": "2013-02-08T13:17:12.181Z",
+          "id": "r-id31",
+          "media": "https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-1.wav",
+          "call": "https://api.catapult.inetwork.com/v1/users/u-user-id/calls/c-call-id31",
+          "startTime": "2013-02-08T13:15:47.587Z",
+          "state": "complete"
+        }
+        ]
+        """
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/recordings',
+                      body=raw_one,
+                      status=200,
+                      content_type='application/json')
+
+        recording_iterator = Recording.as_iterator(chunk_size=2)
+        self.assertIsInstance(recording_iterator, types.GeneratorType)
+        first_two_recordings = next(recording_iterator)
+        self.assertEqual(first_two_recordings[0].state, 'complete')
+        self.assertEqual(first_two_recordings[0].id, 'r-id11')
+        self.assertEqual(first_two_recordings[0].media,
+                         'https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-1.wav')
+        self.assertIsInstance(first_two_recordings[0].start_time, datetime)
+        self.assertIsInstance(first_two_recordings[0].end_time, datetime)
+        self.assertIsInstance(first_two_recordings[0].call, Call)
+        self.assertEqual(first_two_recordings[0].call.call_id, 'c-call-id11')
+        self.assertEqual(first_two_recordings[1].state, 'recording')
+        self.assertEqual(first_two_recordings[1].id, 'r-id12')
+        self.assertEqual(first_two_recordings[1].media,
+                         'https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-2.wav')
+        self.assertIsInstance(first_two_recordings[1].start_time, datetime)
+        self.assertIsNone(first_two_recordings[1].end_time)
+        self.assertIsInstance(first_two_recordings[1].call, Call)
+        self.assertEqual(first_two_recordings[1].call.call_id, 'c-call-id12')
+        responses.reset()
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/recordings',
+                      body=raw_two,
+                      status=200,
+                      content_type='application/json')
+        next_two_recordings = next(recording_iterator)
+        self.assertEqual(next_two_recordings[0].state, 'complete')
+        self.assertEqual(next_two_recordings[0].id, 'r-id21')
+        self.assertEqual(next_two_recordings[0].media,
+                         'https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-1.wav')
+        self.assertIsInstance(next_two_recordings[0].start_time, datetime)
+        self.assertIsInstance(next_two_recordings[0].end_time, datetime)
+        self.assertIsInstance(next_two_recordings[0].call, Call)
+        self.assertEqual(next_two_recordings[0].call.call_id, 'c-call-id21')
+        self.assertEqual(next_two_recordings[1].state, 'recording')
+        self.assertEqual(next_two_recordings[1].id, 'r-id22')
+        self.assertEqual(next_two_recordings[1].media,
+                         'https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-2.wav')
+        self.assertIsInstance(next_two_recordings[1].start_time, datetime)
+        self.assertIsNone(next_two_recordings[1].end_time)
+        self.assertIsInstance(next_two_recordings[1].call, Call)
+        self.assertEqual(next_two_recordings[1].call.call_id, 'c-call-id22')
+        responses.reset()
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/recordings',
+                      body=raw_three,
+                      status=200,
+                      content_type='application/json')
+        last_chunk = next(recording_iterator)
+        self.assertEqual(last_chunk[0].state, 'complete')
+        self.assertEqual(last_chunk[0].id, 'r-id31')
+        self.assertEqual(last_chunk[0].media,
+                         'https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-1.wav')
+        self.assertIsInstance(last_chunk[0].start_time, datetime)
+        self.assertIsInstance(last_chunk[0].end_time, datetime)
+        self.assertIsInstance(last_chunk[0].call, Call)
+        self.assertEqual(last_chunk[0].call.call_id, 'c-call-id31')
+
+        with self.assertRaises(StopIteration):
+            next(recording_iterator)
+
+
+
     @responses.activate
     def test_get_media_url(self):
         """
@@ -1856,60 +2183,102 @@ class PhoneNumberTest(SdkTestCase):
         self.assertEqual(numbers[1].state, 'NC')
         self.assertIsInstance(numbers[1].created_time, datetime)
 
-    @unittest.skip('as iterator')
     @responses.activate
-    def test_phone_number_as_iterator(self):
+    def test_as_iterator(self):
         """
         PhoneNumber.as_iterator()
         """
-        page_1 = """
+        raw = """
         [
         {
-           "id": "numb-id-1",
-           "number":"+1987000001"
+           "id": "numb-id",
+           "application": "https://catapult.inetwork.com/v1/users/u-user/applications/a-j321",
+           "number":"+123456789",
+           "nationalNumber":"(234) 56789",
+           "name": "home phone",
+           "createdTime": "2013-02-13T17:46:08.374Z",
+           "state": "NC",
+           "price": "0.60",
+           "numberState": "enabled"
         },
         {
            "id": "numb-id2",
-           "number":"+1987000002"
+           "application": "https://catapult.inetwork.com/v1/users/u-user/applications/a-j322",
+           "number":"+1987654321",
+           "nationalNumber":"(987) 7654321",
+           "name": "work phone",
+           "createdTime": "2013-02-13T18:32:05.223Z",
+           "state": "NC",
+           "price": "0.60",
+           "numberState": "enabled"
         }
         ]
         """
 
-        page_2 = """
+        raw_last = """
         [
         {
            "id": "numb-id3",
-           "number":"+1987000003"
-        },
-        {
-           "id": "numb-id2",
-           "number":"+1987000004"
+           "application": "https://catapult.inetwork.com/v1/users/u-user/applications/a-j321",
+           "number":"+123456789",
+           "nationalNumber":"(234) 56789",
+           "name": "home phone",
+           "createdTime": "2013-02-13T17:46:08.374Z",
+           "state": "NC",
+           "price": "0.60",
+           "numberState": "enabled"
         }
         ]
         """
         responses.add(responses.GET,
-                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers?size=100&page=0',
-                      body=page_1,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers',
+                      body=raw,
                       status=200,
-                      content_type='application/json',
-                      match_querystring=True)
+                      content_type='application/json')
+        number_iterator = PhoneNumber.as_iterator(chunk_size=2)
+        first_tow_numbers = next(number_iterator)
+        self.assertEqual(first_tow_numbers[0].id, 'numb-id')
+        self.assertIsInstance(first_tow_numbers[0].application, Application)
+        self.assertEqual(first_tow_numbers[0].application.id, 'a-j321')
+        self.assertEqual(first_tow_numbers[0].number, '+123456789')
+        self.assertEqual(first_tow_numbers[0].national_number, '(234) 56789')
+        self.assertEqual(first_tow_numbers[0].name, 'home phone')
+        self.assertEqual(first_tow_numbers[0].number_state, 'enabled')
+        self.assertEqual(first_tow_numbers[0].price, '0.60')
+        self.assertEqual(first_tow_numbers[0].state, 'NC')
+        self.assertIsInstance(first_tow_numbers[0].created_time, datetime)
+        self.assertEqual(first_tow_numbers[1].id, 'numb-id2')
+        self.assertIsInstance(first_tow_numbers[1].application, Application)
+        self.assertEqual(first_tow_numbers[1].application.id, 'a-j322')
+        self.assertEqual(first_tow_numbers[1].number, '+1987654321')
+        self.assertEqual(first_tow_numbers[1].national_number, '(987) 7654321')
+        self.assertEqual(first_tow_numbers[1].name, 'work phone')
+        self.assertEqual(first_tow_numbers[1].number_state, 'enabled')
+        self.assertEqual(first_tow_numbers[1].price, '0.60')
+        self.assertEqual(first_tow_numbers[1].state, 'NC')
+        self.assertIsInstance(first_tow_numbers[1].created_time, datetime)
+        responses.reset()
 
         responses.add(responses.GET,
-                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers?size=100&page=1',
-                      body=page_2,
-                      status=200,
-                      content_type='application/json',
-                      match_querystring=True)
+                    'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers',
+                    body=raw_last,
+                    status=200,
+                    content_type='application/json')
+        last_chunk = next(number_iterator)
+        self.assertEqual(last_chunk[0].id, 'numb-id3')
+        self.assertIsInstance(last_chunk[0].application, Application)
+        self.assertEqual(last_chunk[0].application.id, 'a-j321')
+        self.assertEqual(last_chunk[0].number, '+123456789')
+        self.assertEqual(last_chunk[0].national_number, '(234) 56789')
+        self.assertEqual(last_chunk[0].name, 'home phone')
+        self.assertEqual(last_chunk[0].number_state, 'enabled')
+        self.assertEqual(last_chunk[0].price, '0.60')
+        self.assertEqual(last_chunk[0].state, 'NC')
+        self.assertIsInstance(last_chunk[0].created_time, datetime)
 
-        numbers = PhoneNumber.as_iterator(chunk_size=2)
-        numbers_list = list(numbers)
+        with self.assertRaises(StopIteration):
+            next(number_iterator)
 
-        self.assertEqual(len(numbers_list), 4)
-
-        self.assertEqual(numbers_list[0].number, "+1987000001")
-        self.assertEqual(numbers_list[1].number, "+1987000002")
-        self.assertEqual(numbers_list[2].number, "+1987000003")
-        self.assertEqual(numbers_list[3].number, "+1987000004")
 
     @responses.activate
     def test_get_number_info(self):
@@ -2425,6 +2794,39 @@ class MediaTest(SdkTestCase):
         self.assertEqual(str(media), 'Media(one)')
 
     @responses.activate
+    def test_as_iterator(self):
+        """
+        Media.as_iterator()
+        """
+        raw = """
+        [
+        {
+         "contentLength": 561276,
+         "mediaName": "one",
+         "content": "https://catapult.inetwork.com/v1/users/users/{userId}/media/one"
+        },
+        {
+         "contentLength": 2703360,
+         "mediaName": "{mediaName2}",
+         "content": "https://catapult.inetwork.com/v1/users/users/{userId}/media/two"
+        },
+        {
+         "contentLength": 588,
+         "mediaName": "{mediaName3}",
+         "content": "https://catapult.inetwork.com/v1/users/users/{userId}/media/tree"
+        }
+        ]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/media',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        with self.assertRaises(NotImplementedError):
+            Media.as_iterator()
+
+
+    @responses.activate
     def test_download(self):
         """
         Media('media-id').download()
@@ -2707,6 +3109,104 @@ class MessageTestCase(SdkTestCase):
         self.assertIsInstance(messages[1].time, datetime)
         self.assertEqual(messages[1].direction, 'in')
         self.assertEqual(messages[1].state, Message.STATES.sent)
+
+    @responses.activate
+    def test_as_iterator(self):
+        """
+        Messages.as_iterator(sender='+19796543211', receiver='+19796543212')
+        """
+        raw = """
+        [
+          {
+            "id": "mess-id1",
+            "messageId": "mess-id1",
+            "from": "+19796543211",
+            "to": "+19796543212",
+            "text": "Good morning, this is a test message",
+            "time": "2012-10-05T20:37:38.048Z",
+            "direction": "out",
+            "state": "sent"
+          },
+          {
+            "id": "mess-id2",
+            "messageId": "mess-id2",
+            "from": "+19796543211",
+            "to": "+19796543212",
+            "text": "I received your test message",
+            "time": "2012-10-05T20:38:11.023Z",
+            "direction": "in",
+            "state": "sent"
+          }
+        ]
+        """
+
+        raw_last = """
+        [
+          {
+            "id": "mess-id3",
+            "messageId": "mess-id1",
+            "from": "+19796543211",
+            "to": "+19796543212",
+            "text": "Good morning, this is a test message",
+            "time": "2012-10-05T20:37:38.048Z",
+            "direction": "out",
+            "state": "sent"
+          }
+        ]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/messages',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+
+        message_iterator = Message.as_iterator(sender='+19796543211', receiver='+19796543212')
+        messages_first_two = next(message_iterator)
+        self.assertIsInstance(messages_first_two[0], Message)
+        self.assertEqual(messages_first_two[0].id, 'mess-id1')
+        self.assertEqual(messages_first_two[0].from_, '+19796543211')
+        self.assertEqual(messages_first_two[0].to, '+19796543212')
+        self.assertEqual(
+            messages_first_two[0].text,
+            'Good morning, this is a test message')
+        self.assertIsInstance(messages_first_two[0].time, datetime)
+        self.assertEqual(messages_first_two[0].direction, 'out')
+        self.assertEqual(messages_first_two[0].state, Message.STATES.sent)
+        self.assertIsInstance(messages_first_two[1], Message)
+        self.assertEqual(messages_first_two[1].id, 'mess-id2')
+        self.assertEqual(messages_first_two[1].from_, '+19796543211')
+        self.assertEqual(messages_first_two[1].to, '+19796543212')
+        self.assertEqual(messages_first_two[1].text, 'I received your test message')
+        self.assertIsInstance(messages_first_two[1].time, datetime)
+        self.assertEqual(messages_first_two[1].direction, 'in')
+        self.assertEqual(messages_first_two[1].state, Message.STATES.sent)
+        responses.reset()
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/messages',
+                      body=raw_last,
+                      status=200,
+                      content_type='application/json')
+
+        message_iterator = Message.as_iterator(sender='+19796543211', receiver='+19796543212')
+        messages_last = next(message_iterator)
+        self.assertIsInstance(messages_last[0], Message)
+        self.assertEqual(messages_last[0].id, 'mess-id3')
+        self.assertEqual(messages_last[0].from_, '+19796543211')
+        self.assertEqual(messages_last[0].to, '+19796543212')
+        self.assertEqual(
+            messages_last[0].text,
+            'Good morning, this is a test message')
+        self.assertIsInstance(messages_last[0].time, datetime)
+        self.assertEqual(messages_last[0].direction, 'out')
+        self.assertEqual(messages_last[0].state, Message.STATES.sent)
+
+        with self.assertRaises(StopIteration):
+            next(message_iterator)
+
+
+
+
 
     @responses.activate
     def test_send_message(self):
@@ -3001,6 +3501,145 @@ class UserErrorTest(SdkTestCase):
         user = error.user
 
         self.assertIsNone(user)
+
+    @responses.activate
+    def test_as_iterator(self):
+        """
+        UserError.as_iterator()
+        """
+        raw = """
+        [{
+            "time": "2012-11-15T01:30:16.208Z",
+            "category": "unavailable",
+            "id": "e-id",
+            "details": [{
+                "id": "{userErrorDetailId1}",
+                "name": "applicationId",
+                "value": "{applicationId}"
+            }, {
+                "id": "{userErrorDetailId2}",
+                "name": "number",
+                "value": "{number}"
+            }, {
+                "id": "{userErrorDetailId3}",
+                "name": "callId",
+                "value": "{callId}"
+            }],
+            "message": "Application {applicationId} for number{number} does not specify a URL for call events",
+            "code": "no-callback-for-call"
+        }, {
+            "time": "2012-11-15T01:29:24.512Z",
+            "category": "unavailable",
+            "id": "{userErrorId2}",
+            "message": "No application is configured for number +19195556666",
+            "code": "no-application-for-number"
+        }]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/errors',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        user_errors_iterator = UserError.as_iterator(chunk_size=2)
+        first_two_errors = next(user_errors_iterator)
+
+        self.assertEqual(len(first_two_errors), 2)
+
+        error = first_two_errors[0]
+
+        self.assertEqual(error.id, 'e-id')
+        self.assertEqual(error.code, 'no-callback-for-call')
+
+        self.assertIsInstance(error.time, datetime)
+
+        self.assertEqual(error.category, UserError.CATEGORIES.unavailable)
+        self.assertEqual(error.message, "Application {applicationId} for "
+                                        "number{number} does not specify a URL for call events")
+
+        self.assertIsInstance(error.details, list)
+
+        self.assertEqual(len(error.details), 3)
+
+        first_detail = error.details[0]
+
+        self.assertIsInstance(first_detail, UserError.Detail)
+        self.assertEqual(first_detail.id, "{userErrorDetailId1}")
+        self.assertEqual(first_detail.name, "applicationId")
+        self.assertEqual(first_detail.value, "{applicationId}")
+
+        user = error.user
+
+        self.assertIsNone(user)
+
+        error = first_two_errors[1]
+
+        self.assertEqual(error.id, '{userErrorId2}')
+        self.assertEqual(error.code, 'no-application-for-number')
+
+        self.assertIsInstance(error.time, datetime)
+
+        self.assertEqual(error.category, UserError.CATEGORIES.unavailable)
+        self.assertEqual(
+            error.message,
+            "No application is configured for number +19195556666")
+
+        self.assertIsInstance(error.details, list)
+
+        self.assertEqual(len(error.details), 0)
+
+        user = error.user
+
+        self.assertIsNone(user)
+        responses.reset()
+
+        raw_two = """
+        [{
+            "time": "2012-11-15T01:30:16.208Z",
+            "category": "unavailable",
+            "id": "e-id3",
+            "details": [{
+                "id": "{userErrorDetailId1}",
+                "name": "applicationId",
+                "value": "{applicationId}"
+            }, {
+                "id": "{userErrorDetailId2}",
+                "name": "number",
+                "value": "{number}"
+            }, {
+                "id": "{userErrorDetailId3}",
+                "name": "callId",
+                "value": "{callId}"
+            }],
+            "message": "Application {applicationId} for number{number} does not specify a URL for call events",
+            "code": "no-callback-for-call"
+        }]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/errors',
+                      body=raw_two,
+                      status=200,
+                      content_type='application/json')
+        last_chunk_errors = next(user_errors_iterator)
+        self.assertEqual(len(last_chunk_errors), 1)
+        error = last_chunk_errors[0]
+        self.assertEqual(error.id, 'e-id3')
+        self.assertEqual(error.code, 'no-callback-for-call')
+        self.assertIsInstance(error.time, datetime)
+        self.assertEqual(error.category, UserError.CATEGORIES.unavailable)
+        self.assertEqual(error.message, "Application {applicationId} for "
+                                        "number{number} does not specify a URL for call events")
+        self.assertIsInstance(error.details, list)
+        self.assertEqual(len(error.details), 3)
+        first_detail = error.details[0]
+        self.assertIsInstance(first_detail, UserError.Detail)
+        self.assertEqual(first_detail.id, "{userErrorDetailId1}")
+        self.assertEqual(first_detail.name, "applicationId")
+        self.assertEqual(first_detail.value, "{applicationId}")
+        user = error.user
+        self.assertIsNone(user)
+
+        with self.assertRaises(StopIteration):
+            next(user_errors_iterator)
 
 
 class NumberInfoTest(SdkTestCase):

@@ -6,7 +6,7 @@ from .client import get_client
 from .utils import to_api, from_api, enum, get_location_id, file_exists
 from .errors import AppPlatformError
 from.generics import AudioMixin
-
+import inspect
 
 class BaseResource(object):
     client = None
@@ -70,9 +70,18 @@ class ListResource(BaseResource):
                               Default is 5.
         :param query_params: Keyword arguments that can receive list() method
         """
+        getargspec_func_list = inspect.getargspec(cls.list)
+
+        if getargspec_func_list.keywords is None:
+            def get_list_results(page):
+                return cls.list(page=page, size=chunk_size)
+        else:
+            def get_list_results(page):
+                return cls.list(page=page, size=chunk_size, **query_params)
+
         page = 0
         while page <= chunks_amount:
-            results = cls.list(page=page, size=chunk_size, **query_params)
+            results = get_list_results(page)
 
             if len(results) < chunk_size:
                 yield results
@@ -371,6 +380,7 @@ class Application(GenericResource):
         data_as_list = client.get(
             cls._path, params=dict(page=page, size=size)).json()
         return [cls(data=from_api(v)) for v in data_as_list]
+
 
     @classmethod
     def get(cls, application_id):
@@ -1330,6 +1340,10 @@ class Media(ListResource):
         client = cls.client or get_client()
         data_as_list = client.get(cls._path).json()
         return [cls(data=v) for v in data_as_list]
+
+    @classmethod
+    def as_iterator(cls, chunk_size=100, chunks_amount=5, **query_params):
+        raise NotImplementedError('Media does not support this operation')
 
     def delete(self):
         """
