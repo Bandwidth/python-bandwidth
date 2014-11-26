@@ -59,6 +59,24 @@ secret=file_secret"""
 
         os.remove('./tests/fixtures/.bndsdkrc')
 
+    def test_instantiation_from_file_with_wrong_path(self):
+        with patch.dict('os.environ', {'BANDWIDTH_CONFIG_FILE': './tests/fixtures/.bndsdkrc'}):
+            with self.assertRaises(ValueError):
+                get_client()
+
+    def test_instantiation_from_file_default_path(self):
+        raw_data = """[catapult]
+user_id=file_uid
+token=file_token
+secret=file_secret"""
+        with open('.bndsdkrc', 'w+') as test_file:
+            test_file.write(raw_data)
+        self.assertTrue(test_file.closed)
+        rest_client = get_client()
+        self.assertEqual(rest_client.uid, 'file_uid')
+        self.assertEqual(rest_client.auth, ('file_token', 'file_secret'))
+        os.remove('.bndsdkrc')
+
     @unittest.expectedFailure
     def test_instantiation_bad_args(self):
         """

@@ -1,7 +1,7 @@
 import os
 import logging
-from six.moves import configparser
 
+from .utils import get_creds_from_file, file_exists
 from .rest import RESTClientObject
 
 logger = logging.getLogger(__package__)
@@ -24,18 +24,19 @@ def Client(*args):
         user_id = os.environ.get('BANDWIDTH_USER_ID')
         token = os.environ.get('BANDWIDTH_API_TOKEN')
         secret = os.environ.get('BANDWIDTH_API_SECRET')
-    else:
-        config_path = os.environ.get('BANDWIDTH_CONFIG_FILE', '.bndsdkrc')
-        if os.path.isfile(config_path):
-            cfg_parser = configparser.RawConfigParser()
-            cfg_parser.read(config_path)
-            user_id = cfg_parser.get('catapult', 'user_id')
-            token = cfg_parser.get('catapult', 'token')
-            secret = cfg_parser.get('catapult', 'secret')
+    elif 'BANDWIDTH_CONFIG_FILE' in os.environ:
+        config_path = os.environ.get('BANDWIDTH_CONFIG_FILE')
+        if file_exists(config_path):
+            user_id, token, secret = get_creds_from_file(config_path)
         else:
-            user_id = None
-            token = None
-            secret = None
+            raise ValueError('Bad config path')
+    else:
+        config_path = '.bndsdkrc'
+        if file_exists(config_path):
+            user_id, token, secret = get_creds_from_file(config_path)
+        else:
+            user_id, token, secret = [None] * 3
+
     if not all((user_id, token, secret)):
         raise ValueError('Credentials were improperly configured')
     _global_client = RESTClientObject(user_id, (token, secret))
