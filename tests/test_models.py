@@ -3,16 +3,14 @@ import types
 
 import responses
 import unittest
-
 from bandwidth_sdk import (Call, Bridge,
                            AppPlatformError, Application,
                            Account, Conference, Recording, ConferenceMember,
                            Gather, PhoneNumber, Media, Message, UserError,
                            NumberInfo)
 from datetime import datetime
-import json
-
 from .utils import SdkTestCase
+from six.moves.urllib.parse import parse_qsl, parse_qs, urlsplit
 
 
 def assertJsonEq(first, second, msg='Ouups'):
@@ -238,7 +236,6 @@ class CallsTest(SdkTestCase):
         first_two_calls = next(call_iterator)
         self.assertEquals(first_two_calls[0].call_id, "c-call-id")
         self.assertEquals(first_two_calls[1].call_id, "c-call-id-1")
-        print(vars(responses.calls[0].request))
         responses.reset()
 
         responses.add(responses.GET,
@@ -263,6 +260,136 @@ class CallsTest(SdkTestCase):
 
         with self.assertRaises(StopIteration):
             next(call_iterator)
+
+    @responses.activate
+    def test_as_iterator_query_params(self):
+        """
+        Call.as_iterator(**query_params) || test query_params
+        """
+        raw_one = """
+        [{
+        "id": "c-call-id",
+        "direction": "out",
+        "from": "+1919000001",
+        "to": "+1919000002",
+        "recordingEnabled": false,
+        "callbackUrl": "",
+        "state": "active",
+        "startTime": "2013-02-08T13:15:47.587Z",
+        "activeTime": "2013-02-08T13:15:52.347Z",
+        "events": "https://.../calls/{callId}/events"
+        },
+        {
+        "id": "c-call-id-1",
+        "direction": "out",
+        "from": "+1919000001",
+        "to": "+1919000002",
+        "recordingEnabled": false,
+        "callbackUrl": "",
+        "state": "active",
+        "startTime": "2013-02-08T13:15:47.587Z",
+        "activeTime": "2013-02-08T13:15:52.347Z",
+        "events": "https://.../calls/{callId}/events"
+        }]
+        """
+        raw_two = """[
+            {
+            "id": "c-call-id-2",
+            "direction": "out",
+            "from": "+1919000001",
+            "to": "+1919000002",
+            "recordingEnabled": false,
+            "callbackUrl": "",
+            "state": "active",
+            "startTime": "2013-02-08T13:15:47.587Z",
+            "activeTime": "2013-02-08T13:15:52.347Z",
+            "events": "https://.../calls/{callId}/events"
+            },
+            {
+            "id": "c-call-id-3",
+            "direction": "out",
+            "from": "+1919000001",
+            "to": "+1919000002",
+            "recordingEnabled": false,
+            "callbackUrl": "",
+            "state": "active",
+            "startTime": "2013-02-08T13:15:47.587Z",
+            "activeTime": "2013-02-08T13:15:52.347Z",
+            "events": "https://.../calls/{callId}/events"
+            }]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls',
+                      body=raw_one,
+                      status=200,
+                      content_type='application/json')
+
+        query_params = {'from_': '+1901', 'to': '+1902', 'direction': 'out', 'recordingEnabled' : 'false'}
+        call_iterator_with_query_params = Call.as_iterator(chunk_size=1, **query_params)
+
+        next(call_iterator_with_query_params)
+        next(call_iterator_with_query_params)
+
+        first_responses_url = responses.calls[0].request.url
+        second_responses_url = responses.calls[1].request.url
+
+        first_query = urlsplit(first_responses_url, '?').query
+        dict_first_responses_url = dict(parse_qsl(first_query))
+
+        second_query = urlsplit(second_responses_url, '?').query
+        dict_second_responses_url = dict(parse_qsl(second_query))
+
+        self.assertEqual(dict_first_responses_url['page'], '0')
+        self.assertEqual(dict_first_responses_url['size'], '1')
+        self.assertEqual(dict_second_responses_url['page'], '1')
+        self.assertEqual(dict_second_responses_url['size'], '1')
+
+        self.assertEqual(dict_first_responses_url['from'], query_params['from_'])
+        self.assertEqual(dict_first_responses_url['to'], query_params['to'])
+        self.assertEqual(dict_first_responses_url['direction'], query_params['direction'])
+        self.assertEqual(dict_first_responses_url['recordingEnabled'], query_params['recordingEnabled'])
+
+        self.assertEqual(dict_second_responses_url['from'], query_params['from_'])
+        self.assertEqual(dict_second_responses_url['to'], query_params['to'])
+        self.assertEqual(dict_second_responses_url['direction'], query_params['direction'])
+        self.assertEqual(dict_second_responses_url['recordingEnabled'], query_params['recordingEnabled'])
+        responses.reset()
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls',
+                      body=raw_two,
+                      status=200,
+                      content_type='application/json')
+        call_iterator_without_query_params = Call.as_iterator(chunk_size=1)
+
+        next(call_iterator_without_query_params)
+        next(call_iterator_without_query_params)
+
+        first_responses_url = responses.calls[0].request.url
+        second_responses_url = responses.calls[1].request.url
+
+        first_query = urlsplit(first_responses_url, '?').query
+        dict_first_responses_url = dict(parse_qsl(first_query))
+
+        second_query = urlsplit(second_responses_url, '?').query
+        dict_second_responses_url = dict(parse_qsl(second_query))
+
+        self.assertEqual(dict_first_responses_url['page'], '0')
+        self.assertEqual(dict_first_responses_url['size'], '1')
+        self.assertEqual(dict_second_responses_url['page'], '1')
+        self.assertEqual(dict_second_responses_url['size'], '1')
+
+
+        del dict_first_responses_url['page']
+        del dict_first_responses_url['size']
+        del dict_second_responses_url['page']
+        del dict_second_responses_url['size']
+
+        self.assertEqual(dict_first_responses_url, {})
+        self.assertEqual(dict_second_responses_url, {})
+
+
+
 
     @responses.activate
     def test_create(self):
@@ -889,6 +1016,134 @@ class BridgesTest(SdkTestCase):
         with self.assertRaises(StopIteration):
             next(bridge_iterator)
 
+    @responses.activate
+    def test_as_iterator_query_params(self):
+        """
+        Bridge.as_iterator(**query_params) || test query_params
+        """
+        raw_one = """
+        [
+          {
+            "id": "bridge-11",
+            "state": "completed",
+            "bridgeAudio": "true",
+            "calls":"https://.../v1/users/{userId}/bridges/{bridgeId}/calls",
+            "createdTime": "2013-04-22T13:55:30.279Z",
+            "activatedTime": "2013-04-22T13:55:30.280Z",
+            "completedTime": "2013-04-22T13:56:30.122Z"
+          },
+          {
+            "id": "bridge-12",
+            "state": "completed",
+            "bridgeAudio": "true",
+            "calls":"https://.../v1/users/{userId}/bridges/{bridgeId}/calls",
+            "createdTime": "2013-04-22T13:58:30.121Z",
+            "activatedTime": "2013-04-22T13:58:30.122Z",
+            "completedTime": "2013-04-22T13:59:30.122Z"
+          }
+        ]
+
+        """
+        raw_two = """
+        [
+          {
+            "id": "bridge-21",
+            "state": "completed",
+            "bridgeAudio": "true",
+            "calls":"https://.../v1/users/{userId}/bridges/{bridgeId}/calls",
+            "createdTime": "2013-04-22T13:55:30.279Z",
+            "activatedTime": "2013-04-22T13:55:30.280Z",
+            "completedTime": "2013-04-22T13:56:30.122Z"
+          },
+          {
+            "id": "bridge-22",
+            "state": "completed",
+            "bridgeAudio": "true",
+            "calls":"https://.../v1/users/{userId}/bridges/{bridgeId}/calls",
+            "createdTime": "2013-04-22T13:58:30.121Z",
+            "activatedTime": "2013-04-22T13:58:30.122Z",
+            "completedTime": "2013-04-22T13:59:30.122Z"
+          }
+        ]
+
+        """
+
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges',
+                      body=raw_one,
+                      status=200,
+                      content_type='application/json')
+        query_params = {'state': 'test_state',
+                        'calls': 'test_calls',
+                        'created_time': 'test_created_time'}
+
+        bridge_iterator_with_query_params = Bridge.as_iterator(chunk_size=1, **query_params)
+        next(bridge_iterator_with_query_params)
+        next(bridge_iterator_with_query_params)
+
+        first_responses_url = responses.calls[0].request.url
+        second_responses_url = responses.calls[1].request.url
+
+        first_query = urlsplit(first_responses_url, '?').query
+        dict_first_responses_url = dict(parse_qsl(first_query))
+
+        second_query = urlsplit(second_responses_url, '?').query
+        dict_second_responses_url = dict(parse_qsl(second_query))
+
+        self.assertEqual(dict_first_responses_url['page'], '0')
+        self.assertEqual(dict_first_responses_url['size'], '1')
+        self.assertEqual(dict_second_responses_url['page'], '1')
+        self.assertEqual(dict_second_responses_url['size'], '1')
+
+        with self.assertRaises(KeyError):
+            dict_first_responses_url['state']
+        with self.assertRaises(KeyError):
+            dict_first_responses_url['calls']
+        with self.assertRaises(KeyError):
+            dict_first_responses_url['created_time']
+        with self.assertRaises(KeyError):
+            dict_second_responses_url['state']
+        with self.assertRaises(KeyError):
+            dict_second_responses_url['calls']
+        with self.assertRaises(KeyError):
+            dict_second_responses_url['created_time']
+        responses.reset()
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges',
+                      body=raw_two,
+                      status=200,
+                      content_type='application/json')
+
+        bridge_iterator_without_query_params = Bridge.as_iterator(chunk_size=1)
+        next(bridge_iterator_without_query_params)
+        next(bridge_iterator_without_query_params)
+
+        first_responses_url = responses.calls[0].request.url
+        second_responses_url = responses.calls[1].request.url
+
+        first_query = urlsplit(first_responses_url, '?').query
+        dict_first_responses_url = dict(parse_qsl(first_query))
+
+        second_query = urlsplit(second_responses_url, '?').query
+        dict_second_responses_url = dict(parse_qsl(second_query))
+
+        self.assertEqual(dict_first_responses_url['page'], '0')
+        self.assertEqual(dict_first_responses_url['size'], '1')
+        self.assertEqual(dict_second_responses_url['page'], '1')
+        self.assertEqual(dict_second_responses_url['size'], '1')
+
+        del dict_first_responses_url['page']
+        del dict_first_responses_url['size']
+        del dict_second_responses_url['page']
+        del dict_second_responses_url['size']
+
+        self.assertEqual(dict_first_responses_url, {})
+        self.assertEqual(dict_second_responses_url, {})
+
+
+
 
     @responses.activate
     def test_create(self):
@@ -1350,6 +1605,73 @@ class ApplicationsTest(SdkTestCase):
 
         with self.assertRaises(StopIteration):
             next(application_iterator)
+
+    @responses.activate
+    def test_as_iterator_query_params(self):
+        """
+        Application.as_iterator(**query_params) || test query_params
+        """
+
+        raw_one = """
+        [{
+        "id": "a-application-id11",
+        "callbackHttpMethod": "post",
+        "incomingCallUrl": "http://callback.info",
+        "name": "test_application_name",
+        "autoAnswer": true
+        }
+        ]
+        """
+        raw_two = """
+        [{
+        "id": "a-application-id21",
+        "callbackHttpMethod": "post",
+        "incomingCallUrl": "http://callback.info",
+        "name": "test_application_name",
+        "autoAnswer": true
+        }
+        ]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/applications/',
+                      body=raw_one,
+                      status=200,
+                      content_type='application/json')
+
+        query_params = {'incoming_call_url' : 'test_url',
+                        'incoming_call_url_callback_timeout': 'test_incoming_call_url_callback_timeout',
+                        'incoming_call_fallback_url': 'test_incoming_call_fallback_url'
+                        }
+        application_iterator_with_query_params = Application.as_iterator(chunk_size=1, **query_params)
+        next(application_iterator_with_query_params)
+        responses_url = responses.calls[0].request.url
+        query_from_url = urlsplit(responses_url, '?').query
+        dict_responses_url = dict(parse_qsl(query_from_url))
+        self.assertEqual(dict_responses_url['page'], '0')
+        self.assertEqual(dict_responses_url['size'], '1')
+        del dict_responses_url['page']
+        del dict_responses_url['size']
+        self.assertEqual(dict_responses_url, {})
+        responses.reset()
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/applications/',
+                      body=raw_two,
+                      status=200,
+                      content_type='application/json')
+
+        application_iterator_without_query_params = Application.as_iterator(chunk_size=1)
+        next(application_iterator_without_query_params)
+        responses_url = responses.calls[0].request.url
+        query_from_url = urlsplit(responses_url, '?').query
+        dict_responses_url = dict(parse_qsl(query_from_url))
+        self.assertEqual(dict_responses_url['page'], '0')
+        self.assertEqual(dict_responses_url['size'], '1')
+        del dict_responses_url['page']
+        del dict_responses_url['size']
+        self.assertEqual(dict_responses_url, {})
+
+        responses.reset()
 
 
 
@@ -2017,6 +2339,79 @@ class RecordingTest(SdkTestCase):
         with self.assertRaises(StopIteration):
             next(recording_iterator)
 
+    @responses.activate
+    def as_iterator_query_params(self):
+        """
+        Recording.as_iterator(**query_params) || test query_params
+        """
+        raw_one = """
+        [
+        {
+          "endTime": "2013-02-08T13:17:12.181Z",
+          "id": "r-id11",
+          "media": "https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-1.wav",
+          "call": "https://api.catapult.inetwork.com/v1/users/u-user-id/calls/c-call-id11",
+          "startTime": "2013-02-08T13:15:47.587Z",
+          "state": "complete"
+        }
+        ]
+        """
+
+
+        raw_two = """
+        [
+        {
+          "endTime": "2013-02-08T13:17:12.181Z",
+          "id": "r-id21",
+          "media": "https://api.catapult.inetwork.com/v1/users/u-user-id/media/c-bonay3r4mtwbplurq4nkt7q-1.wav",
+          "call": "https://api.catapult.inetwork.com/v1/users/u-user-id/calls/c-call-id21",
+          "startTime": "2013-02-08T13:15:47.587Z",
+          "state": "complete"
+        }
+        ]
+        """
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/recordings',
+                      body=raw_one,
+                      status=200,
+                      content_type='application/json')
+
+        query_params = {'media' : 'test_media',
+                        'call': 'test_call',
+                        'start_time': 'test_start_time',
+                        'end_time': 'test_end_time'
+                        }
+
+        recording_iterator_with_query_params = Recording.as_iterator(chunk_size=1, **query_params)
+        next(recording_iterator_with_query_params)
+        responses_url = responses.calls[0].request.url
+        query_from_url = urlsplit(responses_url, '?').query
+        dict_responses_url = dict(parse_qsl(query_from_url))
+        self.assertEqual(dict_responses_url['page'], '0')
+        self.assertEqual(dict_responses_url['size'], '1')
+        del dict_responses_url['page']
+        del dict_responses_url['size']
+        self.assertEqual(dict_responses_url, {})
+        responses.reset()
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/recordings',
+                      body=raw_two,
+                      status=200,
+                      content_type='application/json')
+
+        recording_iterator_without_query_params = Recording.as_iterator(chunk_size=1)
+        next(recording_iterator_without_query_params)
+        responses_url = responses.calls[0].request.url
+        query_from_url = urlsplit(responses_url, '?').query
+        dict_responses_url = dict(parse_qsl(query_from_url))
+        self.assertEqual(dict_responses_url['page'], '0')
+        self.assertEqual(dict_responses_url['size'], '1')
+        del dict_responses_url['page']
+        del dict_responses_url['size']
+        self.assertEqual(dict_responses_url, {})
+        responses.reset()
 
 
     @responses.activate
@@ -2279,6 +2674,79 @@ class PhoneNumberTest(SdkTestCase):
         with self.assertRaises(StopIteration):
             next(number_iterator)
 
+
+    @responses.activate
+    def test_as_iterator_query_params(self):
+        """
+        PhoneNumber.as_iterator(**query_params) || test query_params
+        """
+        raw_one = """
+        [
+        {
+           "id": "numb-id",
+           "application": "https://catapult.inetwork.com/v1/users/u-user/applications/a-j321",
+           "number":"+123456789",
+           "nationalNumber":"(234) 56789",
+           "name": "home phone",
+           "createdTime": "2013-02-13T17:46:08.374Z",
+           "state": "NC",
+           "price": "0.60",
+           "numberState": "enabled"
+        }]
+        """
+
+        raw_two = """ [{
+           "id": "numb-id2",
+           "application": "https://catapult.inetwork.com/v1/users/u-user/applications/a-j322",
+           "number":"+1987654321",
+           "nationalNumber":"(987) 7654321",
+           "name": "work phone",
+           "createdTime": "2013-02-13T18:32:05.223Z",
+           "state": "NC",
+           "price": "0.60",
+           "numberState": "enabled"
+        }
+        ]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers',
+                      body=raw_one,
+                      status=200,
+                      content_type='application/json')
+
+        query_params = {'application' : 'test_application',
+                        'name': 'test_name',
+                        'price': 'test_price'
+                        }
+        phonenumber_iterator_with_query_params = PhoneNumber.as_iterator(chunk_size=1, **query_params)
+        next(phonenumber_iterator_with_query_params)
+        responses_url = responses.calls[0].request.url
+        query_from_url = urlsplit(responses_url, '?').query
+        dict_responses_url = dict(parse_qsl(query_from_url))
+        self.assertEqual(dict_responses_url['page'], '0')
+        self.assertEqual(dict_responses_url['size'], '1')
+        del dict_responses_url['page']
+        del dict_responses_url['size']
+        self.assertEqual(dict_responses_url, {})
+        responses.reset()
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers',
+                      body=raw_two,
+                      status=200,
+                      content_type='application/json')
+
+        phonenumber_iterator_without_query_params = PhoneNumber.as_iterator(chunk_size=1)
+        next(phonenumber_iterator_without_query_params)
+        responses_url = responses.calls[0].request.url
+        query_from_url = urlsplit(responses_url, '?').query
+        dict_responses_url = dict(parse_qsl(query_from_url))
+        self.assertEqual(dict_responses_url['page'], '0')
+        self.assertEqual(dict_responses_url['size'], '1')
+        del dict_responses_url['page']
+        del dict_responses_url['size']
+        self.assertEqual(dict_responses_url, {})
+        responses.reset()
 
     @responses.activate
     def test_get_number_info(self):
@@ -2825,6 +3293,52 @@ class MediaTest(SdkTestCase):
         with self.assertRaises(NotImplementedError):
             Media.as_iterator()
 
+    @responses.activate
+    def test_as_iterator_query_params(self):
+        """
+        Media.as_iterator(**query_params) // test query_params
+        """
+        raw_one = """
+        [
+        {
+         "contentLength": 561276,
+         "mediaName": "one",
+         "content": "https://catapult.inetwork.com/v1/users/users/{userId}/media/one"
+        }
+        ]
+        """
+
+        raw_two = """
+        [
+        {
+         "contentLength": 561276,
+         "mediaName": "one",
+         "content": "https://catapult.inetwork.com/v1/users/users/{userId}/media/one"
+        }
+        ]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/media',
+                      body=raw_one,
+                      status=200,
+                      content_type='application/json')
+        query_params = {'content_length': 'test_content_length',
+                        'media_name': 'test_media_name',
+                        'media_url': 'test_media_url'
+                        }
+        with self.assertRaises(NotImplementedError):
+            Media.as_iterator(chunk_size=1, **query_params)
+        responses.reset()
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/media',
+                      body=raw_two,
+                      status=200,
+                      content_type='application/json')
+        with self.assertRaises(NotImplementedError):
+            Media.as_iterator(chunk_size=1)
+        responses.reset()
+
 
     @responses.activate
     def test_download(self):
@@ -3204,6 +3718,74 @@ class MessageTestCase(SdkTestCase):
         with self.assertRaises(StopIteration):
             next(message_iterator)
 
+    @responses.activate
+    def test_as_iterator_query_params(self):
+        """
+        Messages.as_iterator(**query_params) // test query_params
+        """
+        raw_one = """
+        [
+          {
+            "id": "mess-id1",
+            "messageId": "mess-id1",
+            "from": "+19796543211",
+            "to": "+19796543212",
+            "text": "Good morning, this is a test message",
+            "time": "2012-10-05T20:37:38.048Z",
+            "direction": "out",
+            "state": "sent"
+          }
+        ] """
+
+        raw_two = """ [{
+            "id": "mess-id2",
+            "messageId": "mess-id2",
+            "from": "+19796543211",
+            "to": "+19796543212",
+            "text": "I received your test message",
+            "time": "2012-10-05T20:38:11.023Z",
+            "direction": "in",
+            "state": "sent"
+          }
+        ]
+        """
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/messages',
+                      body=raw_one,
+                      status=200,
+                      content_type='application/json')
+        query_params = {'sender': '19796543211', 'receiver': '19796543212'}
+        message_iterator_with_query_params = Message.as_iterator(chunk_size=1, **query_params)
+        next(message_iterator_with_query_params)
+        responses_url = responses.calls[0].request.url
+        query_from_url = urlsplit(responses_url, '?').query
+        dict_responses_url = dict(parse_qsl(query_from_url))
+        self.assertEqual(dict_responses_url['page'], '0')
+        self.assertEqual(dict_responses_url['size'], '1')
+
+        self.assertEqual(dict_responses_url['from'], query_params['sender'])
+        self.assertEqual(dict_responses_url['to'], query_params['receiver'])
+        responses.reset()
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/messages',
+                      body=raw_two,
+                      status=200,
+                      content_type='application/json')
+        message_iterator_without_query_params = Message.as_iterator(chunk_size=1)
+        next(message_iterator_without_query_params)
+        responses_url = responses.calls[0].request.url
+        query_from_url = urlsplit(responses_url, '?').query
+        dict_responses_url = dict(parse_qsl(query_from_url))
+        self.assertEqual(dict_responses_url['page'], '0')
+        self.assertEqual(dict_responses_url['size'], '1')
+
+        del dict_responses_url['page']
+        del dict_responses_url['size']
+
+        self.assertEqual(dict_responses_url, {})
+        self.assertEqual(dict_responses_url, {})
 
 
 
@@ -3503,6 +4085,92 @@ class UserErrorTest(SdkTestCase):
         self.assertIsNone(user)
 
     @responses.activate
+    def test_as_iterator_query_params(self):
+        """
+        UserError.as_iterator(**query_params) || test query_params
+        """
+        raw_one = """
+        [{
+            "time": "2012-11-15T01:30:16.208Z",
+            "category": "unavailable",
+            "id": "e-id",
+            "details": [{
+                "id": "{userErrorDetailId1}",
+                "name": "applicationId",
+                "value": "{applicationId}"
+            }, {
+                "id": "{userErrorDetailId2}",
+                "name": "number",
+                "value": "{number}"
+            }, {
+                "id": "{userErrorDetailId3}",
+                "name": "callId",
+                "value": "{callId}"
+            }],
+            "message": "Application {applicationId} for number{number} does not specify a URL for call events",
+            "code": "no-callback-for-call"
+        }
+        ]
+        """
+
+        raw_two = """  [{
+            "time": "2012-11-15T01:29:24.512Z",
+            "category": "unavailable",
+            "id": "{userErrorId2}",
+            "message": "No application is configured for number +19195556666",
+            "code": "no-application-for-number"
+        }]
+        """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/errors',
+                      body=raw_one,
+                      status=200,
+                      content_type='application/json')
+
+        query_params = {'paramOne': 'test_param_one',
+                        'paramTwo': 'test_param_two',
+                        'paramThree': 'test_param_three',
+                        'paramFour': 'test_param_four'
+                        }
+
+        user_errors_iterator_with_query_params = UserError.as_iterator(chunk_size=1, **query_params)
+        next(user_errors_iterator_with_query_params)
+
+        responses_url = responses.calls[0].request.url
+        query_from_url = urlsplit(responses_url, '?').query
+        dict_responses_url = dict(parse_qsl(query_from_url))
+        self.assertEqual(dict_responses_url['page'], '0')
+        self.assertEqual(dict_responses_url['size'], '1')
+        self.assertEqual(dict_responses_url['paramOne'], query_params['paramOne'])
+        self.assertEqual(dict_responses_url['paramTwo'], query_params['paramTwo'])
+        self.assertEqual(dict_responses_url['paramThree'], query_params['paramThree'])
+        self.assertEqual(dict_responses_url['paramFour'], query_params['paramFour'])
+        responses.reset()
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/errors',
+                      body=raw_two,
+                      status=200,
+                      content_type='application/json')
+
+
+        user_errors_iterator_without_query_params = UserError.as_iterator(chunk_size=1)
+        next(user_errors_iterator_without_query_params)
+
+        responses_url = responses.calls[0].request.url
+        query_from_url = urlsplit(responses_url, '?').query
+        dict_responses_url = dict(parse_qsl(query_from_url))
+        self.assertEqual(dict_responses_url['page'], '0')
+        self.assertEqual(dict_responses_url['size'], '1')
+
+        del dict_responses_url['size']
+        del dict_responses_url['page']
+        self.assertEqual(dict_responses_url, {})
+        responses.reset()
+
+
+
+    @responses.activate
     def test_as_iterator(self):
         """
         UserError.as_iterator()
@@ -3640,7 +4308,6 @@ class UserErrorTest(SdkTestCase):
 
         with self.assertRaises(StopIteration):
             next(user_errors_iterator)
-
 
 class NumberInfoTest(SdkTestCase):
 
