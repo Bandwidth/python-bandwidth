@@ -10,7 +10,7 @@ from bandwidth_sdk import (Call, Bridge,
                            NumberInfo)
 from datetime import datetime
 from .utils import SdkTestCase
-from six.moves.urllib.parse import parse_qsl, parse_qs, urlsplit
+from six.moves.urllib.parse import parse_qsl, urlsplit
 
 
 def assertJsonEq(first, second, msg='Ouups'):
@@ -324,7 +324,10 @@ class CallsTest(SdkTestCase):
                       status=200,
                       content_type='application/json')
 
-        query_params = {'from_': '+1901', 'to': '+1902', 'direction': 'out', 'recordingEnabled' : 'false'}
+        query_params = {'from_': '+1901',
+                        'to': '+1902',
+                        'direction': 'out',
+                        'recordingEnabled': 'false'}
         call_iterator_with_query_params = Call.as_iterator(chunk_size=1, **query_params)
 
         next(call_iterator_with_query_params)
@@ -379,7 +382,6 @@ class CallsTest(SdkTestCase):
         self.assertEqual(dict_second_responses_url['page'], '1')
         self.assertEqual(dict_second_responses_url['size'], '1')
 
-
         del dict_first_responses_url['page']
         del dict_first_responses_url['size']
         del dict_second_responses_url['page']
@@ -387,9 +389,6 @@ class CallsTest(SdkTestCase):
 
         self.assertEqual(dict_first_responses_url, {})
         self.assertEqual(dict_second_responses_url, {})
-
-
-
 
     @responses.activate
     def test_create(self):
@@ -912,7 +911,6 @@ class BridgesTest(SdkTestCase):
         self.assertEqual(bridges[0].id, 'bridge-1')
         self.assertEqual(bridges[1].id, 'bridge-2')
 
-
     @responses.activate
     def test_as_iterator(self):
         """
@@ -1012,7 +1010,6 @@ class BridgesTest(SdkTestCase):
 
         self.assertEqual(last_chunk_bridge[0].id, 'bridge-31')
 
-
         with self.assertRaises(StopIteration):
             next(bridge_iterator)
 
@@ -1067,7 +1064,6 @@ class BridgesTest(SdkTestCase):
         ]
 
         """
-
 
         responses.add(responses.GET,
                       'https://api.catapult.inetwork.com/v1/users/u-user/bridges',
@@ -1141,9 +1137,6 @@ class BridgesTest(SdkTestCase):
 
         self.assertEqual(dict_first_responses_url, {})
         self.assertEqual(dict_second_responses_url, {})
-
-
-
 
     @responses.activate
     def test_create(self):
@@ -1519,7 +1512,6 @@ class ApplicationsTest(SdkTestCase):
         self.assertEqual(applications[1].name, 'test_application_name1')
         self.assertEqual(applications[1].auto_answer, False)
 
-
     @responses.activate
     def test_as_iterator(self):
         """
@@ -1570,7 +1562,6 @@ class ApplicationsTest(SdkTestCase):
         }
         ]
         """
-
 
         responses.add(responses.GET,
                       'https://api.catapult.inetwork.com/v1/users/u-user/applications/',
@@ -1638,7 +1629,7 @@ class ApplicationsTest(SdkTestCase):
                       status=200,
                       content_type='application/json')
 
-        query_params = {'incoming_call_url' : 'test_url',
+        query_params = {'incoming_call_url': 'test_url',
                         'incoming_call_url_callback_timeout': 'test_incoming_call_url_callback_timeout',
                         'incoming_call_fallback_url': 'test_incoming_call_fallback_url'
                         }
@@ -1672,9 +1663,6 @@ class ApplicationsTest(SdkTestCase):
         self.assertEqual(dict_responses_url, {})
 
         responses.reset()
-
-
-
 
     @responses.activate
     def test_create(self):
@@ -2210,7 +2198,6 @@ class RecordingTest(SdkTestCase):
         self.assertIsInstance(recordings[1].call, Call)
         self.assertEqual(recordings[1].call.call_id, 'c-call-id1')
 
-
     @responses.activate
     def as_iterator(self):
         """
@@ -2235,7 +2222,6 @@ class RecordingTest(SdkTestCase):
         }
         ]
         """
-
 
         raw_two = """
         [
@@ -2357,7 +2343,6 @@ class RecordingTest(SdkTestCase):
         ]
         """
 
-
         raw_two = """
         [
         {
@@ -2377,7 +2362,7 @@ class RecordingTest(SdkTestCase):
                       status=200,
                       content_type='application/json')
 
-        query_params = {'media' : 'test_media',
+        query_params = {'media': 'test_media',
                         'call': 'test_call',
                         'start_time': 'test_start_time',
                         'end_time': 'test_end_time'
@@ -2412,7 +2397,6 @@ class RecordingTest(SdkTestCase):
         del dict_responses_url['size']
         self.assertEqual(dict_responses_url, {})
         responses.reset()
-
 
     @responses.activate
     def test_get_media_url(self):
@@ -2655,10 +2639,10 @@ class PhoneNumberTest(SdkTestCase):
         responses.reset()
 
         responses.add(responses.GET,
-                    'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers',
-                    body=raw_last,
-                    status=200,
-                    content_type='application/json')
+                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers',
+                      body=raw_last,
+                      status=200,
+                      content_type='application/json')
         last_chunk = next(number_iterator)
         self.assertEqual(last_chunk[0].id, 'numb-id3')
         self.assertIsInstance(last_chunk[0].application, Application)
@@ -2673,7 +2657,6 @@ class PhoneNumberTest(SdkTestCase):
 
         with self.assertRaises(StopIteration):
             next(number_iterator)
-
 
     @responses.activate
     def test_as_iterator_query_params(self):
@@ -2714,7 +2697,7 @@ class PhoneNumberTest(SdkTestCase):
                       status=200,
                       content_type='application/json')
 
-        query_params = {'application' : 'test_application',
+        query_params = {'application': 'test_application',
                         'name': 'test_name',
                         'price': 'test_price'
                         }
@@ -3266,30 +3249,7 @@ class MediaTest(SdkTestCase):
         """
         Media.as_iterator()
         """
-        raw = """
-        [
-        {
-         "contentLength": 561276,
-         "mediaName": "one",
-         "content": "https://catapult.inetwork.com/v1/users/users/{userId}/media/one"
-        },
-        {
-         "contentLength": 2703360,
-         "mediaName": "{mediaName2}",
-         "content": "https://catapult.inetwork.com/v1/users/users/{userId}/media/two"
-        },
-        {
-         "contentLength": 588,
-         "mediaName": "{mediaName3}",
-         "content": "https://catapult.inetwork.com/v1/users/users/{userId}/media/tree"
-        }
-        ]
-        """
-        responses.add(responses.GET,
-                      'https://api.catapult.inetwork.com/v1/users/u-user/media',
-                      body=raw,
-                      status=200,
-                      content_type='application/json')
+
         with self.assertRaises(NotImplementedError):
             Media.as_iterator()
 
@@ -3298,47 +3258,15 @@ class MediaTest(SdkTestCase):
         """
         Media.as_iterator(**query_params) // test query_params
         """
-        raw_one = """
-        [
-        {
-         "contentLength": 561276,
-         "mediaName": "one",
-         "content": "https://catapult.inetwork.com/v1/users/users/{userId}/media/one"
-        }
-        ]
-        """
-
-        raw_two = """
-        [
-        {
-         "contentLength": 561276,
-         "mediaName": "one",
-         "content": "https://catapult.inetwork.com/v1/users/users/{userId}/media/one"
-        }
-        ]
-        """
-        responses.add(responses.GET,
-                      'https://api.catapult.inetwork.com/v1/users/u-user/media',
-                      body=raw_one,
-                      status=200,
-                      content_type='application/json')
         query_params = {'content_length': 'test_content_length',
                         'media_name': 'test_media_name',
                         'media_url': 'test_media_url'
                         }
         with self.assertRaises(NotImplementedError):
             Media.as_iterator(chunk_size=1, **query_params)
-        responses.reset()
 
-        responses.add(responses.GET,
-                      'https://api.catapult.inetwork.com/v1/users/u-user/media',
-                      body=raw_two,
-                      status=200,
-                      content_type='application/json')
         with self.assertRaises(NotImplementedError):
             Media.as_iterator(chunk_size=1)
-        responses.reset()
-
 
     @responses.activate
     def test_download(self):
@@ -3787,9 +3715,6 @@ class MessageTestCase(SdkTestCase):
         self.assertEqual(dict_responses_url, {})
         self.assertEqual(dict_responses_url, {})
 
-
-
-
     @responses.activate
     def test_send_message(self):
         """
@@ -4153,7 +4078,6 @@ class UserErrorTest(SdkTestCase):
                       status=200,
                       content_type='application/json')
 
-
         user_errors_iterator_without_query_params = UserError.as_iterator(chunk_size=1)
         next(user_errors_iterator_without_query_params)
 
@@ -4167,8 +4091,6 @@ class UserErrorTest(SdkTestCase):
         del dict_responses_url['page']
         self.assertEqual(dict_responses_url, {})
         responses.reset()
-
-
 
     @responses.activate
     def test_as_iterator(self):
@@ -4308,6 +4230,7 @@ class UserErrorTest(SdkTestCase):
 
         with self.assertRaises(StopIteration):
             next(user_errors_iterator)
+
 
 class NumberInfoTest(SdkTestCase):
 
