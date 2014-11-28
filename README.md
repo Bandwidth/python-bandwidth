@@ -58,16 +58,16 @@ secret = s-your-secret
 
 ###Allocate phone number basic
 
-Import AvailableNumber from sdk
+Import PhoneNumber from sdk
 ```python
-from bandwidth_sdk import AvailableNumber
+from bandwidth_sdk import PhoneNumber
 ```
 Get available number for yours search criteria:
 
 ```python
-available_numbers = AvailableNumber.list_local(city='San Francisco', state='CA')
+available_numbers = PhoneNumber.list_local(city='Cary', state='NC')
 available_numbers[0].allocate()
->>> PhoneNumber(number=+14158000000)
+>>> PhoneNumber(number=+19198000000)
 ```
 
 You can also create Application before (or update current), to use your endpoint to handle events related to this Phonenumber.
@@ -77,7 +77,7 @@ from bandwidth_sdk import Application
 application = Application.create(name='new-application',
                                  incoming_call_url='http://test.callback.info')
 # getting number that we allocated before
-number = PhoneNumber.get_number_info(number=+14158000000)
+number = PhoneNumber.get_number_info(number=+19198000000)
 number.patch(application=application)
 ```
 
