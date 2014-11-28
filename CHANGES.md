@@ -12,3 +12,8 @@
 (November 04, 2014):
 
 - Removed AvailableNumber resourse. Moved all logic to PhoneNumber resource.
+
+### 1.0.4-stable:
+(November 28, 2014):
+
+- Released as_iterator method for all ListResources.
