@@ -67,3 +67,4 @@ local_env.sh
 *.egg-info/
 .tox/
 deprecated/
+.bndsdkrc

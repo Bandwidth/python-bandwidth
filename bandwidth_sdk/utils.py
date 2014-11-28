@@ -1,6 +1,8 @@
 import os
 import six
 import re
+from six.moves import configparser
+
 from dateutil import parser
 from datetime import datetime, date
 
@@ -79,6 +81,15 @@ def enum(*vals, **enums):
 def get_location_id(response):
     location = response.headers['Location']
     return location.split('/')[-1]
+
+
+def get_creds_from_file(config_path):
+    cfg_parser = configparser.RawConfigParser()
+    cfg_parser.read(config_path)
+    user_id = cfg_parser.get('catapult', 'user_id')
+    token = cfg_parser.get('catapult', 'token')
+    secret = cfg_parser.get('catapult', 'secret')
+    return user_id, token, secret
 
 
 file_exists = os.path.isfile

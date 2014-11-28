@@ -17,3 +17,8 @@
 (November 28, 2014):
 
 - Released as_iterator method for all ListResources.
+
+### 1.0.5-stable:
+(November 28, 2014):
+
+- Added possibility to use config file to setup credentials for client.
