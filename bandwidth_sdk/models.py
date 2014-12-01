@@ -8,6 +8,7 @@ from .errors import AppPlatformError
 from.generics import AudioMixin
 import inspect
 
+
 class BaseResource(object):
     client = None
     _fields = None
@@ -377,7 +378,6 @@ class Application(GenericResource):
         data_as_list = client.get(
             cls._path, params=dict(page=page, size=size)).json()
         return [cls(data=from_api(v)) for v in data_as_list]
-
 
     @classmethod
     def get(cls, application_id):
