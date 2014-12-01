@@ -29,11 +29,16 @@ pip install -e git+https://github.com/bandwidthcom/python-bandwidth.git#egg=band
 ```
 Note: This may have to be run as `root` or with `--user` flag if you are not using python virtual environment.
 
-## Usage
 
-The SDK setup
+##  Usage
+* [Set up](#the-sdk-setup)
+* [Allocate a phone number ](#allocate-phone-number-basic)
+* [Calls basic usage](#calls-basic-usage)
 
-Default setup from environment variables in UNIX shell:
+### The SDK setup
+
+
+Default setup from environment variables in UNIX shell :
 
 ```console
 export BANDWIDTH_USER_ID=u-your-user-id
@@ -56,7 +61,7 @@ token = t-your-token
 secret = s-your-secret
 ```
 
-###Allocate phone number basic
+### Allocate phone number basic
 
 Import PhoneNumber from sdk
 ```python
