@@ -6,7 +6,6 @@ from .client import get_client
 from .utils import to_api, from_api, enum, get_location_id, file_exists
 from .errors import AppPlatformError
 from.generics import AudioMixin
-import inspect
 
 
 class BaseResource(object):
@@ -69,20 +68,9 @@ class ListResource(BaseResource):
                            Default is 100.
         :param query_params: Keyword arguments that can receive list() method
         """
-        getargspec_func_list = inspect.getargspec(cls.list)
-
-        if getargspec_func_list.keywords is None:
-            if query_params:
-                raise ValueError('Kwargs are not supported for this resource list')
-
-            def get_list_results(page):
-                return cls.list(page=page, size=chunk_size)
-        else:
-            def get_list_results(page):
-                return cls.list(page=page, size=chunk_size, **query_params)
         page = 0
         while True:
-            results = get_list_results(page)
+            results = cls.list(page=page, size=chunk_size, **query_params)
 
             if len(results) < chunk_size:
                 yield results
@@ -1356,7 +1344,7 @@ class Media(ListResource):
         return [cls(data=v) for v in data_as_list]
 
     @classmethod
-    def as_iterator(cls, chunk_size=100, chunks_amount=5, **query_params):
+    def page_iterator(cls, chunk_size=100, chunks_amount=5, **query_params):
         raise NotImplementedError('Media does not support this operation')
 
     def delete(self):
