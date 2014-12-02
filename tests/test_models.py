@@ -262,6 +262,107 @@ class CallsTest(SdkTestCase):
             next(call_iterator)
 
     @responses.activate
+    def test_as_iterator(self):
+        """
+        Call.as_iterator(chunk_size=2)
+        """
+        raw = """
+        [{
+        "id": "c-call-id",
+        "direction": "out",
+        "from": "+1919000001",
+        "to": "+1919000002",
+        "recordingEnabled": false,
+        "callbackUrl": "",
+        "state": "active",
+        "startTime": "2013-02-08T13:15:47.587Z",
+        "activeTime": "2013-02-08T13:15:52.347Z",
+        "events": "https://.../calls/{callId}/events"
+        },
+        {
+        "id": "c-call-id-1",
+        "direction": "out",
+        "from": "+1919000001",
+        "to": "+1919000002",
+        "recordingEnabled": false,
+        "callbackUrl": "",
+        "state": "active",
+        "startTime": "2013-02-08T13:15:47.587Z",
+        "activeTime": "2013-02-08T13:15:52.347Z",
+        "events": "https://.../calls/{callId}/events"
+        }]
+        """
+        raw1 = """[
+            {
+            "id": "c-call-id-2",
+            "direction": "out",
+            "from": "+1919000001",
+            "to": "+1919000002",
+            "recordingEnabled": false,
+            "callbackUrl": "",
+            "state": "active",
+            "startTime": "2013-02-08T13:15:47.587Z",
+            "activeTime": "2013-02-08T13:15:52.347Z",
+            "events": "https://.../calls/{callId}/events"
+            },
+            {
+            "id": "c-call-id-3",
+            "direction": "out",
+            "from": "+1919000001",
+            "to": "+1919000002",
+            "recordingEnabled": false,
+            "callbackUrl": "",
+            "state": "active",
+            "startTime": "2013-02-08T13:15:47.587Z",
+            "activeTime": "2013-02-08T13:15:52.347Z",
+            "events": "https://.../calls/{callId}/events"
+            }]
+        """
+        raw2 = """[
+            {
+            "id": "c-call-id-4",
+            "direction": "out",
+            "from": "+1919000001",
+            "to": "+1919000002",
+            "recordingEnabled": false,
+            "callbackUrl": "",
+            "state": "active",
+            "startTime": "2013-02-08T13:15:47.587Z",
+            "activeTime": "2013-02-08T13:15:52.347Z",
+            "events": "https://.../calls/{callId}/events"
+            }
+            ]
+            """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls'
+                      '?size=2&from=%2B1901&page=0',
+                      body=raw,
+                      status=200,
+                      content_type='application/json',
+                      match_querystring=True)
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls'
+                      '?size=2&from=%2B1901&page=1',
+                      body=raw1,
+                      status=200,
+                      content_type='application/json',
+                      match_querystring=True)
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls'
+                      '?size=2&from=%2B1901&page=2',
+                      body=raw2,
+                      status=200,
+                      content_type='application/json',
+                      match_querystring=True)
+
+        call_iterator = Call.as_iterator(chunk_size=2, from_='+1901')
+        self.assertIsInstance(call_iterator, types.GeneratorType)
+        calls = list(call_iterator)
+        self.assertEqual(len(calls), 5)
+
+    @responses.activate
     def test_page_iterator_query_params(self):
         """
         Call.page_iterator(**query_params) || test query_params
