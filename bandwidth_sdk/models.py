@@ -61,9 +61,9 @@ class ListResource(BaseResource):
         raise NotImplemented
 
     @classmethod
-    def as_iterator(cls, chunk_size=100, **query_params):
+    def page_iterator(cls, chunk_size=100, **query_params):
         """
-        Makes a generator that returns chunked pieces of data.
+        Makes a generator that returns paginated data from resource API.
 
         :param chunk_size: Size of chunk that you want to receive over one iteration.
                            Default is 100.
@@ -72,6 +72,9 @@ class ListResource(BaseResource):
         getargspec_func_list = inspect.getargspec(cls.list)
 
         if getargspec_func_list.keywords is None:
+            if query_params:
+                raise ValueError('Kwargs are not supported for this resource list')
+
             def get_list_results(page):
                 return cls.list(page=page, size=chunk_size)
         else:
@@ -87,6 +90,20 @@ class ListResource(BaseResource):
             else:
                 yield results
                 page += 1
+
+    @classmethod
+    def as_iterator(cls, chunk_size=100, **query_params):
+        """
+        Makes a generator for continuous iteration over very large API lists. This is essentially
+         a chained and structured generator.
+
+        :param chunk_size: Size of chunk that you are going to receive in one API request.
+                           Default is 100.
+        :param query_params: Other keyword arguments for `cls.list` method.
+        """
+        for page in cls.page_iterator(chunk_size, **query_params):
+            for el in page:
+                yield el
 
 
 class GenericResource(ListResource, CreateResource):
