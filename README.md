@@ -32,8 +32,11 @@ Note: This may have to be run as `root` or with `--user` flag if you are not usi
 
 ##  Usage
 * [Set up](#the-sdk-setup)
-* [Allocate a phone number ](#allocate-phone-number-basic)
+* [Allocating a phone number ](#allocate-phone-number-basic)
 * [Calls basic usage](#calls-basic-usage)
+* [Uploading media](#uploading-the-media)
+* [Sending text message](#uploading-the-media)
+
 
 ### The SDK setup
 
@@ -67,13 +70,39 @@ Import PhoneNumber from sdk
 ```python
 from bandwidth_sdk import PhoneNumber
 ```
-Get available number for yours search criteria:
+Get available number for yours search criteria (by location in the following example):
 
 ```python
 available_numbers = PhoneNumber.list_local(city='Cary', state='NC')
 available_numbers[0].allocate()
 >>> PhoneNumber(number=+19198000000)
 ```
+
+Search and allocate tool free numbers:
+
+```python
+available_numbers = PhoneNumber.list_tollfree(pattern='1844*')
+available_numbers[0].allocate()
+>>> PhoneNumber(number=+1844280000)
+```
+
+Get a list of allocated phone numbers:
+
+```python
+PhoneNumber.list()
+>>> [PhoneNumber(number=+19198000000), PhoneNumber(number=+1844280000)]
+```
+
+Example of iteration over all of allocated numbers:
+
+```python
+fallback_number = '+19198000001'
+
+for p in PhoneNumber.as_iterator():
+	p.patch(fallback_number=fallback_number)
+
+```
+In the example, here we update the <code>fallback_number</code> attribute for all of allocated numbers.
 
 You can also create Application before (or update current), to use your endpoint to handle events related to this Phonenumber.
 
