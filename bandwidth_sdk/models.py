@@ -6,7 +6,6 @@ from .client import get_client
 from .utils import to_api, from_api, enum, get_location_id, file_exists
 from .errors import AppPlatformError
 from.generics import AudioMixin
-import inspect
 
 
 class BaseResource(object):
@@ -61,25 +60,17 @@ class ListResource(BaseResource):
         raise NotImplemented
 
     @classmethod
-    def as_iterator(cls, chunk_size=100, **query_params):
+    def page_iterator(cls, chunk_size=100, **query_params):
         """
-        Makes a generator that returns chunked pieces of data.
+        Makes a generator that returns paginated data from resource API.
 
         :param chunk_size: Size of chunk that you want to receive over one iteration.
                            Default is 100.
         :param query_params: Keyword arguments that can receive list() method
         """
-        getargspec_func_list = inspect.getargspec(cls.list)
-
-        if getargspec_func_list.keywords is None:
-            def get_list_results(page):
-                return cls.list(page=page, size=chunk_size)
-        else:
-            def get_list_results(page):
-                return cls.list(page=page, size=chunk_size, **query_params)
         page = 0
         while True:
-            results = get_list_results(page)
+            results = cls.list(page=page, size=chunk_size, **query_params)
 
             if len(results) < chunk_size:
                 yield results
@@ -87,6 +78,20 @@ class ListResource(BaseResource):
             else:
                 yield results
                 page += 1
+
+    @classmethod
+    def as_iterator(cls, chunk_size=100, **query_params):
+        """
+        Makes a generator for continuous iteration over very large API lists. This is essentially
+         a chained and structured generator.
+
+        :param chunk_size: Size of chunk that you are going to receive in one API request.
+                           Default is 100.
+        :param query_params: Other keyword arguments for `cls.list` method.
+        """
+        for page in cls.page_iterator(chunk_size, **query_params):
+            for el in page:
+                yield el
 
 
 class GenericResource(ListResource, CreateResource):
@@ -1339,7 +1344,7 @@ class Media(ListResource):
         return [cls(data=v) for v in data_as_list]
 
     @classmethod
-    def as_iterator(cls, chunk_size=100, chunks_amount=5, **query_params):
+    def page_iterator(cls, chunk_size=100, chunks_amount=5, **query_params):
         raise NotImplementedError('Media does not support this operation')
 
     def delete(self):

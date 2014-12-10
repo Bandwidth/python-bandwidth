@@ -155,9 +155,9 @@ class CallsTest(SdkTestCase):
         self.assertEqual(calls[1].call_id, 'c-call-id-1')
 
     @responses.activate
-    def test_as_iterator(self):
+    def test_page_iterator(self):
         """
-        Call.as_iterator(chunk_size=2)
+        Call.page_iterator(chunk_size=2)
         """
         raw = """
         [{
@@ -231,7 +231,7 @@ class CallsTest(SdkTestCase):
                       body=raw,
                       status=200,
                       content_type='application/json')
-        call_iterator = Call.as_iterator(chunk_size=2, from_='+1901')
+        call_iterator = Call.page_iterator(chunk_size=2, from_='+1901')
         self.assertIsInstance(call_iterator, types.GeneratorType)
         first_two_calls = next(call_iterator)
         self.assertEquals(first_two_calls[0].call_id, "c-call-id")
@@ -262,9 +262,110 @@ class CallsTest(SdkTestCase):
             next(call_iterator)
 
     @responses.activate
-    def test_as_iterator_query_params(self):
+    def test_as_iterator(self):
         """
-        Call.as_iterator(**query_params) || test query_params
+        Call.as_iterator(chunk_size=2)
+        """
+        raw = """
+        [{
+        "id": "c-call-id",
+        "direction": "out",
+        "from": "+1919000001",
+        "to": "+1919000002",
+        "recordingEnabled": false,
+        "callbackUrl": "",
+        "state": "active",
+        "startTime": "2013-02-08T13:15:47.587Z",
+        "activeTime": "2013-02-08T13:15:52.347Z",
+        "events": "https://.../calls/{callId}/events"
+        },
+        {
+        "id": "c-call-id-1",
+        "direction": "out",
+        "from": "+1919000001",
+        "to": "+1919000002",
+        "recordingEnabled": false,
+        "callbackUrl": "",
+        "state": "active",
+        "startTime": "2013-02-08T13:15:47.587Z",
+        "activeTime": "2013-02-08T13:15:52.347Z",
+        "events": "https://.../calls/{callId}/events"
+        }]
+        """
+        raw1 = """[
+            {
+            "id": "c-call-id-2",
+            "direction": "out",
+            "from": "+1919000001",
+            "to": "+1919000002",
+            "recordingEnabled": false,
+            "callbackUrl": "",
+            "state": "active",
+            "startTime": "2013-02-08T13:15:47.587Z",
+            "activeTime": "2013-02-08T13:15:52.347Z",
+            "events": "https://.../calls/{callId}/events"
+            },
+            {
+            "id": "c-call-id-3",
+            "direction": "out",
+            "from": "+1919000001",
+            "to": "+1919000002",
+            "recordingEnabled": false,
+            "callbackUrl": "",
+            "state": "active",
+            "startTime": "2013-02-08T13:15:47.587Z",
+            "activeTime": "2013-02-08T13:15:52.347Z",
+            "events": "https://.../calls/{callId}/events"
+            }]
+        """
+        raw2 = """[
+            {
+            "id": "c-call-id-4",
+            "direction": "out",
+            "from": "+1919000001",
+            "to": "+1919000002",
+            "recordingEnabled": false,
+            "callbackUrl": "",
+            "state": "active",
+            "startTime": "2013-02-08T13:15:47.587Z",
+            "activeTime": "2013-02-08T13:15:52.347Z",
+            "events": "https://.../calls/{callId}/events"
+            }
+            ]
+            """
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls'
+                      '?size=2&from=%2B1901&page=0',
+                      body=raw,
+                      status=200,
+                      content_type='application/json',
+                      match_querystring=True)
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls'
+                      '?size=2&from=%2B1901&page=1',
+                      body=raw1,
+                      status=200,
+                      content_type='application/json',
+                      match_querystring=True)
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/calls'
+                      '?size=2&from=%2B1901&page=2',
+                      body=raw2,
+                      status=200,
+                      content_type='application/json',
+                      match_querystring=True)
+
+        call_iterator = Call.as_iterator(chunk_size=2, from_='+1901')
+        self.assertIsInstance(call_iterator, types.GeneratorType)
+        calls = list(call_iterator)
+        self.assertEqual(len(calls), 5)
+
+    @responses.activate
+    def test_page_iterator_query_params(self):
+        """
+        Call.page_iterator(**query_params) || test query_params
         """
         raw_one = """
         [{
@@ -328,7 +429,7 @@ class CallsTest(SdkTestCase):
                         'to': '+1902',
                         'direction': 'out',
                         'recordingEnabled': 'false'}
-        call_iterator_with_query_params = Call.as_iterator(chunk_size=1, **query_params)
+        call_iterator_with_query_params = Call.page_iterator(chunk_size=1, **query_params)
 
         next(call_iterator_with_query_params)
         next(call_iterator_with_query_params)
@@ -363,7 +464,7 @@ class CallsTest(SdkTestCase):
                       body=raw_two,
                       status=200,
                       content_type='application/json')
-        call_iterator_without_query_params = Call.as_iterator(chunk_size=1)
+        call_iterator_without_query_params = Call.page_iterator(chunk_size=1)
 
         next(call_iterator_without_query_params)
         next(call_iterator_without_query_params)
@@ -912,9 +1013,9 @@ class BridgesTest(SdkTestCase):
         self.assertEqual(bridges[1].id, 'bridge-2')
 
     @responses.activate
-    def test_as_iterator(self):
+    def test_page_iterator(self):
         """
-        Bridge.as_iterator()
+        Bridge.page_iterator()
         """
         raw_one = """
         [
@@ -983,7 +1084,7 @@ class BridgesTest(SdkTestCase):
                       body=raw_one,
                       status=200,
                       content_type='application/json')
-        bridge_iterator = Bridge.as_iterator(chunk_size=2)
+        bridge_iterator = Bridge.page_iterator(chunk_size=2)
         first_two_bridge = next(bridge_iterator)
 
         self.assertEqual(first_two_bridge[0].id, 'bridge-11')
@@ -1012,131 +1113,6 @@ class BridgesTest(SdkTestCase):
 
         with self.assertRaises(StopIteration):
             next(bridge_iterator)
-
-    @responses.activate
-    def test_as_iterator_query_params(self):
-        """
-        Bridge.as_iterator(**query_params) || test query_params
-        """
-        raw_one = """
-        [
-          {
-            "id": "bridge-11",
-            "state": "completed",
-            "bridgeAudio": "true",
-            "calls":"https://.../v1/users/{userId}/bridges/{bridgeId}/calls",
-            "createdTime": "2013-04-22T13:55:30.279Z",
-            "activatedTime": "2013-04-22T13:55:30.280Z",
-            "completedTime": "2013-04-22T13:56:30.122Z"
-          },
-          {
-            "id": "bridge-12",
-            "state": "completed",
-            "bridgeAudio": "true",
-            "calls":"https://.../v1/users/{userId}/bridges/{bridgeId}/calls",
-            "createdTime": "2013-04-22T13:58:30.121Z",
-            "activatedTime": "2013-04-22T13:58:30.122Z",
-            "completedTime": "2013-04-22T13:59:30.122Z"
-          }
-        ]
-
-        """
-        raw_two = """
-        [
-          {
-            "id": "bridge-21",
-            "state": "completed",
-            "bridgeAudio": "true",
-            "calls":"https://.../v1/users/{userId}/bridges/{bridgeId}/calls",
-            "createdTime": "2013-04-22T13:55:30.279Z",
-            "activatedTime": "2013-04-22T13:55:30.280Z",
-            "completedTime": "2013-04-22T13:56:30.122Z"
-          },
-          {
-            "id": "bridge-22",
-            "state": "completed",
-            "bridgeAudio": "true",
-            "calls":"https://.../v1/users/{userId}/bridges/{bridgeId}/calls",
-            "createdTime": "2013-04-22T13:58:30.121Z",
-            "activatedTime": "2013-04-22T13:58:30.122Z",
-            "completedTime": "2013-04-22T13:59:30.122Z"
-          }
-        ]
-
-        """
-
-        responses.add(responses.GET,
-                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges',
-                      body=raw_one,
-                      status=200,
-                      content_type='application/json')
-        query_params = {'state': 'test_state',
-                        'calls': 'test_calls',
-                        'created_time': 'test_created_time'}
-
-        bridge_iterator_with_query_params = Bridge.as_iterator(chunk_size=1, **query_params)
-        next(bridge_iterator_with_query_params)
-        next(bridge_iterator_with_query_params)
-
-        first_responses_url = responses.calls[0].request.url
-        second_responses_url = responses.calls[1].request.url
-
-        first_query = urlsplit(first_responses_url, '?').query
-        dict_first_responses_url = dict(parse_qsl(first_query))
-
-        second_query = urlsplit(second_responses_url, '?').query
-        dict_second_responses_url = dict(parse_qsl(second_query))
-
-        self.assertEqual(dict_first_responses_url['page'], '0')
-        self.assertEqual(dict_first_responses_url['size'], '1')
-        self.assertEqual(dict_second_responses_url['page'], '1')
-        self.assertEqual(dict_second_responses_url['size'], '1')
-
-        with self.assertRaises(KeyError):
-            dict_first_responses_url['state']
-        with self.assertRaises(KeyError):
-            dict_first_responses_url['calls']
-        with self.assertRaises(KeyError):
-            dict_first_responses_url['created_time']
-        with self.assertRaises(KeyError):
-            dict_second_responses_url['state']
-        with self.assertRaises(KeyError):
-            dict_second_responses_url['calls']
-        with self.assertRaises(KeyError):
-            dict_second_responses_url['created_time']
-        responses.reset()
-
-        responses.add(responses.GET,
-                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges',
-                      body=raw_two,
-                      status=200,
-                      content_type='application/json')
-
-        bridge_iterator_without_query_params = Bridge.as_iterator(chunk_size=1)
-        next(bridge_iterator_without_query_params)
-        next(bridge_iterator_without_query_params)
-
-        first_responses_url = responses.calls[0].request.url
-        second_responses_url = responses.calls[1].request.url
-
-        first_query = urlsplit(first_responses_url, '?').query
-        dict_first_responses_url = dict(parse_qsl(first_query))
-
-        second_query = urlsplit(second_responses_url, '?').query
-        dict_second_responses_url = dict(parse_qsl(second_query))
-
-        self.assertEqual(dict_first_responses_url['page'], '0')
-        self.assertEqual(dict_first_responses_url['size'], '1')
-        self.assertEqual(dict_second_responses_url['page'], '1')
-        self.assertEqual(dict_second_responses_url['size'], '1')
-
-        del dict_first_responses_url['page']
-        del dict_first_responses_url['size']
-        del dict_second_responses_url['page']
-        del dict_second_responses_url['size']
-
-        self.assertEqual(dict_first_responses_url, {})
-        self.assertEqual(dict_second_responses_url, {})
 
     @responses.activate
     def test_create(self):
@@ -1513,9 +1489,9 @@ class ApplicationsTest(SdkTestCase):
         self.assertEqual(applications[1].auto_answer, False)
 
     @responses.activate
-    def test_as_iterator(self):
+    def test_page_iterator(self):
         """
-        Application.as_iterator()
+        Application.page_iterator()
         """
 
         raw_one = """
@@ -1569,7 +1545,7 @@ class ApplicationsTest(SdkTestCase):
                       status=200,
                       content_type='application/json')
 
-        application_iterator = Application.as_iterator(chunk_size=2)
+        application_iterator = Application.page_iterator(chunk_size=2)
         self.assertIsInstance(application_iterator, types.GeneratorType)
         first_two_applications = next(application_iterator)
         self.assertEqual(first_two_applications[0].id, "a-application-id11")
@@ -1596,73 +1572,6 @@ class ApplicationsTest(SdkTestCase):
 
         with self.assertRaises(StopIteration):
             next(application_iterator)
-
-    @responses.activate
-    def test_as_iterator_query_params(self):
-        """
-        Application.as_iterator(**query_params) || test query_params
-        """
-
-        raw_one = """
-        [{
-        "id": "a-application-id11",
-        "callbackHttpMethod": "post",
-        "incomingCallUrl": "http://callback.info",
-        "name": "test_application_name",
-        "autoAnswer": true
-        }
-        ]
-        """
-        raw_two = """
-        [{
-        "id": "a-application-id21",
-        "callbackHttpMethod": "post",
-        "incomingCallUrl": "http://callback.info",
-        "name": "test_application_name",
-        "autoAnswer": true
-        }
-        ]
-        """
-        responses.add(responses.GET,
-                      'https://api.catapult.inetwork.com/v1/users/u-user/applications/',
-                      body=raw_one,
-                      status=200,
-                      content_type='application/json')
-
-        query_params = {'incoming_call_url': 'test_url',
-                        'incoming_call_url_callback_timeout': 'test_incoming_call_url_callback_timeout',
-                        'incoming_call_fallback_url': 'test_incoming_call_fallback_url'
-                        }
-        application_iterator_with_query_params = Application.as_iterator(chunk_size=1, **query_params)
-        next(application_iterator_with_query_params)
-        responses_url = responses.calls[0].request.url
-        query_from_url = urlsplit(responses_url, '?').query
-        dict_responses_url = dict(parse_qsl(query_from_url))
-        self.assertEqual(dict_responses_url['page'], '0')
-        self.assertEqual(dict_responses_url['size'], '1')
-        del dict_responses_url['page']
-        del dict_responses_url['size']
-        self.assertEqual(dict_responses_url, {})
-        responses.reset()
-
-        responses.add(responses.GET,
-                      'https://api.catapult.inetwork.com/v1/users/u-user/applications/',
-                      body=raw_two,
-                      status=200,
-                      content_type='application/json')
-
-        application_iterator_without_query_params = Application.as_iterator(chunk_size=1)
-        next(application_iterator_without_query_params)
-        responses_url = responses.calls[0].request.url
-        query_from_url = urlsplit(responses_url, '?').query
-        dict_responses_url = dict(parse_qsl(query_from_url))
-        self.assertEqual(dict_responses_url['page'], '0')
-        self.assertEqual(dict_responses_url['size'], '1')
-        del dict_responses_url['page']
-        del dict_responses_url['size']
-        self.assertEqual(dict_responses_url, {})
-
-        responses.reset()
 
     @responses.activate
     def test_create(self):
@@ -2199,9 +2108,9 @@ class RecordingTest(SdkTestCase):
         self.assertEqual(recordings[1].call.call_id, 'c-call-id1')
 
     @responses.activate
-    def as_iterator(self):
+    def page_iterator(self):
         """
-        Recording.as_iterator()
+        Recording.page_iterator()
         """
         raw_one = """
         [
@@ -2262,7 +2171,7 @@ class RecordingTest(SdkTestCase):
                       status=200,
                       content_type='application/json')
 
-        recording_iterator = Recording.as_iterator(chunk_size=2)
+        recording_iterator = Recording.page_iterator(chunk_size=2)
         self.assertIsInstance(recording_iterator, types.GeneratorType)
         first_two_recordings = next(recording_iterator)
         self.assertEqual(first_two_recordings[0].state, 'complete')
@@ -2326,9 +2235,9 @@ class RecordingTest(SdkTestCase):
             next(recording_iterator)
 
     @responses.activate
-    def as_iterator_query_params(self):
+    def page_iterator_query_params(self):
         """
-        Recording.as_iterator(**query_params) || test query_params
+        Recording.page_iterator(**query_params) || test query_params
         """
         raw_one = """
         [
@@ -2368,7 +2277,7 @@ class RecordingTest(SdkTestCase):
                         'end_time': 'test_end_time'
                         }
 
-        recording_iterator_with_query_params = Recording.as_iterator(chunk_size=1, **query_params)
+        recording_iterator_with_query_params = Recording.page_iterator(chunk_size=1, **query_params)
         next(recording_iterator_with_query_params)
         responses_url = responses.calls[0].request.url
         query_from_url = urlsplit(responses_url, '?').query
@@ -2386,7 +2295,7 @@ class RecordingTest(SdkTestCase):
                       status=200,
                       content_type='application/json')
 
-        recording_iterator_without_query_params = Recording.as_iterator(chunk_size=1)
+        recording_iterator_without_query_params = Recording.page_iterator(chunk_size=1)
         next(recording_iterator_without_query_params)
         responses_url = responses.calls[0].request.url
         query_from_url = urlsplit(responses_url, '?').query
@@ -2563,9 +2472,9 @@ class PhoneNumberTest(SdkTestCase):
         self.assertIsInstance(numbers[1].created_time, datetime)
 
     @responses.activate
-    def test_as_iterator(self):
+    def test_page_iterator(self):
         """
-        PhoneNumber.as_iterator()
+        PhoneNumber.page_iterator()
         """
         raw = """
         [
@@ -2614,7 +2523,7 @@ class PhoneNumberTest(SdkTestCase):
                       body=raw,
                       status=200,
                       content_type='application/json')
-        number_iterator = PhoneNumber.as_iterator(chunk_size=2)
+        number_iterator = PhoneNumber.page_iterator(chunk_size=2)
         first_tow_numbers = next(number_iterator)
         self.assertEqual(first_tow_numbers[0].id, 'numb-id')
         self.assertIsInstance(first_tow_numbers[0].application, Application)
@@ -2657,79 +2566,6 @@ class PhoneNumberTest(SdkTestCase):
 
         with self.assertRaises(StopIteration):
             next(number_iterator)
-
-    @responses.activate
-    def test_as_iterator_query_params(self):
-        """
-        PhoneNumber.as_iterator(**query_params) || test query_params
-        """
-        raw_one = """
-        [
-        {
-           "id": "numb-id",
-           "application": "https://catapult.inetwork.com/v1/users/u-user/applications/a-j321",
-           "number":"+123456789",
-           "nationalNumber":"(234) 56789",
-           "name": "home phone",
-           "createdTime": "2013-02-13T17:46:08.374Z",
-           "state": "NC",
-           "price": "0.60",
-           "numberState": "enabled"
-        }]
-        """
-
-        raw_two = """ [{
-           "id": "numb-id2",
-           "application": "https://catapult.inetwork.com/v1/users/u-user/applications/a-j322",
-           "number":"+1987654321",
-           "nationalNumber":"(987) 7654321",
-           "name": "work phone",
-           "createdTime": "2013-02-13T18:32:05.223Z",
-           "state": "NC",
-           "price": "0.60",
-           "numberState": "enabled"
-        }
-        ]
-        """
-        responses.add(responses.GET,
-                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers',
-                      body=raw_one,
-                      status=200,
-                      content_type='application/json')
-
-        query_params = {'application': 'test_application',
-                        'name': 'test_name',
-                        'price': 'test_price'
-                        }
-        phonenumber_iterator_with_query_params = PhoneNumber.as_iterator(chunk_size=1, **query_params)
-        next(phonenumber_iterator_with_query_params)
-        responses_url = responses.calls[0].request.url
-        query_from_url = urlsplit(responses_url, '?').query
-        dict_responses_url = dict(parse_qsl(query_from_url))
-        self.assertEqual(dict_responses_url['page'], '0')
-        self.assertEqual(dict_responses_url['size'], '1')
-        del dict_responses_url['page']
-        del dict_responses_url['size']
-        self.assertEqual(dict_responses_url, {})
-        responses.reset()
-
-        responses.add(responses.GET,
-                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers',
-                      body=raw_two,
-                      status=200,
-                      content_type='application/json')
-
-        phonenumber_iterator_without_query_params = PhoneNumber.as_iterator(chunk_size=1)
-        next(phonenumber_iterator_without_query_params)
-        responses_url = responses.calls[0].request.url
-        query_from_url = urlsplit(responses_url, '?').query
-        dict_responses_url = dict(parse_qsl(query_from_url))
-        self.assertEqual(dict_responses_url['page'], '0')
-        self.assertEqual(dict_responses_url['size'], '1')
-        del dict_responses_url['page']
-        del dict_responses_url['size']
-        self.assertEqual(dict_responses_url, {})
-        responses.reset()
 
     @responses.activate
     def test_get_number_info(self):
@@ -3245,28 +3081,13 @@ class MediaTest(SdkTestCase):
         self.assertEqual(str(media), 'Media(one)')
 
     @responses.activate
-    def test_as_iterator(self):
+    def test_page_iterator(self):
         """
-        Media.as_iterator()
+        Media.page_iterator()
         """
 
         with self.assertRaises(NotImplementedError):
-            Media.as_iterator()
-
-    @responses.activate
-    def test_as_iterator_query_params(self):
-        """
-        Media.as_iterator(**query_params) // test query_params
-        """
-        query_params = {'content_length': 'test_content_length',
-                        'media_name': 'test_media_name',
-                        'media_url': 'test_media_url'
-                        }
-        with self.assertRaises(NotImplementedError):
-            Media.as_iterator(chunk_size=1, **query_params)
-
-        with self.assertRaises(NotImplementedError):
-            Media.as_iterator(chunk_size=1)
+            Media.page_iterator()
 
     @responses.activate
     def test_download(self):
@@ -3553,9 +3374,9 @@ class MessageTestCase(SdkTestCase):
         self.assertEqual(messages[1].state, Message.STATES.sent)
 
     @responses.activate
-    def test_as_iterator(self):
+    def test_page_iterator(self):
         """
-        Messages.as_iterator(sender='+19796543211', receiver='+19796543212')
+        Messages.page_iterator(sender='+19796543211', receiver='+19796543212')
         """
         raw = """
         [
@@ -3602,7 +3423,7 @@ class MessageTestCase(SdkTestCase):
                       status=200,
                       content_type='application/json')
 
-        message_iterator = Message.as_iterator(sender='+19796543211', receiver='+19796543212')
+        message_iterator = Message.page_iterator(sender='+19796543211', receiver='+19796543212')
         messages_first_two = next(message_iterator)
         self.assertIsInstance(messages_first_two[0], Message)
         self.assertEqual(messages_first_two[0].id, 'mess-id1')
@@ -3630,7 +3451,7 @@ class MessageTestCase(SdkTestCase):
                       status=200,
                       content_type='application/json')
 
-        message_iterator = Message.as_iterator(sender='+19796543211', receiver='+19796543212')
+        message_iterator = Message.page_iterator(sender='+19796543211', receiver='+19796543212')
         messages_last = next(message_iterator)
         self.assertIsInstance(messages_last[0], Message)
         self.assertEqual(messages_last[0].id, 'mess-id3')
@@ -3647,9 +3468,9 @@ class MessageTestCase(SdkTestCase):
             next(message_iterator)
 
     @responses.activate
-    def test_as_iterator_query_params(self):
+    def test_page_iterator_query_params(self):
         """
-        Messages.as_iterator(**query_params) // test query_params
+        Messages.page_iterator(**query_params) // test query_params
         """
         raw_one = """
         [
@@ -3684,7 +3505,7 @@ class MessageTestCase(SdkTestCase):
                       status=200,
                       content_type='application/json')
         query_params = {'sender': '19796543211', 'receiver': '19796543212'}
-        message_iterator_with_query_params = Message.as_iterator(chunk_size=1, **query_params)
+        message_iterator_with_query_params = Message.page_iterator(chunk_size=1, **query_params)
         next(message_iterator_with_query_params)
         responses_url = responses.calls[0].request.url
         query_from_url = urlsplit(responses_url, '?').query
@@ -3701,7 +3522,7 @@ class MessageTestCase(SdkTestCase):
                       body=raw_two,
                       status=200,
                       content_type='application/json')
-        message_iterator_without_query_params = Message.as_iterator(chunk_size=1)
+        message_iterator_without_query_params = Message.page_iterator(chunk_size=1)
         next(message_iterator_without_query_params)
         responses_url = responses.calls[0].request.url
         query_from_url = urlsplit(responses_url, '?').query
@@ -4010,9 +3831,9 @@ class UserErrorTest(SdkTestCase):
         self.assertIsNone(user)
 
     @responses.activate
-    def test_as_iterator_query_params(self):
+    def test_page_iterator_query_params(self):
         """
-        UserError.as_iterator(**query_params) || test query_params
+        UserError.page_iterator(**query_params) || test query_params
         """
         raw_one = """
         [{
@@ -4058,7 +3879,7 @@ class UserErrorTest(SdkTestCase):
                         'paramFour': 'test_param_four'
                         }
 
-        user_errors_iterator_with_query_params = UserError.as_iterator(chunk_size=1, **query_params)
+        user_errors_iterator_with_query_params = UserError.page_iterator(chunk_size=1, **query_params)
         next(user_errors_iterator_with_query_params)
 
         responses_url = responses.calls[0].request.url
@@ -4078,7 +3899,7 @@ class UserErrorTest(SdkTestCase):
                       status=200,
                       content_type='application/json')
 
-        user_errors_iterator_without_query_params = UserError.as_iterator(chunk_size=1)
+        user_errors_iterator_without_query_params = UserError.page_iterator(chunk_size=1)
         next(user_errors_iterator_without_query_params)
 
         responses_url = responses.calls[0].request.url
@@ -4093,9 +3914,9 @@ class UserErrorTest(SdkTestCase):
         responses.reset()
 
     @responses.activate
-    def test_as_iterator(self):
+    def test_page_iterator(self):
         """
-        UserError.as_iterator()
+        UserError.page_iterator()
         """
         raw = """
         [{
@@ -4130,7 +3951,7 @@ class UserErrorTest(SdkTestCase):
                       body=raw,
                       status=200,
                       content_type='application/json')
-        user_errors_iterator = UserError.as_iterator(chunk_size=2)
+        user_errors_iterator = UserError.page_iterator(chunk_size=2)
         first_two_errors = next(user_errors_iterator)
 
         self.assertEqual(len(first_two_errors), 2)
