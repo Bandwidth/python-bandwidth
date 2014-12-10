@@ -36,6 +36,7 @@ Note: This may have to be run as `root` or with `--user` flag if you are not usi
 * [Calls basic usage](#calls-basic-usage)
 * [Uploading media](#uploading-the-media)
 * [Sending text message](#uploading-the-media)
+* [Getting number info](#getting-number-info)
 
 
 ### The SDK setup
@@ -143,6 +144,45 @@ Retrieving list of calls:
 Call.list()
 >>> [Call(c-xxxx, state=completed), Call(c-yyyyy, state=comleted), Call(c-zzzz, state=started)]
 ```
+###Uploading the media
+Make sure that you have media file. In this example we will use test file "dolphin.mp3", that exists in this repo:
+
+```python
+from bandwidth_sdk import Media
+Media.upload('dolphin.mp3', file_path='./tests/fixtures/dolphin.mp3')
+>>> Media(dolphin.mp3)
+```
+
+###Sending text message
+
+Import Message from sdk:
+```python
+from bandwidth_sdk import Message
+```
+Send message by method "send":
+
+```python
+Message.send(sender='+19796543211',receiver='+19796543212', text='Good morning, this is a test message', tag='test tag')
+>>> Message('m-id123213', state='sending')
+```
+
+###Getting number info
+
+Import NumberInfo from sdk:
+```python
+from bandwidth_sdk import NumberInfo
+```
+
+Get number info by CNAM of the number:
+
+```python
+NumberInfo.get('+1900000001')
+>>>NumberInfo(HIGHTSTOWN  NJ)
+n_info = _
+n_info.updated
+>>>datetime.datetime(2014, 12, 19, 2, 14, 14, tzinfo=tzutc())
+```
+
 ####More examples:
 
 Take a look of [python bandwidth examples repository](https://github.com/bandwidthcom/python-bandwidth-examples).
