@@ -22,3 +22,8 @@
 (November 28, 2014):
 
 - Added possibility to use config file to setup credentials for client.
+
+### 1.0.6-stable:
+(December 10, 2014):
+
+- Changed behavior as_iterator method, move previous logic of as_iterator method to page_iterator.
