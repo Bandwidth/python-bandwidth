@@ -29,11 +29,20 @@ pip install -e git+https://github.com/bandwidthcom/python-bandwidth.git#egg=band
 ```
 Note: This may have to be run as `root` or with `--user` flag if you are not using python virtual environment.
 
-## Usage
 
-The SDK setup
+##  Usage
+* [Set up](#the-sdk-setup)
+* [Allocating a phone number ](#allocate-phone-number-basic)
+* [Calls basic usage](#calls-basic-usage)
+* [Uploading media](#uploading-the-media)
+* [Sending text message](#uploading-the-media)
+* [Getting number info](#getting-number-info)
 
-Default setup from environment variables in UNIX shell:
+
+### The SDK setup
+
+
+Default setup from environment variables in UNIX shell :
 
 ```console
 export BANDWIDTH_USER_ID=u-your-user-id
@@ -56,19 +65,45 @@ token = t-your-token
 secret = s-your-secret
 ```
 
-###Allocate phone number basic
+### Allocate phone number basic
 
 Import PhoneNumber from sdk
 ```python
 from bandwidth_sdk import PhoneNumber
 ```
-Get available number for yours search criteria:
+Get available number for yours search criteria (by location in the following example):
 
 ```python
 available_numbers = PhoneNumber.list_local(city='Cary', state='NC')
 available_numbers[0].allocate()
 >>> PhoneNumber(number=+19198000000)
 ```
+
+Search and allocate tool free numbers:
+
+```python
+available_numbers = PhoneNumber.list_tollfree(pattern='1844*')
+available_numbers[0].allocate()
+>>> PhoneNumber(number=+1844280000)
+```
+
+Get a list of allocated phone numbers:
+
+```python
+PhoneNumber.list()
+>>> [PhoneNumber(number=+19198000000), PhoneNumber(number=+1844280000)]
+```
+
+Example of iteration over all of allocated numbers:
+
+```python
+fallback_number = '+19198000001'
+
+for p in PhoneNumber.as_iterator():
+	p.patch(fallback_number=fallback_number)
+
+```
+In the example, here we update the <code>fallback_number</code> attribute for all of allocated numbers.
 
 You can also create Application before (or update current), to use your endpoint to handle events related to this Phonenumber.
 
@@ -109,6 +144,45 @@ Retrieving list of calls:
 Call.list()
 >>> [Call(c-xxxx, state=completed), Call(c-yyyyy, state=comleted), Call(c-zzzz, state=started)]
 ```
+###Uploading the media
+Make sure that you have media file. In this example we will use test file "dolphin.mp3", that exists in this repo:
+
+```python
+from bandwidth_sdk import Media
+Media.upload('dolphin.mp3', file_path='./tests/fixtures/dolphin.mp3')
+>>> Media(dolphin.mp3)
+```
+
+###Sending text message
+
+Import Message from sdk:
+```python
+from bandwidth_sdk import Message
+```
+Send message by method "send":
+
+```python
+Message.send(sender='+19796543211',receiver='+19796543212', text='Good morning, this is a test message', tag='test tag')
+>>> Message('m-id123213', state='sending')
+```
+
+###Getting number info
+
+Import NumberInfo from sdk:
+```python
+from bandwidth_sdk import NumberInfo
+```
+
+Get number info by CNAM of the number:
+
+```python
+NumberInfo.get('+1900000001')
+>>>NumberInfo(HIGHTSTOWN  NJ)
+n_info = _
+n_info.updated
+>>>datetime.datetime(2014, 12, 19, 2, 14, 14, tzinfo=tzutc())
+```
+
 ####More examples:
 
 Take a look of [python bandwidth examples repository](https://github.com/bandwidthcom/python-bandwidth-examples).
