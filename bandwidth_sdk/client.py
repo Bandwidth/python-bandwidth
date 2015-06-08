@@ -16,30 +16,56 @@ def Client(*args):
     """
     Proper way to define singleton
     """
+    err_msg = None
+    user_id, token, secret = (None, None, None)
+
     global _global_client
     if args:
-        assert len(args) == 3, 'Not enough args'
-        user_id, token, secret = args
+        if len(args) != 3:
+            err_msg = """
+                Creating Client with arguments requires:
+                Client(user_id, token, secret)
+                where user_id, token, secret are from your Catapult account.
+                """
+        else:
+            user_id, token, secret = args
+
     elif 'BANDWIDTH_USER_ID' in os.environ:
         user_id = os.environ.get('BANDWIDTH_USER_ID')
         token = os.environ.get('BANDWIDTH_API_TOKEN')
         secret = os.environ.get('BANDWIDTH_API_SECRET')
-    elif 'BANDWIDTH_CONFIG_FILE' in os.environ:
-        config_path = os.environ.get('BANDWIDTH_CONFIG_FILE')
-        if file_exists(config_path):
-            user_id, token, secret = get_creds_from_file(config_path)
-        else:
-            raise ValueError('Bad config path')
-    else:
-        config_path = '.bndsdkrc'
-        if file_exists(config_path):
-            user_id, token, secret = get_creds_from_file(config_path)
-        else:
-            user_id, token, secret = [None] * 3
 
-    if not all((user_id, token, secret)):
-        raise ValueError('Credentials were improperly configured')
+        if not all((user_id, token, secret)):
+            err_msg = """
+                If BANDWIDTH_USER_ID is defined in the environment,
+                BANDWIDTH_API_TOKEN and BANDWIDTH_API_SECRET must also be defined
+                """
+
+    else:
+        # get the credentials from a config file
+        config_path = None
+        if 'BANDWIDTH_CONFIG_FILE' in os.environ:
+            config_path = os.environ.get('BANDWIDTH_CONFIG_FILE')
+        else:
+            config_path = '.bndsdkrc'
+        if file_exists(config_path):
+            user_id, token, secret = get_creds_from_file(config_path)
+            if not all((user_id, token, secret)):
+                err_msg = "\n \
+                    file [{}] \n \
+                    must have user_id, token and secret\n".format(config_path)
+        else:
+            err_msg = "\n \
+                Credentials file <{}> \n \
+                does not exist\n".format(config_path)
+
+    if err_msg:
+        raise ValueError('Credentials were improperly configured, ERROR MESSAGE: \n {}'.format(err_msg))
+
     _global_client = RESTClientObject(user_id, (token, secret))
+
+    # from bandwidth_sdk import Account
+    # acc = Account.get()
     return _global_client
 
 
