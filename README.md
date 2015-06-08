@@ -173,8 +173,9 @@ Import Message from sdk:
 from bandwidth_sdk import Message
 ```
 Create a list of user's existent media to be appended to the message:
+```python
 media_list = [Media('dolphin.mp3')]
-
+```
 Send message by method "send":
 
 ```python
