@@ -3070,9 +3070,9 @@ class MediaTest(SdkTestCase):
                       status=200,
                       content_type='application/json')
 
-        medias = Media.list()
+        media_list = Media.list()
 
-        media = medias[0]
+        media = media_list[0]
 
         self.assertIsInstance(media, Media)
         self.assertEqual(media.media_name, 'one')
@@ -3590,13 +3590,13 @@ class MessageTestCase(SdkTestCase):
                                receiver='+19796543212',
                                text='Good morning, '
                                     'this is a test message',
-                               medias=media_list,
+                               media_list=media_list,
                                tag='test tag')
         self.assertIsInstance(message, Message)
         self.assertEqual(message.id, 'new-mess-id')
         self.assertEqual(message.from_, '+19796543211')
         self.assertEqual(message.text, 'Good morning, this is a test message')
-        self.assertEqual(message.medias, ["https://api.catapult.inetwork.com/v1/users/u-user/media/media-id"])
+        self.assertEqual(message.media_list, ["https://api.catapult.inetwork.com/v1/users/u-user/media/media-id"])
         self.assertEqual(message.tag, 'test tag')
         request_message = responses.calls[0].request.body
         assertJsonEq(request_message, '{"media": ["https://api.catapult.inetwork.com/v1/users/u-user/media/media-id"], '
@@ -3628,13 +3628,13 @@ class MessageTestCase(SdkTestCase):
                                receiver='+19796543212',
                                text='Good morning, '
                                     'this is a test message',
-                               medias=media_list,
+                               media_list=media_list,
                                tag='test tag')
         self.assertIsInstance(message, Message)
         self.assertEqual(message.id, 'new-mess-id')
         self.assertEqual(message.from_, '+19796543211')
         self.assertEqual(message.text, 'Good morning, this is a test message')
-        self.assertEqual(message.medias, ["https://api.catapult.inetwork.com/v1/users/u-user/media/media-id",
+        self.assertEqual(message.media_list, ["https://api.catapult.inetwork.com/v1/users/u-user/media/media-id",
                                           "https://api.catapult.inetwork.com/v1/users/u-user/media/media-id2"])
         self.assertEqual(message.tag, 'test tag')
         request_message = responses.calls[0].request.body
