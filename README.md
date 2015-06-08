@@ -195,7 +195,7 @@ make test
 or
 ```console
 make req
-make test_local
+make local_test
 ```
 
 ## Contribution guidelines
