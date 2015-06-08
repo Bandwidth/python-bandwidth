@@ -12,10 +12,25 @@ import responses
 from bandwidth_sdk import Client, get_client, set_client, RESTClientObject, AppPlatformError
 from .utils import SdkTestCase
 
+import sys
+import logging
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+logging.basicConfig(stream=sys.stderr)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+log.addHandler(ch)
 
 class ClientTest(SdkTestCase):
 
     def setUp(self):
+        """
+        These tests check client creation with different ways of passing in credentials.
+        If you have the Catapult credentials set in env vars in the shell you're running make from,
+        some of these test will fail.
+        Before running make, run:
+            $ unset BANDWIDTH_API_SECRET BANDWIDTH_API_TOKEN BANDWIDTH_USER_ID
+        """
         set_client(None)
 
     def tearDown(self):
@@ -149,4 +164,4 @@ class RestErrors(SdkTestCase):
             client.build_request('get', 'calls/c')
 
         self.assertEqual(str(app_error.exception), 'Connection refused: '
-                                                   'https://api.catapult.inetwork.com/v1/users/u-user/calls/c')
+                                                   'GET https://api.catapult.inetwork.com/v1/users/u-user/calls/c')
