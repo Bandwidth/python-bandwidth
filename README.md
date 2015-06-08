@@ -166,6 +166,22 @@ Message.send(sender='+19796543211',receiver='+19796543212', text='Good morning, 
 >>> Message('m-id123213', state='sending')
 ```
 
+###Sending MMS message
+
+Import Message from sdk:
+```python
+from bandwidth_sdk import Message
+```
+Create a list of user's existent media to be appended to the message:
+media_list = [Media('dolphin.mp3')]
+
+Send message by method "send":
+
+```python
+Message.send(sender='+19796543211',receiver='+19796543212', text='Good morning, this is a test MMS message', medias=media_list, tag='mms tag')
+>>> Message('m-id456654', state='sending')
+```
+
 ###Getting number info
 
 Import NumberInfo from sdk:
