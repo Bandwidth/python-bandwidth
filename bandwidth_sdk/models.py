@@ -1437,7 +1437,7 @@ class Message(GenericResource):
             r = client.post(url, data=post_data).json()
             return r
 
-        def push_message(self, sender, receiver, text, media_list=None, callback_url=None, tag=None):
+        def push_message(self, sender, receiver, text=None, media_list=None, callback_url=None, tag=None):
             message = Message._prepare_message(sender=sender, receiver=receiver, text=text,
                                                media_list=media_list, callback_url=callback_url, tag=tag)
             self.messages.append(message)
@@ -1478,7 +1478,7 @@ class Message(GenericResource):
         super(Message, self).set_up(data)
 
     @classmethod
-    def _prepare_message(cls, sender, receiver, text, media_list=None, callback_url=None, tag=None):
+    def _prepare_message(cls, sender, receiver, text=None, media_list=None, callback_url=None, tag=None):
         if isinstance(sender, PhoneNumber):
             sender = sender.number
         data = {
@@ -1530,7 +1530,7 @@ class Message(GenericResource):
         return cls(data_as_dict)
 
     @classmethod
-    def send(cls, sender, receiver, text, media_list=None, callback_url=None, tag=None):
+    def send(cls, sender, receiver, text=None, media_list=None, callback_url=None, tag=None):
         """
         :param sender: One of your telephone numbers the message should come from.
                        Must be PhoneNumber instance or in E.164 format, like +19195551212.
