@@ -1788,10 +1788,52 @@ class Endpoint(GenericResource):
         client.delete(url)
         return True
 
+    def create_token(self, **params):
+        """
+        Create token to access the endpoint.
+        :expires: time for the token expires (milliseconds)
+        :return: EndpointToken instance
+        """
+        client = self.client
+        url = 'domains/{}/endpoints/{}/tokens'.format(self.domain_id, self.id)
+        data = to_api(params)
+        data_as_dict = client.post(url, data=data).json()
+        return EndpointToken(self.domain_id, self.id, data=from_api(data_as_dict))
+
     def refresh(self):
         url = 'domains/{}/endpoints/{}'.format(self.domain_id, self.id)
         data = self.client.get(url).json()
         self.set_up(from_api(data))
+
+
+class EndpointToken(GenericResource):
+    token = None
+    expires = None
+    domain_id = None
+    endpoint_id = None
+
+    _fields = ('token', 'expires')
+
+    def __init__(self, domain_id, endpoint_id, data):
+        self.client = get_client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.token = data
+        else:
+            raise TypeError('Accepted only token data as dictionary')
+        self.domain_id = domain_id
+        self.endpoint_id = endpoint_id
+
+    def delete(self):
+        """
+        Delete endpoint token instance on catapult side.
+        :return: True if it's deleted
+        """
+        client = self.client or get_client()
+        url = 'domains/{}/endpoints/{}/tokens/{}'.format(self.domain_id, self.endpoint_id, self.token)
+        client.delete(url)
+        return True
 
 
 class UserError(ListResource):
