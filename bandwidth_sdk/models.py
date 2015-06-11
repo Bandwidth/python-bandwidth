@@ -1668,28 +1668,26 @@ class Domain(GenericResource):
         List all endpoints from a domain.
         """
         client = self.client
-        url = '{}/{}/endpoints'.format(self.path, self.id)
+        url = '{}/{}/endpoints'.format(self._path, self.id)
         endpoint_list = client.get(url).json()
-        return [self.endpoint(data) for data in endpoint_list]
+        return [Endpoint(self.id, data) for data in endpoint_list]
 
     def add_endpoint(self, **params):
         """
         Add endpoints to a domain.
+        :name: A name you choose for this endpoint
+        :description: A description you choose for this endpoint
+        :application_id: A application_id in which the endpoint will be related
+        :enabled: Used to indicate if this endpoing is enabled
+        :credentials: A set of credentials for this endpoints
+        :return: Endpoint instance
         """
         client = self.client
-        url = '{}/{}/endpoints'.format(self.path, self.id)
+        url = '{}/{}/endpoints'.format(self._path, self.id)
         data = to_api(params)
         r = client.post(url, data=data)
         endpoint_id = get_location_id(r)
         data.update({'id': endpoint_id})
-        return self.endpoint(data)
-
-    @property
-    def endpoint(self, data):
-        """
-        Get endpoint class closure.
-        >>> Domain('domain-id').endpoint('endpoint-id').get()
-        """
         return Endpoint(self.id, data)
 
 
@@ -1701,9 +1699,9 @@ class Endpoint(GenericResource):
     application_id = None
     enabled = True
     credentials = None
-    sipUri = None
+    sip_uri = None
 
-    _fields = ('id', 'name', 'description', 'domain_id', 'application_id', 'enabled', 'credentials', 'sipUri')
+    _fields = ('id', 'name', 'description', 'domain_id', 'application_id', 'enabled', 'credentials', 'sip_uri')
 
     def __init__(self, domain_id, data):
         self.client = get_client()
@@ -1733,7 +1731,7 @@ class Endpoint(GenericResource):
         resp = client.post(url, data=p_data)
         endpoint_id = get_location_id(resp)
         data.update({'id': endpoint_id})
-        return cls(data=data)
+        return cls(domain_id, data=data)
 
     @classmethod
     def list(cls, domain_id, page=0, size=25):
@@ -1748,7 +1746,7 @@ class Endpoint(GenericResource):
         client = cls.client or get_client()
         url = 'domains/{}/endpoints'.format(domain_id)
         data_as_list = client.get(url, params=dict(page=page, size=size)).json()
-        return [cls(data=from_api(v)) for v in data_as_list]
+        return [cls(domain_id, data=from_api(v)) for v in data_as_list]
 
     @classmethod
     def get(cls, domain_id, endpoint_id):
@@ -1761,7 +1759,7 @@ class Endpoint(GenericResource):
         client = cls.client or get_client()
         url = 'domains/{}/endpoints/{}'.format(domain_id, endpoint_id)
         data_as_dict = client.get(url).json()
-        endpoint = cls(data=from_api(data_as_dict))
+        endpoint = cls(domain_id, data=from_api(data_as_dict))
         return endpoint
 
     def patch(self, **data):
