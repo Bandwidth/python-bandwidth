@@ -270,6 +270,29 @@ Endpoint(re-ywfvkvq7dbgfi4ld22d7qqi)
 True
 ```
 
+###Generate Bandwidth XML
+
+Import NumberInfo from sdk:
+```python
+    from bandwidth_sdk import xml
+```
+
+Create a Bandwidth XML response:
+```python
+    response = xml.Response()
+    speak_sentence = xml.SpeakSentence("Transferring your call, please wait.", voice="paul", gender="male", locale="en_US")
+    transfer = xml.Transfer(transfer_caller_id="private", transfer_to="+13032218749",
+                            speak_sentence=xml.SpeakSentence("Inner speak sentence", voice="paul",
+                                                             gender="male", locale="en_US"))
+    hangup = xml.Hangup()
+
+    response.push(speak_sentence)
+    response.push(transfer)
+    response.push(hangup)
+
+    print(response.to_xml())
+```
+
 ####More examples:
 
 Take a look of [python bandwidth examples repository](https://github.com/bandwidthcom/python-bandwidth-examples).
