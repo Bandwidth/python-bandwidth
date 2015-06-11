@@ -1403,6 +1403,7 @@ class Media(ListResource):
 class Message(GenericResource):
     _path = 'messages'
     STATES = enum('received', 'queued', 'sending', 'sent', 'error')
+    RECEIPT_REQUEST = ['all', 'error', 'none']
     id = None
     direction = None
     callback_url = None
@@ -1414,11 +1415,16 @@ class Message(GenericResource):
     time = None
     text = None
     tag = None
+    receipt_requested = None
+    delivery_state = None
+    delivery_code = None
+    delivery_description = None
     error_message = None
 
     _fields = frozenset(('id', 'direction', 'callback_url', 'callback_timeout',
                          'fallback_url', 'from_', 'to', 'state', 'time', 'text',
-                         'error_message', 'tag'))
+                         'error_message', 'tag', 'receipt_requested', 'delivery_state',
+                         'delivery_code', 'delivery_description'))
     _multi = False
     _batch_messages = None
 
@@ -1436,9 +1442,10 @@ class Message(GenericResource):
             r = client.post(url, data=post_data).json()
             return r
 
-        def push_message(self, sender, receiver, text, callback_url=None, tag=None):
+        def push_message(self, sender, receiver, text, callback_url=None, tag=None, receipt_requested=None):
             message = Message._prepare_message(sender=sender, receiver=receiver, text=text,
-                                               callback_url=callback_url, tag=tag)
+                                               callback_url=callback_url, tag=tag,
+                                               receipt_requested=receipt_requested)
             self.messages.append(message)
 
         def execute(self):
@@ -1463,27 +1470,36 @@ class Message(GenericResource):
         self.client = get_client()
         if isinstance(data, dict):
             self.set_up(from_api(data))
+
+            if self.receipt_requested is not None and self.receipt_requested not in self.RECEIPT_REQUEST:
+                raise TypeError('Accepted only all, error or none as receipt_request')
+
         elif isinstance(data, six.string_types):
             self.id = data
         else:
             raise TypeError('Accepted only message-id or message data as dictionary')
 
     def __repr__(self):
-        return 'Message({}, state={})'.format(self.id, self.state)
+        return 'Message({}, state={}, delivery_state={})'.format(self.id, self.state, self.delivery_state)
 
     def set_up(self, data):
         self.from_ = self.from_ or data.get('from')
         super(Message, self).set_up(data)
 
     @classmethod
-    def _prepare_message(cls, sender, receiver, text, callback_url=None, tag=None):
+    def _prepare_message(cls, sender, receiver, text, callback_url=None, tag=None, receipt_requested=None):
         if isinstance(sender, PhoneNumber):
             sender = sender.number
+
+        if receipt_requested is not None and receipt_requested not in cls.RECEIPT_REQUEST:
+            raise TypeError('Accepted only all, error or none as receipt_requested')
+
         data = {
             'from': sender,
             'to': receiver,
             'text': text,
             'callback_url': callback_url,
+            'receipt_requested': receipt_requested,
             'tag': tag
         }
         return to_api(data)
@@ -1524,7 +1540,7 @@ class Message(GenericResource):
         return cls(data_as_dict)
 
     @classmethod
-    def send(cls, sender, receiver, text, callback_url=None, tag=None):
+    def send(cls, sender, receiver, text, callback_url=None, tag=None, receipt_requested=None):
         """
         :param sender: One of your telephone numbers the message should come from.
                        Must be PhoneNumber instance or in E.164 format, like +19195551212.
@@ -1533,10 +1549,11 @@ class Message(GenericResource):
         :param text: The contents of the text message.
         :param callback_url: URL where the events related to the outgoing message will be posted to.
         :param tag: A string that will be included in the callback events of the message.
+        :param receipt_requested: A enum option specifying if the message wants receipt.
         :return: New message instance with filled data.
         """
         data = cls._prepare_message(sender=sender, receiver=receiver, text=text,
-                                    callback_url=callback_url, tag=tag)
+                                    callback_url=callback_url, tag=tag, receipt_requested=receipt_requested)
 
         client = cls.client or get_client()
         r = client.post(cls._path, data=data)
@@ -1596,8 +1613,8 @@ class Domain(GenericResource):
     @classmethod
     def create(cls, **data):
         """
-        :name: A name you choose for this domain
-        :description: A description you choose for this domain
+        :param name: A name you choose for this domain
+        :param description: A description you choose for this domain
         :return: Domain instance
         """
         client = cls.client or get_client()
@@ -1610,9 +1627,9 @@ class Domain(GenericResource):
     @classmethod
     def list(cls, page=0, size=25):
         """
-        :page: Used for pagination to indicate the page requested for querying a list of domains.
+        :param page: Used for pagination to indicate the page requested for querying a list of domains.
         If no value is specified the default is 1.
-        :size: Used for pagination to indicate the size of each page requested for querying a list of domains.
+        :param size: Used for pagination to indicate the size of each page requested for querying a list of domains.
         If no value is specified the default value is 25. (Maximum value 1000).
         :return: List of Domain instances
         """
@@ -1624,7 +1641,7 @@ class Domain(GenericResource):
     @classmethod
     def get(cls, domain_id):
         """
-        :domain_id: domain id that you want to retrieve.
+        :param domain_id: domain id that you want to retrieve.
         Gets information about one of your domains. No query parameters are supported.
         :return: Domain instance
         """
@@ -1636,7 +1653,7 @@ class Domain(GenericResource):
 
     def patch(self, **data):
         """
-        :description:    A description you choose for this application
+        :param description:    A description you choose for this application
         :return: self if it's patched
         """
         client = self.client or get_client()
@@ -1675,11 +1692,11 @@ class Domain(GenericResource):
     def add_endpoint(self, **params):
         """
         Add endpoints to a domain.
-        :name: A name you choose for this endpoint
-        :description: A description you choose for this endpoint
-        :application_id: A application_id in which the endpoint will be related
-        :enabled: Used to indicate if this endpoing is enabled
-        :credentials: A set of credentials for this endpoints
+        :param name: A name you choose for this endpoint
+        :param description: A description you choose for this endpoint
+        :param application_id: A application_id in which the endpoint will be related
+        :param enabled: Used to indicate if this endpoing is enabled
+        :param credentials: A set of credentials for this endpoints
         :return: Endpoint instance
         """
         client = self.client
@@ -1716,13 +1733,13 @@ class Endpoint(GenericResource):
     @classmethod
     def create(cls, domain_id, **data):
         """
-        :domain_id: domain in which the endpoint belongs to
-        :name: A name you choose for this endpoint
-        :description: A description you choose for this endpoint
-        :domain_id: A domain_id in which this endpoint will be created
-        :application_id: A application_id in which the endpoint will be related
-        :enabled: Used to indicate if this endpoing is enabled
-        :credentials: A set of credentials for this endpoints
+        :param domain_id: domain in which the endpoint belongs to
+        :param name: A name you choose for this endpoint
+        :param description: A description you choose for this endpoint
+        :param domain_id: A domain_id in which this endpoint will be created
+        :param application_id: A application_id in which the endpoint will be related
+        :param enabled: Used to indicate if this endpoing is enabled
+        :param credentials: A set of credentials for this endpoints
         :return: Endpoint instance
         """
         client = cls.client or get_client()
@@ -1736,10 +1753,10 @@ class Endpoint(GenericResource):
     @classmethod
     def list(cls, domain_id, page=0, size=25):
         """
-        :domain_id: domain in which the endpoint belongs to
-        :page: Used for pagination to indicate the page requested for querying a list of endpoints.
+        :param domain_id: domain in which the endpoint belongs to
+        :param page: Used for pagination to indicate the page requested for querying a list of endpoints.
         If no value is specified the default is 1.
-        :size: Used for pagination to indicate the size of each page requested for querying a list of endpoints.
+        :param size: Used for pagination to indicate the size of each page requested for querying a list of endpoints.
         If no value is specified the default value is 25. (Maximum value 1000).
         :return: List of Endpoints instances
         """
@@ -1751,8 +1768,8 @@ class Endpoint(GenericResource):
     @classmethod
     def get(cls, domain_id, endpoint_id):
         """
-        :domain_id: domain in which the endpoint belongs to
-        :endpoint_id: endpoint_id that you want to retrieve.
+        :param domain_id: domain in which the endpoint belongs to
+        :param endpoint_id: endpoint_id that you want to retrieve.
         Gets information about one of your endpoints. No query parameters are supported.
         :return: Endpoint instance
         """
@@ -1764,9 +1781,9 @@ class Endpoint(GenericResource):
 
     def patch(self, **data):
         """
-        :description: A description you choose for this endpoint
-        :application_id: A application_id in which the endpoint will be related
-        :enabled: Used to indicate if this endpoing is enabled
+        :param description: A description you choose for this endpoint
+        :param application_id: A application_id in which the endpoint will be related
+        :param enabled: Used to indicate if this endpoing is enabled
         :return: self if it's patched
         """
         client = self.client or get_client()
@@ -1791,7 +1808,7 @@ class Endpoint(GenericResource):
     def create_token(self, **params):
         """
         Create token to access the endpoint.
-        :expires: time for the token expires (milliseconds)
+        :param expires: time for the token expires (milliseconds)
         :return: EndpointToken instance
         """
         client = self.client

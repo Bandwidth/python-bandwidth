@@ -287,7 +287,7 @@ class MessageEvent(EventType):
 
     @property
     def message(self):
-        return Message({'id': self.message_id, 'state': self.state})
+        return Message({'id': self.message_id, 'state': self.state, 'delivery_state': self.delivery_state})
 
 
 class ConferenceEventMixin(EventType):
