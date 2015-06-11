@@ -213,6 +213,13 @@ Create Domain by method "create":
 Domain(rd-lrek7hie26iihjdja2iibji)
 ```
 
+Delete Domain by method "delete":
+```python
+>>>domain = Domain.create(name='mydomain', description='My domain description')
+>>>domain.delete()
+True
+```
+
 ###Creating SIP endpoint
 
 Import Domain and Endpoint from sdk:
@@ -222,11 +229,18 @@ from bandwidth_sdk import Endpoint
 ```
 
 Create Endpoind via Domain by method "add_endpoint":
-
 ```python
 >>>domain = Domain.create(name='mydomain', description='My domain description')
 >>>domain.add_endpoint(name='myendpoint', description='My endpoint description', credentials={'password':'123456'})
 Endpoint(re-ywfvkvq7dbgfi4ld22d7qqi)
+```
+
+Delete Endpoint by method "delete":
+```python
+>>>domain = Domain.create(name='mydomain', description='My domain description')
+>>>endpoint = domain.add_endpoint(name='myendpoint', description='My endpoint description', credentials={'password':'123456'})
+>>>endpoint.delete()
+True
 ```
 
 ###Creating SIP endpoint token
@@ -238,12 +252,22 @@ from bandwidth_sdk import Endpoint
 ```
 
 Create Endpoind token via Endpoint by method "create_token":
-
 ```python
 >>>domain = Domain.create(name='mydomain', description='My domain description')
 >>>endpoint = domain.add_endpoint(name='myendpoint', description='My endpoint description', credentials={'password':'123456'})
 >>>endpoint.create_token()
 EndpointToken(241ebe3ab1b884bb00f214c99dd83546c32d437c89156a05afc9c34043223915)
+```
+
+Delete Endpoint token by method "delete":
+```python
+>>>Domain.create(name='mydomain', description='My domain description')
+Domain(rd-lrek7hie26iihjdja2iibji)
+>>>Endpoint.create('rd-lrek7hie26iihjdja2iibji', name='myendpoint', description='My endpoint description', credentials={'password':'123456'})
+Endpoint(re-ywfvkvq7dbgfi4ld22d7qqi)
+>>>token = EndpointToken.create('rd-lrek7hie26iihjdja2iibji', 're-ywfvkvq7dbgfi4ld22d7qqi')
+>>>token.delete()
+True
 ```
 
 ####More examples:
