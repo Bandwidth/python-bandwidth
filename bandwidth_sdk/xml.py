@@ -44,30 +44,56 @@ class Transfer(object):
     """
         The Transfer verb is used to transfer the call to another number
     """
-    def __init__(self, transfer_caller_id=None, transfer_to=None, phone_number=None, speak_sentence=None):
+    def __init__(self, transfer_caller_id=None, transfer_to=None, phone_number=None, speak_sentence=None,
+                 play_audio=None, call_timeout=None, recording_enabled=None, recording_callback_url=None,
+                 file_format=None, terminating_digits=None, max_duration=None, transcribe=None,
+                 transcribe_callback_url=None):
         self._param = OrderedDict()
         self._subparam = OrderedDict()
         if transfer_caller_id is not None:
             self._param["transferCallerId"] = str(transfer_caller_id)
         if transfer_to is not None:
             self._param["transferTo"] = str(transfer_to)
+        if call_timeout is not None:
+            self._param["call_timeout"] = str(call_timeout)
+        if recording_enabled is not None:
+            self._param["recording_enabled"] = str(recording_enabled)
+        if recording_callback_url is not None:
+            self._param["recording_callback_url"] = str(recording_callback_url)
+        if file_format is not None:
+            self._param["file_format"] = str(file_format)
+        if terminating_digits is not None:
+            self._param["terminating_digits"] = str(terminating_digits)
+        if max_duration is not None:
+            self._param["max_duration"] = str(max_duration)
+        if transcribe is not None:
+            self._param["transcribe"] = str(transcribe)
+        if transcribe_callback_url is not None:
+            self._param["transcribe_callback_url"] = str(transcribe_callback_url)
+
         if phone_number is not None:
             assert isinstance(phone_number, list), 'Wrong type - expecting a list of phone numbers'
             self._subparam["phoneNumber"] = phone_number
         if speak_sentence is not None:
             assert isinstance(speak_sentence, SpeakSentence), 'Wrong type - expecting a SpeakSentence object'
             self._subparam["speakSentence"] = speak_sentence
+        if play_audio is not None:
+            assert isinstance(play_audio, PlayAudio), 'Wrong type - expecting a PlayAudio object'
+            self._subparam["playAudio"] = play_audio
 
     def _get_sub_parameters(self):
         sub_parameters = []
+
         if len(self._subparam) == 0:
             return {}
         if "phoneNumber" in self._subparam and self._subparam["phoneNumber"] is not None:
             for number in self._subparam["phoneNumber"]:
                 sub_parameters.append(lb.E.PhoneNumber(number))
-
         if "speakSentence" in self._subparam and self._subparam["speakSentence"] is not None:
             sub_parameters.append(self._subparam["speakSentence"].to_xml())
+        if "playAudio" in self._subparam and self._subparam["playAudio"] is not None:
+            sub_parameters.append(self._subparam["playAudio"].to_xml())
+
         return sub_parameters
 
     # Turn a simple dict of key/value pairs into XML
@@ -99,7 +125,7 @@ class Gather(object):
         The Gather verb is used to collect digits for some period of time
     """
     def __init__(self, request_url, request_url_timeout=None, terminating_digits=None, inter_digit_timeout=None,
-                 bargeable=None, speak_sentence=None, play_audio=None):
+                 bargeable=None, speak_sentence=None, play_audio=None, max_digits=None):
         self._param = OrderedDict()
         self._subparam = OrderedDict()
         if request_url is not None:
@@ -112,6 +138,8 @@ class Gather(object):
             self._param["interDigitTimeout"] = str(inter_digit_timeout)
         if bargeable is not None:
             self._param["bargeable"] = str(bargeable)
+        if max_digits is not None:
+            self._param["max_digits"] = str(max_digits)
         if speak_sentence is not None:
             assert isinstance(speak_sentence, SpeakSentence), 'Wrong type - expecting a SpeakSentence object'
             self._subparam["speakSentence"] = speak_sentence
@@ -188,8 +216,7 @@ class Record(object):
         The Record verb allow call recording
     """
     def __init__(self, request_url=None, request_url_timeout=None, terminating_digits=None, max_duration=None,
-                 transcribe=None,
-                 transcribe_callback_url=None):
+                 transcribe=None, transcribe_callback_url=None, file_format=None):
         self._param = OrderedDict()
         if request_url is not None:
             self._param["requestUrl"] = str(request_url)
@@ -203,6 +230,8 @@ class Record(object):
             self._param["transcribe"] = str(transcribe)
         if transcribe_callback_url is not None:
             self._param["transcribeCallbackUrl"] = str(transcribe_callback_url)
+        if file_format is not None:
+            self._param["file_format"] = str(file_format)
 
     # Turn a simple dict of key/value pairs into XML
     def to_xml(self):
