@@ -3070,9 +3070,9 @@ class MediaTest(SdkTestCase):
                       status=200,
                       content_type='application/json')
 
-        medias = Media.list()
+        media_list = Media.list()
 
-        media = medias[0]
+        media = media_list[0]
 
         self.assertIsInstance(media, Media)
         self.assertEqual(media.media_name, 'one')
@@ -3566,6 +3566,115 @@ class MessageTestCase(SdkTestCase):
         assertJsonEq(request_message, '{"to": "+19796543212", "from": "+19796543211", '
                                       '"text": "Good morning, this is a test message", '
                                       '"tag": "test tag"}')
+
+    @responses.activate
+    def test_send_mms_message(self):
+        """
+        Message.send(sender='+19796543211',
+                     receiver='+19796543212',
+                     text='Good morning,
+                     this is a test message',
+                     media=['https://api.catapult.inetwork.com/v1/users/u-user/media/m-media.jpg'],
+                     tag='test tag')
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/messages',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/messages/new-mess-id'})
+        number = PhoneNumber({'id': 'phone_id', 'number': '+19796543211'})
+        media_list = [Media('media-id')]
+
+        message = Message.send(sender=number,
+                               receiver='+19796543212',
+                               text='Good morning, '
+                                    'this is a test message',
+                               media_list=media_list,
+                               tag='test tag')
+        self.assertIsInstance(message, Message)
+        self.assertEqual(message.id, 'new-mess-id')
+        self.assertEqual(message.from_, '+19796543211')
+        self.assertEqual(message.text, 'Good morning, this is a test message')
+        self.assertEqual(message.media_list, ["https://api.catapult.inetwork.com/v1/users/u-user/media/media-id"])
+        self.assertEqual(message.tag, 'test tag')
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"media": ["https://api.catapult.inetwork.com/v1/users/u-user/media/media-id"], '
+                                      '"text": "Good morning, this is a test message", '
+                                      '"to": "+19796543212", "from": "+19796543211", '
+                                      '"tag": "test tag"}')
+
+    @responses.activate
+    def test_send_mms_no_text_message(self):
+        """
+        Message.send(sender='+19796543211',
+                     receiver='+19796543212',
+                     media=['https://api.catapult.inetwork.com/v1/users/u-user/media/m-media.jpg'],
+                     tag='test tag')
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/messages',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/messages/new-mess-id'})
+        number = PhoneNumber({'id': 'phone_id', 'number': '+19796543211'})
+        media_list = [Media('media-id')]
+
+        message = Message.send(sender=number,
+                               receiver='+19796543212',
+                               media_list=media_list,
+                               tag='test tag')
+        self.assertIsInstance(message, Message)
+        self.assertEqual(message.id, 'new-mess-id')
+        self.assertEqual(message.from_, '+19796543211')
+        self.assertEqual(message.media_list, ["https://api.catapult.inetwork.com/v1/users/u-user/media/media-id"])
+        self.assertEqual(message.tag, 'test tag')
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"media": ["https://api.catapult.inetwork.com/v1/users/u-user/media/media-id"], '
+                                      '"to": "+19796543212", "from": "+19796543211", '
+                                      '"tag": "test tag"}')
+
+    @responses.activate
+    def test_send_mms_message_multiple_media(self):
+        """
+        Message.send(sender='+19796543211',
+                     receiver='+19796543212',
+                     text='Good morning,
+                     this is a test message',
+                     media=['https://api.catapult.inetwork.com/v1/users/u-user/media/media-id',
+                            'https://api.catapult.inetwork.com/v1/users/u-user/media/media-id2'],
+                     tag='test tag')
+        """
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/messages',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/messages/new-mess-id'})
+        number = PhoneNumber({'id': 'phone_id', 'number': '+19796543211'})
+        media_list = [Media('media-id'), Media('media-id2')]
+
+        message = Message.send(sender=number,
+                               receiver='+19796543212',
+                               text='Good morning, '
+                                    'this is a test message',
+                               media_list=media_list,
+                               tag='test tag')
+        self.assertIsInstance(message, Message)
+        self.assertEqual(message.id, 'new-mess-id')
+        self.assertEqual(message.from_, '+19796543211')
+        self.assertEqual(message.text, 'Good morning, this is a test message')
+        self.assertEqual(message.media_list, ["https://api.catapult.inetwork.com/v1/users/u-user/media/media-id",
+                                          "https://api.catapult.inetwork.com/v1/users/u-user/media/media-id2"])
+        self.assertEqual(message.tag, 'test tag')
+        request_message = responses.calls[0].request.body
+        assertJsonEq(request_message, '{"media": ["https://api.catapult.inetwork.com/v1/users/u-user/media/media-id", '
+                                                 '"https://api.catapult.inetwork.com/v1/users/u-user/media/media-id2"], '
+                                      '"text": "Good morning, this is a test message", '
+                                      '"to": "+19796543212", "from": "+19796543211", '
+                                      '"tag": "test tag"}')
+
 
     @responses.activate
     def test_send_batch_messages(self):

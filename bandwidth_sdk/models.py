@@ -1414,6 +1414,7 @@ class Message(GenericResource):
     state = None
     time = None
     text = None
+    media_list = None
     tag = None
     receipt_requested = None
     delivery_state = None
@@ -1424,7 +1425,7 @@ class Message(GenericResource):
     _fields = frozenset(('id', 'direction', 'callback_url', 'callback_timeout',
                          'fallback_url', 'from_', 'to', 'state', 'time', 'text',
                          'error_message', 'tag', 'receipt_requested', 'delivery_state',
-                         'delivery_code', 'delivery_description'))
+                         'delivery_code', 'delivery_description', 'media_list'))
     _multi = False
     _batch_messages = None
 
@@ -1442,10 +1443,11 @@ class Message(GenericResource):
             r = client.post(url, data=post_data).json()
             return r
 
-        def push_message(self, sender, receiver, text, callback_url=None, tag=None, receipt_requested=None):
+        def push_message(self, sender, receiver, text=None, media_list=None, callback_url=None, tag=None, receipt_requested=None):
             message = Message._prepare_message(sender=sender, receiver=receiver, text=text,
                                                callback_url=callback_url, tag=tag,
-                                               receipt_requested=receipt_requested)
+                                               receipt_requested=receipt_requested,
+                                               media_list=media_list)
             self.messages.append(message)
 
         def execute(self):
@@ -1484,10 +1486,11 @@ class Message(GenericResource):
 
     def set_up(self, data):
         self.from_ = self.from_ or data.get('from')
+        self.media_list = data.get("media")
         super(Message, self).set_up(data)
 
     @classmethod
-    def _prepare_message(cls, sender, receiver, text, callback_url=None, tag=None, receipt_requested=None):
+    def _prepare_message(cls, sender, receiver, text=None, media_list=None, callback_url=None, tag=None, receipt_requested=None):
         if isinstance(sender, PhoneNumber):
             sender = sender.number
 
@@ -1502,6 +1505,10 @@ class Message(GenericResource):
             'receipt_requested': receipt_requested,
             'tag': tag
         }
+
+        if (media_list is not None):
+            data['media'] = [m.get_full_media_url() for m in media_list]
+
         return to_api(data)
 
     @classmethod
@@ -1540,20 +1547,22 @@ class Message(GenericResource):
         return cls(data_as_dict)
 
     @classmethod
-    def send(cls, sender, receiver, text, callback_url=None, tag=None, receipt_requested=None):
+    def send(cls, sender, receiver, text=None, media_list=None, callback_url=None, tag=None, receipt_requested=None):
         """
         :param sender: One of your telephone numbers the message should come from.
                        Must be PhoneNumber instance or in E.164 format, like +19195551212.
         :param receiver: The phone number the message should be sent to
                          (must be in E.164 format, like +19195551212)
         :param text: The contents of the text message.
+        :param media_list: A list of catapult media objects to be included into the message
         :param callback_url: URL where the events related to the outgoing message will be posted to.
         :param tag: A string that will be included in the callback events of the message.
         :param receipt_requested: A enum option specifying if the message wants receipt.
         :return: New message instance with filled data.
         """
         data = cls._prepare_message(sender=sender, receiver=receiver, text=text,
-                                    callback_url=callback_url, tag=tag, receipt_requested=receipt_requested)
+                                    callback_url=callback_url, tag=tag, receipt_requested=receipt_requested,
+                                    media_list=media_list)
 
         client = cls.client or get_client()
         r = client.post(cls._path, data=data)
