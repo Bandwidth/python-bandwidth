@@ -1,3 +1,4 @@
+lxml
 requests
 six
 python-dateutil==2.2

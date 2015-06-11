@@ -5,7 +5,7 @@ from collections import namedtuple
 from .client import get_client
 from .utils import to_api, from_api, enum, get_location_id, file_exists
 from .errors import AppPlatformError
-from.generics import AudioMixin
+from .generics import AudioMixin
 
 
 class BaseResource(object):
