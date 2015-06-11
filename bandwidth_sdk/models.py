@@ -5,7 +5,7 @@ from collections import namedtuple
 from .client import get_client
 from .utils import to_api, from_api, enum, get_location_id, file_exists
 from .errors import AppPlatformError
-from.generics import AudioMixin
+from .generics import AudioMixin
 
 
 class BaseResource(object):
@@ -1403,6 +1403,7 @@ class Media(ListResource):
 class Message(GenericResource):
     _path = 'messages'
     STATES = enum('received', 'queued', 'sending', 'sent', 'error')
+    RECEIPT_REQUEST = ['all', 'error', 'none']
     id = None
     direction = None
     callback_url = None
@@ -1414,11 +1415,16 @@ class Message(GenericResource):
     time = None
     text = None
     tag = None
+    receipt_requested = None
+    delivery_state = None
+    delivery_code = None
+    delivery_description = None
     error_message = None
 
     _fields = frozenset(('id', 'direction', 'callback_url', 'callback_timeout',
                          'fallback_url', 'from_', 'to', 'state', 'time', 'text',
-                         'error_message', 'tag'))
+                         'error_message', 'tag', 'receipt_requested', 'delivery_state',
+                         'delivery_code', 'delivery_description'))
     _multi = False
     _batch_messages = None
 
@@ -1436,9 +1442,10 @@ class Message(GenericResource):
             r = client.post(url, data=post_data).json()
             return r
 
-        def push_message(self, sender, receiver, text, callback_url=None, tag=None):
+        def push_message(self, sender, receiver, text, callback_url=None, tag=None, receipt_requested=None):
             message = Message._prepare_message(sender=sender, receiver=receiver, text=text,
-                                               callback_url=callback_url, tag=tag)
+                                               callback_url=callback_url, tag=tag,
+                                               receipt_requested=receipt_requested)
             self.messages.append(message)
 
         def execute(self):
@@ -1463,27 +1470,36 @@ class Message(GenericResource):
         self.client = get_client()
         if isinstance(data, dict):
             self.set_up(from_api(data))
+
+            if self.receipt_requested is not None and self.receipt_requested not in self.RECEIPT_REQUEST:
+                raise TypeError('Accepted only all, error or none as receipt_request')
+
         elif isinstance(data, six.string_types):
             self.id = data
         else:
             raise TypeError('Accepted only message-id or message data as dictionary')
 
     def __repr__(self):
-        return 'Message({}, state={})'.format(self.id, self.state)
+        return 'Message({}, state={}, delivery_state={})'.format(self.id, self.state, self.delivery_state)
 
     def set_up(self, data):
         self.from_ = self.from_ or data.get('from')
         super(Message, self).set_up(data)
 
     @classmethod
-    def _prepare_message(cls, sender, receiver, text, callback_url=None, tag=None):
+    def _prepare_message(cls, sender, receiver, text, callback_url=None, tag=None, receipt_requested=None):
         if isinstance(sender, PhoneNumber):
             sender = sender.number
+
+        if receipt_requested is not None and receipt_requested not in cls.RECEIPT_REQUEST:
+            raise TypeError('Accepted only all, error or none as receipt_requested')
+
         data = {
             'from': sender,
             'to': receiver,
             'text': text,
             'callback_url': callback_url,
+            'receipt_requested': receipt_requested,
             'tag': tag
         }
         return to_api(data)
@@ -1524,7 +1540,7 @@ class Message(GenericResource):
         return cls(data_as_dict)
 
     @classmethod
-    def send(cls, sender, receiver, text, callback_url=None, tag=None):
+    def send(cls, sender, receiver, text, callback_url=None, tag=None, receipt_requested=None):
         """
         :param sender: One of your telephone numbers the message should come from.
                        Must be PhoneNumber instance or in E.164 format, like +19195551212.
@@ -1533,10 +1549,11 @@ class Message(GenericResource):
         :param text: The contents of the text message.
         :param callback_url: URL where the events related to the outgoing message will be posted to.
         :param tag: A string that will be included in the callback events of the message.
+        :param receipt_requested: A enum option specifying if the message wants receipt.
         :return: New message instance with filled data.
         """
         data = cls._prepare_message(sender=sender, receiver=receiver, text=text,
-                                    callback_url=callback_url, tag=tag)
+                                    callback_url=callback_url, tag=tag, receipt_requested=receipt_requested)
 
         client = cls.client or get_client()
         r = client.post(cls._path, data=data)
@@ -1575,6 +1592,285 @@ class Message(GenericResource):
 
         """
         return cls._Multi()
+
+
+class Domain(GenericResource):
+    id = None
+    name = None
+    description = None
+    _path = 'domains'
+    _fields = ('id', 'name', 'description', 'endpoints')
+
+    def __init__(self, data):
+        self.client = get_client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.id = data
+        else:
+            raise TypeError('Accepted only domain-id or domain data as dictionary')
+
+    @classmethod
+    def create(cls, **data):
+        """
+        :param name: A name you choose for this domain
+        :param description: A description you choose for this domain
+        :return: Domain instance
+        """
+        client = cls.client or get_client()
+        p_data = to_api(data)
+        resp = client.post(cls._path, data=p_data)
+        domain_id = get_location_id(resp)
+        data.update({'id': domain_id})
+        return cls(data=data)
+
+    @classmethod
+    def list(cls, page=0, size=25):
+        """
+        :param page: Used for pagination to indicate the page requested for querying a list of domains.
+        If no value is specified the default is 1.
+        :param size: Used for pagination to indicate the size of each page requested for querying a list of domains.
+        If no value is specified the default value is 25. (Maximum value 1000).
+        :return: List of Domain instances
+        """
+        client = cls.client or get_client()
+        data_as_list = client.get(
+            cls._path, params=dict(page=page, size=size)).json()
+        return [cls(data=from_api(v)) for v in data_as_list]
+
+    @classmethod
+    def get(cls, domain_id):
+        """
+        :param domain_id: domain id that you want to retrieve.
+        Gets information about one of your domains. No query parameters are supported.
+        :return: Domain instance
+        """
+        client = cls.client or get_client()
+        url = '{}/{}'.format(cls._path, domain_id)
+        data_as_dict = client.get(url).json()
+        domain = cls(data=from_api(data_as_dict))
+        return domain
+
+    def patch(self, **data):
+        """
+        :param description:    A description you choose for this application
+        :return: self if it's patched
+        """
+        client = self.client or get_client()
+        url = '{}/{}'.format(self._path, self.id)
+        cleaned_data = {k: v for k, v in data.items() if v is not None and k in self._fields}
+        client.post(url, data=to_api(cleaned_data))
+        if cleaned_data:
+            self.data = cleaned_data
+            self.set_up(self.data)
+        return self
+
+    def delete(self):
+        """
+        Delete domain instance on catapult side.
+        :return: True if it's deleted
+        """
+        client = self.client or get_client()
+        url = '{}/{}'.format(self._path, self.id)
+        client.delete(url)
+        return True
+
+    def refresh(self):
+        url = '{}/{}'.format(self._path, self.id)
+        data = self.client.get(url).json()
+        self.set_up(from_api(data))
+
+    def get_endpoints(self):
+        """
+        List all endpoints from a domain.
+        """
+        client = self.client
+        url = '{}/{}/endpoints'.format(self._path, self.id)
+        endpoint_list = client.get(url).json()
+        return [Endpoint(self.id, data) for data in endpoint_list]
+
+    def add_endpoint(self, **params):
+        """
+        Add endpoints to a domain.
+        :param name: A name you choose for this endpoint
+        :param description: A description you choose for this endpoint
+        :param application_id: A application_id in which the endpoint will be related
+        :param enabled: Used to indicate if this endpoing is enabled
+        :param credentials: A set of credentials for this endpoints
+        :return: Endpoint instance
+        """
+        client = self.client
+        url = '{}/{}/endpoints'.format(self._path, self.id)
+        data = to_api(params)
+        r = client.post(url, data=data)
+        endpoint_id = get_location_id(r)
+        data.update({'id': endpoint_id})
+        return Endpoint(self.id, data)
+
+
+class Endpoint(GenericResource):
+    id = None
+    name = None
+    description = None
+    domain_id = None
+    application_id = None
+    enabled = True
+    credentials = None
+    sip_uri = None
+
+    _fields = ('id', 'name', 'description', 'domain_id', 'application_id', 'enabled', 'credentials', 'sip_uri')
+
+    def __init__(self, domain_id, data):
+        self.client = get_client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.id = data
+        else:
+            raise TypeError('Accepted only endpoint-id or endpoint data as dictionary')
+        self.domain_id = domain_id
+
+    @classmethod
+    def create(cls, domain_id, **data):
+        """
+        :param domain_id: domain in which the endpoint belongs to
+        :param name: A name you choose for this endpoint
+        :param description: A description you choose for this endpoint
+        :param domain_id: A domain_id in which this endpoint will be created
+        :param application_id: A application_id in which the endpoint will be related
+        :param enabled: Used to indicate if this endpoing is enabled
+        :param credentials: A set of credentials for this endpoints
+        :return: Endpoint instance
+        """
+        client = cls.client or get_client()
+        p_data = to_api(data)
+        url = 'domains/{}/endpoints'.format(domain_id)
+        resp = client.post(url, data=p_data)
+        endpoint_id = get_location_id(resp)
+        data.update({'id': endpoint_id})
+        return cls(domain_id, data=data)
+
+    @classmethod
+    def list(cls, domain_id, page=0, size=25):
+        """
+        :param domain_id: domain in which the endpoint belongs to
+        :param page: Used for pagination to indicate the page requested for querying a list of endpoints.
+        If no value is specified the default is 1.
+        :param size: Used for pagination to indicate the size of each page requested for querying a list of endpoints.
+        If no value is specified the default value is 25. (Maximum value 1000).
+        :return: List of Endpoints instances
+        """
+        client = cls.client or get_client()
+        url = 'domains/{}/endpoints'.format(domain_id)
+        data_as_list = client.get(url, params=dict(page=page, size=size)).json()
+        return [cls(domain_id, data=from_api(v)) for v in data_as_list]
+
+    @classmethod
+    def get(cls, domain_id, endpoint_id):
+        """
+        :param domain_id: domain in which the endpoint belongs to
+        :param endpoint_id: endpoint_id that you want to retrieve.
+        Gets information about one of your endpoints. No query parameters are supported.
+        :return: Endpoint instance
+        """
+        client = cls.client or get_client()
+        url = 'domains/{}/endpoints/{}'.format(domain_id, endpoint_id)
+        data_as_dict = client.get(url).json()
+        endpoint = cls(domain_id, data=from_api(data_as_dict))
+        return endpoint
+
+    def patch(self, **data):
+        """
+        :param description: A description you choose for this endpoint
+        :param application_id: A application_id in which the endpoint will be related
+        :param enabled: Used to indicate if this endpoing is enabled
+        :return: self if it's patched
+        """
+        client = self.client or get_client()
+        url = 'domains/{}/endpoints/{}'.format(self.domain_id, self.id)
+        cleaned_data = {k: v for k, v in data.items() if v is not None and k in self._fields}
+        client.post(url, data=to_api(cleaned_data))
+        if cleaned_data:
+            self.data = cleaned_data
+            self.set_up(self.data)
+        return self
+
+    def delete(self):
+        """
+        Delete endpoint instance on catapult side.
+        :return: True if it's deleted
+        """
+        client = self.client or get_client()
+        url = 'domains/{}/endpoints/{}'.format(self.domain_id, self.id)
+        client.delete(url)
+        return True
+
+    def create_token(self, **params):
+        """
+        Create token to access the endpoint.
+        :param expires: time for the token expires (milliseconds)
+        :return: EndpointToken instance
+        """
+        client = self.client or get_client()
+        url = 'domains/{}/endpoints/{}/tokens'.format(self.domain_id, self.id)
+        data = to_api(params)
+        resp = client.post(url, data=data)
+        token_id = get_location_id(resp)
+        data_as_dict = resp.json()
+        data_as_dict['id'] = token_id
+        return EndpointToken(self.domain_id, self.id, data=from_api(data_as_dict))
+
+    def refresh(self):
+        url = 'domains/{}/endpoints/{}'.format(self.domain_id, self.id)
+        data = self.client.get(url).json()
+        self.set_up(from_api(data))
+
+
+class EndpointToken(GenericResource):
+    id = None
+    token = None
+    expires = None
+    domain_id = None
+    endpoint_id = None
+
+    _fields = ('id', 'token', 'expires')
+
+    def __init__(self, domain_id, endpoint_id, data):
+        self.client = get_client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.id = data
+        else:
+            raise TypeError('Accepted only token data as dictionary')
+        self.domain_id = domain_id
+        self.endpoint_id = endpoint_id
+
+    @classmethod
+    def create(cls, domain_id, endpoint_id, **params):
+        """
+        Create token to access the endpoint.
+        :param expires: time for the token expires (milliseconds)
+        :return: EndpointToken instance
+        """
+        client = cls.client or get_client()
+        url = 'domains/{}/endpoints/{}/tokens'.format(domain_id, endpoint_id)
+        data = to_api(params)
+        resp = client.post(url, data=data)
+        token_id = get_location_id(resp)
+        data_as_dict = resp.json()
+        data_as_dict['id'] = token_id
+        return cls(domain_id, endpoint_id, data=from_api(data_as_dict))
+
+    def delete(self):
+        """
+        Delete endpoint token instance on catapult side.
+        :return: True if it's deleted
+        """
+        client = self.client or get_client()
+        url = 'domains/{}/endpoints/{}/tokens/{}'.format(self.domain_id, self.endpoint_id, self.id)
+        client.delete(url)
+        return True
 
 
 class UserError(ListResource):
