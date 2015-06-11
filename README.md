@@ -35,8 +35,12 @@ Note: This may have to be run as `root` or with `--user` flag if you are not usi
 * [Allocating a phone number ](#allocate-phone-number-basic)
 * [Calls basic usage](#calls-basic-usage)
 * [Uploading media](#uploading-the-media)
-* [Sending text message](#uploading-the-media)
+* [Sending text message](#sending-text-message)
+* [Sending text message with receipt](#sending-text-message-with-receipt)
 * [Getting number info](#getting-number-info)
+* [Creating SIP domain](#creating-sip-domain)
+* [Creating SIP endpoint](#creating-sip-endpoint)
+* [Creating SIP endpoint token](#creating-sip-endpoint-token)
 
 
 ### The SDK setup
@@ -162,8 +166,21 @@ from bandwidth_sdk import Message
 Send message by method "send":
 
 ```python
-Message.send(sender='+19796543211',receiver='+19796543212', text='Good morning, this is a test message', tag='test tag')
+Message.send(sender='+19796543211', receiver='+19796543212', text='Good morning, this is a test message', tag='test tag')
 >>> Message('m-id123213', state='sending')
+```
+
+###Sending text message with receipt
+
+Import Message from sdk:
+```python
+from bandwidth_sdk import Message
+```
+Send message by method "send":
+
+```python
+Message.send(sender='+19796543211', receiver='+19796543212', text='Good morning, this is a test message', tag='test tag', receipt_requested='all')
+>>> Message('m-id123213', state='sending', delivery_state='waiting')
 ```
 
 ###Getting number info
@@ -181,6 +198,52 @@ NumberInfo.get('+1900000001')
 n_info = _
 n_info.updated
 >>>datetime.datetime(2014, 12, 19, 2, 14, 14, tzinfo=tzutc())
+```
+
+###Creating SIP domain
+
+Import Domain from sdk:
+```python
+from bandwidth_sdk import Domain
+```
+
+Create Domain by method "create":
+```python
+>>>Domain.create(name='mydomain', description='My domain description')
+Domain(rd-lrek7hie26iihjdja2iibji)
+```
+
+###Creating SIP endpoint
+
+Import Domain and Endpoint from sdk:
+```python
+from bandwidth_sdk import Domain
+from bandwidth_sdk import Endpoint
+```
+
+Create Endpoind via Domain by method "add_endpoint":
+
+```python
+>>>domain = Domain.create(name='mydomain', description='My domain description')
+>>>domain.add_endpoint(name='myendpoint', description='My endpoint description', credentials={'password':'123456'})
+Endpoint(re-ywfvkvq7dbgfi4ld22d7qqi)
+```
+
+###Creating SIP endpoint token
+
+Import Domain and Endpoint from sdk:
+```python
+from bandwidth_sdk import Domain
+from bandwidth_sdk import Endpoint
+```
+
+Create Endpoind token via Endpoint by method "create_token":
+
+```python
+>>>domain = Domain.create(name='mydomain', description='My domain description')
+>>>endpoint = domain.add_endpoint(name='myendpoint', description='My endpoint description', credentials={'password':'123456'})
+>>>endpoint.create_token()
+EndpointToken(241ebe3ab1b884bb00f214c99dd83546c32d437c89156a05afc9c34043223915)
 ```
 
 ####More examples:
