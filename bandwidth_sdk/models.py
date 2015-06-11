@@ -1577,6 +1577,225 @@ class Message(GenericResource):
         return cls._Multi()
 
 
+class Domain(GenericResource):
+    id = None
+    name = None
+    description = None
+    _path = 'domains'
+    _fields = ('id', 'name', 'description', 'endpoints')
+
+    def __init__(self, data):
+        self.client = get_client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.id = data
+        else:
+            raise TypeError('Accepted only domain-id or domain data as dictionary')
+
+    @classmethod
+    def create(cls, **data):
+        """
+        :name: A name you choose for this domain
+        :description: A description you choose for this domain
+        :return: Domain instance
+        """
+        client = cls.client or get_client()
+        p_data = to_api(data)
+        resp = client.post(cls._path, data=p_data)
+        domain_id = get_location_id(resp)
+        data.update({'id': domain_id})
+        return cls(data=data)
+
+    @classmethod
+    def list(cls, page=0, size=25):
+        """
+        :page: Used for pagination to indicate the page requested for querying a list of domains.
+        If no value is specified the default is 1.
+        :size: Used for pagination to indicate the size of each page requested for querying a list of domains.
+        If no value is specified the default value is 25. (Maximum value 1000).
+        :return: List of Domain instances
+        """
+        client = cls.client or get_client()
+        data_as_list = client.get(
+            cls._path, params=dict(page=page, size=size)).json()
+        return [cls(data=from_api(v)) for v in data_as_list]
+
+    @classmethod
+    def get(cls, domain_id):
+        """
+        :domain_id: domain id that you want to retrieve.
+        Gets information about one of your domains. No query parameters are supported.
+        :return: Domain instance
+        """
+        client = cls.client or get_client()
+        url = '{}/{}'.format(cls._path, domain_id)
+        data_as_dict = client.get(url).json()
+        domain = cls(data=from_api(data_as_dict))
+        return domain
+
+    def patch(self, **data):
+        """
+        :description:    A description you choose for this application
+        :return: self if it's patched
+        """
+        client = self.client or get_client()
+        url = '{}/{}'.format(self._path, self.id)
+        cleaned_data = {k: v for k, v in data.items() if v is not None and k in self._fields}
+        client.post(url, data=to_api(cleaned_data))
+        if cleaned_data:
+            self.data = cleaned_data
+            self.set_up(self.data)
+        return self
+
+    def delete(self):
+        """
+        Delete domain instance on catapult side.
+        :return: True if it's deleted
+        """
+        client = self.client or get_client()
+        url = '{}/{}'.format(self._path, self.id)
+        client.delete(url)
+        return True
+
+    def refresh(self):
+        url = '{}/{}'.format(self._path, self.id)
+        data = self.client.get(url).json()
+        self.set_up(from_api(data))
+
+    def get_endpoints(self):
+        """
+        List all endpoints from a domain.
+        """
+        client = self.client
+        url = '{}/{}/endpoints'.format(self.path, self.id)
+        endpoint_list = client.get(url).json()
+        return [self.endpoint(data) for data in endpoint_list]
+
+    def add_endpoint(self, **params):
+        """
+        Add endpoints to a domain.
+        """
+        client = self.client
+        url = '{}/{}/endpoints'.format(self.path, self.id)
+        data = to_api(params)
+        r = client.post(url, data=data)
+        endpoint_id = get_location_id(r)
+        data.update({'id': endpoint_id})
+        return self.endpoint(data)
+
+    @property
+    def endpoint(self, data):
+        """
+        Get endpoint class closure.
+        >>> Domain('domain-id').endpoint('endpoint-id').get()
+        """
+        return Endpoint(self.id, data)
+
+
+class Endpoint(GenericResource):
+    id = None
+    name = None
+    description = None
+    domain_id = None
+    application_id = None
+    enabled = True
+    credentials = None
+    sipUri = None
+
+    _fields = ('id', 'name', 'description', 'domain_id', 'application_id', 'enabled', 'credentials', 'sipUri')
+
+    def __init__(self, domain_id, data):
+        self.client = get_client()
+        if isinstance(data, dict):
+            self.set_up(from_api(data))
+        elif isinstance(data, six.string_types):
+            self.id = data
+        else:
+            raise TypeError('Accepted only endpoint-id or endpoint data as dictionary')
+        self.domain_id = domain_id
+
+    @classmethod
+    def create(cls, domain_id, **data):
+        """
+        :domain_id: domain in which the endpoint belongs to
+        :name: A name you choose for this endpoint
+        :description: A description you choose for this endpoint
+        :domain_id: A domain_id in which this endpoint will be created
+        :application_id: A application_id in which the endpoint will be related
+        :enabled: Used to indicate if this endpoing is enabled
+        :credentials: A set of credentials for this endpoints
+        :return: Endpoint instance
+        """
+        client = cls.client or get_client()
+        p_data = to_api(data)
+        url = 'domains/{}/endpoints'.format(domain_id)
+        resp = client.post(url, data=p_data)
+        endpoint_id = get_location_id(resp)
+        data.update({'id': endpoint_id})
+        return cls(data=data)
+
+    @classmethod
+    def list(cls, domain_id, page=0, size=25):
+        """
+        :domain_id: domain in which the endpoint belongs to
+        :page: Used for pagination to indicate the page requested for querying a list of endpoints.
+        If no value is specified the default is 1.
+        :size: Used for pagination to indicate the size of each page requested for querying a list of endpoints.
+        If no value is specified the default value is 25. (Maximum value 1000).
+        :return: List of Endpoints instances
+        """
+        client = cls.client or get_client()
+        url = 'domains/{}/endpoints'.format(domain_id)
+        data_as_list = client.get(url, params=dict(page=page, size=size)).json()
+        return [cls(data=from_api(v)) for v in data_as_list]
+
+    @classmethod
+    def get(cls, domain_id, endpoint_id):
+        """
+        :domain_id: domain in which the endpoint belongs to
+        :endpoint_id: endpoint_id that you want to retrieve.
+        Gets information about one of your endpoints. No query parameters are supported.
+        :return: Endpoint instance
+        """
+        client = cls.client or get_client()
+        url = 'domains/{}/endpoints/{}'.format(domain_id, endpoint_id)
+        data_as_dict = client.get(url).json()
+        endpoint = cls(data=from_api(data_as_dict))
+        return endpoint
+
+    def patch(self, **data):
+        """
+        :description: A description you choose for this endpoint
+        :application_id: A application_id in which the endpoint will be related
+        :enabled: Used to indicate if this endpoing is enabled
+        :return: self if it's patched
+        """
+        client = self.client or get_client()
+        url = 'domains/{}/endpoints/{}'.format(self.domain_id, self.id)
+        cleaned_data = {k: v for k, v in data.items() if v is not None and k in self._fields}
+        client.post(url, data=to_api(cleaned_data))
+        if cleaned_data:
+            self.data = cleaned_data
+            self.set_up(self.data)
+        return self
+
+    def delete(self):
+        """
+        Delete endpoint instance on catapult side.
+        :return: True if it's deleted
+        """
+        client = self.client or get_client()
+        url = 'domains/{}/endpoints/{}'.format(self.domain_id, self.id)
+        client.delete(url)
+        return True
+
+    def refresh(self):
+        url = 'domains/{}/endpoints/{}'.format(self.domain_id, self.id)
+        data = self.client.get(url).json()
+        self.set_up(from_api(data))
+
+
 class UserError(ListResource):
     """
     The User Errors resource lets you see information about errors that happened in your API calls

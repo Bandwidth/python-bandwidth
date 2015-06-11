@@ -241,6 +241,25 @@ class RecordingCallEvent(CallEvent):
         return Recording(self.recording_id)
 
 
+class TranscriptionEvent(EventType):
+    """
+    Bandwidth API sends this event to the application when an the transcription for the recorded media file is finished.
+    """
+    event_type = None
+    transcription_id = None
+    state = None
+    status = None
+    text_size = None
+    text = None
+    text_url = None
+    transcription_uri = None
+    _fields = frozenset(('transcription_id', 'event_type', 'state', 'status', 'text_size', 'text', 'text_url',
+                         'transcription_uri'))
+
+    def __repr__(self):
+        return 'TranscriptionEvent(transcription_id={})'.format(self.transcription_id)
+
+
 class MessageEvent(EventType):
     """
     Bandwidth API sends this event to the application when an SMS is sent or received.
@@ -256,8 +275,12 @@ class MessageEvent(EventType):
     time = None
     state = None
     tag = None
+    delivery_state = None
+    delivery_code = None
+    delivery_description = None
     _fields = frozenset(('event_type', 'direction', 'message_id', 'message_uri', 'from_', 'to',
-                         'text', 'application_id', 'time', 'state', 'tag'))
+                         'text', 'application_id', 'time', 'state', 'tag', 'delivery_state', 'delivery_code',
+                         'delivery_description'))
 
     def __repr__(self):
         return 'MessageEvent(message_id={})'.format(self.message_id)
@@ -362,6 +385,7 @@ _events = {'hangup': _end_of_call,
            'error': ErrorCallEvent,
            'timeout': TimeoutCallEvent,
            'recording': RecordingCallEvent,
+           'transcription': TranscriptionEvent,
            'sms': MessageEvent,
            'conference': ConferenceEvent,
            'conference-member': ConferenceMemberEvent,
