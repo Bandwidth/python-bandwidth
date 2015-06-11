@@ -1811,10 +1811,13 @@ class Endpoint(GenericResource):
         :param expires: time for the token expires (milliseconds)
         :return: EndpointToken instance
         """
-        client = self.client
+        client = self.client or get_client()
         url = 'domains/{}/endpoints/{}/tokens'.format(self.domain_id, self.id)
         data = to_api(params)
-        data_as_dict = client.post(url, data=data).json()
+        resp = client.post(url, data=data)
+        token_id = get_location_id(resp)
+        data_as_dict = resp.json()
+        data_as_dict['id'] = token_id
         return EndpointToken(self.domain_id, self.id, data=from_api(data_as_dict))
 
     def refresh(self):
@@ -1824,23 +1827,40 @@ class Endpoint(GenericResource):
 
 
 class EndpointToken(GenericResource):
+    id = None
     token = None
     expires = None
     domain_id = None
     endpoint_id = None
 
-    _fields = ('token', 'expires')
+    _fields = ('id', 'token', 'expires')
 
     def __init__(self, domain_id, endpoint_id, data):
         self.client = get_client()
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
-            self.token = data
+            self.id = data
         else:
             raise TypeError('Accepted only token data as dictionary')
         self.domain_id = domain_id
         self.endpoint_id = endpoint_id
+
+    @classmethod
+    def create(cls, domain_id, endpoint_id, **params):
+        """
+        Create token to access the endpoint.
+        :param expires: time for the token expires (milliseconds)
+        :return: EndpointToken instance
+        """
+        client = cls.client or get_client()
+        url = 'domains/{}/endpoints/{}/tokens'.format(domain_id, endpoint_id)
+        data = to_api(params)
+        resp = client.post(url, data=data)
+        token_id = get_location_id(resp)
+        data_as_dict = resp.json()
+        data_as_dict['id'] = token_id
+        return cls(domain_id, endpoint_id, data=from_api(data_as_dict))
 
     def delete(self):
         """
@@ -1848,7 +1868,7 @@ class EndpointToken(GenericResource):
         :return: True if it's deleted
         """
         client = self.client or get_client()
-        url = 'domains/{}/endpoints/{}/tokens/{}'.format(self.domain_id, self.endpoint_id, self.token)
+        url = 'domains/{}/endpoints/{}/tokens/{}'.format(self.domain_id, self.endpoint_id, self.id)
         client.delete(url)
         return True
 
