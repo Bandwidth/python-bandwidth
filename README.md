@@ -188,6 +188,7 @@ Message.send(sender='+19796543211', receiver='+19796543212', text='Good morning,
 Import Message from sdk:
 ```python
 from bandwidth_sdk import Message
+from bandwidth_sdk import Media
 ```
 Create a list of user's existent media to be appended to the message:
 ```python
