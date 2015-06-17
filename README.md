@@ -180,7 +180,7 @@ Send message by method "send":
 
 ```python
 Message.send(sender='+19796543211', receiver='+19796543212', text='Good morning, this is a test message', tag='test tag', receipt_requested='all')
->>> Message('m-id123213', state='sending', delivery_state='waiting')
+>>> Message('m-id123213', state='sending', delivery_state='None')
 ```
 
 ###Sending MMS message
