@@ -59,6 +59,18 @@ class ClientTest(SdkTestCase):
             self.assertEqual(rest_client.uid, 'venv_uid')
             self.assertEqual(rest_client.auth, ('venv_token', 'venv_secret'))
 
+    @unittest.expectedFailure
+    def test_instantiation_partial_env(self):
+        """
+        test client initialization where environ variables are only partially
+        set
+        """
+        with patch.dict('os.environ', {'BANDWIDTH_USER_ID': 'venv_uid',
+                                       'BANDWIDTH_API_TOKEN': 'venv_token',
+                                       'BANDWIDTH_API_SECRET': 'venv_secret'}):
+            del(os.environ['BANDWIDTH_API_TOKEN'])
+            get_client()
+
     def test_instantiation_from_file_with_env_path(self):
         raw_data = """[catapult]
 user_id=file_uid
@@ -91,6 +103,16 @@ secret=file_secret"""
         self.assertEqual(rest_client.uid, 'file_uid')
         self.assertEqual(rest_client.auth, ('file_token', 'file_secret'))
         os.remove('.bndsdkrc')
+
+    @unittest.expectedFailure
+    def test_instantiation_from_bad_file(self):
+        raw_data = """[catapult]
+user_id=file_uid
+secret=file_secret"""
+        with open('.bndsdkrc', 'w+') as test_file:
+            test_file.write(raw_data)
+        self.assertTrue(test_file.closed)
+        get_client()
 
     @unittest.expectedFailure
     def test_instantiation_bad_args(self):
