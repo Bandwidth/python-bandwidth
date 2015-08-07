@@ -36,7 +36,6 @@ class RESTClientObject(object):
         self.log_hook = log_hook
         self.uid = user_id
         self.auth = auth
-        self.application_id = None
         self.log = log or logger
 
     def _log_response(self, response):
