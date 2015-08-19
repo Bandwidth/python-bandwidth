@@ -15,6 +15,8 @@ Contents:
    self
    quickstart
    modules
+   tests
+   contribute
 
 Indices and tables
 ==================
