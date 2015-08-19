@@ -36,34 +36,43 @@ _HELP_CONFIG_FILE_MISSING = '' \
 
 def Client(user_id=None, token=None, secret=None):
     """
-    Initialize the bandwidth sdk client.  This function will attempt to gather
-    credentials from one of several different locations.
+    Initialize the bandwidth sdk client.  This function will attempt to
+    gather credentials from one of several different locations in the
+    following order:
 
-    In the order of precedence:
-    1) included as arguments when creating the client:
-        bw_cli = bandwidth_sdk.Client(
+    1) Included as arguments when creating the client::
+
+        bandwidth = bandwidth_sdk.Client(
             user_id='u-your-user-id',
             token='t-your-token',
-            secret='your-secret'
-        )
-    2) environment variables:
+            secret='your-secret')
+
+    2) environment variables::
+
         $ export BANDWIDTH_USER_ID=u-your-user-id
         $ export BANDWIDTH_API_TOKEN=t-your-token
         $ export BANDWIDTH_API_SECRET=your-secret
-    3) configuration file:
-        The file can be specified with env var BANDWIDTH_CONFIG_FILE
-        else .bndsdkrc is looked for in the current directory
-        The config file has the following format:
-    [catapult]
-    user_id = u-your-user-id
-    token = t-your-token
-    secret = your-secret
 
-    :param user_id: catapult secret
+    3) Lastly the sdk will attempt to load credentials from a configuration
+       file specified with env var BANDWIDTH_CONFIG_FILE else .bndsdkrc is
+       searched for in the current directory. The config file has the following
+       format::
+
+        $ export BANDWIDTH_CONFIG_FILE=/home/user/.bndsdkrc
+        $ cat /home/user/.bndsdkrc
+        [catapult]
+        user_id = u-your-user-id
+        token = t-your-token
+        secret = your-secret
+
+    :type user_id: str
+    :param user_id: catapult user id
+    :type token: str
     :param token: catapult token
+    :type secret: str
     :param secret: catapult secret
-    :rtype RESTClientObject
-    :returns bandwidth rest client
+    :rtype: RESTClientObject
+    :returns: bandwidth rest client
     """
 
     global _global_client

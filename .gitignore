@@ -68,3 +68,6 @@ local_env.sh
 .tox/
 deprecated/
 .bndsdkrc
+
+# sphinx
+docs/build/*
