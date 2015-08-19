@@ -350,11 +350,11 @@ class Application(GenericResource):
         :name: A name you choose for this application
         :incoming_call_url: A URL where call events will be sent for an inbound call
         :incoming_call_url_callback_timeout: Determine how long should the platform wait for incomingCallUrl's response
-            before timing out in milliseconds.
+        before timing out in milliseconds.
         :incoming_call_fallback_url: The URL used to send the callback event if the request to incomingCallUrl fails.
         :incoming_sms_url: A URL where message events will be sent for an inbound SMS message.
         :incoming_sms_url_callback_timeout: Determine how long should the platform wait for incomingSmsUrl's response
-            before timing out in milliseconds.
+        before timing out in milliseconds.
         :incoming_sms_fallback_url: The URL used to send the callback event if the request to incomingSmsUrl fails.
         :callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST.
             (If not set the default is HTTP POST).
@@ -589,11 +589,11 @@ class Account(BaseResource):
         :from_date: Return only transactions that are older than the parameter. Format: 'yyyy-MM-dd'T'HH:mm:ssZ'
         :type: Return only transactions that are this type
         :page: Used for pagination to indicate the page requested for querying a list of transactions.
-               If no value is specified the default is 0.
+        If no value is specified the default is 0.
         :size: Used for pagination to indicate the size of each page requested for querying a list of transactions.
-               If no value is specified the default value is 25. (Maximum value 1000)
-
-        :return: list of dictionaries that contains information about transaction
+        If no value is specified the default value is 25. (Maximum value 1000)
+        :return: list of dictionaries that contains information about
+        transactions.
         """
         client = cls.client or get_client()
         url = '{}{}'.format(cls._path, 'transactions')
