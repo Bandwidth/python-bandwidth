@@ -112,10 +112,11 @@ class Call(AudioMixin, GenericResource):
     state = None
     start_time = None
     active_time = None
+    end_time = None
     client = None
     bridge_id = None
     _fields = frozenset(('call_id', 'direction', 'from_', 'to', 'recording_enabled', 'callback_url',
-                         'state', 'start_time', 'active_time', 'bridge_id'))
+                         'state', 'start_time', 'active_time', 'end_time', 'bridge_id'))
 
     def __init__(self, data):
         self.client = get_client()

@@ -50,6 +50,7 @@ class CallsTest(SdkTestCase):
         "callbackUrl": "",
         "state": "active",
         "startTime": "2013-02-08T13:15:47.587Z",
+        "endTime": "2013-02-08T13:15:57.347Z",
         "activeTime": "2013-02-08T13:15:52.347Z",
         "events": "https://.../calls/{callId}/events"
         }
@@ -68,6 +69,9 @@ class CallsTest(SdkTestCase):
         self.assertEqual(call.to, '+1919000002')
         self.assertEqual(call.recording_enabled, False)
         self.assertEqual(call.state, 'active')
+        self.assertEqual(
+            call.end_time.strftime('%Y-%m-%d %H:%M:%S'),
+            '2013-02-08 13:15:57')
 
     @responses.activate
     def test_get_and_not_found(self):
