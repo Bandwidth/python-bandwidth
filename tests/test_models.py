@@ -69,7 +69,9 @@ class CallsTest(SdkTestCase):
         self.assertEqual(call.to, '+1919000002')
         self.assertEqual(call.recording_enabled, False)
         self.assertEqual(call.state, 'active')
-        self.assertEqual((call.end_time - call.active_time).seconds, 5)
+        self.assertEqual(
+            call.end_time.strftime('%Y-%m-%d %H:%M:%S'),
+            '2013-02-08 13:15:57')
 
     @responses.activate
     def test_get_and_not_found(self):
