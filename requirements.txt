@@ -2,4 +2,4 @@ lxml
 requests
 six
 python-dateutil==2.2
--r ./dev_requierements.txt
+-r ./dev_requirements.txt
