@@ -24,12 +24,12 @@ generate html documentation locally.
 
 On linux systems::
 
-    cd docs
-    make html
+    cd python-bandwidth
+    make html_docs
 
 On Windows::
 
-    cd docs
+    cd python-bandwidth/docs
     make.bat html
 
 For more information on the format of the docs refer to the official
