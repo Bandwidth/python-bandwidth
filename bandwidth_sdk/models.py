@@ -103,23 +103,25 @@ class GenericResource(ListResource, CreateResource):
 class Call(AudioMixin, GenericResource):
     path = 'calls'
     STATES = enum('started', 'rejected', 'active', 'completed', 'transferring')
-    call_id = None
-    direction = None
-    from_ = None
-    to = None
-    recording_enabled = None
-    callback_url = None
-    state = None
-    start_time = None
-    active_time = None
-    end_time = None
-    client = None
-    bridge_id = None
     _fields = frozenset(('call_id', 'direction', 'from_', 'to', 'recording_enabled', 'callback_url',
                          'state', 'start_time', 'active_time', 'end_time', 'bridge_id'))
 
     def __init__(self, data):
         self.client = get_client()
+
+        self.call_id = None
+        self.direction = None
+        self.from_ = None
+        self.to = None
+        self.recording_enabled = None
+        self.callback_url = None
+        self.state = None
+        self.start_time = None
+        self.active_time = None
+        self.end_time = None
+        self.client = None
+        self.bridge_id = None
+
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
@@ -315,17 +317,6 @@ class Call(AudioMixin, GenericResource):
 
 
 class Application(GenericResource):
-
-    id = None
-    name = None
-    incoming_call_url = None
-    incoming_call_url_callback_timeout = None
-    incoming_call_fallback_url = None
-    incoming_sms_url = None
-    incoming_sms_url_callback_timeout = None
-    incoming_sms_fallback_url = None
-    callback_http_method = 'post'
-    auto_answer = True
     _path = 'applications/'
     _fields = ('id', 'name',
                'incoming_call_url',
@@ -338,6 +329,18 @@ class Application(GenericResource):
 
     def __init__(self, data):
         self.client = get_client()
+
+        self.id = None
+        self.name = None
+        self.incoming_call_url = None
+        self.incoming_call_url_callback_timeout = None
+        self.incoming_call_fallback_url = None
+        self.incoming_sms_url = None
+        self.incoming_sms_url_callback_timeout = None
+        self.incoming_sms_fallback_url = None
+        self.callback_http_method = 'post'
+        self.auto_answer = True
+
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
@@ -437,22 +440,20 @@ class Application(GenericResource):
 class Bridge(AudioMixin, GenericResource):
     path = 'bridges'
     STATES = enum('created', 'active', 'hold', 'completed', 'error')
-    id = None
-    state = None
-    calls = None
-    bridge_audio = None
-    completed_time = None
-    created_time = None
-    activated_time = None
-    client = None
     _fields = frozenset(('id', 'state', 'bridge_audio', 'completed_time', 'created_time',
                          'activated_time'))
 
     def __init__(self, id, *calls, **kwargs):
-        self.calls = calls
         self.client = get_client()
-        self.bridge_audio = kwargs.pop('bridge_audio', None)
+
         self.id = id
+        self.state = None
+        self.calls = calls
+        self.bridge_audio = kwargs.pop('bridge_audio', None)
+        self.completed_time = None
+        self.created_time = None
+        self.activated_time = None
+
         if 'data' in kwargs:
             self.set_up(from_api(kwargs['data']))
 
@@ -558,13 +559,15 @@ class Bridge(AudioMixin, GenericResource):
 
 
 class Account(BaseResource):
-    balance = None
-    account_type = None
     _path = 'account/'
     _fields = frozenset(('balance', 'account_type'))
 
     def __init__(self, data=None):
         self.client = get_client()
+
+        self.balance = None
+        self.account_type = None
+
         if data:
             self.set_up(data)
 
@@ -605,18 +608,19 @@ class Account(BaseResource):
 
 class Gather(CreateResource):
     path = 'calls'
-    id = None
-    reason = None
-    state = None
-    created_time = None
-    completed_time = None
-    digits = None
-
     _fields = frozenset(('id', 'state', 'reason', 'created_time', 'completed_time',
                          'digits'))
 
     def __init__(self, call_id, client=None):
         self.client = client or get_client()
+
+        self.id = None
+        self.reason = None
+        self.state = None
+        self.created_time = None
+        self.completed_time = None
+        self.digits = None
+
         self.path = 'calls/{}/gather'.format(call_id)
 
     def get(self, gather_id):
@@ -713,23 +717,22 @@ class Conference(AudioMixin, CreateResource):
     """
     path = 'conferences'
     STATES = enum('created', 'active', 'completed')
-    client = None
-
-    active_members = None
-    callback_url = None
-    callback_timeout = None
-    fallback_url = None
-    completed_time = None
-    created_time = None
-    from_ = None
-    id = None
-    state = None
-
     _fields = frozenset(('id', 'state', 'from_', 'created_time', 'completed_time', 'fallback_url',
                          'callback_timeout', 'callback_url', 'active_members'))
 
     def __init__(self, data):  # pragma: no cover
         self.client = get_client()
+
+        self.active_members = None
+        self.callback_url = None
+        self.callback_timeout = None
+        self.fallback_url = None
+        self.completed_time = None
+        self.created_time = None
+        self.from_ = None
+        self.id = None
+        self.state = None
+
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
@@ -826,7 +829,6 @@ class Conference(AudioMixin, CreateResource):
 
 
 class ConferenceMember(AudioMixin, BaseResource):
-
     """
     Member of call conference.
 
@@ -842,26 +844,27 @@ class ConferenceMember(AudioMixin, BaseResource):
     :param leaving_tone : true - play a tone when the new member leaves the conference / false - don't play a tone
         when the new member leaves the conference
     """
-    id = None
-    added_time = None
-    hold = None
-    mute = None
-    state = None
-    join_tone = None
-    leaving_tone = None
-    conf_id = None
-
     STATES = enum('created', 'active', 'completed')
     _fields = frozenset(('id', 'state', 'added_time', 'hold', 'mute', 'join_tone', 'leaving_tone'))
 
     def __init__(self, conf_id, data):  # pragma: no cover
         self.client = get_client()
+
+        self.id = None
+        self.added_time = None
+        self.hold = None
+        self.mute = None
+        self.state = None
+        self.join_tone = None
+        self.leaving_tone = None
+
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
             self.id = data
         else:
             raise TypeError('Accepted only id as string or data as dictionary')
+
         self.conf_id = conf_id
 
     def get(self):
@@ -902,18 +905,20 @@ class Recording(ListResource):
     """
     Recording resource
     """
-    id = None
     STATES = enum('recording', 'complete', 'saving', 'error')
-    media = None
-    call = None
-    state = None
-    start_time = None
-    end_time = None
     _path = 'recordings'
     _fields = frozenset(('id', 'media', 'call', 'state', 'start_time', 'end_time'))
 
     def __init__(self, data):
         self.client = get_client()
+
+        self.id = None
+        self.media = None
+        self.call = None
+        self.state = None
+        self.start_time = None
+        self.end_time = None
+
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
@@ -977,25 +982,27 @@ class PhoneNumber(ListResource):
                          'name', 'created_time', 'city', 'state', 'price',
                          'number_state', 'fallback_number', 'pattern_match', 'lata', 'rate_center'))
     NUMBER_STATES = enum('enabled', 'released', 'available')
-    id = None
-    application = None
-    number = None
-    national_number = None
-    name = None
-    created_time = None
-    city = None
-    state = None
-    price = None
-    number_state = None
-    fallback_number = None
-
-    # Available number attributes
-    pattern_match = None
-    lata = None
-    rate_center = None
 
     def __init__(self, data, available=False):
         self.client = get_client()
+
+        self.id = None
+        self.application = None
+        self.number = None
+        self.national_number = None
+        self.name = None
+        self.created_time = None
+        self.city = None
+        self.state = None
+        self.price = None
+        self.number_state = None
+        self.fallback_number = None
+
+        # Available number attributes
+        self.pattern_match = None
+        self.lata = None
+        self.rate_center = None
+
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
@@ -1272,14 +1279,16 @@ class NumberInfo(BaseResource):
     :param updated:  The time this Caller ID information was last updated
     """
     _path = 'phoneNumbers/numberInfo'
-    name = None
-    number = None
-    created = None
-    updated = None
     _fields = frozenset(('name', 'number', 'created', 'updated'))
 
     def __init__(self, data):  # pragma: no cover
         self.client = get_client()
+
+        self.name = None
+        self.number = None
+        self.created = None
+        self.updated = None
+
         if isinstance(data, dict):
             self.set_up(from_api(data))
         else:
@@ -1311,15 +1320,15 @@ class Media(ListResource):
     """
 
     _path = 'media'
-
-    content_length = None
-    media_name = None
-    media_url = None
-
     _fields = frozenset(('media_name', 'content_length'))
 
     def __init__(self, data):  # pragma: no cover
         self.client = get_client()
+
+        self.content_length = None
+        self.media_name = None
+        self.media_url = None
+
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
@@ -1405,30 +1414,10 @@ class Message(GenericResource):
     _path = 'messages'
     STATES = enum('received', 'queued', 'sending', 'sent', 'error')
     RECEIPT_REQUEST = ['all', 'error', 'none']
-    id = None
-    direction = None
-    callback_url = None
-    callback_timeout = None
-    fallback_url = None
-    from_ = None
-    to = None
-    state = None
-    time = None
-    text = None
-    media_list = None
-    tag = None
-    receipt_requested = None
-    delivery_state = None
-    delivery_code = None
-    delivery_description = None
-    error_message = None
-
     _fields = frozenset(('id', 'direction', 'callback_url', 'callback_timeout',
                          'fallback_url', 'from_', 'to', 'state', 'time', 'text',
                          'error_message', 'tag', 'receipt_requested', 'delivery_state',
                          'delivery_code', 'delivery_description', 'media_list'))
-    _multi = False
-    _batch_messages = None
 
     class _Multi(object):
 
@@ -1471,6 +1460,28 @@ class Message(GenericResource):
 
     def __init__(self, data):  # pragma: no cover
         self.client = get_client()
+
+        self.id = None
+        self.direction = None
+        self.callback_url = None
+        self.callback_timeout = None
+        self.fallback_url = None
+        self.from_ = None
+        self.to = None
+        self.state = None
+        self.time = None
+        self.text = None
+        self.media_list = None
+        self.tag = None
+        self.receipt_requested = None
+        self.delivery_state = None
+        self.delivery_code = None
+        self.delivery_description = None
+        self.error_message = None
+
+        self._multi = False
+        self._batch_messages = None
+
         if isinstance(data, dict):
             self.set_up(from_api(data))
 
@@ -1605,14 +1616,16 @@ class Message(GenericResource):
 
 
 class Domain(GenericResource):
-    id = None
-    name = None
-    description = None
     _path = 'domains'
     _fields = ('id', 'name', 'description', 'endpoints')
 
     def __init__(self, data):
         self.client = get_client()
+
+        self.id = None
+        self.name = None
+        self.description = None
+
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
@@ -1719,25 +1732,26 @@ class Domain(GenericResource):
 
 
 class Endpoint(GenericResource):
-    id = None
-    name = None
-    description = None
-    domain_id = None
-    application_id = None
-    enabled = True
-    credentials = None
-    sip_uri = None
-
     _fields = ('id', 'name', 'description', 'domain_id', 'application_id', 'enabled', 'credentials', 'sip_uri')
 
     def __init__(self, domain_id, data):
         self.client = get_client()
+
+        self.id = None
+        self.name = None
+        self.description = None
+        self.application_id = None
+        self.enabled = True
+        self.credentials = None
+        self.sip_uri = None
+
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
             self.id = data
         else:
             raise TypeError('Accepted only endpoint-id or endpoint data as dictionary')
+
         self.domain_id = domain_id
 
     @classmethod
@@ -1837,22 +1851,22 @@ class Endpoint(GenericResource):
 
 
 class EndpointToken(GenericResource):
-    id = None
-    token = None
-    expires = None
-    domain_id = None
-    endpoint_id = None
-
     _fields = ('id', 'token', 'expires')
 
     def __init__(self, domain_id, endpoint_id, data):
         self.client = get_client()
+
+        self.id = None
+        self.token = None
+        self.expires = None
+
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
             self.id = data
         else:
             raise TypeError('Accepted only token data as dictionary')
+
         self.domain_id = domain_id
         self.endpoint_id = endpoint_id
 
@@ -1920,14 +1934,7 @@ class UserError(ListResource):
     :param details: A list of additional details that may help you debug the error; see the User Error Detail
         Properties table
     """
-    id = None
-    time = None
-    category = None
-    code = None
-    message = None
-    details = None
-    version = None
-    user = None
+
     _fields = frozenset(('id', 'time', 'category', 'code', 'message', 'details', 'version', 'user'))
 
     # Additional details that may help you debug the error
@@ -1942,6 +1949,16 @@ class UserError(ListResource):
 
     def __init__(self, data):  # pragma: no cover
         self.client = get_client()
+
+        self.id = None
+        self.time = None
+        self.category = None
+        self.code = None
+        self.message = None
+        self.details = None
+        self.version = None
+        self.user = None
+
         if isinstance(data, dict):
             self.set_up(from_api(data))
         elif isinstance(data, six.string_types):
