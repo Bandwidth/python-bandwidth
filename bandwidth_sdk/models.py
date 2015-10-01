@@ -119,7 +119,6 @@ class Call(AudioMixin, GenericResource):
         self.start_time = None
         self.active_time = None
         self.end_time = None
-        self.client = None
         self.bridge_id = None
 
         if isinstance(data, dict):
