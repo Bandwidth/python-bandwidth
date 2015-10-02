@@ -24,11 +24,6 @@ class RESTClientObject(object):
 
     default_timeout = 60
     headers = {'content-type': 'application/json'}
-    log_hook = None
-    log = None
-    endpoint = None
-    uid = None
-    auth = None
 
     def __init__(self, user_id, auth, endpoint=ENDPOINT,
                  log=None, log_hook=None):
