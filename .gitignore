@@ -71,3 +71,6 @@ deprecated/
 
 # sphinx
 docs/build/*
+
+# builds
+dist
