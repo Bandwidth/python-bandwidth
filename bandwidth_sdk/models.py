@@ -1027,22 +1027,35 @@ class PhoneNumber(ListResource):
         super(PhoneNumber, self).set_up(data)
 
     @classmethod
-    def list(cls, page=0, size=25):
+    def list(cls, page=None, size=None, application_id=None, state=None,
+             name=None, city=None, number_state=None, **kwargs):
         """
         Gets a list of your numbers.
 
         :param page: Used for pagination to indicate the page requested for
-                     querying a list of phone numbers. If no value is specified
-                     Default is 0.
+          querying a list of phone numbers. If no value is specified the
+          default is 0.
         :param size: Used for pagination to indicate the size of each list
-                     requested for querying a list of phone numbers.
-                     If no value is specified the default value is 25.
-                     (Maximum value 1000)
-        :return: List of PhoneNumber instances.
+          requested for querying a list of phone numbers. If no value is
+          specified the default value is 25. (Maximum value 1000)
+        :param application_id: Used to filter the retrieved list of numbers by
+          an associated application ID.
+        :param state: Used to filter the retrieved list of numbers allocated
+          for the authenticated user by a US state.
+        :param name: Used to filter the retrieved list of numbers allocated for
+          the authenticated user by it's name.
+        :param city: Used to filter the retrieved list of numbers allocated for
+          the authenticated user by it's city.
+        :param number_state: Used to filter the retrieved list of numbers
+          allocated for the authenticated user by the number state.
+        :return: list of your numbers
+        :rtype: list of PhoneNumber
         """
         client = get_client()
-        data = client.get(cls._path, params=to_api(dict(page=page,
-                                                        size=size))).json()
+        params = to_api(dict(
+            page=page, size=size, application_id=application_id, state=state,
+            name=name, city=city, number_state=number_state, **kwargs))
+        data = client.get(cls._path, params=params).json()
         return [cls(number) for number in data]
 
     @classmethod
