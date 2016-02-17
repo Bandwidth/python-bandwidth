@@ -31,6 +31,7 @@ setup(
     install_requires=[
         'requests',
         'python-dateutil',
-        'six'
+        'six',
+        'lxml'
     ],
 )
