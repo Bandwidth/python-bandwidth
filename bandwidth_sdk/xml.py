@@ -273,9 +273,9 @@ class SendMessage(object):
         self._param = OrderedDict()
         self.text = text
         if from_number is not None:
-            self._param["from_number"] = str(from_number)
+            self._param["from"] = str(from_number)
         if to_number is not None:
-            self._param["to_number"] = str(to_number)
+            self._param["to"] = str(to_number)
         if status_callback_url is not None:
             self._param["statusCallbackUrl"] = str(status_callback_url)
         if request_url is not None:
