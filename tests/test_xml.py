@@ -208,7 +208,7 @@ class XmlTest(SdkTestCase):
     def test_send_message_xml(self):
         expected_result = str.encode("<?xml version=\'1.0\' encoding=\'ASCII\'?>\n"
                                      "<Response>\n"
-                                     "  <SendMessage from_number=\"+19994444\" to_number=\"+144445555\">"
+                                     "  <SendMessage from=\"+19994444\" to=\"+144445555\">"
                                      "Message to send</SendMessage>\n"
                                      "</Response>\n")
 
