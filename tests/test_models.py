@@ -46,6 +46,7 @@ class CallsTest(SdkTestCase):
         "direction": "out",
         "from": "+1919000001",
         "to": "+1919000002",
+        "bridge":"http://foo.bar/users/userId/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d",
         "recordingEnabled": false,
         "callbackUrl": "",
         "state": "active",
@@ -69,6 +70,7 @@ class CallsTest(SdkTestCase):
         self.assertEqual(call.to, '+1919000002')
         self.assertEqual(call.recording_enabled, False)
         self.assertEqual(call.state, 'active')
+        self.assertEqual(call.bridge_id, 'brg-2hs6wh32lh5ygs7dn2s2x1d')
         self.assertEqual(
             call.end_time.strftime('%Y-%m-%d %H:%M:%S'),
             '2013-02-08 13:15:57')
@@ -126,6 +128,7 @@ class CallsTest(SdkTestCase):
         "direction": "out",
         "from": "+1919000001",
         "to": "+1919000002",
+        "bridge":"http://foo.bar/users/userId/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d",
         "recordingEnabled": false,
         "callbackUrl": "",
         "state": "active",
@@ -138,6 +141,7 @@ class CallsTest(SdkTestCase):
         "direction": "out",
         "from": "+1919000001",
         "to": "+1919000002",
+        "bridge":"http://foo.bar/users/userId/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d",
         "recordingEnabled": false,
         "callbackUrl": "",
         "state": "active",
@@ -156,7 +160,9 @@ class CallsTest(SdkTestCase):
         calls = Call.list()
 
         self.assertEqual(calls[0].call_id, 'c-call-id')
+        self.assertEqual(calls[0].bridge_id, 'brg-2hs6wh32lh5ygs7dn2s2x1d')
         self.assertEqual(calls[1].call_id, 'c-call-id-1')
+        self.assertEqual(calls[1].bridge_id, 'brg-2hs6wh32lh5ygs7dn2s2x1d')
 
     @responses.activate
     def test_page_iterator(self):
@@ -1284,49 +1290,50 @@ class BridgesTest(SdkTestCase):
         "direction": "out",
         "from": "+1919000001",
         "id": "c-xx",
-        "bridgeId": "b-id",
+        "bridge":"http://foo.bar/users/userId/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d",
         "startTime": "2013-05-22T19:49:35Z",
         "state": "active",
         "to": "+1919000002",
         "recordingEnabled": false,
         "events": "https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId1}/events",
-        "bridge": "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/{bridgeId}"
+        "bridge": "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d"
         },
         {
         "activeTime": "2013-05-22T19:50:16Z",
         "direction": "out",
         "from": "+1919000003",
         "id": "c-yy",
-        "bridgeId": "b-id",
+        "bridge":"http://foo.bar/users/userId/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d",
         "startTime": "2013-05-22T19:50:16Z",
         "state": "active",
         "to": "+1919000004",
         "recordingEnabled": false,
         "events": "https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId2}/events",
-        "bridge": "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/{bridgeId}"
+        "bridge": "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d"
         }
         ]
         """
+
         responses.add(responses.GET,
-                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/b-id/calls',
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d/calls',
                       body=raw,
                       status=200,
                       content_type='application/json',
                       )
 
-        bridge = Bridge('b-id')
+        bridge = Bridge('brg-2hs6wh32lh5ygs7dn2s2x1d')
         calls = bridge.fetch_calls()
 
         call = calls[0]
 
         self.assertIsInstance(call, Call)
         self.assertEqual(call.call_id, 'c-xx')
-        self.assertEqual(call.bridge_id, 'b-id')
+        self.assertEqual(call.bridge_id, 'brg-2hs6wh32lh5ygs7dn2s2x1d')
 
         call = calls[1]
         self.assertIsInstance(call, Call)
         self.assertEqual(call.call_id, 'c-yy')
-        self.assertEqual(call.bridge_id, 'b-id')
+        self.assertEqual(call.bridge_id, 'brg-2hs6wh32lh5ygs7dn2s2x1d')
 
         self.assertEqual(bridge.call_ids, ['c-xx', 'c-yy'])
 
