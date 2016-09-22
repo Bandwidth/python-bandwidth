@@ -134,7 +134,7 @@ class Call(AudioMixin, GenericResource):
         super(Call, self).set_up(data)
         bridge = data.get('bridge')
         if bridge is not None:
-            self.bridge_id = bridge_parts = bridge.split("/")[-1]
+            self.bridge_id = bridge.split("/")[-1]
 
     @classmethod
     def create(cls, caller, callee, bridge_id=None, recording_enabled=None, callback_url=None, timeout=30, **kwargs):
