@@ -778,6 +778,44 @@ class CallsTest(SdkTestCase):
                       content_type='application/json',
                       adding_headers={'Location': '/v1/users/u-user/bridges/new-bridge-id'})
 
+        bridge_calls_raw = """
+        [
+        {
+        "activeTime": "2013-05-22T19:49:39Z",
+        "direction": "out",
+        "from": "+1919000001",
+        "id": "c-foo",
+        "bridge":"http://foo.bar/users/userId/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d",
+        "startTime": "2013-05-22T19:49:35Z",
+        "state": "active",
+        "to": "+1919000002",
+        "recordingEnabled": false,
+        "events": "https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId1}/events",
+        "bridge": "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d"
+        },
+        {
+        "activeTime": "2013-05-22T19:50:16Z",
+        "direction": "out",
+        "from": "+1919000003",
+        "id": "c-bar",
+        "bridge":"http://foo.bar/users/userId/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d",
+        "startTime": "2013-05-22T19:50:16Z",
+        "state": "active",
+        "to": "+1919000004",
+        "recordingEnabled": false,
+        "events": "https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId2}/events",
+        "bridge": "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d"
+        }
+        ]
+        """
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/new-bridge-id/calls',
+                      body=bridge_calls_raw,
+                      status=200,
+                      content_type='application/json',
+                      )
+
         bridge = Call('c-foo').bridge(Call('c-bar'))
         self.assertIsInstance(bridge, Bridge)
         self.assertEqual(bridge.id, 'new-bridge-id')
@@ -935,6 +973,53 @@ class BridgesTest(SdkTestCase):
                       body=raw,
                       status=201,
                       content_type='application/json')
+
+
+        bridge_calls_raw = """
+        {
+        "activeTime": "2013-05-22T19:49:39Z",
+        "direction": "out",
+        "from": "+1919000001",
+        "id": "c-xxyyzz",
+        "bridge":"http://foo.bar/users/userId/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d",
+        "startTime": "2013-05-22T19:49:35Z",
+        "state": "active",
+        "to": "+1919000002",
+        "recordingEnabled": false,
+        "events": "https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId1}/events",
+        "bridge": "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d"
+        }
+        """
+
+        responses.add(responses.GET,
+                      'https://.../v1/users/{userId}/bridges/{bridgeId}/calls',
+                      body=bridge_calls_raw,
+                      status=201,
+                      content_type='application/json')
+
+        bridge_calls_raw = """
+        {
+        "activeTime": "2013-05-22T19:49:39Z",
+        "direction": "out",
+        "from": "+1919000001",
+        "id": "c-foo",
+        "bridge":"http://foo.bar/users/userId/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d",
+        "startTime": "2013-05-22T19:49:35Z",
+        "state": "active",
+        "to": "+1919000002",
+        "recordingEnabled": false,
+        "events": "https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId1}/events",
+        "bridge": "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d"
+        }
+        """
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/by-bridge-id/calls',
+                      body=bridge_calls_raw,
+                      status=200,
+                      content_type='application/json',
+                      )
+
         bridge = Bridge.get('by-bridge-id')
 
         self.assertIsInstance(bridge, Bridge)
@@ -1017,6 +1102,37 @@ class BridgesTest(SdkTestCase):
                       body=raw,
                       status=200,
                       content_type='application/json')
+
+        bridge_calls_raw = """
+        {
+        "activeTime": "2013-05-22T19:49:39Z",
+        "direction": "out",
+        "from": "+1919000001",
+        "id": "c-foo",
+        "bridge":"http://foo.bar/users/userId/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d",
+        "startTime": "2013-05-22T19:49:35Z",
+        "state": "active",
+        "to": "+1919000002",
+        "recordingEnabled": false,
+        "events": "https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId1}/events",
+        "bridge": "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d"
+        }
+        """
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/bridge-1/calls',
+                      body=bridge_calls_raw,
+                      status=200,
+                      content_type='application/json',
+                      )
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/bridge-2/calls',
+                      body=bridge_calls_raw,
+                      status=200,
+                      content_type='application/json',
+                      )
+
         bridges = Bridge.list()
 
         self.assertEqual(bridges[0].id, 'bridge-1')
@@ -1089,6 +1205,35 @@ class BridgesTest(SdkTestCase):
 
         """
 
+        bridge_calls_raw = """
+        {
+        "activeTime": "2013-05-22T19:49:39Z",
+        "direction": "out",
+        "from": "+1919000001",
+        "id": "c-foo",
+        "bridge":"http://foo.bar/users/userId/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d",
+        "startTime": "2013-05-22T19:49:35Z",
+        "state": "active",
+        "to": "+1919000002",
+        "recordingEnabled": false,
+        "events": "https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId1}/events",
+        "bridge": "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d"
+        }
+        """
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/bridge-11/calls',
+                      body=bridge_calls_raw,
+                      status=200,
+                      content_type='application/json',
+                      )
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/bridge-12/calls',
+                      body=bridge_calls_raw,
+                      status=200,
+                      content_type='application/json',
+                      )
+
         responses.add(responses.GET,
                       'https://api.catapult.inetwork.com/v1/users/u-user/bridges',
                       body=raw_one,
@@ -1106,6 +1251,21 @@ class BridgesTest(SdkTestCase):
                       body=raw_two,
                       status=200,
                       content_type='application/json')
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/bridge-21/calls',
+                      body=bridge_calls_raw,
+                      status=200,
+                      content_type='application/json',
+                      )
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/bridge-22/calls',
+                      body=bridge_calls_raw,
+                      status=200,
+                      content_type='application/json',
+                      )
+
         next_two_bridge = next(bridge_iterator)
 
         self.assertEqual(next_two_bridge[0].id, 'bridge-21')
@@ -1117,6 +1277,14 @@ class BridgesTest(SdkTestCase):
                       body=raw_three,
                       status=200,
                       content_type='application/json')
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/bridge-31/calls',
+                      body=bridge_calls_raw,
+                      status=200,
+                      content_type='application/json',
+                      )
+
         last_chunk_bridge = next(bridge_iterator)
 
         self.assertEqual(last_chunk_bridge[0].id, 'bridge-31')
@@ -1136,6 +1304,14 @@ class BridgesTest(SdkTestCase):
                       content_type='application/json',
                       adding_headers={'Location': '/v1/users/u-user/bridges/new-bridge-id'})
 
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/new-bridge-id/calls',
+                      body='[]',
+                      status=200,
+                      content_type='application/json',
+                      )
+
         bridge = Bridge.create()
         self.assertIsInstance(bridge, Bridge)
         self.assertEqual(bridge.id, 'new-bridge-id')
@@ -1152,6 +1328,29 @@ class BridgesTest(SdkTestCase):
                       status=201,
                       content_type='application/json',
                       adding_headers={'Location': '/v1/users/u-user/bridges/new-bridge-id'})
+
+        bridge_calls_raw = """
+        {
+        "activeTime": "2013-05-22T19:49:39Z",
+        "direction": "out",
+        "from": "+1919000001",
+        "id": "c-foo",
+        "bridge":"http://foo.bar/users/userId/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d",
+        "startTime": "2013-05-22T19:49:35Z",
+        "state": "active",
+        "to": "+1919000002",
+        "recordingEnabled": false,
+        "events": "https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId1}/events",
+        "bridge": "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/brg-2hs6wh32lh5ygs7dn2s2x1d"
+        }
+        """
+
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/bridges/new-bridge-id/calls',
+                      body=bridge_calls_raw,
+                      status=200,
+                      content_type='application/json',
+                      )
 
         bridge = Bridge.create(Call('c-foo'), Call('c-bar'))
         self.assertIsInstance(bridge, Bridge)
