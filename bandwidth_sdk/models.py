@@ -1177,7 +1177,7 @@ class PhoneNumber(ListResource):
             raise ValueError('state, zip and areaCode are mutually exclusive, you may use only one of them per request')
         elif mandatory_params == 0:
             raise ValueError('Specify a State, ZIP Code, or Area Code with your query')
-        if 'area_code' not in params and 'in_local_calling_area' in params or 'local_number' in params:
+        if 'area_code' not in params and ('in_local_calling_area' in params or 'local_number' in params):
             raise ValueError('localNumber and inLocalCallingArea only applies '
                              'for searching numbers in specific areaCode')
 

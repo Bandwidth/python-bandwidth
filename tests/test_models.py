@@ -2773,6 +2773,44 @@ class PhoneNumberTest(SdkTestCase):
         self.assertEqual(a_numbers[1].number_state, 'NC')
         self.assertEqual(a_numbers[1].price, '0.60')
 
+    @responses.activate
+    def test_list_local_local_number(self):
+        """
+        PhoneNumber.list_local(area_code='919', in_local_calling_area=True, local_number='454', pattern='*3%3F3*')
+        """
+        raw = """[
+          {
+            "number": "ava-1",
+            "nationalNumber": "(919) 454-2393",
+            "patternMatch": "           3 3",
+            "city": "CARY",
+            "lata": "426",
+            "rateCenter": "CARY",
+            "state": "NC",
+            "price": "0.60"
+          }
+        ]
+        """
+        responses.add(responses.GET,
+                      url='https://api.catapult.inetwork.com/v1/availableNumbers/local',
+                      body=raw,
+                      status=200,
+                      content_type='application/json')
+        a_numbers = PhoneNumber.list_local(area_code='919',
+                                           pattern='*9?9*',
+                                           in_local_calling_area=True,
+                                           local_number='454',
+                                           quantity=1)
+        self.assertIsInstance(a_numbers[0], PhoneNumber)
+        self.assertEqual(a_numbers[0].number, 'ava-1')
+        self.assertEqual(a_numbers[0].national_number, '(919) 454-2393')
+        self.assertEqual(a_numbers[0].pattern_match, '           3 3')
+        self.assertEqual(a_numbers[0].city, 'CARY')
+        self.assertEqual(a_numbers[0].lata, '426')
+        self.assertEqual(a_numbers[0].rate_center, 'CARY')
+        self.assertEqual(a_numbers[0].number_state, 'NC')
+        self.assertEqual(a_numbers[0].price, '0.60')
+
     def test_list_local_without_query(self):
         """
         PhoneNumber.list_local()
