@@ -442,13 +442,15 @@ class Application(GenericResource):
 class Bridge(AudioMixin, GenericResource):
     path = 'bridges'
     STATES = enum('created', 'active', 'hold', 'completed', 'error')
-    _fields = frozenset(('id', 'state', 'bridge_audio', 'completed_time', 'created_time',
-                         'activated_time'))
+    _fields = frozenset(('id', 'from', 'to', 'state', 'bridge_audio', 'completed_time', 'created_time',
+                         'activated_time', 'calls'))
 
     def __init__(self, id, *calls, **kwargs):
         self.client = get_client()
 
         self.id = id
+        self.from_ = None
+        self.to = None
         self.state = None
         self.calls = calls
         self.bridge_audio = kwargs.pop('bridge_audio', None)
@@ -458,6 +460,7 @@ class Bridge(AudioMixin, GenericResource):
 
         if 'data' in kwargs:
             self.set_up(from_api(kwargs['data']))
+            self.fetch_calls()
 
     @classmethod
     def list(cls, page=1, size=20):
