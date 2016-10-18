@@ -15,7 +15,7 @@ setup(
                 'API and the official Bandwidth SDK',
     author='bandwidth',
     maintainer='bandwidth',
-    maintainer_email='classifieds-admin@bandwidth.com',
+    maintainer_email='dtolb@bandwidth.com',
     url='https://github.com/bandwidthcom/python-bandwidth',
     license='Apache',
     packages=["bandwidth_sdk"],
