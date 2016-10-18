@@ -16,8 +16,8 @@ setup(
     author='bandwidth',
     maintainer='bandwidth',
     maintainer_email='dtolb@bandwidth.com',
-    url='https://github.com/bandwidthcom/python-bandwidth',
-    license='Apache',
+    url='https://github.com/bandwidth/python-bandwidth',
+    license='MIT',
     packages=["bandwidth_sdk"],
     long_description="Bandwidth Python API",
     classifiers=[
