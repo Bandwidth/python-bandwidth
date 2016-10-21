@@ -75,7 +75,7 @@ def Client(user_id=None, token=None, secret=None):
     :returns: bandwidth rest client
     """
     global _global_client
-    
+
     if any((user_id, token, secret)):
         # at least one keyword argument was specified, require that all are
         # given or raise an error.

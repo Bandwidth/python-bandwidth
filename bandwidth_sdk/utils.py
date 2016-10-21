@@ -93,3 +93,59 @@ def get_creds_from_file(config_path):
 
 
 file_exists = os.path.isfile
+
+# converts an etree to dict, useful to convert xml to dict
+def etree2dict(tree, sub_node_name=None):
+    if sub_node_name is not None:
+        tree = tree.find(sub_node_name)
+
+    root, contents = recursive_dict(tree)
+    return {root: contents}
+
+
+def recursive_dict(element):
+    if element.attrib and 'type' in element.attrib and element.attrib['type'] == "array":
+        return element.tag, [(dict(map(recursive_dict, child)) or getElementValue(child)) for child in element]
+    else:
+        return element.tag, dict(map(recursive_dict, element)) or getElementValue(element)
+
+
+def getElementValue(element):
+    if element.text:
+        if element.attrib and 'type' in element.attrib:
+            attr_type = element.attrib.get('type')
+            if attr_type == 'integer':
+                return int(element.text.strip())
+            if attr_type == 'float':
+                return float(element.text.strip())
+            if attr_type == 'boolean':
+                return element.text.lower().strip() == 'true'
+            if attr_type == 'datetime':
+                t = datetime.datetime(element.text.strip())
+                return t.strftime('%Y-%m-%d %H%M%S %I')
+        else:
+            return element.text
+    elif element.attrib:
+        if 'nil' in element.attrib:
+            return None
+        else:
+            return element.attrib
+    else:
+        return None
+
+
+def etree_to_simple_list(tree, sub_node_name=None):
+    if sub_node_name is not None:
+        tree = tree.find(sub_node_name)
+
+    list = []
+    for child in tree:
+        root, contents =  recursive_dict(child)
+        list.append({root : contents})
+
+    return list
+
+
+def xml_to_dict(root, ):
+    pass
+
