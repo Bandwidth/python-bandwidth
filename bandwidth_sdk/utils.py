@@ -1,4 +1,5 @@
 import os
+import copy
 import six
 import re
 from six.moves import configparser
@@ -148,4 +149,25 @@ def etree_to_simple_list(tree, sub_node_name=None):
 
 def xml_to_dict(root, ):
     pass
+
+def remove_key_from_dict(dict, key=''):
+    """
+    removes a key from a dict
+    Args:
+        dict: dictionary
+        key: name of key to remove
+
+    Returns: a copy of the dictionary withou the key
+
+    """
+    d = copy.deepcopy(dict)
+    if key in d:
+        del d[key]
+
+    return d
+
+def print_dict(dict):
+    for k, v in dict.items():
+        print 'key:{0}, value:{0}'.format(k, v)
+
 
