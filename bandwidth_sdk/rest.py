@@ -26,7 +26,7 @@ class RESTClientObject(object):
     headers = {'content-type': 'application/json'}
 
     def __init__(self, user_id, auth, endpoint=ENDPOINT,
-                 log=None, log_hook=None):
+                 log=None, log_hook=None, xml=False):
         self.endpoint = endpoint
         self.log_hook = log_hook
         self.uid = user_id
