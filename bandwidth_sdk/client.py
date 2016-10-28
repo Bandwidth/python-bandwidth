@@ -147,7 +147,7 @@ def _iris_client(account_id='', username='', password=''):
         $ export BANDWIDTH_USERNAME=t-your-username
         $ export BANDWIDTH_PASSWORD=your-password
 
-    3) Lastly the sdk will attempt to load credentials from a configuration
+    3) The sdk will attempt to load credentials from a configuration
        file specified with env var BANDWIDTH_CONFIG_FILE else .bndsdkrc is
        searched for in the current directory. The config file has the following
        format::
@@ -155,9 +155,15 @@ def _iris_client(account_id='', username='', password=''):
         $ export BANDWIDTH_CONFIG_FILE=/home/user/.bndsdkrc
         $ cat /home/user/.bndsdkrc
         [catapult]
-        user_id = u-your-user-id
-        token = t-your-token
-        secret = your-secret
+        account_id = dashboard account id
+        username = dashboard username
+        password = dashboard password
+
+    4) Finally the sdk will look for credentials in a module variable. You can set these as follows:
+
+        bandwidth_sdk.account_id='dashboard account id'
+        bandwidth_sdk.username='dashboard username'
+        bandwidth_sdk.password='dashboard password'
 
     :type account_id: str
     :param account_id: dashboard account id
@@ -235,9 +241,14 @@ def _iris_client(account_id='', username='', password=''):
 
     else:
         # could not locate configuration variables, raise an error
-        raise ValueError('No configuration provided. {}'.format(Client.__doc__))
+        raise ValueError('No configuration provided. {}'.format(_iris_client.__doc__))
 
-    return RESTClientObject(account_id, (username, password), endpoint=IRIS_ENDPOINT, xml=True)
+    if bandwidth_sdk.iris_endpoint is not None:
+        _endpoint = bandwidth_sdk.iris_endpoint
+    else:
+        _endpoint = IRIS_ENDPOINT
+
+    return RESTClientObject(account_id, (username, password), endpoint=_endpoint, xml=True)
 
 def _load_config(config_path):
     try:
