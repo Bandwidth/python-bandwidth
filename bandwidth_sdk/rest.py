@@ -83,12 +83,19 @@ class RESTClientObject(object):
 
         return response
 
-    def post(self, url, data=None, timeout=None, **kwargs):
-        url = self._join_endpoint(url)
+    def post(self, url, data=None, timeout=None, join_endpoint=True, xml=False, **kwargs):
+        if join_endpoint:
+            url = self._join_endpoint(url)
+
         kwargs['timeout'] = timeout or self.default_timeout
-        if data:
+        if data and not xml:
             data = json.dumps(data)
-        response = self.request('post', url, auth=self.auth, headers=self.headers, data=data, **kwargs)
+        if xml:
+            _headers={'content-type': 'application/xml'}
+        else:
+            _headers=self.headers
+
+        response = self.request('post', url, auth=self.auth, headers=_headers, data=data, **kwargs)
 
         self._log_response(response)
 
