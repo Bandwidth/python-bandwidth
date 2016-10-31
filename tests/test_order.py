@@ -191,12 +191,12 @@ class TestOrder(TestCase):
 
 
             self.assertTrue(isinstance(completed_order, dict))
-            self.assertTrue(completed_order['OrderResponse']['OrderStatus'], 'COMPLETED')
+            self.assertEqual(completed_order['OrderResponse']['OrderStatus'], 'COMPLETE')
             self.assertEqual(completed_order['OrderResponse']['CompletedQuantity'], '3')
             self.assertEqual(completed_order['OrderResponse']['CreatedByUser'], 'testUser')
 
             tn_list = completed_order['OrderResponse']['CompletedNumbers']
-            self.assertTrue(tn_list[0]['FullNumber'], '6172218217')
+            self.assertEqual(tn_list[0]['FullNumber'], '6172218217')
 
 
     def test_create_rate_center_search_and_order(self):
@@ -293,13 +293,13 @@ class TestOrder(TestCase):
             completed_order = Order.get(id)
 
             self.assertTrue(isinstance(completed_order, dict))
-            self.assertTrue(completed_order['OrderResponse']['OrderStatus'], 'COMPLETED')
+            self.assertEqual(completed_order['OrderResponse']['OrderStatus'], 'COMPLETE')
             self.assertEqual(completed_order['OrderResponse']['CompletedQuantity'], '3')
             self.assertEqual(completed_order['OrderResponse']['CreatedByUser'], 'testUser')
 
             tn_list = completed_order['OrderResponse']['CompletedNumbers']
-            self.assertTrue(tn_list[0]['FullNumber'], '7203707877')
-            self.assertTrue(tn_list[len(tn_list)-1]['FullNumber'], '7203708478')
+            self.assertEqual(tn_list[0]['FullNumber'], '7203707877')
+            self.assertEqual(tn_list[len(tn_list)-1]['FullNumber'], '7203708478')
 
 
     def test_create_npsnxx_search_And_order(self):
@@ -395,13 +395,13 @@ class TestOrder(TestCase):
             completed_order = Order.get(id)
 
             self.assertTrue(isinstance(completed_order, dict))
-            self.assertTrue(completed_order['OrderResponse']['OrderStatus'], 'COMPLETED')
+            self.assertEqual(completed_order['OrderResponse']['OrderStatus'], 'COMPLETE')
             self.assertEqual(completed_order['OrderResponse']['CompletedQuantity'], '3')
             self.assertEqual(completed_order['OrderResponse']['CreatedByUser'], 'testUser')
 
             tn_list = completed_order['OrderResponse']['CompletedNumbers']
-            self.assertTrue(tn_list[0]['FullNumber'], '9194390189')
-            self.assertTrue(tn_list[len(tn_list) - 1]['FullNumber'], '9194396493')
+            self.assertEqual(tn_list[0]['FullNumber'], '9194390189')
+            self.assertEqual(tn_list[len(tn_list) - 1]['FullNumber'], '9194396493')
 
     def test_create_toll_free_vanity_search_and_order(self):
         self.fail()
@@ -497,23 +497,79 @@ class TestOrder(TestCase):
             completed_order = Order.get(id)
 
             self.assertTrue(isinstance(completed_order, dict))
-            self.assertTrue(completed_order['OrderResponse']['OrderStatus'], 'COMPLETED')
+            self.assertEqual(completed_order['OrderResponse']['OrderStatus'], 'COMPLETE')
             self.assertEqual(completed_order['OrderResponse']['CompletedQuantity'], '3')
             self.assertEqual(completed_order['OrderResponse']['CreatedByUser'], 'testUser')
 
             tn_list = completed_order['OrderResponse']['CompletedNumbers']
-            self.assertTrue(tn_list[0]['FullNumber'], '7193990461')
-            self.assertTrue(tn_list[len(tn_list) - 1]['FullNumber'], '7193990505')
+            self.assertEqual(tn_list[0]['FullNumber'], '7193990461')
+            self.assertEqual(tn_list[len(tn_list) - 1]['FullNumber'], '7193990505')
 
     def test_create_city_search_and_order(self):
         order_response = \
+        '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <OrderResponse>
+                <Order>
+                    <CustomerOrderId>nmo-1213</CustomerOrderId>
+                    <Name>test order 6</Name>
+                    <OrderCreateDate>2016-10-31T21:25:23.598Z</OrderCreateDate>
+                    <PeerId>912912</PeerId>
+                    <BackOrderRequested>false</BackOrderRequested>
+                    <id>e65134cc-3a6b-468e-9ee4-fd9bf46c30a4</id>
+                    <CitySearchAndOrderType>
+                        <City>DENVER</City>
+                        <Quantity>3</Quantity>
+                        <State>CO</State>
+                    </CitySearchAndOrderType>
+                    <PartialAllowed>true</PartialAllowed>
+                    <SiteId>2993</SiteId>
+                </Order>
+                <OrderStatus>RECEIVED</OrderStatus>
+            </OrderResponse>
         '''
+
+        order_inst = \
+        '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <OrderResponse>
+                <CompletedQuantity>3</CompletedQuantity>
+                <CreatedByUser>testUser</CreatedByUser>
+                <LastModifiedDate>2016-10-31T21:28:30.014Z</LastModifiedDate>
+                <OrderCompleteDate>2016-10-31T21:28:30.014Z</OrderCompleteDate>
+                <Order>
+                    <CustomerOrderId>nmo-1213</CustomerOrderId>
+                    <Name>test order 6</Name>
+                    <OrderCreateDate>2016-10-31T21:28:27.746Z</OrderCreateDate>
+                    <PeerId>912912</PeerId>
+                    <BackOrderRequested>false</BackOrderRequested>
+                    <CitySearchAndOrderType>
+                        <City>DENVER</City>
+                        <Quantity>3</Quantity>
+                        <State>CO</State>
+                    </CitySearchAndOrderType>
+                    <PartialAllowed>true</PartialAllowed>
+                    <SiteId>2993</SiteId>
+                </Order>
+                <OrderStatus>COMPLETE</OrderStatus>
+                <CompletedNumbers>
+                    <TelephoneNumber>
+                        <FullNumber>7203708644</FullNumber>
+                    </TelephoneNumber>
+                    <TelephoneNumber>
+                        <FullNumber>7203708773</FullNumber>
+                    </TelephoneNumber>
+                    <TelephoneNumber>
+                        <FullNumber>7203720271</FullNumber>
+                    </TelephoneNumber>
+                </CompletedNumbers>
+                <Summary>3 numbers ordered in (720)</Summary>
+                <FailedQuantity>0</FailedQuantity>
+            </OrderResponse>
         '''
         with requests_mock.Mocker() as m:
             url = 'http://resource_tests/123456/{0}'.format(Order.orders_path)
             m.post(url, content=order_response)
 
-            order = Order.create_city_search_and_order(city='WESTMINISTER',
+            order = Order.create_city_search_and_order(city='DENVER',
                                                        state='CO',
                                                        quantity='3',
                                                        name='test order 6',
@@ -523,6 +579,31 @@ class TestOrder(TestCase):
                                                        back_order_requested='false'
                                                        )
 
+            self.assertTrue(isinstance(order, dict))
+            self.assertTrue(isinstance(order['OrderResponse'], dict))
+            self.assertTrue(isinstance(order['OrderResponse']['Order'], dict))
+            self.assertEqual(order['OrderResponse']['Order']['Name'], 'test order 6')
+            self.assertEqual(order['OrderResponse']['Order']['PeerId'], '912912')
+            self.assertEqual(order['OrderResponse']['Order']['BackOrderRequested'], 'false')
+            self.assertEqual(order['OrderResponse']['Order']['SiteId'], '2993')
+            self.assertEqual(order['OrderResponse']['Order']['CitySearchAndOrderType']['Quantity'], '3')
+            self.assertEqual(order['OrderResponse']['Order']['CitySearchAndOrderType']['City'], 'DENVER')
+            self.assertEqual(order['OrderResponse']['Order']['CitySearchAndOrderType']['State'], 'CO')
+
+            id = order['OrderResponse']['Order']['id']
+
+            url = '{0}/{1}'.format(url, id)
+            m.get(url, content=order_inst)
+            completed_order = Order.get(id)
+
+            self.assertTrue(isinstance(completed_order, dict))
+            self.assertEqual(completed_order['OrderResponse']['OrderStatus'], 'COMPLETE')
+            self.assertEqual(completed_order['OrderResponse']['CompletedQuantity'], '3')
+            self.assertEqual(completed_order['OrderResponse']['CreatedByUser'], 'testUser')
+
+            tn_list = completed_order['OrderResponse']['CompletedNumbers']
+            self.assertEqual(tn_list[0]['FullNumber'], '7203708644')
+            self.assertEqual(tn_list[len(tn_list) - 1]['FullNumber'], '7203720271')
 
     def test_create_zip_search_and_order(self):
         order_response = \
