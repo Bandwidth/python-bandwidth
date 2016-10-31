@@ -30,8 +30,6 @@ class TestOrder(TestCase):
     def test_list(self):
         self.fail()
 
-    def test__create(self):
-        self.fail()
 
     def test_create_existing_telephone_number_order(self):
         query_response = \
@@ -104,7 +102,101 @@ class TestOrder(TestCase):
 
 
     def test_create_area_code_search_and_order(self):
-        self.fail()
+        order_response = \
+        '''
+            <OrderResponse>
+                <Order>
+                    <CustomerOrderId>abc-123</CustomerOrderId>
+                    <Name>test order 2</Name>
+                    <OrderCreateDate>2016-10-31T16:57:34.708Z</OrderCreateDate>
+                    <PeerId>912912</PeerId>
+                    <BackOrderRequested>true</BackOrderRequested>
+                    <id>f2584-fe-47-82-d69aa</id>
+                    <AreaCodeSearchAndOrderType>
+                        <AreaCode>617</AreaCode>
+                        <Quantity>3</Quantity>
+                    </AreaCodeSearchAndOrderType>
+                    <PartialAllowed>true</PartialAllowed>
+                    <SiteId>2993</SiteId>
+                </Order>
+                <OrderStatus>RECEIVED</OrderStatus>
+            </OrderResponse>
+        '''
+
+        order_inst = \
+        '''
+            <OrderResponse>
+                <CompletedQuantity>3</CompletedQuantity>
+                <CreatedByUser>testUser</CreatedByUser>
+                <LastModifiedDate>2016-10-31T16:57:34.810Z</LastModifiedDate>
+                <OrderCompleteDate>2016-10-31T16:57:34.810Z</OrderCompleteDate>
+                <Order>
+                    <CustomerOrderId>abc-123</CustomerOrderId>
+                    <Name>test order 2</Name>
+                    <OrderCreateDate>2016-10-31T16:57:34.708Z</OrderCreateDate>
+                    <PeerId>912912</PeerId>
+                    <BackOrderRequested>true</BackOrderRequested>
+                    <AreaCodeSearchAndOrderType>
+                        <AreaCode>617</AreaCode>
+                        <Quantity>3</Quantity>
+                    </AreaCodeSearchAndOrderType>
+                    <PartialAllowed>true</PartialAllowed>
+                    <SiteId>2993</SiteId>
+                </Order>
+                <OrderStatus>COMPLETE</OrderStatus>
+                <CompletedNumbers>
+                    <TelephoneNumber>
+                        <FullNumber>6172218217</FullNumber>
+                    </TelephoneNumber>
+                    <TelephoneNumber>
+                        <FullNumber>6172219906</FullNumber>
+                    </TelephoneNumber>
+                    <TelephoneNumber>
+                        <FullNumber>6172219931</FullNumber>
+                    </TelephoneNumber>
+                </CompletedNumbers>
+                <Summary>3 numbers ordered in (617)</Summary>
+                <FailedQuantity>0</FailedQuantity>
+            </OrderResponse>
+        '''
+
+        with requests_mock.Mocker() as m:
+            url = 'http://resource_tests/123456/{0}'.format(Order.orders_path)
+            m.post(url, content=order_response)
+
+            order = Order.create_area_code_search_and_order(area_code='719',
+                                                            quantity='3',
+                                                            name = 'test order 2',
+                                                            site_id='2993',
+                                                            peer_id = '912912',
+                                                            customer_order_id = 'abc-123',
+                                                            back_order_requested='true'
+                                                            )
+
+            self.assertTrue(isinstance(order, dict))
+            self.assertTrue(isinstance(order['OrderResponse'], dict))
+            self.assertTrue(isinstance(order['OrderResponse']['Order'], dict))
+            self.assertEqual(order['OrderResponse']['Order']['Name'], 'test order 2')
+            self.assertEqual(order['OrderResponse']['Order']['PeerId'], '912912')
+            self.assertEqual(order['OrderResponse']['Order']['BackOrderRequested'], 'true')
+            self.assertEqual(order['OrderResponse']['Order']['SiteId'], '2993')
+            self.assertEqual(order['OrderResponse']['Order']['AreaCodeSearchAndOrderType']['Quantity'], '3')
+
+            id = order['OrderResponse']['Order']['id']
+
+            url = '{0}/{1}'.format(url, id)
+            m.get(url, content=order_inst)
+            completed_order = Order.get(id)
+
+
+            self.assertTrue(isinstance(completed_order, dict))
+            self.assertTrue(completed_order['OrderResponse']['OrderStatus'], 'COMPLETED')
+            self.assertEqual(completed_order['OrderResponse']['CompletedQuantity'], '3')
+            self.assertEqual(completed_order['OrderResponse']['CreatedByUser'], 'testUser')
+
+            tn_list = completed_order['OrderResponse']['CompletedNumbers']
+            self.assertTrue(tn_list[0]['FullNumber'], '6172218217')
+
 
     def test_create_rate_center_search_and_order(self):
         self.fail()

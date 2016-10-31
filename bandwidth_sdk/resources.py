@@ -136,7 +136,7 @@ class Order(GenericResource):
         content = response.content
         if content:
             root = fromstring(content)
-            order = etree2dict(root, sub_node_name=cls.order_element_name)
+            order = etree2dict(root)
 
         return order
 
@@ -215,7 +215,7 @@ class Order(GenericResource):
 
 
     @classmethod
-    def create_area_code_search_and_order(cls, area_code, quantity, *kwargs):
+    def create_area_code_search_and_order(cls, area_code, quantity, **kwargs):
         """
             Searchs for and creates an order given an area code and quantity
             <AreaCodeSearchAndOrderType>
