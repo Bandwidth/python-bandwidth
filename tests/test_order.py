@@ -96,11 +96,11 @@ class TestOrder(TestCase):
             self.assertEqual(order['OrderResponse']['Order']['id'], 'b64b-7a-69-8b62-274d9b0')
             self.assertEqual(order['OrderResponse']['Order']['PartialAllowed'], 'true')
             self.assertEqual(order['OrderResponse']['Order']['SiteId'], '2993')
-            self.assertTrue(isinstance(order['OrderResponse']['Order']['ExistingTelephoneNumberOrderType']['TelephoneNumberList'], dict))
+            self.assertTrue(isinstance(order['OrderResponse']['Order']['ExistingTelephoneNumberOrderType']['TelephoneNumberList'], list))
 
             # TODO the next line should return a list, not a dict
-            tn = order['OrderResponse']['Order']['ExistingTelephoneNumberOrderType']['TelephoneNumberList']
-            self.assertEqual(tn['TelephoneNumber'], '7192041495')
+            tn = order['OrderResponse']['Order']['ExistingTelephoneNumberOrderType']['TelephoneNumberList'][0]
+            self.assertEqual(tn, '7192041437')
 
 
     def test_create_area_code_search_and_order(self):

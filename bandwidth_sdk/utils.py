@@ -105,7 +105,7 @@ def etree2dict(tree, sub_node_name=None):
 
 
 def recursive_dict(element):
-    if element.attrib and 'type' in element.attrib and element.attrib['type'] == "array":
+    if 'list' in element.tag.lower() or (element.attrib and 'type' in element.attrib and element.attrib['type'] == "array"):
         return element.tag, [(dict(map(recursive_dict, child)) or getElementValue(child)) for child in element]
     else:
         return element.tag, dict(map(recursive_dict, element)) or getElementValue(element)
