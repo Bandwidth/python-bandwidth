@@ -25,7 +25,49 @@ class TestOrder(TestCase):
         pass
 
     def test_get(self):
-        self.fail()
+        order_inst = \
+        '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <OrderResponse>
+                <CreatedByUser>testUser</CreatedByUser>
+                <ErrorList>
+                    <Error>
+                        <Code>5019</Code>
+                        <Description>Order is pending. Please check the status of your order later. </Description>
+                    </Error>
+                </ErrorList>
+                <Order>
+                    <CustomerOrderId>test Order 18</CustomerOrderId>
+                    <Name>Existing Number Order</Name>
+                    <OrderCreateDate>2016-10-31T21:59:57.853Z</OrderCreateDate>
+                    <PeerId>1819</PeerId>
+                    <BackOrderRequested>false</BackOrderRequested>
+                    <id>020-a2-4a-9b-1234bc</id>
+                    <LATASearchAndOrderType>
+                        <Quantity>3</Quantity>
+                    </LATASearchAndOrderType>
+                    <PartialAllowed>true</PartialAllowed>
+                    <SiteId>1918</SiteId>
+                </Order>
+                <OrderStatus>RECEIVED</OrderStatus>
+            </OrderResponse>
+        '''
+        with requests_mock.Mocker() as m:
+            url = 'http://resource_tests/123456/{0}'.format(Order.orders_path)
+
+            id = '020-a2-4a-9b-1234bc'
+
+            url = '{0}/{1}'.format(url, id)
+            m.get(url, content=order_inst)
+            completed_order = Order.get(id)
+
+            self.assertTrue(isinstance(completed_order, dict))
+            self.assertEqual(completed_order['OrderResponse']['OrderStatus'], 'RECEIVED')
+
+            for error in completed_order['OrderResponse']['ErrorList']:
+                error['Code']
+                error['Description']
+
+
 
     def test_list(self):
         self.fail()
@@ -708,7 +750,103 @@ class TestOrder(TestCase):
             self.assertEqual(tn_list[len(tn_list) - 1]['FullNumber'], '7203721282')
 
     def test_create_lata_search_and_order(self):
-        self.fail()
+        order_response = \
+        '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <OrderResponse>
+                <Order>
+                    <CustomerOrderId>tuv-1617</CustomerOrderId>
+                    <Name>test order 8</Name>
+                    <OrderCreateDate>2016-10-31T21:59:57.853Z</OrderCreateDate>
+                    <PeerId>912912</PeerId>
+                    <BackOrderRequested>false</BackOrderRequested>
+                    <id>0220-a2-5a-ab-5c0c3</id>
+                    <LATASearchAndOrderType>
+                        <Quantity>3</Quantity>
+                    </LATASearchAndOrderType>
+                    <PartialAllowed>true</PartialAllowed>
+                    <SiteId>2993</SiteId>
+                </Order>
+                <OrderStatus>RECEIVED</OrderStatus>
+            </OrderResponse>
+        '''
+
+        # TODO Get the real one this is a from the zip order
+        order_inst = \
+        '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <OrderResponse>
+                <CompletedQuantity>3</CompletedQuantity>
+                <CreatedByUser>testUser</CreatedByUser>
+                <LastModifiedDate>2016-10-31T21:46:00.224Z</LastModifiedDate>
+                <OrderCompleteDate>2016-10-31T21:46:00.224Z</OrderCompleteDate>
+                <Order>
+                    <CustomerOrderId>qrs-1415</CustomerOrderId>
+                    <Name>test order 7</Name>
+                    <OrderCreateDate>2016-10-31T21:45:59.068Z</OrderCreateDate>
+                    <PeerId>912912</PeerId>
+                    <BackOrderRequested>false</BackOrderRequested>
+                    <ZIPSearchAndOrderType>
+                        <Quantity>3</Quantity>
+                        <Zip>80202</Zip>
+                    </ZIPSearchAndOrderType>
+                    <PartialAllowed>true</PartialAllowed>
+                    <SiteId>2993</SiteId>
+                </Order>
+                <OrderStatus>COMPLETE</OrderStatus>
+                <CompletedNumbers>
+                    <TelephoneNumber>
+                        <FullNumber>7203720319</FullNumber>
+                    </TelephoneNumber>
+                    <TelephoneNumber>
+                        <FullNumber>7203721280</FullNumber>
+                    </TelephoneNumber>
+                    <TelephoneNumber>
+                        <FullNumber>7203721282</FullNumber>
+                    </TelephoneNumber>
+                </CompletedNumbers>
+                <Summary>3 numbers ordered in (720)</Summary>
+                <FailedQuantity>0</FailedQuantity>
+            </OrderResponse>
+
+        '''
+
+        with requests_mock.Mocker() as m:
+            url = 'http://resource_tests/123456/{0}'.format(Order.orders_path)
+            m.post(url, content=order_response)
+
+            order = Order.create_lata_search_and_order(lata='224',
+                                                       quantity='3',
+                                                       name='test order 8',
+                                                       site_id='2993',
+                                                       peer_id='912912',
+                                                       customer_order_id='tuv-1617',
+                                                       back_order_requested='true'
+                                                       )
+
+            self.assertTrue(isinstance(order, dict))
+            self.assertTrue(isinstance(order['OrderResponse'], dict))
+            self.assertTrue(isinstance(order['OrderResponse']['Order'], dict))
+            self.assertEqual(order['OrderResponse']['Order']['Name'], 'test order 8')
+            self.assertEqual(order['OrderResponse']['Order']['PeerId'], '912912')
+            self.assertEqual(order['OrderResponse']['Order']['BackOrderRequested'], 'false')
+            self.assertEqual(order['OrderResponse']['Order']['SiteId'], '2993')
+            self.assertEqual(order['OrderResponse']['Order']['LATASearchAndOrderType']['Quantity'], '3')
+
+
+            id = order['OrderResponse']['Order']['id']
+
+            url = '{0}/{1}'.format(url, id)
+            m.get(url, content=order_inst)
+            completed_order = Order.get(id)
+
+            self.assertTrue(isinstance(completed_order, dict))
+            self.assertEqual(completed_order['OrderResponse']['OrderStatus'], 'COMPLETE')
+            self.assertEqual(completed_order['OrderResponse']['CompletedQuantity'], '3')
+            self.assertEqual(completed_order['OrderResponse']['CreatedByUser'], 'testUser')
+            self.assertEqual(completed_order['OrderResponse']['FailedQuantity'], '0')
+
+            tn_list = completed_order['OrderResponse']['CompletedNumbers']
+            self.assertEqual(tn_list[0]['FullNumber'], '7203720319')
+            self.assertEqual(tn_list[len(tn_list) - 1]['FullNumber'], '7203721282')
 
     def test_create_combined_search_and_order(self):
         self.fail()
