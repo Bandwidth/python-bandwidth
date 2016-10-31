@@ -410,13 +410,137 @@ class TestOrder(TestCase):
         self.fail()
 
     def test_create_state_search_and_order(self):
-        self.fail()
+        order_response = \
+        '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <OrderResponse>
+                <Order>
+                    <CustomerOrderId>klm-1011</CustomerOrderId>
+                    <Name>test order 5</Name>
+                    <OrderCreateDate>2016-10-31T21:17:28.603Z</OrderCreateDate>
+                    <PeerId>912912</PeerId>
+                    <BackOrderRequested>false</BackOrderRequested>
+                    <id>0061-1e-49-ad-ba617</id>
+                    <StateSearchAndOrderType>
+                        <Quantity>3</Quantity>
+                        <State>CO</State>
+                    </StateSearchAndOrderType>
+                    <PartialAllowed>true</PartialAllowed>
+                    <SiteId>2993</SiteId>
+                </Order>
+                <OrderStatus>RECEIVED</OrderStatus>
+            </OrderResponse>
+        '''
+
+        order_inst = \
+        '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <OrderResponse>
+                <CompletedQuantity>3</CompletedQuantity>
+                <CreatedByUser>testUser</CreatedByUser>
+                <LastModifiedDate>2016-10-31T21:17:29.103Z</LastModifiedDate>
+                <OrderCompleteDate>2016-10-31T21:17:29.102Z</OrderCompleteDate>
+                <Order>
+                    <CustomerOrderId>klm-1011</CustomerOrderId>
+                    <Name>test order 5</Name>
+                    <OrderCreateDate>2016-10-31T21:17:28.603Z</OrderCreateDate>
+                    <PeerId>912912</PeerId>
+                    <BackOrderRequested>false</BackOrderRequested>
+                    <StateSearchAndOrderType>
+                        <Quantity>3</Quantity>
+                        <State>CO</State>
+                    </StateSearchAndOrderType>
+                    <PartialAllowed>true</PartialAllowed>
+                    <SiteId>2993</SiteId>
+                </Order>
+                <OrderStatus>COMPLETE</OrderStatus>
+                <CompletedNumbers>
+                    <TelephoneNumber>
+                        <FullNumber>7193990461</FullNumber>
+                    </TelephoneNumber>
+                    <TelephoneNumber>
+                        <FullNumber>7193990484</FullNumber>
+                    </TelephoneNumber>
+                    <TelephoneNumber>
+                        <FullNumber>7193990505</FullNumber>
+                    </TelephoneNumber>
+                </CompletedNumbers>
+                <Summary>3 numbers ordered in (719)</Summary>
+                <FailedQuantity>0</FailedQuantity>
+            </OrderResponse>
+        '''
+        with requests_mock.Mocker() as m:
+            url = 'http://resource_tests/123456/{0}'.format(Order.orders_path)
+            m.post(url, content=order_response)
+
+            order = Order.create_state_search_and_order(state='CO',
+                                                        quantity='3',
+                                                        name='test order 5',
+                                                        site_id='2993',
+                                                        peer_id='912912',
+                                                        customer_order_id='klm-1011',
+                                                        back_order_requested='false'
+                                                        )
+
+            self.assertTrue(isinstance(order, dict))
+            self.assertTrue(isinstance(order['OrderResponse'], dict))
+            self.assertTrue(isinstance(order['OrderResponse']['Order'], dict))
+            self.assertEqual(order['OrderResponse']['Order']['Name'], 'test order 5')
+            self.assertEqual(order['OrderResponse']['Order']['PeerId'], '912912')
+            self.assertEqual(order['OrderResponse']['Order']['BackOrderRequested'], 'false')
+            self.assertEqual(order['OrderResponse']['Order']['SiteId'], '2993')
+            self.assertEqual(order['OrderResponse']['Order']['StateSearchAndOrderType']['Quantity'], '3')
+            self.assertEqual(order['OrderResponse']['Order']['StateSearchAndOrderType']['State'], 'CO')
+
+            id = order['OrderResponse']['Order']['id']
+
+            url = '{0}/{1}'.format(url, id)
+            m.get(url, content=order_inst)
+            completed_order = Order.get(id)
+
+            self.assertTrue(isinstance(completed_order, dict))
+            self.assertTrue(completed_order['OrderResponse']['OrderStatus'], 'COMPLETED')
+            self.assertEqual(completed_order['OrderResponse']['CompletedQuantity'], '3')
+            self.assertEqual(completed_order['OrderResponse']['CreatedByUser'], 'testUser')
+
+            tn_list = completed_order['OrderResponse']['CompletedNumbers']
+            self.assertTrue(tn_list[0]['FullNumber'], '7193990461')
+            self.assertTrue(tn_list[len(tn_list) - 1]['FullNumber'], '7193990505')
 
     def test_create_city_search_and_order(self):
-        self.fail()
+        order_response = \
+        '''
+        '''
+        with requests_mock.Mocker() as m:
+            url = 'http://resource_tests/123456/{0}'.format(Order.orders_path)
+            m.post(url, content=order_response)
+
+            order = Order.create_city_search_and_order(city='WESTMINISTER',
+                                                       state='CO',
+                                                       quantity='3',
+                                                       name='test order 6',
+                                                       site_id='2993',
+                                                       peer_id='912912',
+                                                       customer_order_id='nmo-1213',
+                                                       back_order_requested='false'
+                                                       )
+
 
     def test_create_zip_search_and_order(self):
-        self.fail()
+        order_response = \
+        '''
+        '''
+        with requests_mock.Mocker() as m:
+            url = 'http://resource_tests/123456/{0}'.format(Order.orders_path)
+            m.post(url, content=order_response)
+
+            order = Order.create_zip_search_and_order(zip='80202',
+                                                      quantity='3',
+                                                      name='test order 7',
+                                                      site_id='2993',
+                                                      peer_id='912912',
+                                                      customer_order_id='qrs-1415',
+                                                      back_order_requested='false'
+                                                      )
+
 
     def test_create_lata_search_and_order(self):
         self.fail()
