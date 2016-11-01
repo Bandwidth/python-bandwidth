@@ -21,8 +21,10 @@ class TestOrder(TestCase):
         bandwidth_sdk.password='bar'
         bandwidth_sdk.iris_endpoint = 'http://resource_tests'
 
+
     def tearDown(self):
         pass
+
 
     def test_get(self):
         order_inst = \
@@ -68,11 +70,6 @@ class TestOrder(TestCase):
                 error['Description']
 
 
-
-    def test_list(self):
-        self.fail()
-
-
     def test_create_existing_telephone_number_order(self):
         query_response = \
             '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -109,7 +106,6 @@ class TestOrder(TestCase):
             <OrderStatus>RECEIVED</OrderStatus>
         </OrderResponse>
         '''
-
         with requests_mock.Mocker() as m:
             url = 'http://resource_tests/123456/{0}'.format(TelephoneNumber.available_numbers_path)
             m.get(url, content=query_response)
@@ -201,7 +197,6 @@ class TestOrder(TestCase):
                 <FailedQuantity>0</FailedQuantity>
             </OrderResponse>
         '''
-
         with requests_mock.Mocker() as m:
             url = 'http://resource_tests/123456/{0}'.format(Order.orders_path)
             m.post(url, content=order_response)
@@ -304,7 +299,6 @@ class TestOrder(TestCase):
             <FailedQuantity>0</FailedQuantity>
         </OrderResponse>
         '''
-
         with requests_mock.Mocker() as m:
             url = 'http://resource_tests/123456/{0}'.format(Order.orders_path)
             m.post(url, content=order_response)
@@ -448,11 +442,6 @@ class TestOrder(TestCase):
             self.assertEqual(tn_list[0]['FullNumber'], '9194390189')
             self.assertEqual(tn_list[len(tn_list) - 1]['FullNumber'], '9194396493')
 
-    def test_create_toll_free_vanity_search_and_order(self):
-        self.fail()
-
-    def test_create_toll_free_wild_char_search_and_order(self):
-        self.fail()
 
     def test_create_state_search_and_order(self):
         order_response = \
@@ -550,6 +539,7 @@ class TestOrder(TestCase):
             tn_list = completed_order['OrderResponse']['CompletedNumbers']
             self.assertEqual(tn_list[0]['FullNumber'], '7193990461')
             self.assertEqual(tn_list[len(tn_list) - 1]['FullNumber'], '7193990505')
+
 
     def test_create_city_search_and_order(self):
         order_response = \
@@ -652,6 +642,7 @@ class TestOrder(TestCase):
             self.assertEqual(tn_list[0]['FullNumber'], '7203708644')
             self.assertEqual(tn_list[len(tn_list) - 1]['FullNumber'], '7203720271')
 
+
     def test_create_zip_search_and_order(self):
         order_response = \
         '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -749,6 +740,7 @@ class TestOrder(TestCase):
             self.assertEqual(tn_list[0]['FullNumber'], '7203720319')
             self.assertEqual(tn_list[len(tn_list) - 1]['FullNumber'], '7203721282')
 
+
     def test_create_lata_search_and_order(self):
         order_response = \
         '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -770,7 +762,7 @@ class TestOrder(TestCase):
             </OrderResponse>
         '''
 
-        # TODO Get the real one this is a from the zip order
+        # TODO Get the real one; this is a from the zip order
         order_inst = \
         '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
             <OrderResponse>
@@ -808,7 +800,6 @@ class TestOrder(TestCase):
             </OrderResponse>
 
         '''
-
         with requests_mock.Mocker() as m:
             url = 'http://resource_tests/123456/{0}'.format(Order.orders_path)
             m.post(url, content=order_response)
@@ -848,8 +839,110 @@ class TestOrder(TestCase):
             self.assertEqual(tn_list[0]['FullNumber'], '7203720319')
             self.assertEqual(tn_list[len(tn_list) - 1]['FullNumber'], '7203721282')
 
+
+    def test_create_toll_free_vanity_search_and_order(self):
+        order_response = \
+        '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <OrderResponse>
+                <Order>
+                    <CustomerOrderId>wxy-1819</CustomerOrderId>
+                    <Name>test order 9</Name>
+                    <OrderCreateDate>2016-11-01T19:38:09.990Z</OrderCreateDate>
+                    <PeerId>912912</PeerId>
+                    <BackOrderRequested>false</BackOrderRequested>
+                    <id>a8ed-3a-45-8f-4a8fa1</id>
+                    <TollFreeVanitySearchAndOrderType>
+                        <Quantity>1</Quantity>
+                        <TollFreeVanity>surf</TollFreeVanity>
+                    </TollFreeVanitySearchAndOrderType>
+                    <PartialAllowed>true</PartialAllowed>
+                    <SiteId>2993</SiteId>
+                </Order>
+                <OrderStatus>RECEIVED</OrderStatus>
+            </OrderResponse>
+        '''
+
+        order_inst = \
+        '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <OrderResponse>
+                <CompletedQuantity>1</CompletedQuantity>
+                <CreatedByUser>testUser</CreatedByUser>
+                <LastModifiedDate>2016-11-01T19:38:15.255Z</LastModifiedDate>
+                <OrderCompleteDate>2016-11-01T19:38:15.255Z</OrderCompleteDate>
+                <Order>
+                    <CustomerOrderId>wxy-1819</CustomerOrderId>
+                    <Name>test order 9</Name>
+                    <OrderCreateDate>2016-11-01T19:38:09.990Z</OrderCreateDate>
+                    <PeerId>912912</PeerId>
+                    <BackOrderRequested>false</BackOrderRequested>
+                    <TollFreeVanitySearchAndOrderType>
+                        <Quantity>1</Quantity>
+                        <TollFreeVanity>surf</TollFreeVanity>
+                    </TollFreeVanitySearchAndOrderType>
+                    <PartialAllowed>true</PartialAllowed>
+                    <SiteId>2993</SiteId>
+                </Order>
+                <OrderStatus>COMPLETE</OrderStatus>
+                <CompletedNumbers>
+                    <TelephoneNumber>
+                        <FullNumber>8552178735</FullNumber>
+                    </TelephoneNumber>
+                </CompletedNumbers>
+                <Summary>1 number ordered in (855)</Summary>
+                <FailedQuantity>0</FailedQuantity>
+            </OrderResponse>
+        '''
+        with requests_mock.Mocker() as m:
+            url = 'http://resource_tests/123456/{0}'.format(Order.orders_path)
+            m.post(url, content=order_response)
+
+            order = Order.create_toll_free_vanity_search_and_order(toll_free_vanity='surf',
+                                                                   quantity='1',
+                                                                   name='test order 9',
+                                                                   site_id='2993',
+                                                                   peer_id='912912',
+                                                                   customer_order_id='wxy-1819',
+                                                                   back_order_requested='false')
+
+            self.assertTrue(isinstance(order, dict))
+            self.assertTrue(isinstance(order['OrderResponse'], dict))
+            self.assertTrue(isinstance(order['OrderResponse']['Order'], dict))
+            self.assertEqual(order['OrderResponse']['Order']['Name'], 'test order 9')
+            self.assertEqual(order['OrderResponse']['Order']['PeerId'], '912912')
+            self.assertEqual(order['OrderResponse']['Order']['BackOrderRequested'], 'false')
+            self.assertEqual(order['OrderResponse']['Order']['SiteId'], '2993')
+            self.assertEqual(order['OrderResponse']['Order']['TollFreeVanitySearchAndOrderType']['Quantity'], '1')
+            self.assertEqual(order['OrderResponse']['Order']['TollFreeVanitySearchAndOrderType']['TollFreeVanity'], 'surf')
+            self.assertEqual(order['OrderResponse']['OrderStatus'], 'RECEIVED')
+
+            id = order['OrderResponse']['Order']['id']
+
+            url = '{0}/{1}'.format(url, id)
+            m.get(url, content=order_inst)
+            completed_order = Order.get(id)
+
+            self.assertTrue(isinstance(completed_order, dict))
+            self.assertEqual(completed_order['OrderResponse']['OrderStatus'], 'COMPLETE')
+            self.assertEqual(completed_order['OrderResponse']['CompletedQuantity'], '1')
+            self.assertEqual(completed_order['OrderResponse']['CreatedByUser'], 'testUser')
+            self.assertEqual(completed_order['OrderResponse']['FailedQuantity'], '0')
+
+            tn_list = completed_order['OrderResponse']['CompletedNumbers']
+            self.assertEqual(tn_list[0]['FullNumber'], '8552178735')
+
+
+    def test_create_toll_free_wild_char_search_and_order(self):
+        order_response = \
+            '''
+
+            '''
+        with requests_mock.Mocker() as m:
+            url = 'http://resource_tests/123456/{0}'.format(Order.orders_path)
+            m.post(url, content=order_response)
+
+            order = Order.create_toll_free_wild_char_search_and_order()
+
+
     def test_create_combined_search_and_order(self):
         self.fail()
 
-    def test_to_xml(self):
-        self.fail()

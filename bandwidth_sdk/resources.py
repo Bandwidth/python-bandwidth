@@ -143,7 +143,7 @@ class Order(GenericResource):
 
     @classmethod
     def list(cls, *args):
-        pass
+        pass #TODO Implement search for active orders
 
     @classmethod
     def _create(cls, payload):  # pragma: no cover
