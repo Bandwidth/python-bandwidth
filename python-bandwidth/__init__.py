@@ -1,5 +1,3 @@
-import logging
-
 SUPPORTED_CLIENTS = ['catapult']
 
 client_classes = {}

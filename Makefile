@@ -1,5 +1,5 @@
 FLAKE=flake8 --max-line-length=120 --exclude=./tests
-PACKAGE=bandwidth_sdk
+PACKAGE=python-bandwidth
 
 default: clean req test pep
 
