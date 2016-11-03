@@ -21,12 +21,12 @@ class ClientTests(unittest.TestCase):
         """
         self.assertIsNotNone(client('CAtapult', 'userId', 'token', 'secret'))
 
-    @unittest.expectedFailure
     def test_call_with_unsupported_client(self):
         """
         Call of client() should raise error for unsupported client name
         """
-        client('Non existing client')
+        with self.assertRaises(ValueError):
+            client('Non existing client')
 
     def test_call_with_caching_client_class_name(self):
         """

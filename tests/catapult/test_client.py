@@ -30,12 +30,12 @@ class ClientTests(unittest.TestCase):
         self.assertEqual('url', client.api_endpoint)
         self.assertEqual('v2', client.api_version)
 
-    @unittest.expectedFailure
     def test_init_with_missing_auth_data(self):
         """
         Client() should raise error on missing auth data
         """
-        Client('userId')
+        with self.assertRaises(ValueError):
+            Client('userId')
 
     def test_request_with_absolute_url(self):
         """
