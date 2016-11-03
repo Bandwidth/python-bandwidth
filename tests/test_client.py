@@ -13,13 +13,13 @@ class ClientTests(unittest.TestCase):
         """
         Call of client() should return client instance for supported client name
         """
-        self.assertIsNotNone(client('catapult'))
+        self.assertIsNotNone(client('catapult', 'userId', 'token', 'secret'))
 
     def test_call_with_supported_client_different_case(self):
         """
         Call of client() should return client instance for supported client name (case insensitive)
         """
-        self.assertIsNotNone(client('CAtapult'))
+        self.assertIsNotNone(client('CAtapult', 'userId', 'token', 'secret'))
 
     @unittest.expectedFailure
     def test_call_with_unsupported_client(self):
@@ -40,8 +40,8 @@ class ClientTests(unittest.TestCase):
             return orig_import(name, *args)
         import_mock.call_count = 0
         with patch('__builtin__.__import__', side_effect=import_mock):
-            client('catapult')
+            client('catapult', 'userId', 'token', 'secret')
             self.assertIs(1, import_mock.call_count)
-            client('catapult')
+            client('catapult', 'userId', 'token', 'secret')
             self.assertIs(1, import_mock.call_count)
 

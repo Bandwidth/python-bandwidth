@@ -8,7 +8,7 @@ def client(client_name, *args, **kwargs):
 
     if name not in SUPPORTED_CLIENTS:
         client_names = map(lambda k: '"%s"' % k, SUPPORTED_CLIENTS)
-        raise Exception('Invalid client name "%s". Valid values are %s' % [client_name, ', '.join(client_names)])
+        raise ValueError('Invalid client name "%s". Valid values are %s' % [client_name, ', '.join(client_names)])
     client_class = client_classes.get(name)
     if client_class == None:
         client_class = getattr(__import__('bandwidth.%s' % name), name).Client
