@@ -34,14 +34,9 @@ class ClientTests(unittest.TestCase):
         """
         client_classes = {}
         orig_import = __import__
-        def import_mock(name, *args):
-            if name == 'bandwidth.catapult':
-                import_mock.call_count += 1
-            return orig_import(name, *args)
-        import_mock.call_count = 0
-        with patch('__builtin__.__import__', side_effect=import_mock):
+        with patch('__builtin__.__import__', side_effect=orig_import) as p:
             client('catapult', 'userId', 'token', 'secret')
-            self.assertIs(1, import_mock.call_count)
+            p.assert_called_once_with('bandwidth.catapult')
             client('catapult', 'userId', 'token', 'secret')
-            self.assertIs(1, import_mock.call_count)
+            p.assert_called_once_with('bandwidth.catapult')
 

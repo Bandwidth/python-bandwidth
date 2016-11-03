@@ -13,10 +13,10 @@ class Client(AccountMixin):
     def _request(self, method, url, *args, **kwargs):
         if url.startswith('/'):
             # relative url
-            url = '%s/%s/%s' % (self.api_endpoint, self.api_version, url)
+            url = '%s/%s%s' % (self.api_endpoint, self.api_version, url)
         return requests.request(method, url, auth = self.auth, *args, **kwargs)
 
-    def _check_response(response):
+    def _check_response(self, response):
         if response.status_code >= 400:
             if response.headers.get('content-type') == 'application/json':
                 data = response.json()
@@ -31,8 +31,9 @@ class Client(AccountMixin):
         id = None
         if response.headers.get('content-type') == 'application/json':
             data = response.json()
-        if response.headers.haskey('location'):
-            id = response.headers['location'].split('/')[-1]
+        location = response.headers.get('location')
+        if location != None:
+            id = location.split('/')[-1]
         return (data, response, id)
 
 
@@ -40,7 +41,9 @@ class CatapultException(Exception):
     def __init__(self, status_code, message, **kwargs):
         self.status_code = status_code
         self.message = message
-        self.code = kwargs.get('code', str(self.status_code))
+        self.code = kwargs.get('code')
+        if self.code == None:
+            self.code = str(status_code)
 
     def __str__(self):
         return 'Error %s: %s' % (self.code, self.message)
