@@ -4,12 +4,12 @@ from setuptools import setup
 
 def get_version():
     version = {}
-    with open('./python-bandwidth/version.py') as f:
+    with open('./bandwidth/version.py') as f:
         exec(f.read(), version)
     return version.get('__version__')
 
 setup(
-    name='python-bandwidth',
+    name='bandwidth',
     version=get_version(),
     description='This client library is designed to support the Bandwidth '
                 'API and the official Bandwidth SDK',
@@ -18,7 +18,7 @@ setup(
     maintainer_email='dtolb@bandwidth.com',
     url='https://github.com/bandwidth/python-bandwidth',
     license='MIT',
-    packages=["python-bandwidth"],
+    packages=["bandwidth"],
     long_description="Bandwidth Python API",
     classifiers=[
         'License :: OSI Approved :: Apache Software License',

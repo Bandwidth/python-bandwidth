@@ -6,7 +6,7 @@ if six.PY3:
 else:
     from mock import patch
 
-from python-bandwidth import client, client_classes
+from bandwidth import client, client_classes
 
 class ClientTests(unittest.TestCase):
     def test_call_with_supported_client(self):
@@ -34,13 +34,14 @@ class ClientTests(unittest.TestCase):
         """
         client_classes = {}
         orig_import = __import__
-        call_count = 0
-        import_mock = lambda *args:
-            call_count += 1
-            return orig_import(*args)
-        with mock.patch('__builtin__.__import__', side_effect=import_mock):
+        def import_mock(name, *args):
+            if name == 'bandwidth.catapult':
+                import_mock.call_count += 1
+            return orig_import(name, *args)
+        import_mock.call_count = 0
+        with patch('__builtin__.__import__', side_effect=import_mock):
             client('catapult')
-            self.assertIs(1, call_count)
+            self.assertIs(1, import_mock.call_count)
             client('catapult')
-            self.assertIs(1, call_count)
+            self.assertIs(1, import_mock.call_count)
 

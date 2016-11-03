@@ -1,7 +1,6 @@
 bpython==0.13.1
 green==1.6.0
 flake8
-tox==1.7.2
 coverage==3.7.1
 responses
 mock
