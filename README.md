@@ -1,6 +1,6 @@
 # Bandwidth Python API
 
-[![Build Status](https://travis-ci.org/bandwidth/python-bandwidth.svg?branch=master)](https://travis-ci.org/bandwidth/python-bandwidth) [![Can I Use Python 3?](https://caniusepython3.com/project/bandwidth-sdk.svg)](https://caniusepython3.com/project/bandwidth-sdk)
+[![Build Status](https://travis-ci.org/Bandwidth/python-bandwidth.svg?branch=master)](https://travis-ci.org/Bandwidth/python-bandwidth) [![Can I Use Python 3?](https://caniusepython3.com/project/bandwidth-sdk.svg)](https://caniusepython3.com/project/bandwidth-sdk)
 
 Client library for the [Bandwidth App Platform](http://ap.bandwidth.com/docs/rest-api/)
 
