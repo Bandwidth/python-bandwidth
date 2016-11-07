@@ -10,3 +10,5 @@ def create_response(status_code = 200, content = '', content_type = 'application
         response.headers['content-type'] = content_type
         response._content = content
         return response
+
+AUTH = ('apiToken', 'apiSecret')
