@@ -1,8 +1,9 @@
 import requests
 from .account import AccountMixin
+from .application import ApplicationMixin
 
 
-class Client(AccountMixin):
+class Client(AccountMixin, ApplicationMixin):
     def __init__(self, user_id=None, api_token=None, api_secret=None, **other_options):
         if not all((user_id, api_token, api_secret)):
             raise ValueError('Arguments user_id, api_token and api_secret are required. '
