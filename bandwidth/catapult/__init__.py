@@ -1,10 +1,12 @@
 import requests
 from .account import AccountMixin
 
+
 class Client(AccountMixin):
-    def __init__(self, user_id = None, api_token = None, api_secret = None, **other_options):
+    def __init__(self, user_id=None, api_token=None, api_secret=None, **other_options):
         if not all((user_id, api_token, api_secret)):
-            raise ValueError('Arguments user_id, api_token and api_secret are required. Use bandwidth.client("catapult", "YOUR-USER-ID", "YOUR-API-TOKEN", "YOUR-API-SECRET")')
+            raise ValueError('Arguments user_id, api_token and api_secret are required. '
+                             'Use bandwidth.client("catapult", "YOUR-USER-ID", "YOUR-API-TOKEN", "YOUR-API-SECRET")')
         self.user_id = user_id
         self.api_endpoint = other_options.get('api_endpoint', 'https://api.catapult.inetwork.com')
         self.api_version = other_options.get('api_version', 'v1')
@@ -14,13 +16,13 @@ class Client(AccountMixin):
         if url.startswith('/'):
             # relative url
             url = '%s/%s%s' % (self.api_endpoint, self.api_version, url)
-        return requests.request(method, url, auth = self.auth, *args, **kwargs)
+        return requests.request(method, url, auth=self.auth, *args, **kwargs)
 
     def _check_response(self, response):
         if response.status_code >= 400:
             if response.headers.get('content-type') == 'application/json':
                 data = response.json()
-                raise CatapultException(response.status_code, data['message'], code = data.get('code'))
+                raise CatapultException(response.status_code, data['message'], code=data.get('code'))
             else:
                 raise CatapultException(response.status_code, response.content.decode('utf-8')[:79])
 
@@ -32,7 +34,7 @@ class Client(AccountMixin):
         if response.headers.get('content-type') == 'application/json':
             data = response.json()
         location = response.headers.get('location')
-        if location != None:
+        if location is not None:
             id = location.split('/')[-1]
         return (data, response, id)
 
@@ -42,9 +44,8 @@ class CatapultException(Exception):
         self.status_code = status_code
         self.message = message
         self.code = kwargs.get('code')
-        if self.code == None:
+        if self.code is None:
             self.code = str(status_code)
 
     def __str__(self):
         return 'Error %s: %s' % (self.code, self.message)
-
