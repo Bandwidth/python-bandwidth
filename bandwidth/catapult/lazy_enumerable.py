@@ -13,4 +13,6 @@ def get_lazy_enumerator(client, get_first_page):
                 break
         if len(next_page_url) == 0:
             break
-        get_data = lambda : client._make_request('get', next_page_url)
+
+        def get_data():
+            return client._make_request('get', next_page_url)
