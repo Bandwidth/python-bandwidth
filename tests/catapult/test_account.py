@@ -32,6 +32,6 @@ class AccountTests(unittest.TestCase):
         """
         with patch('requests.request', return_value = helpers.create_response(200, estimated_json)) as p:
             client = helpers.get_client()
-            data = client.get_account_transactions()
+            data = list(client.get_account_transactions())
             p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/account/transactions', auth=helpers.AUTH, params=None)
             self.assertEqual('transactionId1', data[0]['id'])

@@ -25,7 +25,7 @@ class ApplicationTests(unittest.TestCase):
         """
         with patch('requests.request', return_value = helpers.create_response(200, estimated_json)) as p:
             client = helpers.get_client()
-            data = client.get_applications()
+            data = list(client.get_applications())
             p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/applications', auth=helpers.AUTH, params=None)
             self.assertEqual('applicationId', data[0]['id'])
 
