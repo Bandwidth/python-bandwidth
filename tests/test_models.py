@@ -3213,6 +3213,49 @@ class PhoneNumberTest(SdkTestCase):
             'http://callback.info')
 
 
+    @responses.activate
+    def test_import_numbers(self):
+
+        json_response = '''
+        {
+          "application": "https://api.catapult.inetwork.com/v1/users/user-id/applications/a-xmgkn6wmt5i3y",
+          "id": "n-e3xtn5rq",
+          "number": "+19194396493",
+          "nationalNumber": "(919) 439-6493",
+          "name": "import test 1",
+          "createdTime": "2016-11-08T22:14:57Z",
+          "price": "0.00",
+          "numberState": "enabled",
+          "provider": {
+            "providerName": "bandwidth-dashboard",
+            "properties": {
+              "accountId": "99988899"
+            }
+          }
+        }'''
+        responses.add(responses.POST,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumbers',
+                      body='',
+                      status=201,
+                      content_type='application/json',
+                      adding_headers={'Location': '/v1/users/u-user/phoneNumber/n-e3xtn5rq'})
+        responses.add(responses.GET,
+                      'https://api.catapult.inetwork.com/v1/users/u-user/phoneNumber/n-e3xtn5rq',
+                      body=json_response,
+                      status=200,
+                      content_type='application/json')
+
+        provider = {'providerName' : 'bandwidth-dashboard', 'properties' : { 'accountId' : '99988899', 'userName': 'testUser', 'password': 'test'}}
+        imported_number = PhoneNumber.import_number(number='19194396493', application='a-xmgkn6wmt5i3y', name='import test 1', provider=provider)
+        self.assertEqual(imported_number.number, '19194396493')
+        self.assertEqual(imported_number.application.id, 'a-xmgkn6wmt5i3y')
+        self.assertEqual(imported_number.name, 'import test 1')
+        self.assertEqual(imported_number.provider['providerName'], 'bandwidth-dashboard')
+        self.assertEqual(imported_number.provider['properties']['accountId'], '99988899')
+        self.assertEqual(imported_number.provider['properties']['userName'], 'testUser')
+        self.assertEqual(imported_number.provider['properties']['password'], 'test')
+
+
 class CommonTest(SdkTestCase):
 
     """

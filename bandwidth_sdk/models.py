@@ -983,7 +983,8 @@ class PhoneNumber(ListResource):
     _available_numbers_path = 'availableNumbers'
     _fields = frozenset(('id', 'application', 'number', 'national_number',
                          'name', 'created_time', 'city', 'state', 'price',
-                         'number_state', 'fallback_number', 'pattern_match', 'lata', 'rate_center'))
+                         'number_state', 'fallback_number', 'pattern_match', 'lata', 'rate_center',
+                         'provider', 'provider.properties', 'provider.properties.account'))
     NUMBER_STATES = enum('enabled', 'released', 'available')
 
     def __init__(self, data, available=False):
@@ -1000,6 +1001,8 @@ class PhoneNumber(ListResource):
         self.price = None
         self.number_state = None
         self.fallback_number = None
+        self.provider = None
+
 
         # Available number attributes
         self.pattern_match = None
@@ -1267,6 +1270,40 @@ class PhoneNumber(ListResource):
         url = client.endpoint + '/v1/{}/local'.format(cls._available_numbers_path)
         data = client.build_request('post', url, params=to_api(params), join_endpoint=False).json()
         return [cls(number) for number in data]
+
+    @classmethod
+    def import_number(cls, **params):
+        '''
+        :param number: TN to import
+        :param application_id: app id to associate this number to
+        :param name: optional name of TN
+        :provider: structure with provider_name and properties.
+                {
+                    "number": "+12013663520",
+                    "applicationId":"a-soysphdl6l24kr7d3sab2ei",
+                    "name" : "text messaging TN",
+                    "provider": {
+                          "providerName": "bandwidth-dashboard",
+                          "properties": {
+                                "accountId": "9999999",
+                                "userName": "wileCoyote",
+                                "password": "catchThatBird"
+                          }
+                    }
+                }
+
+        Returns:
+
+        '''
+        client = get_client()
+
+        json_data = to_api(params)
+        r = client.post('phoneNumbers', data=json_data)
+        phone_number = get_location_id(r)
+        number = cls(phone_number)
+        number.set_up(json_data)
+        return number
+
 
     @classmethod
     def batch_allocate_tollfree(cls, quantity=1):
