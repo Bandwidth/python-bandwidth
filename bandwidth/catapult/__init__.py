@@ -3,10 +3,11 @@ from .account import AccountMixin
 from .application import ApplicationMixin
 from .available_number import AvailableNumberMixin
 from .bridge import BridgeMixin
+from .recording import RecordingMixin
 from .transcription import TranscriptionMixin
 
 
-class Client(AccountMixin, ApplicationMixin, AvailableNumberMixin, BridgeMixin, TranscriptionMixin):
+class Client(AccountMixin, ApplicationMixin, AvailableNumberMixin, BridgeMixin, RecordingMixin, TranscriptionMixin):
     def __init__(self, user_id=None, api_token=None, api_secret=None, **other_options):
         if not all((user_id, api_token, api_secret)):
             raise ValueError('Arguments user_id, api_token and api_secret are required. '
