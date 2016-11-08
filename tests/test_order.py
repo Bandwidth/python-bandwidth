@@ -942,7 +942,7 @@ class TestOrder(TestCase):
                     <OrderCreateDate>2016-11-08T14:59:09.346Z</OrderCreateDate>
                     <PeerId>912912</PeerId>
                     <BackOrderRequested>true</BackOrderRequested>
-                    <id>3c5a76db-2773-4a52-8e9d-bc06524842dd</id>
+                    <id>36db-23-42-e9d-b42dd</id>
                     <TollFreeWildCharSearchAndOrderType>
                         <Quantity>1</Quantity>
                         <TollFreeWildCardPattern>8**</TollFreeWildCardPattern>
@@ -1025,44 +1025,88 @@ class TestOrder(TestCase):
 
     def test_create_combined_search_and_order(self):
         order_response = \
-            '''
-
+            '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <OrderResponse>
+                <Order>
+                    <CustomerOrderId>def-2223</CustomerOrderId>
+                    <Name>test order 11</Name>
+                    <OrderCreateDate>2016-11-08T17:00:49.632Z</OrderCreateDate>
+                    <PeerId>912912</PeerId>
+                    <BackOrderRequested>false</BackOrderRequested>
+                    <id>4915-11-42b-bc-38c03</id>
+                    <CombinedSearchAndOrderType>
+                        <AreaCode>720</AreaCode>
+                        <LocalVanity>snow</LocalVanity>
+                        <EndsIn>false</EndsIn>
+                        <EnableLCA>false</EnableLCA>
+                        <Quantity>1</Quantity>
+                    </CombinedSearchAndOrderType>
+                    <PartialAllowed>true</PartialAllowed>
+                    <SiteId>2993</SiteId>
+                </Order>
+                <OrderStatus>RECEIVED</OrderStatus>
+            </OrderResponse>
             '''
 
         order_inst = \
-            '''
+            '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                <OrderResponse>
+                    <CompletedQuantity>1</CompletedQuantity>
+                    <CreatedByUser>testUser</CreatedByUser>
+                    <LastModifiedDate>2016-11-08T17:00:50.868Z</LastModifiedDate>
+                    <OrderCompleteDate>2016-11-08T17:00:50.868Z</OrderCompleteDate>
+                    <Order>
+                        <CustomerOrderId>def-2223</CustomerOrderId>
+                        <Name>test order 11</Name>
+                        <OrderCreateDate>2016-11-08T17:00:49.632Z</OrderCreateDate>
+                        <PeerId>912912</PeerId>
+                        <BackOrderRequested>false</BackOrderRequested>
+                        <CombinedSearchAndOrderType>
+                            <AreaCode>720</AreaCode>
+                            <LocalVanity>snow</LocalVanity>
+                            <EndsIn>false</EndsIn>
+                            <EnableLCA>false</EnableLCA>
+                            <Quantity>1</Quantity>
+                        </CombinedSearchAndOrderType>
+                        <PartialAllowed>true</PartialAllowed>
+                        <SiteId>2993</SiteId>
+                    </Order>
+                    <OrderStatus>COMPLETE</OrderStatus>
+                    <CompletedNumbers>
+                        <TelephoneNumber>
+                            <FullNumber>7206427669</FullNumber>
+                        </TelephoneNumber>
+                    </CompletedNumbers>
+                    <Summary>1 number ordered in (720)</Summary>
+                    <FailedQuantity>0</FailedQuantity>
+                </OrderResponse>
             '''
         with requests_mock.Mocker() as m:
             url = 'http://resource_tests/123456/{0}'.format(Order.orders_path)
             m.post(url, content=order_response)
 
-            order = Order.create_combined_search_and_order(area_code='',
-                                                           rate_center='',
-                                                           state='',
-                                                           npanxx='',
-                                                           lata='',
-                                                           city='',
-                                                           zip='',
-                                                           enable_lca='',
-                                                           quantity='',
-                                                           local_vantity=None,
+            order = Order.create_combined_search_and_order(area_code='720',
+                                                           quantity='1',
+                                                           local_vantity='snow',
                                                            ends_in='false',
-                                                           name='test order 10',
+                                                           name='test order 11',
                                                            site_id='2993',
                                                            peer_id='912912',
-                                                           customer_order_id='abc-2021',
-                                                           back_order_requested='true'
+                                                           customer_order_id='def-2223',
+                                                           back_order_requested='false'
                                                            )
 
             self.assertTrue(isinstance(order, dict))
             self.assertTrue(isinstance(order['OrderResponse'], dict))
             self.assertTrue(isinstance(order['OrderResponse']['Order'], dict))
-            self.assertEqual(order['OrderResponse']['Order']['Name'], 'test order 10')
+            self.assertEqual(order['OrderResponse']['Order']['Name'], 'test order 11')
             self.assertEqual(order['OrderResponse']['Order']['PeerId'], '912912')
-            self.assertEqual(order['OrderResponse']['Order']['BackOrderRequested'], 'true')
+            self.assertEqual(order['OrderResponse']['Order']['BackOrderRequested'], 'false')
             self.assertEqual(order['OrderResponse']['Order']['SiteId'], '2993')
             self.assertEqual(order['OrderResponse']['Order']['CombinedSearchAndOrderType']['Quantity'], '1')
-            self.assertEqual(order['OrderResponse']['Order']['CombinedSearchAndOrderType']['RateCenter'], '')
+            self.assertEqual(order['OrderResponse']['Order']['CombinedSearchAndOrderType']['AreaCode'], '720')
+            self.assertEqual(order['OrderResponse']['Order']['CombinedSearchAndOrderType']['LocalVanity'], 'snow')
+            self.assertEqual(order['OrderResponse']['Order']['CombinedSearchAndOrderType']['EndsIn'], 'false')
             self.assertEqual(order['OrderResponse']['OrderStatus'], 'RECEIVED')
 
             id = order['OrderResponse']['Order']['id']
@@ -1078,6 +1122,6 @@ class TestOrder(TestCase):
             self.assertEqual(completed_order['OrderResponse']['FailedQuantity'], '0')
 
             tn_list = completed_order['OrderResponse']['CompletedNumbers']
-            self.assertEqual(tn_list[0]['FullNumber'], '8552178735')
+            self.assertEqual(tn_list[0]['FullNumber'], '7206427669')
 
 

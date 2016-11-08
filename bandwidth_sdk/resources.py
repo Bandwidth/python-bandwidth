@@ -495,15 +495,16 @@ class Order(GenericResource):
 
     @classmethod
     def create_combined_search_and_order(cls,
-                                         area_code,
-                                         rate_center,
-                                         state,
-                                         npanxx,
-                                         lata,
-                                         city,
-                                         zip,
-                                         enable_lca,
                                          quantity,
+                                         area_code=None,
+                                         rate_center=None,
+                                         state=None,
+                                         npanxx=None,
+                                         npanxx_x=None,
+                                         lata=None,
+                                         city=None,
+                                         zip=None,
+                                         enable_lca=None,
                                          local_vantity=None,
                                          ends_in='false',
                                          **kwargs):
@@ -550,15 +551,27 @@ class Order(GenericResource):
 
         # add the specifics for this order type
         order_type_node = SubElement(order_node, 'CombinedSearchAndOrderType')
-        SubElement(order_type_node, 'AreaCode').text = area_code
-        SubElement(order_type_node, 'RateCenter').text = rate_center
-        SubElement(order_type_node, 'State').text = state
-        SubElement(order_type_node, 'NpaNxx').text = npanxx
-        SubElement(order_type_node, 'Lata').text = lata
-        SubElement(order_type_node, 'City').text = city
-        SubElement(order_type_node, 'Zip').text = zip
-        SubElement(order_type_node, 'EnableLCA').text = enable_lca
         SubElement(order_type_node, 'Quantity').text = quantity
+        # here we only want the subelement if the argument is valid (hence the awkard syntax)
+        if area_code is not None:
+            SubElement(order_type_node, 'AreaCode').text = area_code
+        if rate_center is not None:
+            SubElement(order_type_node, 'RateCenter').text = rate_center
+        if state is not None:
+            SubElement(order_type_node, 'State').text = state
+        if npanxx is not None:
+            SubElement(order_type_node, 'NpaNxx').text = npanxx
+        if npanxx_x is not None:
+            SubElement(order_type_node, 'NpaNxxX').text = npanxx_x
+        if lata is not None:
+            SubElement(order_type_node, 'Lata').text = lata
+        if city is not None:
+            SubElement(order_type_node, 'City').text = city
+        if zip is not None:
+            SubElement(order_type_node, 'Zip').text = zip
+        if enable_lca is not None:
+            SubElement(order_type_node, 'EnableLCA').text = enable_lca
+
         if local_vantity is not None:
             SubElement(order_type_node, 'LocalVanity').text = local_vantity
             SubElement(order_type_node, 'EndsIn').text = ends_in
