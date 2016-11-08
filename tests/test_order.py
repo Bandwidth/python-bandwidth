@@ -12,7 +12,6 @@ from bandwidth_sdk.resources import TelephoneNumber, Order
 import bandwidth_sdk
 
 
-
 class TestOrder(TestCase):
 
     def setUp(self):

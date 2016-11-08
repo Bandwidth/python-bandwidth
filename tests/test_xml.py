@@ -1,4 +1,4 @@
-from bandwidth_sdk import xml
+from bandwidth_sdk import bxml
 from .utils import SdkTestCase
 
 
@@ -9,8 +9,8 @@ class XmlTest(SdkTestCase):
                                      "  <Pause duration=\"6\"></Pause>\n"
                                      "</Response>\n")
 
-        xml_response = xml.Response()
-        pause = xml.Pause(duration=6)
+        xml_response = bxml.Response()
+        pause = bxml.Pause(duration=6)
         xml_response.push(pause)
         actual_result = xml_response.to_xml()
 
@@ -22,8 +22,8 @@ class XmlTest(SdkTestCase):
                                      "  <Pause duration=\"6\"></Pause>\n"
                                      "</Response>\n")
 
-        xml_response = xml.Response()
-        pause = xml.Pause(6)
+        xml_response = bxml.Response()
+        pause = bxml.Pause(6)
         xml_response.push(pause)
         actual_result = xml_response.to_xml()
 
@@ -35,8 +35,8 @@ class XmlTest(SdkTestCase):
                                      "  <Transfer transferCallerId=\"+11234567891\" transferTo=\"+11234567892\"/>\n"
                                      "</Response>\n")
 
-        xml_response = xml.Response()
-        xml_response.push(xml.Transfer(transfer_caller_id="+11234567891", transfer_to="+11234567892"))
+        xml_response = bxml.Response()
+        xml_response.push(bxml.Transfer(transfer_caller_id="+11234567891", transfer_to="+11234567892"))
         actual_result = xml_response.to_xml()
 
         self.assertEqual(expected_result, actual_result)
@@ -47,8 +47,8 @@ class XmlTest(SdkTestCase):
                                      "  <Hangup></Hangup>\n"
                                      "</Response>\n")
 
-        xml_response = xml.Response()
-        xml_response.push(xml.Hangup())
+        xml_response = bxml.Response()
+        xml_response.push(bxml.Hangup())
         actual_result = xml_response.to_xml()
 
         self.assertEqual(expected_result, actual_result)
@@ -59,8 +59,8 @@ class XmlTest(SdkTestCase):
                                      "  <Transfer/>\n"
                                      "</Response>\n")
 
-        xml_response = xml.Response()
-        xml_response.push(xml.Transfer())
+        xml_response = bxml.Response()
+        xml_response.push(bxml.Transfer())
         actual_result = xml_response.to_xml()
 
         self.assertEqual(expected_result, actual_result)
@@ -76,10 +76,10 @@ class XmlTest(SdkTestCase):
                                      "  </Transfer>\n"
                                      "</Response>\n")
 
-        xml_response = xml.Response()
-        xml_response.push(xml.Transfer(transfer_caller_id="+11234567891", transfer_to="+11234567892",
+        xml_response = bxml.Response()
+        xml_response.push(bxml.Transfer(transfer_caller_id="+11234567891", transfer_to="+11234567892",
                                        phone_number=["+9991112345", "+8888811111"],
-                                       speak_sentence=xml.SpeakSentence("Inner speak sentence", gender="male",
+                                       speak_sentence=bxml.SpeakSentence("Inner speak sentence", gender="male",
                                                                         voice="paul", locale="en_US")))
         actual_result = xml_response.to_xml()
 
@@ -92,8 +92,8 @@ class XmlTest(SdkTestCase):
                                      "Text to speak</SpeakSentence>\n"
                                      "</Response>\n")
 
-        xml_response = xml.Response()
-        xml_response.push(xml.SpeakSentence("Text to speak", gender="male", voice="paul", locale="en_US"))
+        xml_response = bxml.Response()
+        xml_response.push(bxml.SpeakSentence("Text to speak", gender="male", voice="paul", locale="en_US"))
         actual_result = xml_response.to_xml()
 
         self.assertEqual(expected_result, actual_result)
@@ -104,8 +104,8 @@ class XmlTest(SdkTestCase):
                                      "  <Gather requestUrl=\"http://test.com\"/>\n"
                                      "</Response>\n")
 
-        xml_response = xml.Response()
-        xml_response.push(xml.Gather(request_url="http://test.com"))
+        xml_response = bxml.Response()
+        xml_response.push(bxml.Gather(request_url="http://test.com"))
         actual_result = xml_response.to_xml()
 
         self.assertEqual(expected_result, actual_result)
@@ -120,10 +120,10 @@ class XmlTest(SdkTestCase):
                                      "  </Gather>\n"
                                      "</Response>\n")
 
-        xml_response = xml.Response()
-        xml_response.push(xml.Gather(request_url="http://test.com", request_url_timeout="5", terminating_digits="#",
+        xml_response = bxml.Response()
+        xml_response.push(bxml.Gather(request_url="http://test.com", request_url_timeout="5", terminating_digits="#",
                                      inter_digit_timeout="5", bargeable="true",
-                                     speak_sentence=xml.SpeakSentence("Inner speak sentence", gender="male",
+                                     speak_sentence=bxml.SpeakSentence("Inner speak sentence", gender="male",
                                                                       voice="paul", locale="en_US")))
         actual_result = xml_response.to_xml()
 
@@ -135,8 +135,8 @@ class XmlTest(SdkTestCase):
                                      "  <PlayAudio/>\n"
                                      "</Response>\n")
 
-        xml_response = xml.Response()
-        xml_response.push(xml.PlayAudio())
+        xml_response = bxml.Response()
+        xml_response.push(bxml.PlayAudio())
         actual_result = xml_response.to_xml()
 
         self.assertEqual(expected_result, actual_result)
@@ -147,8 +147,8 @@ class XmlTest(SdkTestCase):
                                      "  <PlayAudio>http://test.com</PlayAudio>\n"
                                      "</Response>\n")
 
-        xml_response = xml.Response()
-        xml_response.push(xml.PlayAudio(url="http://test.com"))
+        xml_response = bxml.Response()
+        xml_response.push(bxml.PlayAudio(url="http://test.com"))
         actual_result = xml_response.to_xml()
 
         self.assertEqual(expected_result, actual_result)
@@ -162,8 +162,8 @@ class XmlTest(SdkTestCase):
                                      "  </Media>\n"
                                      "</Response>\n")
 
-        xml_response = xml.Response()
-        xml_response.push(xml.Media(url_list=["http://test1.com", "http://test2.com"]))
+        xml_response = bxml.Response()
+        xml_response.push(bxml.Media(url_list=["http://test1.com", "http://test2.com"]))
         actual_result = xml_response.to_xml()
 
         self.assertEqual(expected_result, actual_result)
@@ -175,8 +175,8 @@ class XmlTest(SdkTestCase):
                                      "terminatingDigits=\"#\"></Record>\n"
                                      "</Response>\n")
 
-        xml_response = xml.Response()
-        xml_response.push(xml.Record(request_url="/stepTransfer", request_url_timeout="5", terminating_digits="#"))
+        xml_response = bxml.Response()
+        xml_response.push(bxml.Record(request_url="/stepTransfer", request_url_timeout="5", terminating_digits="#"))
         actual_result = xml_response.to_xml()
 
         self.assertEqual(expected_result, actual_result)
@@ -187,8 +187,8 @@ class XmlTest(SdkTestCase):
                                      "  <Redirect requestUrl=\"/stepTransfer\" requestUrlTimeout=\"5\"></Redirect>\n"
                                      "</Response>\n")
 
-        xml_response = xml.Response()
-        xml_response.push(xml.Redirect(request_url="/stepTransfer", request_url_timeout="5"))
+        xml_response = bxml.Response()
+        xml_response.push(bxml.Redirect(request_url="/stepTransfer", request_url_timeout="5"))
         actual_result = xml_response.to_xml()
 
         self.assertEqual(expected_result, actual_result)
@@ -199,8 +199,8 @@ class XmlTest(SdkTestCase):
                                      "  <Reject></Reject>\n"
                                      "</Response>\n")
 
-        xml_response = xml.Response()
-        xml_response.push(xml.Reject())
+        xml_response = bxml.Response()
+        xml_response.push(bxml.Reject())
         actual_result = xml_response.to_xml()
 
         self.assertEqual(expected_result, actual_result)
@@ -212,8 +212,8 @@ class XmlTest(SdkTestCase):
                                      "Message to send</SendMessage>\n"
                                      "</Response>\n")
 
-        xml_response = xml.Response()
-        xml_response.push(xml.SendMessage("Message to send", "+19994444", "+144445555"))
+        xml_response = bxml.Response()
+        xml_response.push(bxml.SendMessage("Message to send", "+19994444", "+144445555"))
         actual_result = xml_response.to_xml()
 
         self.assertEqual(expected_result, actual_result)

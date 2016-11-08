@@ -1,5 +1,6 @@
 import six
-from lxml.etree import Element, SubElement, tostring, fromstring
+
+from xml.etree.ElementTree import Element, SubElement, tostring, fromstring
 
 import bandwidth_sdk
 import bandwidth_sdk.models as models
