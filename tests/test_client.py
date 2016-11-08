@@ -3,8 +3,10 @@ import six
 
 if six.PY3:
     from unittest.mock import patch
+    builtins = 'builtins'
 else:
     from mock import patch
+    builtins = '__builtin__'
 
 from bandwidth import client, client_classes
 
@@ -34,7 +36,7 @@ class ClientTests(unittest.TestCase):
         """
         client_classes = {}
         orig_import = __import__
-        with patch('builtins.__import__', side_effect=orig_import) as p:
+        with patch('%s.__import__' % builtins, side_effect=orig_import) as p:
             client('catapult', 'userId', 'token', 'secret')
             old = p.call_count
             client('catapult', 'userId', 'token', 'secret')
