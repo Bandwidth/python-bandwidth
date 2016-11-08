@@ -157,7 +157,7 @@ class Order(GenericResource):
         """
         client = get_iris_client()
         url = '{0}/{1}/{2}'.format(bandwidth_sdk.iris_endpoint, bandwidth_sdk.account_id, cls.orders_path)
-        response = client.post(url, data=payload, join_endpoint=False, xml=True)
+        response = client.post_xml(url, data=payload, join_endpoint=False, xml=True)
         content = response.content
         if content:
             root = fromstring(content)

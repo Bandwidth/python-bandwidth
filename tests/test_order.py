@@ -931,18 +931,153 @@ class TestOrder(TestCase):
             self.assertEqual(tn_list[0]['FullNumber'], '8552178735')
 
 
+
     def test_create_toll_free_wild_char_search_and_order(self):
+        order_response = \
+        '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <OrderResponse>
+                <Order>
+                    <CustomerOrderId>abc-2021</CustomerOrderId>
+                    <Name>test order 10</Name>
+                    <OrderCreateDate>2016-11-08T14:59:09.346Z</OrderCreateDate>
+                    <PeerId>912912</PeerId>
+                    <BackOrderRequested>true</BackOrderRequested>
+                    <id>3c5a76db-2773-4a52-8e9d-bc06524842dd</id>
+                    <TollFreeWildCharSearchAndOrderType>
+                        <Quantity>1</Quantity>
+                        <TollFreeWildCardPattern>8**</TollFreeWildCardPattern>
+                    </TollFreeWildCharSearchAndOrderType>
+                    <PartialAllowed>true</PartialAllowed>
+                    <SiteId>2993</SiteId>
+                </Order>
+                <OrderStatus>RECEIVED</OrderStatus>
+            </OrderResponse>
+        '''
+
+        order_inst = \
+        '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <OrderResponse>
+                <CompletedQuantity>1</CompletedQuantity>
+                <CreatedByUser>testUser</CreatedByUser>
+                <LastModifiedDate>2016-11-08T14:59:14.089Z</LastModifiedDate>
+                <OrderCompleteDate>2016-11-08T14:59:14.089Z</OrderCompleteDate>
+                <Order>
+                    <CustomerOrderId>abc-2021</CustomerOrderId>
+                    <Name>test order 10</Name>
+                    <OrderCreateDate>2016-11-08T14:59:09.346Z</OrderCreateDate>
+                    <PeerId>912912</PeerId>
+                    <BackOrderRequested>true</BackOrderRequested>
+                    <TollFreeWildCharSearchAndOrderType>
+                        <Quantity>1</Quantity>
+                        <TollFreeWildCardPattern>8**</TollFreeWildCardPattern>
+                    </TollFreeWildCharSearchAndOrderType>
+                    <PartialAllowed>true</PartialAllowed>
+                    <SiteId>2993</SiteId>
+                </Order>
+                <OrderStatus>COMPLETE</OrderStatus>
+                <CompletedNumbers>
+                    <TelephoneNumber>
+                        <FullNumber>8446107874</FullNumber>
+                    </TelephoneNumber>
+                </CompletedNumbers>
+                <Summary>1 number ordered in (844)</Summary>
+            </OrderResponse>
+        '''
+        with requests_mock.Mocker() as m:
+            url = 'http://resource_tests/123456/{0}'.format(Order.orders_path)
+            m.post(url, content=order_response)
+
+            order = Order.create_toll_free_wild_char_search_and_order(wild_card_pattern='8**',
+                                                                      quantity='1',
+                                                                      name='test order 10',
+                                                                      site_id='2993',
+                                                                      peer_id='912912',
+                                                                      customer_order_id='abc-2021',
+                                                                      back_order_requested='true'
+                                                                      )
+
+
+            self.assertTrue(isinstance(order, dict))
+            self.assertTrue(isinstance(order['OrderResponse'], dict))
+            self.assertTrue(isinstance(order['OrderResponse']['Order'], dict))
+            self.assertEqual(order['OrderResponse']['Order']['Name'], 'test order 10')
+            self.assertEqual(order['OrderResponse']['Order']['PeerId'], '912912')
+            self.assertEqual(order['OrderResponse']['Order']['BackOrderRequested'], 'true')
+            self.assertEqual(order['OrderResponse']['Order']['SiteId'], '2993')
+            self.assertEqual(order['OrderResponse']['Order']['TollFreeWildCharSearchAndOrderType']['Quantity'], '1')
+            self.assertEqual(order['OrderResponse']['Order']['TollFreeWildCharSearchAndOrderType']['TollFreeWildCardPattern'], '8**')
+            self.assertEqual(order['OrderResponse']['OrderStatus'], 'RECEIVED')
+
+            id = order['OrderResponse']['Order']['id']
+
+            url = '{0}/{1}'.format(url, id)
+            m.get(url, content=order_inst)
+            completed_order = Order.get(id)
+
+            self.assertTrue(isinstance(completed_order, dict))
+            self.assertEqual(completed_order['OrderResponse']['OrderStatus'], 'COMPLETE')
+            self.assertEqual(completed_order['OrderResponse']['CompletedQuantity'], '1')
+            self.assertEqual(completed_order['OrderResponse']['CreatedByUser'], 'testUser')
+
+            tn_list = completed_order['OrderResponse']['CompletedNumbers']
+            self.assertEqual(tn_list[0]['FullNumber'], '8446107874')
+
+
+    def test_create_combined_search_and_order(self):
         order_response = \
             '''
 
+            '''
+
+        order_inst = \
+            '''
             '''
         with requests_mock.Mocker() as m:
             url = 'http://resource_tests/123456/{0}'.format(Order.orders_path)
             m.post(url, content=order_response)
 
-            order = Order.create_toll_free_wild_char_search_and_order()
+            order = Order.create_combined_search_and_order(area_code='',
+                                                           rate_center='',
+                                                           state='',
+                                                           npanxx='',
+                                                           lata='',
+                                                           city='',
+                                                           zip='',
+                                                           enable_lca='',
+                                                           quantity='',
+                                                           local_vantity=None,
+                                                           ends_in='false',
+                                                           name='test order 10',
+                                                           site_id='2993',
+                                                           peer_id='912912',
+                                                           customer_order_id='abc-2021',
+                                                           back_order_requested='true'
+                                                           )
 
+            self.assertTrue(isinstance(order, dict))
+            self.assertTrue(isinstance(order['OrderResponse'], dict))
+            self.assertTrue(isinstance(order['OrderResponse']['Order'], dict))
+            self.assertEqual(order['OrderResponse']['Order']['Name'], 'test order 10')
+            self.assertEqual(order['OrderResponse']['Order']['PeerId'], '912912')
+            self.assertEqual(order['OrderResponse']['Order']['BackOrderRequested'], 'true')
+            self.assertEqual(order['OrderResponse']['Order']['SiteId'], '2993')
+            self.assertEqual(order['OrderResponse']['Order']['CombinedSearchAndOrderType']['Quantity'], '1')
+            self.assertEqual(order['OrderResponse']['Order']['CombinedSearchAndOrderType']['RateCenter'], '')
+            self.assertEqual(order['OrderResponse']['OrderStatus'], 'RECEIVED')
 
-    def test_create_combined_search_and_order(self):
-        self.fail()
+            id = order['OrderResponse']['Order']['id']
+
+            url = '{0}/{1}'.format(url, id)
+            m.get(url, content=order_inst)
+            completed_order = Order.get(id)
+
+            self.assertTrue(isinstance(completed_order, dict))
+            self.assertEqual(completed_order['OrderResponse']['OrderStatus'], 'COMPLETE')
+            self.assertEqual(completed_order['OrderResponse']['CompletedQuantity'], '1')
+            self.assertEqual(completed_order['OrderResponse']['CreatedByUser'], 'testUser')
+            self.assertEqual(completed_order['OrderResponse']['FailedQuantity'], '0')
+
+            tn_list = completed_order['OrderResponse']['CompletedNumbers']
+            self.assertEqual(tn_list[0]['FullNumber'], '8552178735')
+
 
