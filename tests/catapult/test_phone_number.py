@@ -13,7 +13,7 @@ from bandwidth.catapult import Client
 class PhoneNumberTests(unittest.TestCase):
     def test_get_phone_numbers(self):
         """
-        get_phone_numbers() should return applications
+        get_phone_numbers() should return numbers
         """
         estimated_json="""
         [{
@@ -36,7 +36,7 @@ class PhoneNumberTests(unittest.TestCase):
 
     def test_create_phone_number(self):
         """
-        create_phone_number() should create an application and return id
+        create_phone_number() should create an number and return id
         """
         estimated_response = helpers.create_response(201)
         estimated_response.headers['Location'] = 'http://localhost/numberId'
@@ -50,7 +50,7 @@ class PhoneNumberTests(unittest.TestCase):
 
     def test_get_phone_number(self):
         """
-        get_phone_number() should return an application
+        get_phone_number() should return a phone number
         """
         estimated_json="""
         {
@@ -73,7 +73,7 @@ class PhoneNumberTests(unittest.TestCase):
 
     def test_delete_phone_number(self):
         """
-        delete_phone_number() should remove an application
+        delete_phone_number() should remove a number
         """
         with patch('requests.request', return_value = helpers.create_response(200)) as p:
             client = helpers.get_client()
