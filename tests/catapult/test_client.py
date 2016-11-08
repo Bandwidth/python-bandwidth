@@ -1,7 +1,7 @@
 import unittest
 import six
 import requests
-import helpers
+from  tests.catapult.helpers import create_response, get_client, AUTH
 if six.PY3:
     from unittest.mock import patch
 else:
@@ -41,8 +41,8 @@ class ClientTests(unittest.TestCase):
         """
         _request() should make authorized request to absolute url
         """
-        with patch('requests.request', return_value = helpers.create_response()) as p:
-            client = helpers.get_client()
+        with patch('requests.request', return_value = create_response()) as p:
+            client = get_client()
             response = client._request('get', 'http://localhost')
             p.assert_called_with('get', 'http://localhost', auth=('apiToken', 'apiSecret'))
 
@@ -50,8 +50,8 @@ class ClientTests(unittest.TestCase):
         """
         _request() should make authorized request to relative url
         """
-        with patch('requests.request', return_value = helpers.create_response()) as p:
-            client = helpers.get_client()
+        with patch('requests.request', return_value = create_response()) as p:
+            client = get_client()
             response = client._request('get', '/path')
             p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/path', auth=('apiToken', 'apiSecret'))
 
@@ -59,8 +59,8 @@ class ClientTests(unittest.TestCase):
         """
         _check_response() should extract error data from json
         """
-        response = helpers.create_response(400, '{"message": "This is error", "code": "invalid-request"}')
-        client = helpers.get_client()
+        response = create_response(400, '{"message": "This is error", "code": "invalid-request"}')
+        client = get_client()
         with self.assertRaises(CatapultException) as r:
             client._check_response(response)
         err = r.exception
@@ -73,8 +73,8 @@ class ClientTests(unittest.TestCase):
         """
         _check_response() should extract error data from json (without code)
         """
-        response = helpers.create_response(400, '{"message": "This is error"}')
-        client = helpers.get_client()
+        response = create_response(400, '{"message": "This is error"}')
+        client = get_client()
         with self.assertRaises(CatapultException) as r:
             client._check_response(response)
         err = r.exception
@@ -87,8 +87,8 @@ class ClientTests(unittest.TestCase):
         """
         _check_response() should extract error data from plain text
         """
-        response = helpers.create_response(400, 'This is error', 'text/html')
-        client = helpers.get_client()
+        response = create_response(400, 'This is error', 'text/html')
+        client = get_client()
         with self.assertRaises(CatapultException) as r:
             client._check_response(response)
         err = r.exception
@@ -101,9 +101,9 @@ class ClientTests(unittest.TestCase):
         """
         _make_request() should make request, check response and extract json data
         """
-        estimated_response = helpers.create_response(200, '{"data": "data"}')
+        estimated_response = create_response(200, '{"data": "data"}')
         with patch('requests.request', return_value = estimated_response) as p:
-            client = helpers.get_client()
+            client = get_client()
             data, response, _ = client._make_request('get', '/path')
             p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/path', auth=('apiToken', 'apiSecret'))
             self.assertIs(estimated_response, response)
@@ -113,10 +113,10 @@ class ClientTests(unittest.TestCase):
         """
         _make_request() should make request, check response and extract id from location header
         """
-        estimated_response = helpers.create_response(201, '', 'text/html')
+        estimated_response = create_response(201, '', 'text/html')
         estimated_response.headers['location'] = 'http://localhost/path/id'
         with patch('requests.request', return_value = estimated_response) as p:
-            client = helpers.get_client()
+            client = get_client()
             _, response, id = client._make_request('get', '/path')
             p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/path', auth=('apiToken', 'apiSecret'))
             self.assertIs(estimated_response, response)

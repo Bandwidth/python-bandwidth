@@ -1,7 +1,7 @@
 import unittest
 import six
 import requests
-import helpers
+from  tests.catapult.helpers import create_response, get_client, AUTH
 if six.PY3:
     from unittest.mock import patch
 else:
@@ -26,10 +26,10 @@ class AvailableNumberTests(unittest.TestCase):
             "price": "0.60"
         }]
         """
-        with patch('requests.request', return_value = helpers.create_response(200, estimated_json)) as p:
-            client = helpers.get_client()
+        with patch('requests.request', return_value = create_response(200, estimated_json)) as p:
+            client = get_client()
             data = client.search_available_numbers('local', {'quantity': 1})
-            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/availableNumbers/local', auth=helpers.AUTH, params={'quantity': 1})
+            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/availableNumbers/local', auth=AUTH, params={'quantity': 1})
             self.assertEqual('CARY', data[0]['city'])
 
     def test_search_and_order_available_numbers(self):
@@ -44,9 +44,9 @@ class AvailableNumberTests(unittest.TestCase):
         "location": "https://.../v1/users/.../phoneNumbers/{numberId1}"
         }]
         """
-        with patch('requests.request', return_value = helpers.create_response(200, estimated_json)) as p:
-            client = helpers.get_client()
+        with patch('requests.request', return_value = create_response(200, estimated_json)) as p:
+            client = get_client()
             data = client.search_and_order_available_numbers('local', {'quantity': 1})
-            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/availableNumbers/local', auth=helpers.AUTH, params={'quantity': 1})
+            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/availableNumbers/local', auth=AUTH, params={'quantity': 1})
             self.assertEqual('{national_number1}', data[0]['nationalNumber'])
             self.assertEqual('{numberId1}', data[0]['id'])

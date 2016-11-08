@@ -1,7 +1,7 @@
 import unittest
 import six
 import requests
-import helpers
+from  tests.catapult.helpers import create_response, get_client, AUTH
 if six.PY3:
     from unittest.mock import patch
 else:
@@ -23,10 +23,10 @@ class ErrorTests(unittest.TestCase):
             "code" : "no-application-for-number"
         }]
         """
-        with patch('requests.request', return_value = helpers.create_response(200, estimated_json)) as p:
-            client = helpers.get_client()
+        with patch('requests.request', return_value = create_response(200, estimated_json)) as p:
+            client = get_client()
             data = list(client.get_errors())
-            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/errors', auth=helpers.AUTH, params=None)
+            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/errors', auth=AUTH, params=None)
             self.assertEqual('{userErrorId}', data[0]['id'])
 
     def test_get_error(self):
@@ -42,8 +42,8 @@ class ErrorTests(unittest.TestCase):
             "code" : "no-application-for-number"
         }
         """
-        with patch('requests.request', return_value = helpers.create_response(200, estimated_json)) as p:
-            client = helpers.get_client()
+        with patch('requests.request', return_value = create_response(200, estimated_json)) as p:
+            client = get_client()
             data = client.get_error('errorId')
-            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/errors/errorId', auth=helpers.AUTH)
+            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/errors/errorId', auth=AUTH)
             self.assertEqual('{userErrorId}', data['id'])

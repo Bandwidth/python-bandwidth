@@ -1,7 +1,7 @@
 import unittest
 import six
 import requests
-import helpers
+from  tests.catapult.helpers import create_response, get_client, AUTH
 if six.PY3:
     from unittest.mock import patch
 else:
@@ -23,8 +23,8 @@ class NumberInfoTests(unittest.TestCase):
         "updated": "2013-09-23T16:42:18Z"
         }
         """
-        with patch('requests.request', return_value = helpers.create_response(200, estimated_json)) as p:
-            client = helpers.get_client()
+        with patch('requests.request', return_value = create_response(200, estimated_json)) as p:
+            client = get_client()
             data = client.get_number_info('1234567890')
-            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/phoneNumbers/numberInfo/1234567890', auth=helpers.AUTH)
+            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/phoneNumbers/numberInfo/1234567890', auth=AUTH)
             self.assertEqual('Name', data['name'])

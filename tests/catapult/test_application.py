@@ -1,12 +1,10 @@
 import unittest
 import six
 import requests
-import helpers
+from  tests.catapult.helpers import create_response, get_client, AUTH
 if six.PY3:
-    import .helpers
     from unittest.mock import patch
 else:
-    import helpers
     from mock import patch
 
 from bandwidth.catapult import Client
@@ -25,23 +23,23 @@ class ApplicationTests(unittest.TestCase):
             "autoAnswer": true
         }]
         """
-        with patch('requests.request', return_value = helpers.create_response(200, estimated_json)) as p:
-            client = helpers.get_client()
+        with patch('requests.request', return_value = create_response(200, estimated_json)) as p:
+            client = get_client()
             data = list(client.get_applications())
-            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/applications', auth=helpers.AUTH, params=None)
+            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/applications', auth=AUTH, params=None)
             self.assertEqual('applicationId', data[0]['id'])
 
     def test_create_application(self):
         """
         create_application() should create an application and return id
         """
-        estimated_response = helpers.create_response(201)
+        estimated_response = create_response(201)
         estimated_response.headers['Location'] = 'http://localhost/applicationId'
         with patch('requests.request', return_value = estimated_response) as p:
-            client = helpers.get_client()
+            client = get_client()
             data = {'name': 'MyFirstApp'}
             id = client.create_application(data)
-            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/applications', auth=helpers.AUTH, json=data)
+            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/applications', auth=AUTH, json=data)
             self.assertEqual('applicationId', id)
 
 
@@ -58,18 +56,18 @@ class ApplicationTests(unittest.TestCase):
             "autoAnswer": true
         }
         """
-        with patch('requests.request', return_value = helpers.create_response(200, estimated_json)) as p:
-            client = helpers.get_client()
+        with patch('requests.request', return_value = create_response(200, estimated_json)) as p:
+            client = get_client()
             data = client.get_application('applicationId')
-            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/applications/applicationId', auth=helpers.AUTH)
+            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/applications/applicationId', auth=AUTH)
             self.assertEqual('applicationId', data['id'])
 
     def test_delete_application(self):
         """
         delete_application() should remove an application
         """
-        with patch('requests.request', return_value = helpers.create_response(200)) as p:
-            client = helpers.get_client()
+        with patch('requests.request', return_value = create_response(200)) as p:
+            client = get_client()
             client.delete_application('applicationId')
-            p.assert_called_with('delete', 'https://api.catapult.inetwork.com/v1/users/userId/applications/applicationId', auth=helpers.AUTH)
+            p.assert_called_with('delete', 'https://api.catapult.inetwork.com/v1/users/userId/applications/applicationId', auth=AUTH)
 

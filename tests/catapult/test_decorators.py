@@ -1,7 +1,6 @@
 import unittest
 import six
 import requests
-import helpers
 if six.PY3:
     from unittest.mock import patch
 else:

@@ -1,7 +1,7 @@
 import unittest
 import six
 import requests
-import helpers
+from  tests.catapult.helpers import create_response, get_client, AUTH
 if six.PY3:
     from unittest.mock import patch
 else:
@@ -24,10 +24,10 @@ class RecordingTests(unittest.TestCase):
             "state": "complete"
         }]
         """
-        with patch('requests.request', return_value = helpers.create_response(200, estimated_json)) as p:
-            client = helpers.get_client()
+        with patch('requests.request', return_value = create_response(200, estimated_json)) as p:
+            client = get_client()
             data = list(client.get_recordings())
-            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/recordings', auth=helpers.AUTH, params=None)
+            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/recordings', auth=AUTH, params=None)
             self.assertEqual('{recordingId1}', data[0]['id'])
             self.assertEqual('{callId1}-1.wav', data[0]['mediaName'])
 
@@ -46,9 +46,9 @@ class RecordingTests(unittest.TestCase):
             "state": "complete"
         }
         """
-        with patch('requests.request', return_value = helpers.create_response(200, estimated_json)) as p:
-            client = helpers.get_client()
+        with patch('requests.request', return_value = create_response(200, estimated_json)) as p:
+            client = get_client()
             data = client.get_recording('recordingId')
-            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/recordings/recordingId', auth=helpers.AUTH)
+            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/recordings/recordingId', auth=AUTH)
             self.assertEqual('{callId1}-1.wav', data['mediaName'])
 
