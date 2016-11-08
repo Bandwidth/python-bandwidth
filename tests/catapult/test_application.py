@@ -3,8 +3,10 @@ import six
 import requests
 import helpers
 if six.PY3:
+    import .helpers
     from unittest.mock import patch
 else:
+    import helpers
     from mock import patch
 
 from bandwidth.catapult import Client
