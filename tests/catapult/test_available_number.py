@@ -49,5 +49,4 @@ class AvailableNumberTests(unittest.TestCase):
             data = client.search_and_order_available_numbers('local', {'quantity': 1})
             p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/availableNumbers/local', auth=helpers.AUTH, params={'quantity': 1})
             self.assertEqual('{national_number1}', data[0]['nationalNumber'])
-            print data[0]
             self.assertEqual('{numberId1}', data[0]['id'])
