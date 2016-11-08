@@ -34,9 +34,9 @@ class ClientTests(unittest.TestCase):
         """
         client_classes = {}
         orig_import = __import__
-        with patch('__builtin__.__import__', side_effect=orig_import) as p:
+        with patch('builtins.__import__', side_effect=orig_import) as p:
             client('catapult', 'userId', 'token', 'secret')
-            p.assert_called_once_with('bandwidth.catapult')
+            old = p.call_count
             client('catapult', 'userId', 'token', 'secret')
-            p.assert_called_once_with('bandwidth.catapult')
+            self.assertEqual(old, p.call_count)
 

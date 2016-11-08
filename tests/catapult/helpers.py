@@ -9,7 +9,7 @@ def create_response(status_code = 200, content = '', content_type = 'application
         response.status_code = status_code
         if content is not None and len(content) > 0:
             response.headers['content-type'] = content_type
-            response._content = content
+            response._content = content.encode('utf-8')
         return response
 
 AUTH = ('apiToken', 'apiSecret')

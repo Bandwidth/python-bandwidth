@@ -18,7 +18,7 @@ class LazyEnumerableTests(unittest.TestCase):
             client = get_client()
             results = get_lazy_enumerator(client, lambda: client._make_request('get', 'https://api.catapult.inetwork.com/v1/users/userId/account/transactions?page=0&size=25'))
             p.assert_not_called()
-            self.assertItemsEqual([1, 2, 3], list(results))
+            self.assertEqual([1, 2, 3], list(results))
             p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/account/transactions?page=0&size=25', auth=AUTH)
 
     def test_get_lazy_enumerator_with_several_requests(self):
@@ -34,5 +34,5 @@ class LazyEnumerableTests(unittest.TestCase):
         client = get_client()
         with patch('requests.request', return_value=response2) as p:
             results = get_lazy_enumerator(client, lambda: ([1, 2, 3], response1, None))
-            self.assertItemsEqual([1, 2, 3, 4, 5, 6, 7], list(results))
+            self.assertEqual([1, 2, 3, 4, 5, 6, 7], list(results))
             p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/account/transactions?page=1&size=25', auth=AUTH)
