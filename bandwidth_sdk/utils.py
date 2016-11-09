@@ -1,5 +1,6 @@
 import os
 import copy
+import string
 import six
 import re
 from six.moves import configparser
@@ -27,6 +28,12 @@ def underscoreToCamel(match):
 
 def camelize(value):
     return UNDERSCORES.sub(underscoreToCamel, value)
+
+def toTag(value):
+    temp = camelize(value)
+    ret_val =  temp[0].upper() + temp[1:]
+
+    return ret_val
 
 
 def underscorize(value):

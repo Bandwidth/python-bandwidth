@@ -111,6 +111,11 @@ def Client(user_id=None, token=None, secret=None):
         config_path = '.bndsdkrc'
         user_id, token, secret = _load_config(config_path)
 
+    elif bandwidth_sdk.user_id is not None:
+        user_id = bandwidth_sdk.user_id
+        token = bandwidth_sdk.api_token
+        secret = bandwidth_sdk.api_secret
+
     else:
         # could not locate configuration variables, raise an error
         raise ValueError('No configuration provided. {}'.format(Client.__doc__))

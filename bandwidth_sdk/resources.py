@@ -6,7 +6,8 @@ import bandwidth_sdk
 import bandwidth_sdk.models as models
 from bandwidth_sdk.models import GenericResource
 from bandwidth_sdk.client import get_iris_client
-from bandwidth_sdk.utils import to_api, drop_empty, etree2dict, etree_to_simple_list, camelize, remove_key_from_dict
+from bandwidth_sdk.utils import to_api, drop_empty, etree2dict, etree_to_simple_list, toTag, \
+                                camelize, remove_key_from_dict
 
 
 def get_content_from_path(path, **kwargs):
@@ -618,6 +619,6 @@ class Order(GenericResource):
         root = Element(cls.__name__)
 
         for k, v in six.iteritems(kwargs):
-            SubElement(root, camelize(k)).text = v
+            SubElement(root, toTag(k)).text = v
 
         return root
