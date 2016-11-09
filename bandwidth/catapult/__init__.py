@@ -4,6 +4,7 @@ from .application import ApplicationMixin
 from .available_number import AvailableNumberMixin
 from .bridge import BridgeMixin
 from .call import CallMixin
+from .conference import ConferenceMixin
 from .error import ErrorMixin
 from .number_info import NumberInfoMixin
 from .phone_numbers import PhoneNumbersMixin
@@ -12,7 +13,7 @@ from .transcription import TranscriptionMixin
 
 
 class Client(AccountMixin, ApplicationMixin, AvailableNumberMixin, BridgeMixin,
-             CallMixin, ErrorMixin,
+             CallMixin, ConferenceMixin, ErrorMixin,
              PhoneNumbersMixin, NumberInfoMixin, RecordingMixin, TranscriptionMixin):
     def __init__(self, user_id=None, api_token=None, api_secret=None, **other_options):
         if not all((user_id, api_token, api_secret)):
