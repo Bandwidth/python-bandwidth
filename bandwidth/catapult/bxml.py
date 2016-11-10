@@ -2,7 +2,7 @@ from lxml import etree as ET
 from lxml.builder import E
 
 
-class BXMLResponse:
+class Response:
     def __init__(self, *response_verbs):
         self.response = E.xml(E.Response(*response_verbs))
 

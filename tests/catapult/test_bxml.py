@@ -1,14 +1,14 @@
 import unittest
-from bandwidth.catapult.bxml import BXMLResponse
+from bandwidth.catapult.bxml import Response
 from lxml.builder import E
 
-class BXMLResponseTests(unittest.TestCase):
+class ResponseTests(unittest.TestCase):
     def test_to_xml(self):
         """
         to_xml() should build XML
         """
         estimated_xml = b'<xml><Response><Hangup/></Response></xml>'
-        xml = BXMLResponse(E.Hangup())
+        xml = Response(E.Hangup())
         self.assertEqual(estimated_xml, xml.to_xml())
 
     def test_to_xml_with_several_verbs(self):
@@ -16,7 +16,7 @@ class BXMLResponseTests(unittest.TestCase):
         to_xml() should build XML (some verbs)
         """
         estimated_xml = b'<xml><Response><Pause duration="10"/><Hangup/></Response></xml>'
-        xml = BXMLResponse(E.Pause({'duration': '10'}), E.Hangup())
+        xml = Response(E.Pause({'duration': '10'}), E.Hangup())
         self.assertEqual(estimated_xml, xml.to_xml())
 
     def test__str__(self):
@@ -24,5 +24,5 @@ class BXMLResponseTests(unittest.TestCase):
         __str__() should return XML as string
         """
         estimated_xml = '<xml><Response><Hangup/></Response></xml>'
-        xml = BXMLResponse(E.Hangup())
+        xml = Response(E.Hangup())
         self.assertEqual(estimated_xml, str(xml))
