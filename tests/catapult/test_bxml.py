@@ -15,8 +15,8 @@ class BXMLResponseTests(unittest.TestCase):
         """
         to_xml() should build XML (some verbs)
         """
-        estimated_xml = b'<xml><Response><Call from="+1234567890" to="+1234568791"/><Hangup/></Response></xml>'
-        xml = BXMLResponse(E.Call({'from': '+1234567890', 'to': '+1234568791'}), E.Hangup())
+        estimated_xml = b'<xml><Response><Pause duration="10"/><Hangup/></Response></xml>'
+        xml = BXMLResponse(E.Pause({'duration': '10'}), E.Hangup())
         self.assertEqual(estimated_xml, xml.to_xml())
 
     def test__str__(self):
