@@ -1,7 +1,7 @@
 from .lazy_enumerable import get_lazy_enumerator
 
 
-class PhoneNumbersMixin:
+class PhoneNumberMixin:
     def get_phone_numbers(self, query=None):
         path = '/users/%s/phoneNumbers' % self.user_id
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=query))

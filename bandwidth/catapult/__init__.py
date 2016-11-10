@@ -7,14 +7,14 @@ from .call import CallMixin
 from .conference import ConferenceMixin
 from .error import ErrorMixin
 from .number_info import NumberInfoMixin
-from .phone_numbers import PhoneNumbersMixin
+from .phone_number import PhoneNumberMixin
 from .recording import RecordingMixin
 from .transcription import TranscriptionMixin
 
 
 class Client(AccountMixin, ApplicationMixin, AvailableNumberMixin, BridgeMixin,
              CallMixin, ConferenceMixin, ErrorMixin,
-             PhoneNumbersMixin, NumberInfoMixin, RecordingMixin, TranscriptionMixin):
+             PhoneNumberMixin, NumberInfoMixin, RecordingMixin, TranscriptionMixin):
     def __init__(self, user_id=None, api_token=None, api_secret=None, **other_options):
         if not all((user_id, api_token, api_secret)):
             raise ValueError('Arguments user_id, api_token and api_secret are required. '
