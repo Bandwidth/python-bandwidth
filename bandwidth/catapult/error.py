@@ -2,7 +2,9 @@ from .lazy_enumerable import get_lazy_enumerator
 
 
 class ErrorMixin:
-
+    """
+    Error API
+    """
     def get_errors(self, query=None):
         """
         Get a list of errors
