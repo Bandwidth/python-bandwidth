@@ -278,7 +278,7 @@ class CallMixin:
         :returns: id of create of gather
 
         :Example:
-        gather_id = api.create_call_gather('callId', {})
+        gather_id = api.create_call_gather('callId', {'maxDigits': 1})
         """
         return self._make_request('post', '/users/%s/calls/%s/gather' % (self.user_id, id), json=data)[2]
 
