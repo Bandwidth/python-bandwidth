@@ -1,4 +1,8 @@
 def play_audio(suffix):
+    """
+    Add to class instance methods: speak_sentence_to_SUFFIX and play_audio_file_to_SUFFIX
+    which call play_audio_to_SUFFIX with right parameters
+    """
     def add_methods(cl):
         def speak_sentence(self, id, sentence, gender='female', voice='susan', locale='en_US', tag=None):
             play_audio = getattr(self, 'play_audio_to_%s' % suffix)
