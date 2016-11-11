@@ -51,7 +51,7 @@ class ApplicationMixin:
                 Default value is 'true'.
 
         :rtype: str
-        :returns: id of crested application
+        :returns: id of created application
 
         :Example:
         id = api.create_application({'name': 'MyApp'})
