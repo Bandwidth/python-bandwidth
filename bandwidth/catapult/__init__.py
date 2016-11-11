@@ -20,7 +20,31 @@ class Client(AccountMixin, ApplicationMixin, AvailableNumberMixin, BridgeMixin,
              CallMixin, ConferenceMixin, DomainMixin, EndpointMixin, ErrorMixin,
              MediaMixin, MessageMixin, PhoneNumberMixin, NumberInfoMixin,
              RecordingMixin, TranscriptionMixin):
+    """
+    Catapult client
+    """
     def __init__(self, user_id=None, api_token=None, api_secret=None, **other_options):
+        """
+        Initialize the catatpult client.
+        :type user_id: str
+        :param user_id: catapult user id
+        :type api_token: str
+        :param api_token: catapult api token
+        :type api_secret: str
+        :param api_secret: catapult api secret
+        :type api_endpoint: str
+        :param api_endpoint: catapult api endpoint (optional, default value is https://api.catapult.inetwork.com)
+        :type api_version: str
+        :param api_version: catapult api version (optional, default value is v1)
+
+        :rtype: bandwidth.catapult.Client
+        :returns: bandwidth client
+
+        :Example:
+        api = bandwidth.catapult.Client('YOUR_USER_ID', 'YOUR_API_TOKEN', 'YOUR_API_SECRET')
+        # or
+        api = bandwidth.client('catapult', 'YOUR_USER_ID', 'YOUR_API_TOKEN', 'YOUR_API_SECRET')
+        """
         if not all((user_id, api_token, api_secret)):
             raise ValueError('Arguments user_id, api_token and api_secret are required. '
                              'Use bandwidth.client("catapult", "YOUR-USER-ID", "YOUR-API-TOKEN", "YOUR-API-SECRET")')
@@ -57,7 +81,22 @@ class Client(AccountMixin, ApplicationMixin, AvailableNumberMixin, BridgeMixin,
 
 
 class CatapultException(Exception):
+    """
+    Catapult API request exception
+    """
     def __init__(self, status_code, message, **kwargs):
+        """
+        Initialize the catapult exception.
+        :type status_code: str
+        :param status_code: http status code
+        :type message: str
+        :param message: error message
+        :type code: str
+        :param code: optional error code
+
+        :rtype: bandwidth.catapult.CatapultException
+        :returns: instance of exception
+        """
         self.status_code = status_code
         self.message = message
         self.code = kwargs.get('code')

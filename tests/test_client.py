@@ -8,7 +8,7 @@ else:
     from mock import patch
     builtins = '__builtin__'
 
-from bandwidth import client, client_classes
+from bandwidth import client, _client_classes
 
 class ClientTests(unittest.TestCase):
     def test_call_with_supported_client(self):
@@ -34,7 +34,7 @@ class ClientTests(unittest.TestCase):
         """
         Call of client() should cache client class name
         """
-        client_classes = {}
+        _client_classes = {}
         orig_import = __import__
         with patch('%s.__import__' % builtins, side_effect=orig_import) as p:
             client('catapult', 'userId', 'token', 'secret')
