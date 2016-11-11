@@ -7,7 +7,7 @@ class ApplicationMixin:
     """
     def get_applications(self, query=None):
         """
-        Get a list of user's' applications
+        Get a list of user's applications
 
         Query parameters
             size
