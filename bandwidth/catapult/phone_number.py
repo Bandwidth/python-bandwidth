@@ -2,6 +2,9 @@ from .lazy_enumerable import get_lazy_enumerator
 
 
 class PhoneNumberMixin:
+    """
+    PhoneNumber API
+    """
     def get_phone_numbers(self, query=None):
         """
         Get a list of user's phone numbers
