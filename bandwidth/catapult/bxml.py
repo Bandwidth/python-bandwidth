@@ -19,6 +19,7 @@ class Response:
         :Example:
         response = bandwidth.catapult.bxml.Response(E.Hangup())
         response = bandwidth.catapult.bxml.Response(E.Call({'from': '+1234567890', 'to': '+1234567891'}), E.Hangup())
+        response = bandwidth.catapult.bxml.Response(E.PlayAudio("Thank you"), E.Hangup())
         """
         self.response = E.xml(E.Response(*response_verbs))
 
