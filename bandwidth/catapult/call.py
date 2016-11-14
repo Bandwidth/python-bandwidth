@@ -254,8 +254,8 @@ class CallMixin:
                 Stop gathering if a DTMF digit is not detected in this many seconds
                 (default 5.0; maximum 30.0).
             terminatingDigits
-                	A string of DTMF digits that end the gather operation immediately
-                    if any one of them is detected
+                A string of DTMF digits that end the gather operation immediately
+                if any one of them is detected
             tag
                 A string you choose that will be included with the response and events for
                 this gather operation.
@@ -356,7 +356,6 @@ class CallMixin:
         api.hangup_call('callId')
         """
         self.update_call(id, {'state': 'completed'})
-
 
     def tune_call_recording(self, id, enabled):
         """
