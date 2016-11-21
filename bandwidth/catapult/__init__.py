@@ -74,10 +74,7 @@ class Client:
     Account API
     """
 
-    def __init__ (client):
-        self.client = client;
-
-    def get_account(self):
+    def get_account:
         """
         Get an Account object
 
@@ -87,7 +84,7 @@ class Client:
         :Example:
         data = api.get_account()
         """
-        return client._make_request('get', '/users/%s/account' % self.user_id)[0]
+        return _make_request('get', '/users/%s/account' % self.user_id)[0]
 
     def get_account_transactions(self, query=None):
         """
@@ -113,7 +110,8 @@ class Client:
         list = api.get_account_transactions({'type': 'charge'})
         """
         path = '/users/%s/account/transactions' % self.user_id
-        return get_lazy_enumerator(self, lambda: client._make_request('get', path, params=query))
+        return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=query))
+
 
 
     def get_calls(self, query=None):
