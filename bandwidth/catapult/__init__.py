@@ -1,4 +1,6 @@
 import requests
+import six
+import urllib
 
 quote = urllib.parse.quote if six.PY3 else urllib.quote
 lazy_map = map if six.PY3 else itertools.imap
@@ -510,7 +512,7 @@ class Client:
             data['callbackUrl'] = callback_url
         return self.update_call(id, data)
 
-         """
+    """
     Application API
     """
     def list(self, query=None):
@@ -593,7 +595,7 @@ class Client:
         """
         self._make_request('delete', '/users/%s/applications/%s' % (self.user_id, id))
 
-            """
+    """
     Available number API
     """
     def search_available_numbers(self, number_type='local', query=None):
@@ -1385,7 +1387,7 @@ class Client:
         path = '/users/%s/domains/%s/endpoints/%s/tokens' % (self.user_id, id, endpoint_id)
         return self._make_request('post', path, json=data)[0]
 
-   """
+    """
     Error API
     """
     def get_errors(self, query=None):
@@ -1504,10 +1506,13 @@ class Client:
         path = '/users/%s/media/%s' % (self.user_id, quote(media_name))
         self._make_request('delete', path)
 
-   """
+    """
     Message API
     """
 
+    """
+    Message API
+    """
     def get_messages(self, query=None):
         """
         Get a list of user's messages
@@ -1548,7 +1553,7 @@ class Client:
         path = '/users/%s/messages' % self.user_id
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=query))
 
-    def send_message(self, **kwargs):
+    def send_message(self, data):
         """
         Send a message (SMS or MMS)
 
@@ -1583,22 +1588,11 @@ class Client:
         :Example:
         # SMS
         id = api.send_message({'from': '+1234567980', 'to': '+1234567981', 'text': 'SMS message'})
-        id = api.message.end(
-            _from="+1",
-            to="+4",
-            text = "123"
-
-
-        )
-
         # MMS
         id = api.send_message({'from': '+1234567980', 'to': '+1234567981', 'text': 'MMS message',
         'media': ['http://host/path/to/file']})
         """
-        if kwargs.get("media")
-        if "media" in kwargs and "text" not in kwargs:
-            ## WARN
-        return self._make_request('post', '/users/%s/messages' % self.user_id, json=)[2]
+        return self._make_request('post', '/users/%s/messages' % self.user_id, json=data)[2]
 
     def send_messages(self, messages_data):
         """
