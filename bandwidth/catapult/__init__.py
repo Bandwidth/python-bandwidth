@@ -1,6 +1,8 @@
 import requests
 import six
 import urllib
+from .lazy_enumerable import get_lazy_enumerator
+
 
 quote = urllib.parse.quote if six.PY3 else urllib.quote
 lazy_map = map if six.PY3 else itertools.imap
@@ -74,7 +76,7 @@ class Client:
     Account API
     """
 
-    def get_account:
+    def get_account(self):
         """
         Get an Account object
 
@@ -84,7 +86,7 @@ class Client:
         :Example:
         data = api.get_account()
         """
-        return _make_request('get', '/users/%s/account' % self.user_id)[0]
+        return self._make_request('get', '/users/%s/account' % self.user_id)[0]
 
     def get_account_transactions(self, query=None):
         """
@@ -513,7 +515,7 @@ class Client:
     """
     Application API
     """
-    def list(self, query=None):
+    def get_applications(self, query=None):
         """
         Get a list of user's applications
 
