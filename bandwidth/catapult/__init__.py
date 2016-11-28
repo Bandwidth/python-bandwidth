@@ -1556,7 +1556,7 @@ class Client:
         path = '/users/%s/messages' % self.user_id
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=query))
 
-    def send_message(self, from_=None, to=None, **kwargs):
+    def send_message(self, from_, to, **kwargs):
         """
         Send a message (SMS or MMS)
         :param str from_: One of your telephone numbers the message should come from
