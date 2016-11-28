@@ -1,8 +1,9 @@
 import requests
 import six
 import urllib
+import itertools
 from .lazy_enumerable import get_lazy_enumerator
-
+from .decorators import play_audio
 
 quote = urllib.parse.quote if six.PY3 else urllib.quote
 lazy_map = map if six.PY3 else itertools.imap
@@ -115,7 +116,7 @@ class Client:
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=query))
 
 
-
+    @play_audio('call')
     def get_calls(self, query=None):
         """
         Get a list of calls
@@ -681,6 +682,7 @@ class Client:
             item['id'] = item.get('location', '').split('/')[-1]
         return list
 
+    @play_audio('bridge')
     def get_bridges(self, query=None):
         """
         Get a list of bridges
@@ -798,6 +800,7 @@ class Client:
         """
         self._make_request('post', '/users/%s/bridges/%s/audio' % (self.user_id, id), json=data)
 
+    @play_audio('conference')
     def create_conference(self, data):
         """
         Create a conference
