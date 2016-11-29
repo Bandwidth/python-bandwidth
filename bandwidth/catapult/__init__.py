@@ -13,6 +13,7 @@ def _set_media_name(recording):
     recording['mediaName'] = recording.get('media', '').split('/')[-1]
     return recording
 
+
 @play_audio('call')
 @play_audio('bridge')
 @play_audio('conference')
@@ -117,7 +118,6 @@ class Client:
         """
         path = '/users/%s/account/transactions' % self.user_id
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=query))
-
 
     def get_calls(self, query=None):
         """
