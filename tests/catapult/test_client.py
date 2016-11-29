@@ -121,3 +121,18 @@ class ClientTests(unittest.TestCase):
             p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/path', auth=('apiToken', 'apiSecret'))
             self.assertIs(estimated_response, response)
             self.assertEqual('id', id)
+
+    def test_play_audio_methods(self):
+        """
+        client should contain play audio helpers
+        """
+        client = get_client()
+        self.assertIsNotNone(getattr(client, 'speak_sentence_to_call'))
+        self.assertIsNotNone(getattr(client, 'play_audio_file_to_call'))
+        self.assertIsNotNone(getattr(client, 'speak_sentence_to_bridge'))
+        self.assertIsNotNone(getattr(client, 'play_audio_file_to_bridge'))
+        self.assertIsNotNone(getattr(client, 'speak_sentence_to_conference'))
+        self.assertIsNotNone(getattr(client, 'play_audio_file_to_conference'))
+        self.assertIsNotNone(getattr(client, 'speak_sentence_to_conference_member'))
+        self.assertIsNotNone(getattr(client, 'play_audio_file_to_conference_member'))
+
