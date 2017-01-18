@@ -1556,46 +1556,40 @@ class Client:
         path = '/users/%s/messages' % self.user_id
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=query))
 
-    def send_message(self, data):
+    def send_message(self, from_, to, **kwargs):
         """
         Send a message (SMS or MMS)
-
-        Parameters
-            from
-                One of your telephone numbers the message should come from
-            to
-                The phone number the message should be sent to
-            text
-                The contents of the text message
-            media
-                For MMS messages, a media url to the location of the media or list of medias to
-                be sent send with the message.
-            receiptRequested
-                Requested receipt option for outbound messages: 'none', 'all', 'error'
-            callbackUrl
-                The server URL where the events related to the outgoing message will
-                be sent to
-            callbackHttpMethod
-                Determine if the callback event should be sent via HTTP GET or HTTP POST.
-                Values are get or post Default is post
-            callbackTimeout
-                Determine how long should the platform wait for callbackUrl's response
-                before timing out (milliseconds).
-            fallbackUrl
-                The server URL used to send the message events if the request to callbackUrl fails.
-            tag
-                Any string, it will be included in the callback events of the message.
+        :param str from_: One of your telephone numbers the message should come from
+        :param str from_: One of your telephone numbers the message should come from
+        :param str to: The phone number the message should be sent to
+        :param str text: The contents of the text message
+        :param list media: For MMS messages, a media url to the location of the media or list of medias to be sent send with the message.
+        :param str receiptRequested: Requested receipt option for outbound messages: 'none', 'all', 'error'
+        :param str callbackUrl: The server URL where the events related to the outgoing message will be sent to
+        :param str callbackHttpMethod: Determine if the callback event should be sent via HTTP GET or HTTP POST. Values are get or post Default is post
+        :param str callbackTimeout: Determine how long should the platform wait for callbackUrl's response before timing out (milliseconds).
+        :param str fallbackUrl: The server URL used to send the message events if the request to callbackUrl fails.
+        :param str tag: Any string, it will be included in the callback events of the message.
         :rtype: str
         :returns: id of created message
 
         :Example:
         # SMS
-        id = api.send_message({'from': '+1234567980', 'to': '+1234567981', 'text': 'SMS message'})
+        id = api.send_message(
+            from_ = '+1234567980',
+            to = '+1234567981',
+            text = 'SMS message'
+            )
         # MMS
-        id = api.send_message({'from': '+1234567980', 'to': '+1234567981', 'text': 'MMS message',
-        'media': ['http://host/path/to/file']})
+        id = api.send_message(
+            from = '+1234567980',
+            to = '+1234567981',
+            media = ['http://host/path/to/file']
+            )
         """
-        return self._make_request('post', '/users/%s/messages' % self.user_id, json=data)[2]
+        kwargs["from"] = from_
+        kwargs["to"]= to
+        return self._make_request('post', '/users/%s/messages' % self.user_id, json=kwargs)[2]
 
     def send_messages(self, messages_data):
         """
