@@ -21,6 +21,7 @@ atlassian-ide-plugin.xml
 *.sublime-workspace
 *.ropeproject
 *.patch
+*.iml
 
 # Coverage
 .coverage
