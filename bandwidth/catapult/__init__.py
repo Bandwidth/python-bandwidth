@@ -146,21 +146,21 @@ class Client:
         """
         return self._make_request('get', '/users/%s/account' % self.user_id)[0]
 
-    def get_account_transactions(self, query=None):
+        client.get_call_transcriptions(application='123')
+
+        :param str from_: One of your telephone numbers the message should come from
+
+
+    def get_account_transactions(self, max_items=None, to_date=None, from_date=None, type=None, size=None, number=None, **kwargs):
         """
         Get the transactions from the user's account
 
         Query parameters
-            maxItems
-                Limit the number of transactions that will be returned.
-            toDate
-                Return only transactions that are newer than the parameter. Format: "yyyy-MM-dd'T'HH:mm:ssZ"
-            fromDate
-                Return only transactions that are older than the parameter. Format: "yyyy-MM-dd'T'HH:mm:ssZ"
-            type
-                Return only transactions that are this type.
-            size
-                Used for pagination to indicate the size of each page requested for querying a list
+        :param str max_items: Limit the number of transactions that will be returned.
+        :param str to_date: Return only transactions that are newer than the parameter. Format: "yyyy-MM-dd'T'HH:mm:ssZ"
+        :param str from_date: Return only transactions that are older than the parameter. Format: "yyyy-MM-dd'T'HH:mm:ssZ"
+        :param str type: Return only transactions that are this type.
+        :param int size: Used for pagination to indicate the size of each page requested for querying a list
                 of items. If no value is specified the default value is 25. (Maximum value 1000)
 
         :rtype: types.GeneratorType
@@ -169,85 +169,99 @@ class Client:
         :Example:
         list = api.get_account_transactions({'type': 'charge'})
         """
-        path = '/users/%s/account/transactions' % self.user_id
-        return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=query))
+        kwargs["maxItems"] = max_items
+        kwargs["toDate"] = to_date
+        kwargs["fromDate"] = from_date
+        kwargs["type"] = type
+        kwargs["page"] = page
+        kwargs["size"] = size
+        kwargs["number"] = number
 
-    def get_calls(self, query=None):
+        path = '/users/%s/account/transactions' % self.user_id
+        return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
+
+    def get_calls(self, bridge_id=None, conference_id=None, from_=None, to=None, size=None, sort_order=None, **kwargs):
         """
         Get a list of calls
 
         Query parameters
-            bridgeId
-                The id of the bridge for querying a list of calls history
-            conferenceId
-                The id of the conference for querying a list of calls history
-            from
-                The number to filter calls that came from
-            to
-                The number to filter calls that was called to
-            sortOrder
-                How to sort the calls. Values are asc or desc
+        :param str bridge_id: The id of the bridge for querying a list of calls history
+        :param str conference_id: The id of the conference for querying a list of calls history
+        :param str from_: The number to filter calls that came from
+        :param str to: The number to filter calls that was called to
+        :param str sort_order: How to sort the calls. Values are asc or desc
                 If no value is specified the default value is desc
-            size
-                Used for pagination to indicate the size of each page requested for querying a list
+        :param int size: Used for pagination to indicate the size of each page requested for querying a list
                 of items. If no value is specified the default value is 25. (Maximum value 1000)
+
         :rtype: types.GeneratorType
         :returns: list of calls
 
         :Example:
         list = api.get_calls()
         """
+        kwargs["bridgeId"] = bridge_id
+        kwargs["conferenceId"] = conference_id
+        kwargs["from"] = from_
+        kwargs["to"] = to
+        kwargs["size"] = size
+        kwargs["sortOrder"] = sort_order
+
         path = '/users/%s/calls' % self.user_id
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=query))
 
-    def create_call(self, data):
+    def create_call(self, from_, to, call_timeout=None, callback_url=None,
+                    callback_timeout=None, callback_http_method=None, fallback_url=None,
+                    bridge_id=None, conference_id=None, recording_enabled=None,
+                    recording_file_format=None, recording_max_duration=None,
+                    transcription_enabled=None, tag=None, sip_headers=None, **kwargs):
         """
         Create a call
 
         Parameters
-            from
-                A Bandwidth phone number on your account the call should come from (required)
-            to
-                The number to call (required)
-            callTimeout
-                Determine how long should the platform wait for call answer before timing out
+        :param str from_: A Bandwidth phone number on your account the call should come from (required)
+        :param str to: The number to call (required)
+        :param str call_timeout: Determine how long should the platform wait for call answer before timing out
                 in seconds.
-            callbackUrl
-                The full server URL where the call events related to the Call will be sent to.
-            callbackTimeout
-                Determine how long should the platform wait for callbackUrl's response before
+        :param str callback_url: The full server URL where the call events related to the Call will be sent to.
+        :param str callback_timeout: Determine how long should the platform wait for callbackUrl's response before
                 timing out in milliseconds.
-            callbackHttpMethod
-                Determine if the callback event should be sent via HTTP GET or HTTP POST.
+        :param str callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST.
                 Values are "GET" or "POST" (if not set the default is POST).
-            fallbackUrl
-                The full server URL used to send the callback event if the request to
+        :param str fallback_url: The full server URL used to send the callback event if the request to
                 callbackUrl fails.
-            bridgeId
-                The id of the bridge where the call will be added.
-            conferenceId
-                Id of the conference where the call will be added. This property is required
+        :param str bridge_id: The id of the bridge where the call will be added.
+        :param str conference_id: Id of the conference where the call will be added. This property is required
                 if you want to add this call to a conference.
-            recordingEnabled
-                Indicates if the call should be recorded after being created. Set to "true"
+        :param str recording_enabled: Indicates if the call should be recorded after being created. Set to "true"
                 to enable. Default is "false".
-            recordingFileFormat
-                The file format of the recorded call. Supported values are wav (default) and mp3.
-            recordingMaxDuration
-                Indicates the maximum duration of call recording in seconds. Default value is 1 hour.
-            transcriptionEnabled
-                Whether all the recordings for this call is going to be automatically transcribed.
-            tag
-                A string that will be included in the callback events of the call.
-            sipHeaders
-                Map of Sip headers prefixed by "X-". Up to 5 headers can be sent per call.
+        :param str recording_file_format: The file format of the recorded call. Supported values are wav (default) and mp3.
+        :param str recording_max_duration: Indicates the maximum duration of call recording in seconds. Default value is 1 hour.
+        :param str transcription_enabled: Whether all the recordings for this call is going to be automatically transcribed.
+        :param str tag: A string that will be included in the callback events of the call.
+        :param str sip_headers: Map of Sip headers prefixed by "X-". Up to 5 headers can be sent per call.
         :rtype: str
         :returns: id of created call
 
         :Example:
         id = api.create_call({'from': '+1234567890', 'to': '+1234567891'})
         """
-        return self._make_request('post', '/users/%s/calls' % self.user_id, json=data)[2]
+        kwargs["from"] = from_
+        kwargs["to"] = to
+        kwargs["callTimeout"] = call_timeout
+        kwargs["callbackUrl"] = callback_url
+        kwargs["callbackTimeout"] = callback_timeout
+        kwargs["callbackHttpMethod"] = callback_http_method
+        kwargs["fallbackUrl"] = fallback_url
+        kwargs["bridgeId"] = bridge_id
+        kwargs["conferenceId"] = conference_id
+        kwargs["recordingEnabled"] = recording_enabled
+        kwargs["recordingFileFormat"] = recording_file_format
+        kwargs["recordingMaxDuration"] = recording_max_duration
+        kwargs["transcriptionEnabled"] = transcription_enabled
+        kwargs["tag"] = tag
+        kwargs["sipHeaders"] = sip_headers
+        return self._make_request('post', '/users/%s/calls' % self.user_id, json=kwargs)[2]
 
     def get_call(self, id):
         """
@@ -260,11 +274,12 @@ class Client:
         :returns: call information
 
         :Example:
-        data = api.get_call('callId')
+        data = api.get_call('call_id')
         """
         return self._make_request('get', '/users/%s/calls/%s' % (self.user_id, id))[0]
 
-    def update_call(self, id, data):
+    def update_call(self, id, state=None, recording_enabled=None, recording_file_format=None,
+                    transfer_to=None, transfer_caller_id=None, whisper_audio=None, callback_url=None, **kwargs):
         """
         Update a call
 
@@ -272,29 +287,30 @@ class Client:
         :param id: id of a call
 
         Parameters
-            state
-                The call state. Possible values: rejected to reject not answer, active to answer the call,
+        :param str state: The call state. Possible values: rejected to reject not answer, active to answer the call,
                 completed to hangup the call, transferring to start and connect call to a new outbound call.
-            recordingEnabled
-                Indicates if the call should be recorded. Values true or false. You can turn recording
+        :param str recording_enabled: Indicates if the call should be recorded. Values true or false. You can turn recording
                 on/off and have multiple recordings on a single call.
-            recordingFileFormat
-                The file format of the recorded call. Supported values are wav (default) and mp3.
-            transferTo
-                Phone number or SIP address that the call is going to be transferred to.
-            transferCallerId
-                This is the caller id that will be used when the call is transferred.
-            whisperAudio
-                Audio to be played to the caller that the call will be transferred to.
-            callbackUrl
-                The server URL where the call events for the new call will be sent upon transferring.
+        :param str recording_file_format: The file format of the recorded call. Supported values are wav (default) and mp3.
+        :param str transfer_to: Phone number or SIP address that the call is going to be transferred to.
+        :param str transfer_caller_id: This is the caller id that will be used when the call is transferred.
+        :param str whisper_audio: Audio to be played to the caller that the call will be transferred to.
+        :param str callback_url: The server URL where the call events for the new call will be sent upon transferring.
 
         :Example:
-        api.update_call('callId', {'state': 'completed'})
+        api.update_call('callId', state='completed')
         """
-        return self._make_request('post', '/users/%s/calls/%s' % (self.user_id, id), json=data)[2]
 
-    def play_audio_to_call(self, id, data):
+        kwargs["state"] = state
+        kwargs["recordingEnabled"] = recording_enabled
+        kwargs["recordingFileFormat"] = recording_file_format
+        kwargs["transferTo"] = transfer_to
+        kwargs["transferCallerId"] = transfer_caller_id
+        kwargs["whisperAudio"] = whisper_audio
+        kwargs["callbackUrl"] = callback_url
+        return self._make_request('post', '/users/%s/calls/%s' % (self.user_id, id), json=kwargs)[2]
+
+    def play_audio_to_call(self, id, file_url = None, sentence = None, gender = None, locale = None, voice = None, loop_enabled = None, **kwargs):
         """
         Play audio to a call
 
@@ -302,18 +318,12 @@ class Client:
         :param id: id of a call
 
         Parameters
-            fileUrl
-                The location of an audio file to play (WAV and MP3 supported).
-            sentence
-                The sentence to speak.
-            gender
-                The gender of the voice used to synthesize the sentence.
-            locale
-                The locale used to get the accent of the voice used to synthesize the sentence.
-            voice
-                The voice to speak the sentence.
-            loopEnabled
-                When value is true, the audio will keep playing in a loop.
+        :param str file_url: The location of an audio file to play (WAV and MP3 supported).
+        :param str sentence: The sentence to speak.
+        :param str gender: The gender of the voice used to synthesize the sentence.
+        :param str locale: The locale used to get the accent of the voice used to synthesize the sentence.
+        :param str voice: The voice to speak the sentence.
+        :param bool loop_enabled: When value is true, the audio will keep playing in a loop.
 
 
         :Example:
@@ -324,9 +334,15 @@ class Client:
         api.play_audio_file_to_call('callId', 'http://host/path/file.mp3')
         api.speak_sentence_to_call('callId', 'Hello')
         """
-        self._make_request('post', '/users/%s/calls/%s/audio' % (self.user_id, id), json=data)
+        kwargs["fileUrl"] = file_url
+        kwargs["sentence"] = sentence
+        kwargs["gender"] = gender
+        kwargs["locale"] = locale
+        kwargs["voice"] voice
+        kwargs["loopEnabled"] = loop_enabled
+        self._make_request('post', '/users/%s/calls/%s/audio' % (self.user_id, id), json=kwargs)
 
-    def send_dtmf_to_call(self, id, data):
+    def send_dtmf_to_call(self, id, dtmf_out, **kwargs):
         """
         Send DTMF (phone keypad digit presses).
 
@@ -334,10 +350,10 @@ class Client:
         :param id: id of a call
 
         Parameters
-            dtmfOut
-                String containing the DTMF characters to be sent in a call.
+        :param str dtmf_out: String containing the DTMF characters to be sent in a call.
         """
-        self._make_request('post', '/users/%s/calls/%s/dtmf' % (self.user_id, id), json=data)
+        kwargs["dtmfOut"] = dtmf_out
+        self._make_request('post', '/users/%s/calls/%s/dtmf' % (self.user_id, id), json=kwargs)
 
     def get_call_recordings(self, id):
         """
@@ -1890,7 +1906,7 @@ class Client:
         path = '/users/%s/messages' % self.user_id
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=query))
 
-    def send_message(self, from_, to, **kwargs):
+    def send_message(self, from_, to, text=None, **kwargs):
         """
         Send a message (SMS or MMS)
         :param str from_: One of your telephone numbers the message should come from
