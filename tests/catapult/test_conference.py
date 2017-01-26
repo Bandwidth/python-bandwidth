@@ -15,13 +15,25 @@ class ConferenceTests(unittest.TestCase):
         """
         create_conference() should create a conference and return id
         """
+        estimated_request = {
+            'callbackUrl': None,
+            'from': '+1234567980',
+            'callbackTimeout': None,
+            'callbackHttpMethod': 'GET',
+            'fallbackUrl': None,
+            'tag': 'my_tag'
+        }
         estimated_response = create_response(201)
         estimated_response.headers['Location'] = 'http://localhost/conferenceId'
         with patch('requests.request', return_value = estimated_response) as p:
             client = get_client()
-            data = {'from': '+1234567980'}
-            id = client.create_conference(data)
-            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/conferences', auth=AUTH, json=data)
+            id = client.create_conference(
+                from_ = '+1234567980',
+                callbackUrl = 'http://abc.com',
+                tag = 'my_tag',
+                callback_http_method = 'GET'
+            )
+            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/conferences', auth=AUTH, json=estimated_request)
             self.assertEqual('conferenceId', id)
 
 

@@ -1084,35 +1084,63 @@ class Client:
         """
         self._make_request('post', '/users/%s/bridges/%s/audio' % (self.user_id, id), json=data)
 
-    def create_conference(self, data):
+    def create_conference(self, from_ , callback_url = None, callback_timeout = None,
+                          callback_http_method = None, fallback_url = None, tag = None, **kwargs):
         """
         Create a conference
 
         Parameters
-            from
-                The phone number that will host the conference (required)
-            callbackUrl
-                The full server URL where the conference events related
+        :param str from_: The phone number that will host the conference (required)
+        :param str callback_url: The full server URL where the conference events related
                 to the Conerence will be sent to.
-            callbackTimeout
-                Determine how long should the platform wait for callbackUrl's response before
+        :param str callback_timeout: Determine how long should the platform wait for callbackUrl's response before
                 timing out in milliseconds.
-            callbackHttpMethod
-                Determine if the callback event should be sent via HTTP GET or HTTP POST.
+        :param str callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST.
                 Values are "GET" or "POST" (if not set the default is POST).
-            fallbackUrl
-                The full server URL used to send the callback event if the request to
+        :param str fallback_url: The full server URL used to send the callback event if the request to
                 callbackUrl fails.
-            tag
-                A string that will be included in the callback events of the conference.
+        :param str tag: A string that will be included in the callback events of the conference.
 
         :rtype: str
         :returns: id of created conference
 
         :Example:
-        id = api.create_conference({'from': '+1234567890'})
+        conference_id = api.create_conference('+12018994444')
+
+        print(conference_id)
+        ## conf-ixaagbn5wcyskisiy
+
+        :Example:
+        conference_id = api.create_conference(from_ = "+12018994444", callback_url = "http://google.com",
+                                        callback_timeout= 2000, fallback_url = "http://yahoo.com")
+
+        print(conference_id)
+        ## conf-ixaagbn5wcyskisiy
+
+        my_conf = api.get_conference(conference_id)
+
+        print(my_conf)
+        ## {   'activeMembers': 0,
+        ##     'callbackHttpMethod': 'post',
+        ##     'callbackTimeout': 2000,
+        ##     'callbackUrl': 'http://google.com',
+        ##     'createdTime': '2017-01-26T01:58:59Z',
+        ##     'fallbackUrl': 'http://yahoo.com',
+        ##     'from': '+12018994444',
+        ##     'hold': False,
+        ##     'id': 'conf-ixaagbn5wcyskisiy',
+        ##     'mute': False,
+        ##     'state': 'created'}
         """
-        return self._make_request('post', '/users/%s/conferences' % self.user_id, json=data)[2]
+
+        kwargs["from"] = from_
+        kwargs["callbackUrl"] = callback_url
+        kwargs["callbackTimeout"] = callback_timeout
+        kwargs["callbackHttpMethod"] = callback_http_method
+        kwargs["fallbackUrl"] = fallback_url
+        kwargs["tag"] = tag
+
+        return self._make_request('post', '/users/%s/conferences' % self.user_id, json=kwargs)[2]
 
     def get_conference(self, id):
         """
@@ -1125,11 +1153,32 @@ class Client:
         :returns: conference information
 
         :Example:
-        data = api.get_conference('conferenceId')
+       conference_id = api.create_conference(from_ = "+12018994444", callback_url = "http://google.com",
+                                        callback_timeout= 2000, fallback_url = "http://yahoo.com")
+
+        print(conference_id)
+        ## conf-ixaagbn5wcyskisiy
+
+        my_conf = api.get_conference(conference_id)
+
+        print(my_conf)
+        ## {   'activeMembers': 0,
+        ##     'callbackHttpMethod': 'post',
+        ##     'callbackTimeout': 2000,
+        ##     'callbackUrl': 'http://google.com',
+        ##     'createdTime': '2017-01-26T01:58:59Z',
+        ##     'fallbackUrl': 'http://yahoo.com',
+        ##     'from': '+12018994444',
+        ##     'hold': False,
+        ##     'id': 'conf-ixaagbn5wcyskisiy',
+        ##     'mute': False,
+        ##     'state': 'created'}
         """
         return self._make_request('get', '/users/%s/conferences/%s' % (self.user_id, id))[0]
 
-    def update_conference(self, id, data):
+    def update_conference(self, id, state = None, mute = None, hold = None, callback_url = None,
+                          callback_timeout = None, callback_http_method = None, fallback_url = None,
+                          tag = None, **kwargs):
         """
         Update a conference
 
@@ -1137,34 +1186,36 @@ class Client:
         :param id: id of a conference
 
         Parameters
-            state
-                Conference state. Possible state values are: "completed"
-                to terminate the conference.
-            mute
-                If "true", all member can't speak in the conference.
-                If "false", all members can speak in the conference
-            hold
-                If "true", all member can't hear or speak in the conference.
-                If "false", all members can hear and speak in the conference
-            callbackUrl
-                The full server URL where the conference events related
-                to the Conerence will be sent to.
-            callbackTimeout
-                Determine how long should the platform wait for callbackUrl's response before
-                timing out in milliseconds.
-            callbackHttpMethod
-                Determine if the callback event should be sent via HTTP GET or HTTP POST.
-                Values are "GET" or "POST" (if not set the default is POST).
-            fallbackUrl
-                The full server URL used to send the callback event if the request to
-                callbackUrl fails.
-            tag
-                A string that will be included in the callback events of the conference.
+        :param str state: Conference state. Possible state values are: "completed"
+                          to terminate the conference.
+        :param str mute: If "true", all member can't speak in the conference.
+                          If "false", all members can speak in the conference
+        :param str hold: If "true", all member can't hear or speak in the conference.
+                          If "false", all members can hear and speak in the conference
+        :param str callback_url: The full server URL where the conference events related
+                          to the Conerence will be sent to.
+        :param str callback_timeout: Determine how long should the platform wait for callbackUrl's response before
+                          timing out in milliseconds.
+        :param str callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST.
+                          Values are "GET" or "POST" (if not set the default is POST).
+        :param str fallback_url: The full server URL used to send the callback event if the request to
+                          callbackUrl fails.
+        :param str tag: A string that will be included in the callback events of the conference.
 
-        :Example:
+       :Example:
         api.update_conference('conferenceId', {'state': 'completed'})
         """
-        self._make_request('post', '/users/%s/conferences/%s' % (self.user_id, id), json=data)
+
+        kwargs["state"] = state
+        kwargs["mute"] = mute
+        kwargs["hold"] = hold
+        kwargs["callbackUrl"] = callback_url
+        kwargs["callbackTimeout"] = callback_timeout
+        kwargs["callbackHttpMethod"] = callback_http_method
+        kwargs["fallbackUrl"] = fallback_url
+        kwargs["tag"] = tag
+
+        self._make_request('post', '/users/%s/conferences/%s' % (self.user_id, id), json=kwargs)
 
     def play_audio_to_conference(self, id, data):
         """
