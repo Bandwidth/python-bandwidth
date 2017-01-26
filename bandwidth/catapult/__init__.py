@@ -937,7 +937,6 @@ class Client:
         :param str call_ids: The first of the call ids in the bridge. If either of the call ids
                 is not provided the bridge is logically created and it can be
                 used to place calls later.
-        :param str call_id_2: The second of call ids in the bridge.
 
         :rtype: str
         :returns: id of created bridge
@@ -963,27 +962,49 @@ class Client:
         :returns: bridge information
 
         :Example:
-        data = api.get_bridge('bridgeId')
+        my_bridge = api.get_bridge('brg-bridgeId')
+        print(my_bridge)
+
+        ## {   'bridgeAudio': True,
+        ##     'calls': 'https://api.catapult.inetwork.com/v1/users/u-123/bridges/brg-bridgeId/calls',
+        ##     'createdTime': '2017-01-26T01:15:09Z',
+        ##     'id': 'brg-bridgeId',
+        ##     'state': 'created'}
+
+        print(my_bridge["state"])
+        ## created
         """
         return self._make_request('get', '/users/%s/bridges/%s' % (self.user_id, id))[0]
 
-    def update_bridge(self, id, data):
+    def update_bridge(self, id, call_ids = None, bridge_audio = None, **kwargs):
         """
         Update a bridge
 
         :type id: str
         :param id: id of a bridge
 
-        Parameters
-            bridgeAudio
-                Enable/Disable two way audio path (default = true)
-            callIds
-                The list of call ids in the bridge
+        :param bool bridge_audio: Enable/Disable two way audio path (default = true)
+        :param str call_ids: The first of the call ids in the bridge. If either of the call ids
+                is not provided the bridge is logically created and it can be
+                used to place calls later.
 
         :Example:
-        api.update_bridge('bridgeId', {'callIds': ['callId3'], 'bridgeAudio': 'true'})
+
+        my_bridge = api.get_bridge('brg-bridgeId')
+
+        print(my_bridge["bridgeAudio"])
+        ## True
+
+        api.update_bridge(my_bridge['id'], call_ids = ['callId1', 'callId2'], bridge_audio = False)
+        my_bridge = api.get_bridge(my_bridge['id'])
+
+        print(my_bridge["bridgeAudio"])
+        ## False
+
         """
-        self._make_request('post', '/users/%s/bridges/%s' % (self.user_id, id), json=data)
+        kwargs["callIds"] = call_ids
+        kwargs["bridgeAudio"] = bridge_audio
+        self._make_request('post', '/users/%s/bridges/%s' % (self.user_id, id), json=kwargs)
 
     def get_bridge_calls(self, id):
         """
@@ -996,7 +1017,37 @@ class Client:
         :returns: list of calls
 
         :Example:
-        list = api.get_bridge_calls('bridgeId')
+        call_list = api.get_bridge_calls('bridgeId')
+
+        print(list(call_list))
+        ## [
+        ##     {
+        ##         "activeTime": "2013-05-22T19:49:39Z",
+        ##         "direction": "out",
+        ##         "from": "{fromNumber}",
+        ##         "id": "{callId1}",
+        ##         "bridgeId": "{bridgeId}",
+        ##         "startTime": "2013-05-22T19:49:35Z",
+        ##         "state": "active",
+        ##         "to": "{toNumber1}",
+        ##         "recordingEnabled": false,
+        ##         "events": "https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId1}/events",
+        ##         "bridge": "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/{bridgeId}"
+        ##     },
+        ##     {
+        ##         "activeTime": "2013-05-22T19:50:16Z",
+        ##         "direction": "out",
+        ##         "from": "{fromNumber}",
+        ##         "id": "{callId2}",
+        ##         "bridgeId": "{bridgeId}",
+        ##         "startTime": "2013-05-22T19:50:16Z",
+        ##         "state": "active",
+        ##         "to": "{toNumber2}",
+        ##         "recordingEnabled": false,
+        ##         "events": "https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId2}/events",
+        ##         "bridge": "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/{bridgeId}"
+        ##     }
+        ## ]
         """
         path = '/users/%s/bridges/%s/calls' % (self.user_id, id)
         return get_lazy_enumerator(self, lambda: self._make_request('get', path))
