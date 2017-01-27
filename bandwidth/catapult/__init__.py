@@ -140,8 +140,9 @@ class Client:
         :rtype: dict
         :returns: account data
 
-        :Example:
-        data = api.get_account()
+        Example::
+
+            data = api.get_account()
         """
         return self._make_request('get', '/users/%s/account' % self.user_id)[0]
 
@@ -149,19 +150,34 @@ class Client:
         """
         Get the transactions from the user's account
 
-        Query parameters
         :param str max_items: Limit the number of transactions that will be returned.
         :param str to_date: Return only transactions that are newer than the parameter. Format: "yyyy-MM-dd'T'HH:mm:ssZ"
         :param str from_date: Return only transactions that are older than the parameter. Format: "yyyy-MM-dd'T'HH:mm:ssZ"
         :param str type: Return only transactions that are this type.
-        :param int size: Used for pagination to indicate the size of each page requested for querying a list
-                of items. If no value is specified the default value is 25. (Maximum value 1000)
+        :param int size: Used for pagination to indicate the size of each page requested for querying a list of items. If no value is specified the default value is 25. (Maximum value 1000)
 
         :rtype: types.GeneratorType
         :returns: list of transactions
 
-        :Example:
-        list = api.get_account_transactions({'type': 'charge'})
+        Example: Get transactions::
+
+            list = api.get_account_transactions(type = 'charge')
+
+        Example: Get transactions by date::
+
+            list = api.get_account_transactions(type = 'charge')
+
+        Example: Get transactions filtering by date::
+
+            list = api.get_account_transactions(type = 'charge')
+
+        Example: Get transactions limiting result::
+
+            list = api.get_account_transactions(type = 'charge')
+
+        Example: Get transactions of payment type::
+
+            list = api.get_account_transactions(type = 'charge')
         """
         kwargs["maxItems"] = max_items
         kwargs["toDate"] = to_date
@@ -181,15 +197,13 @@ class Client:
         :param str conference_id: The id of the conference for querying a list of calls history
         :param str ``from_``: The number to filter calls that came from
         :param str to: The number to filter calls that was called to
-        :param str sort_order: How to sort the calls. Values are asc or desc
-                If no value is specified the default value is desc
-        :param int size: Used for pagination to indicate the size of each page requested for querying a list
-                of items. If no value is specified the default value is 25. (Maximum value 1000)
+        :param str sort_order: How to sort the calls. Values are asc or desc If no value is specified the default value is desc
+        :param int size: Used for pagination to indicate the size of each page requested for querying a list of items. If no value is specified the default value is 25. (Maximum value 1000)
 
         :rtype: types.GeneratorType
         :returns: list of calls
 
-        Fetch calls from specific telephone number::
+        Example: Fetch calls from specific telephone number::
 
             call_list = api.list_calls(from_ = '+19192223333', size = 1000)
 
@@ -201,7 +215,7 @@ class Client:
             print(total_chargeable_duration)
             ## 240
 
-        List Calls::
+        Example: List Calls::
 
             call_list = api.list_calls(to = '+19192223333', size = 2)
             print(list(call_list))
@@ -287,7 +301,7 @@ class Client:
         :rtype: str
         :returns: id of created call
 
-        Create Call and fetch information::
+        Example: Create an outbound phone call::
 
             call_id = api.create_call(from_ = '+1234567890', to = '+1234567891', callback_url = "http://yoursite.com/calls")
             print(call_id)
@@ -437,11 +451,12 @@ class Client:
         """
         Send DTMF (phone keypad digit presses).
 
-        :type id: str
-        :param id: id of a call
-
-        Parameters
+        :param str id: id of a call
         :param str dtmf_out: String containing the DTMF characters to be sent in a call.
+
+        Example: Send Digits to call::
+
+            api.send_dtmf_to_cal('c-callId', '1234')
         """
         kwargs["dtmfOut"] = dtmf_out
         self._make_request('post', '/users/%s/calls/%s/dtmf' % (self.user_id, id), json=kwargs)
@@ -680,30 +695,30 @@ class Client:
         :rtype: types.GeneratorType
         :returns: list of applications
 
-        :Example:
-        # Fetch and print all applications
-        apps = api.list_applications()
-        print(list(apps))
+        Example: Fetch and print all applications::
 
-        :Example:
-        # Iterate over all applications to find specific name
-        apps = api.list_applications(size=20)
+            apps = api.list_applications()
+            print(list(apps))
 
-        app_name = ""
-        while app_name != "MyAppName":
-            my_app = next(apps)
-            app_name = my_app["name"]
+        Example: Iterate over all applications to find specific name::
 
-        print(my_app)
+            apps = api.list_applications(size=20)
+
+            app_name = ""
+            while app_name != "MyAppName":
+                my_app = next(apps)
+                app_name = my_app["name"]
+
+            print(my_app)
 
 
-        ## {   'autoAnswer': True,
-        ##     'callbackHttpMethod': 'get',
-        ##     'id': 'a-asdf',
-        ##     'incomingCallUrl': 'https://test.com/callcallback/',
-        ##     'incomingMessageUrl': 'https://test.com/msgcallback/',
-        ##     'name': 'MyAppName'
-        ## }
+            ## {   'autoAnswer': True,
+            ##     'callbackHttpMethod': 'get',
+            ##     'id': 'a-asdf',
+            ##     'incomingCallUrl': 'https://test.com/callcallback/',
+            ##     'incomingMessageUrl': 'https://test.com/msgcallback/',
+            ##     'name': 'MyAppName'
+            ## }
 
         """
         kwargs["size"] = size
@@ -717,46 +732,43 @@ class Client:
         """
         Creates an application that can handle calls and messages for one of your phone number.
 
-        Parameters
         :param str name: A name you choose for this application (required).
         :param str incoming_call_url: A URL where call events will be sent for an inbound call.
-        :param str incoming_call_url_callback_timeout: Determine how long should the platform wait for inconmingCallUrl's response
-                before timing out in milliseconds.
+        :param str incoming_call_url_callback_timeout: Determine how long should the platform wait for inconmingCallUrl's response before timing out in milliseconds.
         :param str incoming_call_fallback_url: The URL used to send the callback event if the request to incomingCallUrl fails.
         :param str incoming_message_url: A URL where message events will be sent for an inbound SMS message
-        :param str incoming_message_url_callback_timeout: Determine how long should the platform wait for incomingMessageUrl's response before
-                timing out in milliseconds.
+        :param str incoming_message_url_callback_timeout: Determine how long should the platform wait for incomingMessageUrl's response before timing out in milliseconds.
         :param str incoming_message_fallback_url: The URL used to send the callback event if the request to incomingMessageUrl fails.
-        :param str callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST.
-                (If not set the default is HTTP POST)
-        :param str auto_answer: Determines whether or not an incoming call should be automatically answered.
-                Default value is 'true'.
+        :param str callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST. (If not set the default is HTTP POST)
+        :param str auto_answer: Determines whether or not an incoming call should be automatically answered. Default value is 'true'.
 
         :rtype: str
         :returns: id of created application
 
-        :Example:
-        my_app_id = api.create_application(name = "MyFirstApp",
-                                    incoming_call_url = "http://callback.com/calls",
-                                    incoming_messageUrl = "http://callback.com/messages",
-                                    callback_http_method = "GET")
+        Example: Create Application::
 
-        print(my_app_id)
-        ## a-1232asf123
+            my_app_id = api.create_application( name                 = "MyFirstApp",
+                                                incoming_call_url    = "http://callback.com/calls",
+                                                incoming_messageUrl  = "http://callback.com/messages",
+                                                callback_http_method = "GET")
 
-        my_app = api.get_application(my_app_id)
-        print(my_app)
-        ## {   'autoAnswer': True,
-        ##     'callbackHttpMethod': 'get',
-        ##     'id': 'a-1232asf123',
-        ##     'incomingCallUrl': 'http://callback.com/calls',
-        ##     'incomingMessageUrl': 'http://callback.com/messages',
-        ##     'incomingSmsUrl': 'http://callback.com/messages',
-        ##     'name': 'MyFirstApp2'
-        ## }
+            print(my_app_id)
+            ## a-1232asf123
 
-        print(my_app["id"])
-        ## a-1232asf123
+            my_app = api.get_application(my_app_id)
+            print(my_app)
+            ## {   'autoAnswer'        : True,
+            ##     'callbackHttpMethod': 'get',
+            ##     'id'                : 'a-1232asf123',
+            ##     'incomingCallUrl'   : 'http://callback.com/calls',
+            ##     'incomingMessageUrl': 'http://callback.com/messages',
+            ##     'incomingSmsUrl'    : 'http://callback.com/messages',
+            ##     'name'              : 'MyFirstApp2'
+            ## }
+
+            print(my_app["id"])
+            ## a-1232asf123
+
         """
         kwargs["name"] = name
         kwargs["incomingCallUrl"] = incoming_call_url
@@ -780,20 +792,22 @@ class Client:
         :rtype: dict
         :returns: application information
 
-        :Example:
-        my_app = api.get_application(my_app_id)
-        print(my_app)
-        ## {   'autoAnswer': True,
-        ##     'callbackHttpMethod': 'get',
-        ##     'id': 'a-1232asf123',
-        ##     'incomingCallUrl': 'http://callback.com/calls',
-        ##     'incomingMessageUrl': 'http://callback.com/messages',
-        ##     'incomingSmsUrl': 'http://callback.com/messages',
-        ##     'name': 'MyFirstApp2'
-        ## }
+        Example: Fetch single application::
 
-        print(my_app["id"])
-        ## a-1232asf123        """
+            my_app = api.get_application(my_app_id)
+            print(my_app)
+            ## {   'autoAnswer': True,
+            ##     'callbackHttpMethod': 'get',
+            ##     'id': 'a-1232asf123',
+            ##     'incomingCallUrl': 'http://callback.com/calls',
+            ##     'incomingMessageUrl': 'http://callback.com/messages',
+            ##     'incomingSmsUrl': 'http://callback.com/messages',
+            ##     'name': 'MyFirstApp2'
+            ## }
+
+            print(my_app["id"])
+            ## a-1232asf123
+        """
         return self._make_request('get', '/users/%s/applications/%s' % (self.user_id, id))[0]
 
     def delete_application(self, id):
@@ -803,14 +817,15 @@ class Client:
         :type id: str
         :param id: id of an application
 
-        :Example:
-        api.delete_application('a-appId')
+        Example: Delete single application::
 
-        try :
-            api.get_application('a-appId')
-        except CatapultException as err:
-            print(err.message)
-        ## The application a-appId could not be found
+            api.delete_application('a-appId')
+
+            try :
+                api.get_application('a-appId')
+            except CatapultException as err:
+                print(err.message)
+            ## The application a-appId could not be found
 
         """
         self._make_request('delete', '/users/%s/applications/%s' % (self.user_id, id))
@@ -824,50 +839,46 @@ class Client:
         """
         Searches for available local or toll free numbers.
 
-        Query parameters for local numbers
         :param str city: A city name
         :param str state: A two-letter US state abbreviation
         :param str zip: A 5-digit US ZIP code
         :param str area_code: A 3-digit telephone area code
-        :param str local_number: It is defined as the first digits of a telephone number inside an area code
-                                for filtering the results. It must have at least 3 digits and the areaCode
-                                field must be filled.
-        :param str in_local_calling_area: Boolean value to indicate that the search for available numbers must consider
-                                          overlayed areas.
+        :param str local_number: It is defined as the first digits of a telephone number inside an area code for filtering the results. It must have at least 3 digits and the areaCode field must be filled.
+        :param str in_local_calling_area: Boolean value to indicate that the search for available numbers must consider overlayed areas.
         :param int quantity: The maximum number of numbers to return (default 10, maximum 5000)
         :param str pattern: A number pattern that may include letters, digits, and the wildcard characters
 
         :rtype: list
         :returns: list of numbers
 
-        :Example:
-        numbers = api.search_available_local_numbers(area_code = '910', quantity = 3)
+        Example: Search for 3 910 numbers::
 
-        print(numbers)
+            numbers = api.search_available_local_numbers(area_code = '910', quantity = 3)
 
-        ## [   {   'city': 'WILMINGTON',
-        ##         'nationalNumber': '(910) 444-0230',
-        ##         'number': '+19104440230',
-        ##         'price': '0.35',
-        ##         'rateCenter': 'WILMINGTON',
-        ##         'state': 'NC'},
-        ##     {   'city': 'WILMINGTON',
-        ##         'nationalNumber': '(910) 444-0263',
-        ##         'number': '+19104440263',
-        ##         'price': '0.35',
-        ##         'rateCenter': 'WILMINGTON',
-        ##         'state': 'NC'},
-        ##     {   'city': 'WILMINGTON',
-        ##         'nationalNumber': '(910) 444-0268',
-        ##         'number': '+19104440268',
-        ##         'price': '0.35',
-        ##         'rateCenter': 'WILMINGTON',
-        ##         'state': 'NC'}
-        ## ]
+            print(numbers)
 
-        print(numbers[0]["number"])
-        ## +19104440230
+            ## [   {   'city'          : 'WILMINGTON',
+            ##         'nationalNumber': '(910) 444-0230',
+            ##         'number'        : '+19104440230',
+            ##         'price'         : '0.35',
+            ##         'rateCenter'    : 'WILMINGTON',
+            ##         'state'         : 'NC'},
+            ##     {   'city'          : 'WILMINGTON',
+            ##         'nationalNumber': '(910) 444-0263',
+            ##         'number'        : '+19104440263',
+            ##         'price'         : '0.35',
+            ##         'rateCenter'    : 'WILMINGTON',
+            ##         'state'         : 'NC'},
+            ##     {   'city'          : 'WILMINGTON',
+            ##         'nationalNumber': '(910) 444-0268',
+            ##         'number'        : '+19104440268',
+            ##         'price'         : '0.35',
+            ##         'rateCenter'    : 'WILMINGTON',
+            ##         'state'         : 'NC'}
+            ## ]
 
+            print(numbers[0]["number"])
+            ## +19104440230
 
         """
         kwargs["city"] = city
@@ -884,33 +895,33 @@ class Client:
         """
         Searches for available local or toll free numbers.
 
-         Query parameters for toll free numbers
-         :param int quantity: The maximum number of numbers to return (default 10, maximum 5000)
-         :param str pattern:  A number pattern that may include letters, digits, and the wildcard characters
+        :param int quantity: The maximum number of numbers to return (default 10, maximum 5000)
+        :param str pattern:  A number pattern that may include letters, digits, and the wildcard characters
 
-         :rtype: list
-         :returns: list of numbers
+        :rtype: list
+        :returns: list of numbers
 
-        :Example:
-        numbers = api.search_available_toll_free_numbers(pattern = '*456', quantity = 3)
+        Example: Serach for 3 toll free numbers with pattern 456::
 
-        print(numbers)
+            numbers = api.search_available_toll_free_numbers(pattern = '*456', quantity = 3)
 
-        ## [   {   'nationalNumber': '(844) 489-0456',
-        ##         'number': '+18444890456',
-        ##         'patternMatch': '           456',
-        ##         'price': '0.75'},
-        ##     {   'nationalNumber': '(844) 498-2456',
-        ##         'number': '+18444982456',
-        ##         'patternMatch': '           456',
-        ##         'price': '0.75'},
-        ##     {   'nationalNumber': '(844) 509-4566',
-        ##         'number': '+18445094566',
-        ##         'patternMatch': '          456 ',
-        ##         'price': '0.75'}]
+            print(numbers)
 
-        print(numbers[0]["number"])
-        ## +18444890456
+            ## [   {   'nationalNumber': '(844) 489-0456',
+            ##         'number'        : '+18444890456',
+            ##         'patternMatch'  : '           456',
+            ##         'price'         : '0.75'},
+            ##     {   'nationalNumber': '(844) 498-2456',
+            ##         'number'        : '+18444982456',
+            ##         'patternMatch'  : '           456',
+            ##         'price'         : '0.75'},
+            ##     {   'nationalNumber': '(844) 509-4566',
+            ##         'number'        : '+18445094566',
+            ##         'patternMatch'  : '          456 ',
+            ##         'price'         : '0.75'}]
+
+            print(numbers[0]["number"])
+            ## +18444890456
 
 
         """
@@ -924,37 +935,30 @@ class Client:
         """
         Searches and orders for available local numbers.
 
-        Query parameters for local numbers
         :param str city: A city name
         :param str state: A two-letter US state abbreviation
         :param str zip: A 5-digit US ZIP code
         :param str area_code: A 3-digit telephone area code
-        :param str local_number: It is defined as the first digits of a telephone number inside an area code
-                for filtering the results. It must have at least 3 digits and the areaCode
-                field must be filled.
-        :param str in_local_calling_area: Boolean value to indicate that the search for available numbers must consider
-                overlayed areas.
+        :param str local_number: It is defined as the first digits of a telephone number inside an area code for filtering the results. It must have at least 3 digits and the areaCode field must be filled.
+        :param str in_local_calling_area: Boolean value to indicate that the search for available numbers must consider overlayed areas.
         :param str quantity: The maximum number of numbers to return (default 10, maximum 5000)
-
-        Query parameters for toll free numbers
-            quantity
-                The maximum number of numbers to return (default 10, maximum 5000)
 
         :rtype: list
         :returns: list of ordered numbers
 
-        :Example:
-        ordered_numbers = api.search_and_order_available_numbers(zip = '27606', quantity = 1)
+        Example: Search _and_ order a single number::
 
-        print(ordered_number)
+            ordered_numbers = api.search_and_order_available_numbers(zip = '27606', quantity = 1)
 
-        ## [   {   'city': 'RALEIGH',
-        ##         'id': 'n-abc',
-        ##         'location': 'https://api.catapult.inetwork.com/v1/users/u-12/phoneNumbers/n-abc',
-        ##         'nationalNumber': '(919) 222-4444',
-        ##         'number': '+19192224444',
-        ##         'price': '0.35',
-        ##         'state': 'NC'}]
+            print(ordered_number)
+
+            ## [   {   'city'          : 'RALEIGH',
+            ##         'id'            : 'n-abc',
+            ##         'location'      : 'https://api.catapult.inetwork.com/v1/users/u-12/phoneNumbers/n-abc',
+            ##         'nationalNumber': '(919) 222-4444',
+            ##         'number'        : '+19192224444',
+            ##         'price'         : '0.35',
+            ##         'state'         : 'NC'}]
 
 
         """
@@ -975,24 +979,25 @@ class Client:
         """
         Searches for available local or toll free numbers.
 
-         Query parameters for toll free numbers
-         :param int quantity: The maximum number of numbers to return (default 10, maximum 5000)
+        Query parameters for toll free numbers
+        :param int quantity: The maximum number of numbers to return (default 10, maximum 5000)
 
-         :rtype: list
-         :returns: list of numbers
+        :rtype: list
+        :returns: list of numbers
 
-        :Example:
-        numbers = api.search_and_order_toll_free_numbers(quantity = 1)
+        Example: Search then order a single toll-free number::
 
-        print(numbers)
+            numbers = api.search_and_order_toll_free_numbers(quantity = 1)
 
-        ## [   {   'location': 'https://api.catapult.inetwork.com/v1/users/u-123/phoneNumbers/n-abc',
-        ##         'nationalNumber': '(844) 484-1048',
-        ##         'number': '+18444841048',
-        ##         'price': '0.75'}]
+            print(numbers)
 
-        print(numbers[0]["number"])
-        ## +18444841048
+            ## [   {   'location'      : 'https://api.catapult.inetwork.com/v1/users/u-123/phoneNumbers/n-abc',
+            ##         'nationalNumber': '(844) 484-1048',
+            ##         'number'        : '+18444841048',
+            ##         'price'         : '0.75'}]
+
+            print(numbers[0]["number"])
+            ## +18444841048
 
         """
         kwargs["quantity"] = quantity
@@ -1005,24 +1010,23 @@ class Client:
         """
         Get a list of bridges
 
-        Query parameters
-        :param int size: Used for pagination to indicate the size of each page requested for querying a list
-                        of items. If no value is specified the default value is 25. (Maximum value 1000)
+        :param int size: Used for pagination to indicate the size of each page requested for querying a list of items. If no value is specified the default value is 25. (Maximum value 1000)
 
         :rtype: types.GeneratorType
         :returns: list of bridges
 
-        :Example:
-        bridges = api.list_bridges(size=1000)
+        Example: List bridges 1000 at a time::
 
-        for bridge in bridges:
-            print(bridge["id"])
+            bridges = api.list_bridges(size=1000)
 
-        ## brg-6mv7pi22i
-        ## brg-3emq7olua
-        ## brg-bbufdc7yq
-        ## brg-dvpvd7cuy
-        ## brg-5ws2buzmq
+            for bridge in bridges:
+                print(bridge["id"])
+
+            ## brg-6mv7pi22i
+            ## brg-3emq7olua
+            ## brg-bbufdc7yq
+            ## brg-dvpvd7cuy
+            ## brg-5ws2buzmq
         """
         kwargs["size"] = size
         path = '/users/%s/bridges' % self.user_id
@@ -1032,20 +1036,18 @@ class Client:
         """
         Create a bridge
 
-        Parameters
         :param bool bridge_audio: Enable/Disable two way audio path (default = true)
-        :param str call_ids: The first of the call ids in the bridge. If either of the call ids
-                is not provided the bridge is logically created and it can be
-                used to place calls later.
+        :param str call_ids: The first of the call ids in the bridge. If either of the call ids is not provided the bridge is logically created and it can be used to place calls later.
 
         :rtype: str
         :returns: id of created bridge
 
-        :Example:
-        bridge_id = api.create_bridge(call_ids = ['callId1', 'callId2'], bridge_audio = True)
+        Example: Create bridge with 2 calls and audio::
 
-        print(bridge_id)
-        # brg-123
+            bridge_id = api.create_bridge(call_ids = ['callId1', 'callId2'], bridge_audio = True)
+
+            print(bridge_id)
+            # brg-123
         """
         kwargs["callIds"] = call_ids
         kwargs["bridgeAudio"] = bridge_audio
@@ -1061,18 +1063,19 @@ class Client:
         :rtype: dict
         :returns: bridge information
 
-        :Example:
-        my_bridge = api.get_bridge('brg-bridgeId')
-        print(my_bridge)
+        Example: Fetch single bridge by ID::
 
-        ## {   'bridgeAudio': True,
-        ##     'calls': 'https://api.catapult.inetwork.com/v1/users/u-123/bridges/brg-bridgeId/calls',
-        ##     'createdTime': '2017-01-26T01:15:09Z',
-        ##     'id': 'brg-bridgeId',
-        ##     'state': 'created'}
+            my_bridge = api.get_bridge('brg-bridgeId')
+            print(my_bridge)
 
-        print(my_bridge["state"])
-        ## created
+            ## {   'bridgeAudio': True,
+            ##     'calls'      : 'https://api.catapult.inetwork.com/v1/users/u-123/bridges/brg-bridgeId/calls',
+            ##     'createdTime': '2017-01-26T01:15:09Z',
+            ##     'id'         : 'brg-bridgeId',
+            ##     'state'      : 'created'}
+
+            print(my_bridge["state"])
+            ## created
         """
         return self._make_request('get', '/users/%s/bridges/%s' % (self.user_id, id))[0]
 
@@ -1088,25 +1091,25 @@ class Client:
                 is not provided the bridge is logically created and it can be
                 used to place calls later.
 
-        :Example:
+        Example: stop bridging audio::
 
-        my_bridge = api.get_bridge('brg-bridgeId')
+            my_bridge = api.get_bridge('brg-bridgeId')
 
-        print(my_bridge["bridgeAudio"])
-        ## True
+            print(my_bridge["bridgeAudio"])
+            ## True
 
-        api.update_bridge(my_bridge['id'], call_ids = ['callId1', 'callId2'], bridge_audio = False)
-        my_bridge = api.get_bridge(my_bridge['id'])
+            api.update_bridge(my_bridge['id'], call_ids = ['callId1', 'callId2'], bridge_audio = False)
+            my_bridge = api.get_bridge(my_bridge['id'])
 
-        print(my_bridge["bridgeAudio"])
-        ## False
+            print(my_bridge["bridgeAudio"])
+            ## False
 
         """
         kwargs["callIds"] = call_ids
         kwargs["bridgeAudio"] = bridge_audio
         self._make_request('post', '/users/%s/bridges/%s' % (self.user_id, id), json=kwargs)
 
-    def get_bridge_calls(self, id):
+    def list_bridge_calls(self, id):
         """
         Get a list of calls of a bridge
 
@@ -1116,38 +1119,39 @@ class Client:
         :rtype: types.GeneratorType
         :returns: list of calls
 
-        :Example:
-        call_list = api.get_bridge_calls('bridgeId')
+        Example: Fetch all calls that were in a bridge::
 
-        print(list(call_list))
-        ## [
-        ##     {
-        ##         "activeTime": "2013-05-22T19:49:39Z",
-        ##         "direction": "out",
-        ##         "from": "{fromNumber}",
-        ##         "id": "{callId1}",
-        ##         "bridgeId": "{bridgeId}",
-        ##         "startTime": "2013-05-22T19:49:35Z",
-        ##         "state": "active",
-        ##         "to": "{toNumber1}",
-        ##         "recordingEnabled": false,
-        ##         "events": "https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId1}/events",
-        ##         "bridge": "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/{bridgeId}"
-        ##     },
-        ##     {
-        ##         "activeTime": "2013-05-22T19:50:16Z",
-        ##         "direction": "out",
-        ##         "from": "{fromNumber}",
-        ##         "id": "{callId2}",
-        ##         "bridgeId": "{bridgeId}",
-        ##         "startTime": "2013-05-22T19:50:16Z",
-        ##         "state": "active",
-        ##         "to": "{toNumber2}",
-        ##         "recordingEnabled": false,
-        ##         "events": "https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId2}/events",
-        ##         "bridge": "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/{bridgeId}"
-        ##     }
-        ## ]
+            call_list = api.get_bridge_calls('bridgeId')
+
+            print(list(call_list))
+            ## [
+            ##     {
+            ##         "activeTime"      : "2013-05-22T19:49:39Z",
+            ##         "direction"       : "out",
+            ##         "from"            : "{fromNumber}",
+            ##         "id"              : "{callId1}",
+            ##         "bridgeId"        : "{bridgeId}",
+            ##         "startTime"       : "2013-05-22T19:49:35Z",
+            ##         "state"           : "active",
+            ##         "to"              : "{toNumber1}",
+            ##         "recordingEnabled": false,
+            ##         "events"          : "https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId1}/events",
+            ##         "bridge"          : "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/{bridgeId}"
+            ##     },
+            ##     {
+            ##         "activeTime"      : "2013-05-22T19:50:16Z",
+            ##         "direction"       : "out",
+            ##         "from"            : "{fromNumber}",
+            ##         "id"              : "{callId2}",
+            ##         "bridgeId"        : "{bridgeId}",
+            ##         "startTime"       : "2013-05-22T19:50:16Z",
+            ##         "state"           : "active",
+            ##         "to"              : "{toNumber2}",
+            ##         "recordingEnabled": false,
+            ##         "events"          : "https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId2}/events",
+            ##         "bridge"          : "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/{bridgeId}"
+            ##     }
+            ## ]
         """
         path = '/users/%s/bridges/%s/calls' % (self.user_id, id)
         return get_lazy_enumerator(self, lambda: self._make_request('get', path))
@@ -1174,13 +1178,14 @@ class Client:
                 When value is true, the audio will keep playing in a loop.
 
 
-        :Example:
-        api.play_audio_to_bridge('bridgeId', {'fileUrl': 'http://host/path/file.mp3'})
-        api.play_audio_to_bridge('bridgeId', {'sentence': 'Press 0 to complete call', 'gender': 'female'})
+        Examples: Play either file for speak sentence::
 
-        # or with extension methods
-        api.play_audio_file_to_bridge('bridgeId', 'http://host/path/file.mp3')
-        api.speak_sentence_to_bridge('bridgeId', 'Hello')
+            api.play_audio_to_bridge('bridgeId', {'fileUrl': 'http://host/path/file.mp3'})
+            api.play_audio_to_bridge('bridgeId', {'sentence': 'Press 0 to complete call', 'gender': 'female'})
+
+            # or with extension methods
+            api.play_audio_file_to_bridge('bridgeId', 'http://host/path/file.mp3')
+            api.speak_sentence_to_bridge('bridgeId', 'Hello')
         """
         self._make_request('post', '/users/%s/bridges/%s/audio' % (self.user_id, id), json=data)
 
@@ -1189,48 +1194,45 @@ class Client:
         """
         Create a conference
 
-        Parameters
-        :param str from_: The phone number that will host the conference (required)
-        :param str callback_url: The full server URL where the conference events related
-                to the Conerence will be sent to.
-        :param str callback_timeout: Determine how long should the platform wait for callbackUrl's response before
-                timing out in milliseconds.
-        :param str callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST.
-                Values are "GET" or "POST" (if not set the default is POST).
-        :param str fallback_url: The full server URL used to send the callback event if the request to
-                callbackUrl fails.
+        :param str ``from_``: The phone number that will host the conference (required)
+        :param str callback_url: The full server URL where the conference events related to the Conerence will be sent to.
+        :param str callback_timeout: Determine how long should the platform wait for callbackUrl's response before timing out in milliseconds.
+        :param str callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST. Values are "GET" or "POST" (if not set the default is POST).
+        :param str fallback_url: The full server URL used to send the callback event if the request to callbackUrl fails.
         :param str tag: A string that will be included in the callback events of the conference.
 
         :rtype: str
         :returns: id of created conference
 
-        :Example:
-        conference_id = api.create_conference('+12018994444')
+        Example: create simple conference::
 
-        print(conference_id)
-        ## conf-ixaagbn5wcyskisiy
+            conference_id = api.create_conference('+12018994444')
 
-        :Example:
-        conference_id = api.create_conference(from_ = "+12018994444", callback_url = "http://google.com",
-                                        callback_timeout= 2000, fallback_url = "http://yahoo.com")
+            print(conference_id)
+            ## conf-ixaagbn5wcyskisiy
 
-        print(conference_id)
-        ## conf-ixaagbn5wcyskisiy
+        Example: create conference with extra parameters::
 
-        my_conf = api.get_conference(conference_id)
+            conference_id = api.create_conference(from_ = "+12018994444", callback_url = "http://google.com",
+                                                  callback_timeout= 2000, fallback_url = "http://yahoo.com")
 
-        print(my_conf)
-        ## {   'activeMembers': 0,
-        ##     'callbackHttpMethod': 'post',
-        ##     'callbackTimeout': 2000,
-        ##     'callbackUrl': 'http://google.com',
-        ##     'createdTime': '2017-01-26T01:58:59Z',
-        ##     'fallbackUrl': 'http://yahoo.com',
-        ##     'from': '+12018994444',
-        ##     'hold': False,
-        ##     'id': 'conf-ixaagbn5wcyskisiy',
-        ##     'mute': False,
-        ##     'state': 'created'}
+            print(conference_id)
+            ## conf-ixaagbn5wcyskisiy
+
+            my_conf = api.get_conference(conference_id)
+
+            print(my_conf)
+            ## {   'activeMembers'     : 0,
+            ##     'callbackHttpMethod': 'post',
+            ##     'callbackTimeout'   : 2000,
+            ##     'callbackUrl'       : 'http://google.com',
+            ##     'createdTime'       : '2017-01-26T01:58:59Z',
+            ##     'fallbackUrl'       : 'http://yahoo.com',
+            ##     'from'              : '+12018994444',
+            ##     'hold'              : False,
+            ##     'id'                : 'conf-ixaagbn5wcyskisiy',
+            ##     'mute'              : False,
+            ##     'state'             : 'created'}
         """
 
         kwargs["from"] = from_
@@ -1252,27 +1254,28 @@ class Client:
         :rtype: dict
         :returns: conference information
 
-        :Example:
-       conference_id = api.create_conference(from_ = "+12018994444", callback_url = "http://google.com",
-                                        callback_timeout= 2000, fallback_url = "http://yahoo.com")
+        Example: Create then fetch conference::
 
-        print(conference_id)
-        ## conf-ixaagbn5wcyskisiy
+            conference_id = api.create_conference(from_ = "+12018994444", callback_url = "http://google.com",
+                                                  callback_timeout= 2000, fallback_url = "http://yahoo.com")
 
-        my_conf = api.get_conference(conference_id)
+            print(conference_id)
+            ## conf-ixaagbn5wcyskisiy
 
-        print(my_conf)
-        ## {   'activeMembers': 0,
-        ##     'callbackHttpMethod': 'post',
-        ##     'callbackTimeout': 2000,
-        ##     'callbackUrl': 'http://google.com',
-        ##     'createdTime': '2017-01-26T01:58:59Z',
-        ##     'fallbackUrl': 'http://yahoo.com',
-        ##     'from': '+12018994444',
-        ##     'hold': False,
-        ##     'id': 'conf-ixaagbn5wcyskisiy',
-        ##     'mute': False,
-        ##     'state': 'created'}
+            my_conf = api.get_conference(conference_id)
+
+            print(my_conf)
+            ## {   'activeMembers'     : 0,
+            ##     'callbackHttpMethod': 'post',
+            ##     'callbackTimeout'   : 2000,
+            ##     'callbackUrl'       : 'http://google.com',
+            ##     'createdTime'       : '2017-01-26T01:58:59Z',
+            ##     'fallbackUrl'       : 'http://yahoo.com',
+            ##     'from'              : '+12018994444',
+            ##     'hold'              : False,
+            ##     'id'                : 'conf-ixaagbn5wcyskisiy',
+            ##     'mute'              : False,
+            ##     'state'             : 'created'}
         """
         return self._make_request('get', '/users/%s/conferences/%s' % (self.user_id, id))[0]
 
@@ -1282,28 +1285,20 @@ class Client:
         """
         Update a conference
 
-        :type id: str
-        :param id: id of a conference
-
-        Parameters
-        :param str state: Conference state. Possible state values are: "completed"
-                          to terminate the conference.
-        :param str mute: If "true", all member can't speak in the conference.
-                          If "false", all members can speak in the conference
-        :param str hold: If "true", all member can't hear or speak in the conference.
-                          If "false", all members can hear and speak in the conference
-        :param str callback_url: The full server URL where the conference events related
-                          to the Conerence will be sent to.
-        :param str callback_timeout: Determine how long should the platform wait for callbackUrl's response before
-                          timing out in milliseconds.
-        :param str callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST.
-                          Values are "GET" or "POST" (if not set the default is POST).
-        :param str fallback_url: The full server URL used to send the callback event if the request to
-                          callbackUrl fails.
+        :param str id: id of a conference
+        :param str state: Conference state. Possible state values are: "completed" to terminate the conference.
+        :param str mute: If "true", all member can't speak in the conference. If "false", all members can speak in the conference
+        :param str hold: If "true", all member can't hear or speak in the conference. If "false", all members can hear and speak in the conference
+        :param str callback_url: The full server URL where the conference events related to the Conerence will be sent to.
+        :param str callback_timeout: Determine how long should the platform wait for callbackUrl's response before timing out in milliseconds.
+        :param str callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST. Values are "GET" or "POST" (if not set the default is POST).
+        :param str fallback_url: The full server URL used to send the callback event if the request to callbackUrl fails.
         :param str tag: A string that will be included in the callback events of the conference.
 
-       :Example:
-        api.update_conference('conferenceId', {'state': 'completed'})
+        Example: End conference::
+
+            api.update_conference('conferenceId', {'state': 'completed'})
+
         """
 
         kwargs["state"] = state

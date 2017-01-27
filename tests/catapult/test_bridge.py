@@ -76,9 +76,9 @@ class BridgesTests(unittest.TestCase):
             client.update_bridge('bridgeId', bridge_audio = False)
             p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/bridges/bridgeId', auth=AUTH, json=data)
 
-    def test_get_bridge_calls(self):
+    def test_list_bridge_calls(self):
         """
-        get_bridge_calls() should return calls of a bridge
+        list_bridge_calls() should return calls of a bridge
         """
         estimated_json="""
         [{
@@ -97,7 +97,7 @@ class BridgesTests(unittest.TestCase):
         """
         with patch('requests.request', return_value = create_response(200, estimated_json)) as p:
             client = get_client()
-            calls = list(client.get_bridge_calls('bridgeId'))
+            calls = list(client.list_bridge_calls('bridgeId'))
             p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/bridges/bridgeId/calls', auth=AUTH)
             self.assertEqual('{callId1}', calls[0]['id'])
 
