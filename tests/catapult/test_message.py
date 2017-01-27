@@ -33,15 +33,12 @@ class MessageTests(unittest.TestCase):
         estimated_response.headers['Location'] = 'http://localhost/messageId'
         with patch('requests.request', return_value = estimated_response) as p:
             client = get_client()
-            data = {'from': 'num1', 'to': 'num2', 'text': 'text'}
             messageID = client.send_message(
                 from_ = 'num1',
                 to = 'num2',
                 text = 'text'
                 )
-
-            client.send_message()
-            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/messages', auth=AUTH, json=data)
+            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/messages', auth=AUTH, json={'from': 'num1', 'to': 'num2'})
             self.assertEqual('messageId', messageID)
 
     def test_send_messages(self):

@@ -56,11 +56,20 @@ class ConferenceTests(unittest.TestCase):
         """
         update_conference() should update a conference
         """
+        estimated_request = {
+            'state'             :'completed',
+            'mute'              :None,
+            'hold'              :None,
+            'callbackUrl'       :None,
+            'callbackTimeout'   :None,
+            'callbackHttpMethod':None,
+            'fallbackUrl'       :None,
+            'tag'               :None
+        }
         with patch('requests.request', return_value = create_response(200)) as p:
             client = get_client()
-            data = {'state': 'completed'}
-            client.update_conference('conferenceId', data)
-            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/conferences/conferenceId', auth=AUTH, json=data)
+            client.update_conference('conferenceId', state = 'completed')
+            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/conferences/conferenceId', auth=AUTH, json=estimated_request)
 
     def test_play_audio_to_conference(self):
         """

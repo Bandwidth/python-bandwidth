@@ -15,6 +15,14 @@ class PhoneNumberTests(unittest.TestCase):
         """
         get_phone_numbers() should return numbers
         """
+        estimated_request = {
+            'applicationId':None,
+            'state'        :None,
+            'name'         :None,
+            'city'         :None,
+            'numberState'  :None,
+            'size'         :None
+        }
         estimated_json="""
         [{
         "id": "{numberId1}",
@@ -31,7 +39,7 @@ class PhoneNumberTests(unittest.TestCase):
         with patch('requests.request', return_value = create_response(200, estimated_json)) as p:
             client = get_client()
             data = list(client.get_phone_numbers())
-            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/phoneNumbers', auth=AUTH, params=None)
+            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/phoneNumbers', auth=AUTH, params=estimated_request)
             self.assertEqual('{numberId1}', data[0]['id'])
 
     def test_create_phone_number(self):

@@ -10,10 +10,18 @@ else:
 from bandwidth.catapult import Client
 
 class CallTests(unittest.TestCase):
-    def test_get_calls(self):
+    def test_list_calls(self):
         """
-        get_calls() should return calls
+        list_calls() should return calls
         """
+        estimated_resquest ={
+            'bridgeId'    :None,
+            'conferenceId':None,
+            'from'        :None,
+            'to'          :None,
+            'size'        :None,
+            'sortOrder'   :None
+        }
         estimated_json="""
         [{
             "id": "callId"
@@ -21,21 +29,39 @@ class CallTests(unittest.TestCase):
         """
         with patch('requests.request', return_value = create_response(200, estimated_json)) as p:
             client = get_client()
-            data = list(client.get_calls())
-            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/calls', auth=AUTH, params=None)
+            data = list(client.list_calls())
+            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/calls', auth=AUTH, params=estimated_resquest)
             self.assertEqual('callId', data[0]['id'])
 
     def test_create_call(self):
         """
         create_call() should create a call and return id
         """
+        estimated_resquest ={
+            'from'                :'+1234567890',
+            'to'                  :'+1234567891',
+            'callTimeout'         :None,
+            'callbackUrl'         :None,
+            'callbackTimeout'     :None,
+            'callbackHttpMethod'  :None,
+            'fallbackUrl'         :None,
+            'bridgeId'            :None,
+            'conferenceId'        :None,
+            'recordingEnabled'    :None,
+            'recordingFileFormat' :None,
+            'recordingMaxDuration':None,
+            'transcriptionEnabled':None,
+            'tag'                 :None,
+            'sipHeaders'          :None
+        }
         estimated_response = create_response(201)
         estimated_response.headers['Location'] = 'http://localhost/callId'
         with patch('requests.request', return_value = estimated_response) as p:
             client = get_client()
-            data = {'from': '+1234567890', 'to': '+1234567891'}
-            id = client.create_call(data)
-            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/calls', auth=AUTH, json=data)
+            from_ = '+1234567890'
+            to= '+1234567891'
+            id = client.create_call(from_, to)
+            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/calls', auth=AUTH, json=estimated_resquest)
             self.assertEqual('callId', id)
 
 
@@ -58,21 +84,36 @@ class CallTests(unittest.TestCase):
         """
         update_call() should update a call
         """
+        estimated_resquest = {
+            'state'              :'completed',
+            'recordingEnabled'   :None,
+            'recordingFileFormat':None,
+            'transferTo'         :None,
+            'transferCallerId'   :None,
+            'whisperAudio'       :None,
+            'callbackUrl'        :None
+        }
         with patch('requests.request', return_value = create_response(200)) as p:
             client = get_client()
-            data = {'state': 'completed'}
-            client.update_call('callId', data)
-            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId', auth=AUTH, json=data)
+            client.update_call('callId', state='completed')
+            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId', auth=AUTH, json=estimated_resquest)
 
     def test_play_audio_to_call(self):
         """
         play_audio_to_call() should play audio to a call
         """
+        estimated_resquest = {
+            'fileUrl'    :'url',
+            'sentence'   :None,
+            'gender'     :None,
+            'locale'     :None,
+            'voice'      :None,
+            'loopEnabled':None
+        }
         with patch('requests.request', return_value = create_response(200)) as p:
             client = get_client()
-            data = {'fileUrl': 'url'}
-            client.play_audio_to_call('callId', data)
-            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId/audio', auth=AUTH, json=data)
+            client.play_audio_to_call('callId', file_url = 'url')
+            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId/audio', auth=AUTH, json=estimated_resquest)
 
     def test_send_dtmf_to_call(self):
         """
@@ -80,11 +121,10 @@ class CallTests(unittest.TestCase):
         """
         with patch('requests.request', return_value = create_response(200)) as p:
             client = get_client()
-            data = {'dtmfOut': '12'}
-            client.send_dtmf_to_call('callId', data)
-            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId/dtmf', auth=AUTH, json=data)
+            client.send_dtmf_to_call('callId', 12)
+            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId/dtmf', auth=AUTH, json={'dtmfOut': 12})
 
-    def test_get_call_recordings(self):
+    def test_list_call_recordings(self):
         """
         get_call_recordings() should return recordings
         """
@@ -95,11 +135,11 @@ class CallTests(unittest.TestCase):
         """
         with patch('requests.request', return_value = create_response(200, estimated_json)) as p:
             client = get_client()
-            data = list(client.get_call_recordings('callId'))
+            data = list(client.list_call_recordings('callId'))
             p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId/recordings', auth=AUTH)
             self.assertEqual('recordingId', data[0]['id'])
 
-    def test_get_call_transcriptions(self):
+    def test_list_call_transcriptions(self):
         """
         get_call_transcriptions() should return transcriptions
         """
@@ -110,13 +150,13 @@ class CallTests(unittest.TestCase):
         """
         with patch('requests.request', return_value = create_response(200, estimated_json)) as p:
             client = get_client()
-            data = list(client.get_call_transcriptions('callId'))
+            data = list(client.list_call_transcriptions('callId'))
             p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId/transcriptions', auth=AUTH)
             self.assertEqual('transcriptionId', data[0]['id'])
 
-    def test_get_call_events(self):
+    def test_list_call_events(self):
         """
-        get_call_events() should return events
+        list_call_events() should return events
         """
         estimated_json="""
         [{
@@ -125,7 +165,7 @@ class CallTests(unittest.TestCase):
         """
         with patch('requests.request', return_value = create_response(200, estimated_json)) as p:
             client = get_client()
-            data = list(client.get_call_events('callId'))
+            data = list(client.list_call_events('callId'))
             p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId/events', auth=AUTH)
             self.assertEqual('eventId', data[0]['id'])
 
@@ -148,13 +188,18 @@ class CallTests(unittest.TestCase):
         """
         create_call_gather() should create a gather
         """
+        estimated_resquest ={
+            'maxDigits'        :1,
+            'interDigitTimeout':None,
+            'terminatingDigits':None,
+            'tag'              :None
+        }
         response = create_response(201)
         response.headers['location'] = 'http://.../gatherId'
         with patch('requests.request', return_value = response) as p:
             client = get_client()
-            data = {'maxDigits': 1}
-            id = client.create_call_gather('callId', data)
-            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId/gather', auth=AUTH, json=data)
+            id = client.create_call_gather('callId', max_digits = 1)
+            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId/gather', auth=AUTH, json=estimated_resquest)
             self.assertEqual('gatherId', id)
 
     def test_get_call_gather(self):
@@ -179,7 +224,7 @@ class CallTests(unittest.TestCase):
         with patch('requests.request', return_value = create_response(200)) as p:
             client = get_client()
             data = {'state': 'completed'}
-            client.update_call_gather('callId', 'gatherId', data)
+            client.update_call_gather('callId', 'gatherId', state='completed')
             p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId/gather/gatherId', auth=AUTH, json=data)
 
     def test_answer_call(self):
