@@ -12,7 +12,7 @@ If you want to install the bleeding edge version of the SDK from our
 `github repository <https://github.com/bandwidthcom/python-bandwidth>`_
 use the following command::
 
-    pip install -e git+https://github.com/bandwidthcom/python-bandwidth.git#egg=bandwidth_sdk
+    pip install -e git+https://github.com/bandwidth/python-bandwidth.git#egg=bandwidth_sdk
 
 Note: This may have to be run as `root` or with `--user` flag if you are not
 using python virtual environment.
@@ -23,12 +23,8 @@ Client Initialization
 Before using the sdk you must initialize a Client with your Bandwidth App
 Platform API credentials::
 
-    from bandwidth_sdk import Client
-    Client('u-user', 't-token', 's-secret')
-
-For those who do not wish to hardcode their credentials in source code,
-:meth:`bandwidth_sdk.client.Client` provides additional initialization methods
-including environment variables and configuration files.
+    import Bandwidth
+    api = bandwidth.client('catapult', 'u-user', 't-token', 's-secret')
 
 Code Samples
 ^^^^^^^^^^^^
@@ -41,167 +37,114 @@ Phone Numbers
 
 Get available number via location search::
 
-    from bandwidth_sdk import PhoneNumber
-    available_numbers = PhoneNumber.list_local(city='Cary', state='NC')
-    available_numbers[0].allocate()
-    # PhoneNumber(number=+19198000000)
+    import Bandwidth
+    api = bandwidth.client('catapult', 'u-user', 't-token', 's-secret')
+    numbers = api.search_available_local_numbers(area_code = '910', quantity = 3)
+    print(numbers)
+    ## [   {   'city'          : 'WILMINGTON',
+    ##         'nationalNumber': '(910) 444-0230',
+    ##         'number'        : '+19104440230',
+    ##         'price'         : '0.35',
+    ##         'rateCenter'    : 'WILMINGTON',
+    ##         'state'         : 'NC'},
+    ##     {   'city'          : 'WILMINGTON',
+    ##         'nationalNumber': '(910) 444-0263',
+    ##         'number'        : '+19104440263',
+    ##         'price'         : '0.35',
+    ##         'rateCenter'    : 'WILMINGTON',
+    ##         'state'         : 'NC'},
+    ##     {   'city'          : 'WILMINGTON',
+    ##         'nationalNumber': '(910) 444-0268',
+    ##         'number'        : '+19104440268',
+    ##         'price'         : '0.35',
+    ##         'rateCenter'    : 'WILMINGTON',
+    ##         'state'         : 'NC'}
+    ## ]
 
-Allocate a tollfree number::
+    my_number = api.create_phone_number(numbers[0]['number'])
 
-    from bandwidth_sdk import PhoneNumber
-    available_numbers = PhoneNumber.list_tollfree(pattern='1844*')
-    available_numbers[0].allocate()
-    # PhoneNumber(number=+1844280000)
-
-Iterate over all allocated phone numbers::
-
-    for p in PhoneNumber.as_iterator():
-        print(p)
-
-Get number info::
-
-    from bandwidth_sdk import NumberInfo
-    n_info = NumberInfo.get('+1900000001')
-    n_info.updated
-    # datetime.datetime(2014, 12, 19, 2, 14, 14, tzinfo=tzutc())
+    print(my_number)
+    #+19104440230
 
 Calling
 -------
 
 Create a call::
 
-    from bandwidth_sdk import Call
-    call = Call.create("+1919000001", "+1919000002")
-    # Call(c-xxxxx, state=started)
+    import Bandwidth
+    api = bandwidth.client('catapult', 'u-user', 't-token', 's-secret')
+    call_id = api.create_call(from_ = '+1234567890', to = '+1234567891', callback_url = "http://yoursite.com/calls")
+    print(call_id)
+    ## c-abc123
 
-Speaking a sentence in a phone call::
-
-    call.speak_sentence("Hello", gender="female")
-
-Transferring a call and saying something before bridging the calls::
-
-    call.transfer(
-        '+1919000008',
-         whisper_audio={"sentence": "Hello {number}, thanks for calling"}
-     )
-    # Call(c-yyyyy, state=started)
+    my_call = api.get_call(call_id)
+    print(my_call)
+    ## {   'callbackUrl'         : 'http://yoursite.com/calls',
+    ##     'direction'           : 'out',
+    ##     'events'              : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/events',
+    ##     'from'                : '+1234567890',
+    ##     'id'                  : 'c-abc123',
+    ##     'recordingEnabled'    : False,
+    ##     'recordingFileFormat' : 'wav',
+    ##     'recordings'          : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/recordings',
+    ##     'startTime'           : '2017-01-26T16:10:11Z',
+    ##     'state'               : 'started',
+    ##     'to'                  : '+1234567891',
+    ##     'transcriptionEnabled': False,
+    ##     'transcriptions'      : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/transcriptions'}
 
 Retrieving list of calls::
 
-    Call.list()
-    # [Call(c-xxxx, state=completed), Call(c-yyyyy, state=comleted), Call(c-zzzz, state=started)]
+    import Bandwidth
+    api = bandwidth.client('catapult', 'u-user', 't-token', 's-secret')
+    call_list = api.list_calls(to = '+19192223333', size = 2)
+    print(list(call_list))
+    ## [
+    ##   {
+    ##     'activeTime'          : '2017-01-26T16:10:23Z',
+    ##     'callbackUrl'         : 'http://yoursite.com/calls',
+    ##     'chargeableDuration'  : 60,
+    ##     'direction'           : 'out',
+    ##     'endTime'             : '2017-01-26T16:10:33Z',
+    ##     'events'              : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-abc123/events',
+    ##     'from'                : '+17079311113',
+    ##     'id'                  : 'c-abc123',
+    ##     'recordingEnabled'    : False,
+    ##     'recordingFileFormat' : 'wav',
+    ##     'recordings'          : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-abc123/recordings',
+    ##     'startTime'           : '2017-01-26T16:10:11Z',
+    ##     'state'               : 'completed',
+    ##     'to'                  : '+19192223333',
+    ##     'transcriptionEnabled': False,
+    ##     'transcriptions'      : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-abc123/transcriptions'
+    ##   },
+    ##   {
+    ##     'activeTime'          : '2016-12-29T23:50:35Z',
+    ##     'chargeableDuration'  : 60,
+    ##     'direction'           : 'out',
+    ##     'endTime'             : '2016-12-29T23:50:41Z',
+    ##     'events'              : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-xyz987/events',
+    ##     'from'                : '+19194443333',
+    ##     'id'                  : 'c-xyz987',
+    ##     'recordingEnabled'    : False,
+    ##     'recordingFileFormat' : 'wav',
+    ##     'recordings'          : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-xyz987/recordings',
+    ##     'startTime'           : '2016-12-29T23:50:15Z',
+    ##     'state'               : 'completed',
+    ##     'to'                  : '+19192223333',
+    ##     'transcriptionEnabled': False,
+    ##     'transcriptions'      : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-xyz987/transcriptions'
+    ##   }
+    ## ]
 
 Messaging
 ---------
 
-Sending a text message::
-
-    from bandwidth_sdk import Message
-    Message.send(
-        sender='+19796543211',
-        receiver='+19796543212',
-        text='Good morning, this is a test message',
-        tag='test tag')
-    # Message('m-id123213', state='sending')
-
-Sending a text message with receipts::
-
-    from bandwidth_sdk import Message
-    Message.send(
-        sender='+19796543211',
-        receiver='+19796543212',
-        text='Good morning, this is a test message',
-        tag='test tag',
-        receipt_requested='all'
-    )
-    # Message('m-id123213', state='sending', delivery_state='None')
-
-Sending an MMS message::
-
-    from bandwidth_sdk import Message
-    from bandwidth_sdk import Media
-
-    media = Media.upload('dolphin.mp3',
-                         file_path='./tests/fixtures/dolphin.mp3')
-
-    media_list = [media]
-
-    Message.send(
-        sender='+19796543211',
-        receiver='+19796543212',
-        text='Good morning, this is a test MMS message',
-        media_list=media_list,
-        tag='mms tag')
-
-    # Message('m-id456654', state='sending')
-
 SIP
 ---
 
-Creating a SIP endpoint token::
-
-    from bandwidth_sdk import Domain
-    from bandwidth_sdk import Endpoint
-    domain = Domain.create(name='mydomain', description='My domain description')
-    endpoint = domain.add_endpoint(
-        name='myendpoint',
-        description='My endpoint description',
-        credentials={'password':'123456'}
-    )
-    endpoint.create_token()
-    # EndpointToken(241ebe3ab1b884bb00f214c99dd83546c32d437c89156a05afc9c34043223915)
-
-Delete an endpoint token::
-
-    from bandwidth_sdk import Domain
-    from bandwidth_sdk import Endpoint
-    Domain.create(name='mydomain', description='My domain description')
-    # Domain('rd-lrek7hie26iihjdja2iibji')
-
-    Endpoint.create(
-        'rd-lrek7hie26iihjdja2iibji',
-        name='myendpoint',
-        description='My endpoint description',
-        credentials={'password': '123456'})
-    # Endpoint(re-ywfvkvq7dbgfi4ld22d7qqi)
-    
-    token = EndpointToken.create(
-        'rd-lrek7hie26iihjdja2iibji',
-        're-ywfvkvq7dbgfi4ld22d7qqi')
-    
-    token.delete()
-    # True
-
 Bandwidth XML
 -------------
-
-Create a Bandwidth XML response::
-
-    from bandwidth_sdk import xml
-    response = xml.Response()
-    speak_sentence = xml.SpeakSentence(
-        "Transferring your call, please wait.",
-         voice="paul", gender="male",
-         locale="en_US")
-
-    transfer = xml.Transfer(
-        transfer_caller_id="private",
-        transfer_to="+13032218749",
-        speak_sentence=xml.SpeakSentence(
-            "Inner speak sentence",
-             voice="paul",
-             gender="male",
-             locale="en_US"
-        )
-    )
-
-    hangup = xml.Hangup()
-
-    response.push(speak_sentence)
-    response.push(transfer)
-    response.push(hangup)
-
-    print(response.to_xml())
 
 More examples
 -------------
