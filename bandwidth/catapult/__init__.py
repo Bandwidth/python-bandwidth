@@ -38,10 +38,11 @@ class Client:
         :rtype: bandwidth.catapult.Client
         :returns: bandwidth client
 
-        :Example:
-        api = bandwidth.catapult.Client('YOUR_USER_ID', 'YOUR_API_TOKEN', 'YOUR_API_SECRET')
-        # or
-        api = bandwidth.client('catapult', 'YOUR_USER_ID', 'YOUR_API_TOKEN', 'YOUR_API_SECRET')
+        Init the catapult client::
+
+            api = bandwidth.catapult.Client('YOUR_USER_ID', 'YOUR_API_TOKEN', 'YOUR_API_SECRET')
+            # or
+            api = bandwidth.client('catapult', 'YOUR_USER_ID', 'YOUR_API_TOKEN', 'YOUR_API_SECRET')
         """
         if not all((user_id, api_token, api_secret)):
             raise ValueError('Arguments user_id, api_token and api_secret are required. '
@@ -77,9 +78,6 @@ class Client:
             id = location.split('/')[-1]
         return (data, response, id)
 
-    """
-    Text to Voice API
-    """
     def build_sentence(self, sentence, gender=None, locale=None, voice=None, loop_enabled=None, **kwargs):
         """
         Create a dictionary to speak sentence to live call, bridge, or conference
@@ -87,7 +85,7 @@ class Client:
         :param str sentence: The sentence to speak.
         :param str gender: The gender of the voice used to synthesize the sentence.
         :param str locale: The locale used to get the accent of the voice used to synthesize the sentence.
-        :param str voice: The voice to speak the sentence.
+        :param str voice: The voice to speak the sentence.<br>
             - English US: Susan (Default), Kate, Julie, Dave, Paul
             - English UK: Bridget
             - Spanish: Esperanza, Violeta, Jorge
@@ -100,14 +98,15 @@ class Client:
         :returns: dictionary to be passed to audio playback methods
 
         :Example:
-        my_sentence = api.build_sentence(sentence = "Hello from Bandwidth",
-                                         gender="Female",
-                                         locale="en_UK",
-                                         voice="Bridget",
-                                         loop_enabled=True
-                                         )
 
-        api.play_audio_to_call(call_id, my_sentence)
+            my_sentence = api.build_sentence(sentence = "Hello from Bandwidth",
+                                             gender="Female",
+                                             locale="en_UK",
+                                             voice="Bridget",
+                                             loop_enabled=True
+                                             )
+
+            api.play_audio_to_call(call_id, my_sentence)
         """
         kwargs["sentence"] = sentence
         kwargs["gender"] = gender
@@ -146,11 +145,6 @@ class Client:
         """
         return self._make_request('get', '/users/%s/account' % self.user_id)[0]
 
-        client.get_call_transcriptions(application='123')
-
-        :param str from_: One of your telephone numbers the message should come from
-
-
     def get_account_transactions(self, max_items=None, to_date=None, from_date=None, type=None, size=None, number=None, **kwargs):
         """
         Get the transactions from the user's account
@@ -173,21 +167,19 @@ class Client:
         kwargs["toDate"] = to_date
         kwargs["fromDate"] = from_date
         kwargs["type"] = type
-        kwargs["page"] = page
         kwargs["size"] = size
         kwargs["number"] = number
 
         path = '/users/%s/account/transactions' % self.user_id
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
 
-    def get_calls(self, bridge_id=None, conference_id=None, from_=None, to=None, size=None, sort_order=None, **kwargs):
+    def list_calls(self, bridge_id=None, conference_id=None, from_=None, to=None, size=None, sort_order=None, **kwargs):
         """
         Get a list of calls
 
-        Query parameters
         :param str bridge_id: The id of the bridge for querying a list of calls history
         :param str conference_id: The id of the conference for querying a list of calls history
-        :param str from_: The number to filter calls that came from
+        :param str ``from_``: The number to filter calls that came from
         :param str to: The number to filter calls that was called to
         :param str sort_order: How to sort the calls. Values are asc or desc
                 If no value is specified the default value is desc
@@ -197,9 +189,62 @@ class Client:
         :rtype: types.GeneratorType
         :returns: list of calls
 
-        :Example:
-        list = api.get_calls()
+        Fetch calls from specific telephone number::
+
+            call_list = api.list_calls(from_ = '+19192223333', size = 1000)
+
+            total_chargeable_duration = 0
+
+            for call in call_list:
+                total_chargeable_duration += call['chargeableDuration']
+
+            print(total_chargeable_duration)
+            ## 240
+
+        List Calls::
+
+            call_list = api.list_calls(to = '+19192223333', size = 2)
+            print(list(call_list))
+            ## [
+            ##   {
+            ##     'activeTime'          : '2017-01-26T16:10:23Z',
+            ##     'callbackUrl'         : 'http://yoursite.com/calls',
+            ##     'chargeableDuration'  : 60,
+            ##     'direction'           : 'out',
+            ##     'endTime'             : '2017-01-26T16:10:33Z',
+            ##     'events'              : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-abc123/events',
+            ##     'from'                : '+17079311113',
+            ##     'id'                  : 'c-abc123',
+            ##     'recordingEnabled'    : False,
+            ##     'recordingFileFormat' : 'wav',
+            ##     'recordings'          : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-abc123/recordings',
+            ##     'startTime'           : '2017-01-26T16:10:11Z',
+            ##     'state'               : 'completed',
+            ##     'to'                  : '+19192223333',
+            ##     'transcriptionEnabled': False,
+            ##     'transcriptions'      : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-abc123/transcriptions'
+            ##   },
+            ##   {
+            ##     'activeTime'          : '2016-12-29T23:50:35Z',
+            ##     'chargeableDuration'  : 60,
+            ##     'direction'           : 'out',
+            ##     'endTime'             : '2016-12-29T23:50:41Z',
+            ##     'events'              : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-xyz987/events',
+            ##     'from'                : '+19194443333',
+            ##     'id'                  : 'c-xyz987',
+            ##     'recordingEnabled'    : False,
+            ##     'recordingFileFormat' : 'wav',
+            ##     'recordings'          : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-xyz987/recordings',
+            ##     'startTime'           : '2016-12-29T23:50:15Z',
+            ##     'state'               : 'completed',
+            ##     'to'                  : '+19192223333',
+            ##     'transcriptionEnabled': False,
+            ##     'transcriptions'      : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-xyz987/transcriptions'
+            ##   }
+            ## ]
+
         """
+
         kwargs["bridgeId"] = bridge_id
         kwargs["conferenceId"] = conference_id
         kwargs["from"] = from_
@@ -208,7 +253,7 @@ class Client:
         kwargs["sortOrder"] = sort_order
 
         path = '/users/%s/calls' % self.user_id
-        return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=query))
+        return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
 
     def create_call(self, from_, to, call_timeout=None, callback_url=None,
                     callback_timeout=None, callback_http_method=None, fallback_url=None,
@@ -218,8 +263,7 @@ class Client:
         """
         Create a call
 
-        Parameters
-        :param str from_: A Bandwidth phone number on your account the call should come from (required)
+        :param str ``from_``: A Bandwidth phone number on your account the call should come from (required)
         :param str to: The number to call (required)
         :param str call_timeout: Determine how long should the platform wait for call answer before timing out
                 in seconds.
@@ -243,8 +287,27 @@ class Client:
         :rtype: str
         :returns: id of created call
 
-        :Example:
-        id = api.create_call({'from': '+1234567890', 'to': '+1234567891'})
+        Create Call and fetch information::
+
+            call_id = api.create_call(from_ = '+1234567890', to = '+1234567891', callback_url = "http://yoursite.com/calls")
+            print(call_id)
+            ## c-abc123
+
+            my_call = api.get_call(call_id)
+            print(my_call)
+            ## {   'callbackUrl'         : 'http://yoursite.com/calls',
+            ##     'direction'           : 'out',
+            ##     'events'              : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/events',
+            ##     'from'                : '+1234567890',
+            ##     'id'                  : 'c-abc123',
+            ##     'recordingEnabled'    : False,
+            ##     'recordingFileFormat' : 'wav',
+            ##     'recordings'          : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/recordings',
+            ##     'startTime'           : '2017-01-26T16:10:11Z',
+            ##     'state'               : 'started',
+            ##     'to'                  : '+1234567891',
+            ##     'transcriptionEnabled': False,
+            ##     'transcriptions'      : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/transcriptions'}
         """
         kwargs["from"] = from_
         kwargs["to"] = to
@@ -273,32 +336,59 @@ class Client:
         :rtype: dict
         :returns: call information
 
-        :Example:
-        data = api.get_call('call_id')
+        Fetch and Print Call::
+
+            my_call = api.get_call(call_id)
+            print(my_call)
+            ## {   'callbackUrl'         : 'http://yoursite.com/calls',
+            ##     'direction'           : 'out',
+            ##     'events'              : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/events',
+            ##     'from'                : '+1234567890',
+            ##     'id'                  : 'c-abc123',
+            ##     'recordingEnabled'    : False,
+            ##     'recordingFileFormat' : 'wav',
+            ##     'recordings'          : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/recordings',
+            ##     'startTime'           : '2017-01-26T16:10:11Z',
+            ##     'state'               : 'started',
+            ##     'to'                  : '+1234567891',
+            ##     'transcriptionEnabled': False,
+            ##     'transcriptions'      : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/transcriptions'}
         """
         return self._make_request('get', '/users/%s/calls/%s' % (self.user_id, id))[0]
 
     def update_call(self, id, state=None, recording_enabled=None, recording_file_format=None,
                     transfer_to=None, transfer_caller_id=None, whisper_audio=None, callback_url=None, **kwargs):
         """
+
         Update a call
 
         :type id: str
         :param id: id of a call
 
-        Parameters
         :param str state: The call state. Possible values: rejected to reject not answer, active to answer the call,
-                completed to hangup the call, transferring to start and connect call to a new outbound call.
+            completed to hangup the call, transferring to start and connect call to a new outbound call.
         :param str recording_enabled: Indicates if the call should be recorded. Values true or false. You can turn recording
-                on/off and have multiple recordings on a single call.
+            on/off and have multiple recordings on a single call.
         :param str recording_file_format: The file format of the recorded call. Supported values are wav (default) and mp3.
         :param str transfer_to: Phone number or SIP address that the call is going to be transferred to.
         :param str transfer_caller_id: This is the caller id that will be used when the call is transferred.
         :param str whisper_audio: Audio to be played to the caller that the call will be transferred to.
         :param str callback_url: The server URL where the call events for the new call will be sent upon transferring.
 
-        :Example:
-        api.update_call('callId', state='completed')
+
+        Update call with state = completed. (Hang up the call)::
+
+            my_call = api.get_call(call_id)
+            my_call_state = my_call['state']
+            print(my_call_state)
+            ## started
+
+            api.update_call(my_call['id'], state='completed')
+
+            my_call = api.get_call(my_call['id'])
+            print(my_call['state'])
+            ## completed
+
         """
 
         kwargs["state"] = state
@@ -326,19 +416,20 @@ class Client:
         :param bool loop_enabled: When value is true, the audio will keep playing in a loop.
 
 
-        :Example:
-        api.play_audio_to_call('callId', {'fileUrl': 'http://host/path/file.mp3'})
-        api.play_audio_to_call('callId', {'sentence': 'Press 0 to complete call', 'gender': 'female'})
+        Play audio in file::
 
-        # or with extension methods
-        api.play_audio_file_to_call('callId', 'http://host/path/file.mp3')
-        api.speak_sentence_to_call('callId', 'Hello')
+            api.play_audio_to_call('callId', fileUrl= 'http://host/path/file.mp3')
+            api.play_audio_to_call('callId', {'sentence': 'Press 0 to complete call', 'gender': 'female'})
+            # or with extension methods
+            api.play_audio_file_to_call('callId', 'http://host/path/file.mp3')
+            api.speak_sentence_to_call('callId', 'Hello')
+
         """
         kwargs["fileUrl"] = file_url
         kwargs["sentence"] = sentence
         kwargs["gender"] = gender
         kwargs["locale"] = locale
-        kwargs["voice"] voice
+        kwargs["voice"] = voice
         kwargs["loopEnabled"] = loop_enabled
         self._make_request('post', '/users/%s/calls/%s/audio' % (self.user_id, id), json=kwargs)
 
@@ -355,7 +446,7 @@ class Client:
         kwargs["dtmfOut"] = dtmf_out
         self._make_request('post', '/users/%s/calls/%s/dtmf' % (self.user_id, id), json=kwargs)
 
-    def get_call_recordings(self, id):
+    def list_call_recordings(self, id):
         """
         Get a list of recordings of a call
 
@@ -365,13 +456,14 @@ class Client:
         :rtype: types.GeneratorType
         :returns: list of recordings
 
-        :Example:
-        list = api.get_call_recordings('callId')
+        Fetch all call recordings for a call::
+
+            list = api.get_call_recordings('callId')
         """
         path = '/users/%s/calls/%s/recordings' % (self.user_id, id)
         return get_lazy_enumerator(self, lambda:  self._make_request('get', path))
 
-    def get_call_transcriptions(self, id):
+    def list_call_transcriptions(self, id):
         """
         Get a list of transcriptions of a call
 
@@ -381,13 +473,14 @@ class Client:
         :rtype: types.GeneratorType
         :returns: list of transcriptions
 
-        :Example:
-        list = api.get_call_transcriptions('callId')
+        Get all transcriptions for calls::
+
+            list = api.get_call_transcriptions('callId')
         """
         path = '/users/%s/calls/%s/transcriptions' % (self.user_id, id)
         return get_lazy_enumerator(self, lambda: self._make_request('get', path))
 
-    def get_call_events(self, id):
+    def list_call_events(self, id):
         """
         Get a list of events of a call
 
@@ -397,8 +490,10 @@ class Client:
         :rtype: types.GeneratorType
         :returns: list of events
 
-        :Example:
-        list = api.get_call_events('callId')
+        Fetch all events for calls::
+
+            list = api.get_call_events('callId')
+
         """
         path = '/users/%s/calls/%s/events' % (self.user_id, id)
         return get_lazy_enumerator(self, lambda: self._make_request('get', path))
@@ -416,52 +511,41 @@ class Client:
         :rtype: dict
         :returns: data of event
 
-        :Example:
-        data = api.get_call_event('callId', 'eventId')
+        Fetch information on a specific event::
+
+            data = api.get_call_event('callId', 'eventId')
         """
         return self._make_request('get', '/users/%s/calls/%s/events/%s' % (self.user_id, id, event_id))[0]
 
-    def create_call_gather(self, id, data):
+    def create_call_gather(self, id, max_digits = None, inter_digit_timeout = None, terminating_digits = None, tag = None, **kwargs):
         """
         Create a gather for a call
 
         :type id: str
         :param id: id of a call
 
-        Parameters
-            maxDigits
-                The maximum number of digits to collect, not including terminating digits (maximum 30).
-            interDigitTimeout
-                Stop gathering if a DTMF digit is not detected in this many seconds
+        :param int max_digits: The maximum number of digits to collect, not including terminating digits (maximum 30).
+        :param int inter_digit_timeout: Stop gathering if a DTMF digit is not detected in this many seconds
                 (default 5.0; maximum 30.0).
-            terminatingDigits
-                A string of DTMF digits that end the gather operation immediately
+        :param str terminating_digits: A string of DTMF digits that end the gather operation immediately
                 if any one of them is detected
-            tag
-                A string you choose that will be included with the response and events for
+        :param str tag: A string you choose that will be included with the response and events for
                 this gather operation.
-            prompt.sentence
-                The text to speak for the prompt
-            prompt.gender
-                The gender to use for the voice reading the prompt sentence
-            prompt.locale
-                The language and region to use for the voice reading the prompt sentence
-            prompt.loopEnabled
-                When value is true, the audio will keep playing in a loop.
-            prompt.bargeable
-                Make the prompt (audio or sentence) bargeable (will be interrupted
-                at first digit gathered).
-            prompt.fileUrl
-                The location of an audio file to play (WAV and MP3 supported).
-
 
         :rtype: str
         :returns: id of create of gather
 
-        :Example:
-        gather_id = api.create_call_gather('callId', {'maxDigits': 1})
+        Create gather for only single digit::
+
+            gather_id = api.create_call_gather('callId', max_digits = 1)
         """
-        return self._make_request('post', '/users/%s/calls/%s/gather' % (self.user_id, id), json=data)[2]
+
+        kwargs['maxDigits'] = max_digits
+        kwargs['interDigitTimeout'] = inter_digit_timeout
+        kwargs['terminatingDigits'] = terminating_digits
+        kwargs['tag'] = tag
+
+        return self._make_request('post', '/users/%s/calls/%s/gather' % (self.user_id, id), json=kwargs)[2]
 
     def get_call_gather(self, id, gather_id):
         """
@@ -476,29 +560,28 @@ class Client:
         :rtype: dict
         :returns: data of gather
 
-        :Example:
-        data = api.get_call_gather('callId', 'gatherId')
+        Get Gather information for a previously created gather::
+
+            data = api.get_call_gather('callId', 'gatherId')
         """
         return self._make_request('get', '/users/%s/calls/%s/gather/%s' % (self.user_id, id, gather_id))[0]
 
-    def update_call_gather(self, id, gather_id, data):
+    def update_call_gather(self, id, gather_id, state=None, **kwargs):
         """
         Update a gather of a call
 
         :type id: str
         :param id: id of a call
-
         :type gather_id: str
         :param gather_id: id of a gather
+        :param str state: The only update allowed is state:completed to stop the gather.
 
-        Parameters
-            state
-                The only update allowed is state:completed to stop the gather.
+        End gather::
 
-        :Example:
-        api.update_call_gather('callId', 'gatherId', {'state': 'completed'})
+            api.update_call_gather('callId', 'gatherId', state = 'completed')
         """
-        self._make_request('post', '/users/%s/calls/%s/gather/%s' % (self.user_id, id, gather_id), json=data)
+        kwargs['state'] = state
+        self._make_request('post', '/users/%s/calls/%s/gather/%s' % (self.user_id, id, gather_id), json=kwargs)
 
     # extensions
 
@@ -510,7 +593,8 @@ class Client:
         :param id: id of a call
 
         :Example:
-        api.answer_call('callId')
+
+            api.answer_call('callId')
         """
         self.update_call(id, {'state': 'active'})
 
@@ -2027,12 +2111,12 @@ class Client:
     """
     PhoneNumber API
     """
-    def get_phone_numbers(self, query=None):
+    def get_phone_numbers(self, application_id = None, state = None, name = None, city = None, number_state = None, size = None, **kwargs):
         """
         Get a list of user's phone numbers
 
         Query parameters
-            applicationId
+            application_id
                 Used to filter the retrieved list of numbers by an associated application ID.
             state
                 Used to filter the retrieved list of numbers allocated for the authenticated
@@ -2043,7 +2127,7 @@ class Client:
             city
                 Used to filter the retrieved list of numbers allocated for the authenticated user
                 by it's city.
-            numberState
+            number_state
                 Used to filter the retrieved list of numbers allocated for the authenticated user
                 by the number state.
             size
@@ -2055,8 +2139,17 @@ class Client:
         :Example:
         list = api.get_phone_numbers()
         """
+
+        kwargs['applicationId']=application_id
+        kwargs['state']=state
+        kwargs['name']=name
+        kwargs['city']=city
+        kwargs['numberState']=number_state
+        kwargs['size']=size
+
+
         path = '/users/%s/phoneNumbers' % self.user_id
-        return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=query))
+        return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
 
     def create_phone_number(self, data):
         """
