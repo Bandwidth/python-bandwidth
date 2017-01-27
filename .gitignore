@@ -71,7 +71,9 @@ deprecated/
 .bndsdkrc
 
 # sphinx
-docs/build/*
+sphinx_docs/build/*
 
 # builds
 dist
+
+play.py

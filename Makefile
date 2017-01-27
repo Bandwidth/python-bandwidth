@@ -23,4 +23,4 @@ req:
 	pip install -r requirements.txt
 
 html_docs:
-	cd docs && make html
+	cd sphinx_docs && make html
