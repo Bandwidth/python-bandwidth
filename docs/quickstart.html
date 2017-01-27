@@ -1,0 +1,363 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Quickstart Guide &mdash; bandwidth_sdk 1.0.6-stable documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="bandwidth_sdk 1.0.6-stable documentation" href="index.html"/>
+        <link rel="next" title="bandwidth_sdk" href="modules.html"/>
+        <link rel="prev" title="Bandwidth App Platform SDK" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="index.html" class="icon icon-home"> bandwidth_sdk
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Quickstart Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#client-initialization">Client Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#code-samples">Code Samples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phone-numbers">Phone Numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#calling">Calling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#messaging">Messaging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sip">SIP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bandwidth-xml">Bandwidth XML</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#more-examples">More examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">bandwidth_sdk</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bandwidth_sdk.html">bandwidth package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#module-bandwidth">bandwidth.client module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#calls">Calls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#account">Account</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#applications">Applications</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#available-numbers">Available Numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#bridges">Bridges</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#conferences">Conferences</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">Test Suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing and Reporting Bugs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contribute.html#submitting-bug-reports">Submitting Bug Reports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contribute.html#contributing">Contributing</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">bandwidth_sdk</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Quickstart Guide</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/quickstart.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="quickstart-guide">
+<h1>Quickstart Guide<a class="headerlink" href="#quickstart-guide" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>To install the latest stable version with pip use the following command:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>pip install bandwidth_sdk
+</pre></div>
+</div>
+<p>If you want to install the bleeding edge version of the SDK from our
+<a class="reference external" href="https://github.com/bandwidthcom/python-bandwidth">github repository</a>
+use the following command:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>pip install -e git+https://github.com/bandwidth/python-bandwidth.git#egg=bandwidth_sdk
+</pre></div>
+</div>
+<p>Note: This may have to be run as <cite>root</cite> or with <cite>&#8211;user</cite> flag if you are not
+using python virtual environment.</p>
+</div>
+<div class="section" id="client-initialization">
+<h2>Client Initialization<a class="headerlink" href="#client-initialization" title="Permalink to this headline">¶</a></h2>
+<p>Before using the sdk you must initialize a Client with your Bandwidth App
+Platform API credentials:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">Bandwidth</span>
+<span class="n">api</span> <span class="o">=</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;catapult&#39;</span><span class="p">,</span> <span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="code-samples">
+<h2>Code Samples<a class="headerlink" href="#code-samples" title="Permalink to this headline">¶</a></h2>
+<p>Each of these code sample assumes that you have already initialized a client
+as described above.</p>
+<div class="section" id="phone-numbers">
+<h3>Phone Numbers<a class="headerlink" href="#phone-numbers" title="Permalink to this headline">¶</a></h3>
+<p>Get available number via location search:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">Bandwidth</span>
+<span class="n">api</span> <span class="o">=</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;catapult&#39;</span><span class="p">,</span> <span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
+<span class="n">numbers</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">search_available_local_numbers</span><span class="p">(</span><span class="n">area_code</span> <span class="o">=</span> <span class="s1">&#39;910&#39;</span><span class="p">,</span> <span class="n">quantity</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">numbers</span><span class="p">)</span>
+<span class="c1">## [   {   &#39;city&#39;          : &#39;WILMINGTON&#39;,</span>
+<span class="c1">##         &#39;nationalNumber&#39;: &#39;(910) 444-0230&#39;,</span>
+<span class="c1">##         &#39;number&#39;        : &#39;+19104440230&#39;,</span>
+<span class="c1">##         &#39;price&#39;         : &#39;0.35&#39;,</span>
+<span class="c1">##         &#39;rateCenter&#39;    : &#39;WILMINGTON&#39;,</span>
+<span class="c1">##         &#39;state&#39;         : &#39;NC&#39;},</span>
+<span class="c1">##     {   &#39;city&#39;          : &#39;WILMINGTON&#39;,</span>
+<span class="c1">##         &#39;nationalNumber&#39;: &#39;(910) 444-0263&#39;,</span>
+<span class="c1">##         &#39;number&#39;        : &#39;+19104440263&#39;,</span>
+<span class="c1">##         &#39;price&#39;         : &#39;0.35&#39;,</span>
+<span class="c1">##         &#39;rateCenter&#39;    : &#39;WILMINGTON&#39;,</span>
+<span class="c1">##         &#39;state&#39;         : &#39;NC&#39;},</span>
+<span class="c1">##     {   &#39;city&#39;          : &#39;WILMINGTON&#39;,</span>
+<span class="c1">##         &#39;nationalNumber&#39;: &#39;(910) 444-0268&#39;,</span>
+<span class="c1">##         &#39;number&#39;        : &#39;+19104440268&#39;,</span>
+<span class="c1">##         &#39;price&#39;         : &#39;0.35&#39;,</span>
+<span class="c1">##         &#39;rateCenter&#39;    : &#39;WILMINGTON&#39;,</span>
+<span class="c1">##         &#39;state&#39;         : &#39;NC&#39;}</span>
+<span class="c1">## ]</span>
+
+<span class="n">my_number</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_phone_number</span><span class="p">(</span><span class="n">numbers</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;number&#39;</span><span class="p">])</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">my_number</span><span class="p">)</span>
+<span class="c1">#+19104440230</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="calling">
+<h3>Calling<a class="headerlink" href="#calling" title="Permalink to this headline">¶</a></h3>
+<p>Create a call:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">Bandwidth</span>
+<span class="n">api</span> <span class="o">=</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;catapult&#39;</span><span class="p">,</span> <span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
+<span class="n">call_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_call</span><span class="p">(</span><span class="n">from_</span> <span class="o">=</span> <span class="s1">&#39;+1234567890&#39;</span><span class="p">,</span> <span class="n">to</span> <span class="o">=</span> <span class="s1">&#39;+1234567891&#39;</span><span class="p">,</span> <span class="n">callback_url</span> <span class="o">=</span> <span class="s2">&quot;http://yoursite.com/calls&quot;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">call_id</span><span class="p">)</span>
+<span class="c1">## c-abc123</span>
+
+<span class="n">my_call</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call</span><span class="p">(</span><span class="n">call_id</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_call</span><span class="p">)</span>
+<span class="c1">## {   &#39;callbackUrl&#39;         : &#39;http://yoursite.com/calls&#39;,</span>
+<span class="c1">##     &#39;direction&#39;           : &#39;out&#39;,</span>
+<span class="c1">##     &#39;events&#39;              : &#39;https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/events&#39;,</span>
+<span class="c1">##     &#39;from&#39;                : &#39;+1234567890&#39;,</span>
+<span class="c1">##     &#39;id&#39;                  : &#39;c-abc123&#39;,</span>
+<span class="c1">##     &#39;recordingEnabled&#39;    : False,</span>
+<span class="c1">##     &#39;recordingFileFormat&#39; : &#39;wav&#39;,</span>
+<span class="c1">##     &#39;recordings&#39;          : &#39;https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/recordings&#39;,</span>
+<span class="c1">##     &#39;startTime&#39;           : &#39;2017-01-26T16:10:11Z&#39;,</span>
+<span class="c1">##     &#39;state&#39;               : &#39;started&#39;,</span>
+<span class="c1">##     &#39;to&#39;                  : &#39;+1234567891&#39;,</span>
+<span class="c1">##     &#39;transcriptionEnabled&#39;: False,</span>
+<span class="c1">##     &#39;transcriptions&#39;      : &#39;https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/transcriptions&#39;}</span>
+</pre></div>
+</div>
+<p>Retrieving list of calls:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">Bandwidth</span>
+<span class="n">api</span> <span class="o">=</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;catapult&#39;</span><span class="p">,</span> <span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
+<span class="n">call_list</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">list_calls</span><span class="p">(</span><span class="n">to</span> <span class="o">=</span> <span class="s1">&#39;+19192223333&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">call_list</span><span class="p">))</span>
+<span class="c1">## [</span>
+<span class="c1">##   {</span>
+<span class="c1">##     &#39;activeTime&#39;          : &#39;2017-01-26T16:10:23Z&#39;,</span>
+<span class="c1">##     &#39;callbackUrl&#39;         : &#39;http://yoursite.com/calls&#39;,</span>
+<span class="c1">##     &#39;chargeableDuration&#39;  : 60,</span>
+<span class="c1">##     &#39;direction&#39;           : &#39;out&#39;,</span>
+<span class="c1">##     &#39;endTime&#39;             : &#39;2017-01-26T16:10:33Z&#39;,</span>
+<span class="c1">##     &#39;events&#39;              : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-abc123/events&#39;,</span>
+<span class="c1">##     &#39;from&#39;                : &#39;+17079311113&#39;,</span>
+<span class="c1">##     &#39;id&#39;                  : &#39;c-abc123&#39;,</span>
+<span class="c1">##     &#39;recordingEnabled&#39;    : False,</span>
+<span class="c1">##     &#39;recordingFileFormat&#39; : &#39;wav&#39;,</span>
+<span class="c1">##     &#39;recordings&#39;          : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-abc123/recordings&#39;,</span>
+<span class="c1">##     &#39;startTime&#39;           : &#39;2017-01-26T16:10:11Z&#39;,</span>
+<span class="c1">##     &#39;state&#39;               : &#39;completed&#39;,</span>
+<span class="c1">##     &#39;to&#39;                  : &#39;+19192223333&#39;,</span>
+<span class="c1">##     &#39;transcriptionEnabled&#39;: False,</span>
+<span class="c1">##     &#39;transcriptions&#39;      : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-abc123/transcriptions&#39;</span>
+<span class="c1">##   },</span>
+<span class="c1">##   {</span>
+<span class="c1">##     &#39;activeTime&#39;          : &#39;2016-12-29T23:50:35Z&#39;,</span>
+<span class="c1">##     &#39;chargeableDuration&#39;  : 60,</span>
+<span class="c1">##     &#39;direction&#39;           : &#39;out&#39;,</span>
+<span class="c1">##     &#39;endTime&#39;             : &#39;2016-12-29T23:50:41Z&#39;,</span>
+<span class="c1">##     &#39;events&#39;              : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-xyz987/events&#39;,</span>
+<span class="c1">##     &#39;from&#39;                : &#39;+19194443333&#39;,</span>
+<span class="c1">##     &#39;id&#39;                  : &#39;c-xyz987&#39;,</span>
+<span class="c1">##     &#39;recordingEnabled&#39;    : False,</span>
+<span class="c1">##     &#39;recordingFileFormat&#39; : &#39;wav&#39;,</span>
+<span class="c1">##     &#39;recordings&#39;          : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-xyz987/recordings&#39;,</span>
+<span class="c1">##     &#39;startTime&#39;           : &#39;2016-12-29T23:50:15Z&#39;,</span>
+<span class="c1">##     &#39;state&#39;               : &#39;completed&#39;,</span>
+<span class="c1">##     &#39;to&#39;                  : &#39;+19192223333&#39;,</span>
+<span class="c1">##     &#39;transcriptionEnabled&#39;: False,</span>
+<span class="c1">##     &#39;transcriptions&#39;      : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-xyz987/transcriptions&#39;</span>
+<span class="c1">##   }</span>
+<span class="c1">## ]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="messaging">
+<h3>Messaging<a class="headerlink" href="#messaging" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="sip">
+<h3>SIP<a class="headerlink" href="#sip" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="bandwidth-xml">
+<h3>Bandwidth XML<a class="headerlink" href="#bandwidth-xml" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="more-examples">
+<h3>More examples<a class="headerlink" href="#more-examples" title="Permalink to this headline">¶</a></h3>
+<p>Take a look at the
+<a class="reference external" href="https://github.com/bandwidthcom/python-bandwidth-examples">python bandwidth examples repository</a></p>
+</div>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="modules.html" class="btn btn-neutral float-right" title="bandwidth_sdk" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Bandwidth App Platform SDK" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Bandwidth App Platform.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.6-stable',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
