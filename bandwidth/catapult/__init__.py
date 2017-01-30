@@ -115,15 +115,15 @@ class Client:
         kwargs["loopEnabled"] = loop_enabled
         return kwargs
 
-
-    """
-    Audio File playback API
-    """
     def build_audio_playback(self, file_url, loop_enabled=None, **kwargs):
         """
         Create a dictionary to playback audio file
         :param str file_url: The location of an audio file to play (WAV and MP3 supported).
         :param bool loop_enabled: When value is true, the audio will keep playing in a loop.
+
+        :Example:
+
+            my_audio = api.build_audio_playback('http://my_site.com/file.mp3, loop_enabled=True)
         """
         kwargs["fileUrl"] = file_url
         kwargs["loopEnabled"] = loop_enabled
@@ -381,12 +381,12 @@ class Client:
 
         :param str state: The call state. Possible values: rejected to reject not answer, active to answer the call,
             completed to hangup the call, transferring to start and connect call to a new outbound call.
-        :param str recording_enabled: Indicates if the call should be recorded. Values true or false. You can turn recording
+        :param bool recording_enabled: Indicates if the call should be recorded. Values true or false. You can turn recording
             on/off and have multiple recordings on a single call.
         :param str recording_file_format: The file format of the recorded call. Supported values are wav (default) and mp3.
         :param str transfer_to: Phone number or SIP address that the call is going to be transferred to.
         :param str transfer_caller_id: This is the caller id that will be used when the call is transferred.
-        :param str whisper_audio: Audio to be played to the caller that the call will be transferred to.
+        :param dict whisper_audio: Audio to be played to the caller that the call will be transferred to.
         :param str callback_url: The server URL where the call events for the new call will be sent upon transferring.
 
 
@@ -418,10 +418,7 @@ class Client:
         """
         Play audio to a call
 
-        :type id: str
-        :param id: id of a call
-
-        Parameters
+        :param str id: id of a call
         :param str file_url: The location of an audio file to play (WAV and MP3 supported).
         :param str sentence: The sentence to speak.
         :param str gender: The gender of the voice used to synthesize the sentence.
@@ -433,7 +430,7 @@ class Client:
         Play audio in file::
 
             api.play_audio_to_call('callId', fileUrl= 'http://host/path/file.mp3')
-            api.play_audio_to_call('callId', {'sentence': 'Press 0 to complete call', 'gender': 'female'})
+            api.play_audio_to_call('callId', sentence='Press 0 to complete call', gender='female')
             # or with extension methods
             api.play_audio_file_to_call('callId', 'http://host/path/file.mp3')
             api.speak_sentence_to_call('callId', 'Hello')
@@ -596,7 +593,7 @@ class Client:
             api.update_call_gather('callId', 'gatherId', state = 'completed')
         """
         kwargs['state'] = state
-        self._make_request('post', '/users/%s/calls/%s/gather/%s' % (self.user_id, id, gather_id), json=kwargs)
+        return self._make_request('post', '/users/%s/calls/%s/gather/%s' % (self.user_id, id, gather_id), json=kwargs)
 
     # extensions
 
@@ -607,11 +604,11 @@ class Client:
         :type id: str
         :param id: id of a call
 
-        :Example:
+        Example: Answer incoming call::
 
             api.answer_call('callId')
         """
-        self.update_call(id, {'state': 'active'})
+        return self.update_call(id, state='active')
 
     def reject_call(self, id):
         """
@@ -620,10 +617,11 @@ class Client:
         :type id: str
         :param id: id of a call
 
-        :Example:
-        api.reject_call('callId')
+        Example: Reject incoming call::
+
+            api.reject_call('callId')
         """
-        self.update_call(id, {'state': 'rejected'})
+        return self.update_call(id, state='rejected')
 
     def hangup_call(self, id):
         """
@@ -632,29 +630,78 @@ class Client:
         :type id: str
         :param id: id of a call
 
-        :Example:
-        api.hangup_call('callId')
+        Example: Hangup call::
+
+            api.hangup_call('callId')
         """
-        self.update_call(id, {'state': 'completed'})
+        return self.update_call(id, state='completed')
 
-    def tune_call_recording(self, id, enabled):
+    def enable_call_recording(self, call_id):
         """
-        Tune on or tune off call recording
+        Turn on call recording
 
-        :type id: str
-        :param id: id of a call
+        :type call_id: str
+        :param call_id: id of a call
 
-        :Example:
-        api.tune_call_recording('callId', True)
+        Example: Enable Call Recording::
+
+            api.enable_call_recording('c-callId')
         """
-        self.update_call(id, {'recordingEnabled': enabled})
+        return self.update_call(call_id, recording_enabled=True)
 
-    def transfer_call(self, id, to, caller_id=None, whisper_audio=None, callback_url=None):
+    def disable_call_recording(self, call_id):
+        """
+        Turn off call recording
+
+        :type call_id: str
+        :param call_id: id of a call
+
+        Example: Disable Call Recording::
+
+            api.disable_call_recording('c-callId')
+        """
+        return self.update_call(call_id, recording_enabled=False)
+
+    def toggle_call_recording(self, call_id):
+        """
+        Fetches the current call state and either toggles recording on or off
+
+        :param str call_id: id of the call to toggle
+
+        Example: Toggle the call recording::
+
+            my_call_id = api.create_call(to='+19192223333', from_='+18281114444')
+            my_call = api.get_call(my_call_id)
+            print(my_call['recordingEnabled'])
+            ## False
+
+            api.toggle_call_recording(my_call_id)
+            my_call = api.get_call(my_call_id)
+            print(my_call['recordingEnabled'])
+            ## True
+
+            api.toggle_call_recording(my_call_id)
+            my_call = api.get_call(my_call_id)
+            print(my_call['recordingEnabled'])
+            ## False
+
+        """
+        call_status = self.get_call(call_id)
+        recording_enabled = call_status['recordingEnabled']
+
+        if recording_enabled == True:
+            return self.disable_call_recording(call_id)
+        elif recording_enabled == False:
+            return self.enable_call_recording(call_id)
+        else:
+            return call_status
+
+    def transfer_call(self, call_id, to, caller_id=None, whisper_audio=None, callback_url=None, **kwargs):
         """
         Transfer a call
 
-        :type id: str
-        :param id: id of a call
+        :type call_id: str
+        :param call_id: id of a call
 
         :type to: str
         :param to: number that the call is going to be transferred to.
@@ -662,26 +709,35 @@ class Client:
         :type caller_id: str
         :param caller_id: caller id that will be used when the call is transferred
 
-        :type whisper_audio: str
+        :type whisper_audio: dict
         :param whisper_audio: audio to be played to the caller that the call will be transferred to
 
         :type callback_url: str
         :param callback_url: URL where the call events for the new call will be sent upon transferring
 
-        :rtype str
-        :returns id of created call
+        :returns str: id of created call
 
-        :Example:
-        api.transfer_call('callId', '+1234564890')
+        Example: Transfer with whisper::
+
+            my_sentence = api.build_sentence(sentence = "Hello from Bandwidth",
+                                 gender="Female",
+                                 locale="en_UK",
+                                 voice="Bridget",
+                                 loop_enabled=True
+                                )
+            my_call = api.get_call('c-callId')
+            api.transfer_call('c-callId', to = '+1234564890', caller_id = my_call['from'], whisper_audio = my_sentence )
+
+        Example: Transfer with whisper audio playback::
+
+            my_audio = api.build_audio_playback('http://my_site.com/file.mp3', loop_enabled=True)
+            my_call = api.get_call('c-callId')
+            api.transfer_call('c-callId', to = '+1234564890', whisper_audio = my_audio )
+
         """
-        data = {'state': 'transferring', 'transferTo': to}
-        if caller_id is not None:
-            data['transferCallerId'] = caller_id
-        if whisper_audio is not None:
-            data['whisperAudio'] = whisper_audio
-        if callback_url is not None:
-            data['callbackUrl'] = callback_url
-        return self.update_call(id, data)
+
+        return self.update_call(call_id, state='transferring', transfer_caller_id=caller_id, transfer_to=to,
+                                callback_url=callback_url, whisper_audio=whisper_audio, **kwargs)
 
     """
     Application API

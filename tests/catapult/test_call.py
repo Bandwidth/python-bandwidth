@@ -234,7 +234,7 @@ class CallTests(unittest.TestCase):
         client = get_client()
         with patch.object(client, 'update_call') as p:
             client.answer_call('callId')
-            p.assert_called_with('callId', {'state': 'active'})
+            p.assert_called_with('callId', state='active')
 
     def test_reject_call(self):
         """
@@ -243,7 +243,7 @@ class CallTests(unittest.TestCase):
         client = get_client()
         with patch.object(client, 'update_call') as p:
             client.reject_call('callId')
-            p.assert_called_with('callId', {'state': 'rejected'})
+            p.assert_called_with('callId', state='rejected')
 
     def test_hangup_call(self):
         """
@@ -252,16 +252,74 @@ class CallTests(unittest.TestCase):
         client = get_client()
         with patch.object(client, 'update_call') as p:
             client.hangup_call('callId')
-            p.assert_called_with('callId', {'state': 'completed'})
+            p.assert_called_with('callId', state='completed')
 
-    def test_tune_call_recording(self):
+    def test_enable_call_recording(self):
         """
-        tune_call_recording() should call update_call with right data
+        enable_call_recording() should call update_call with recording_enabled=True
         """
         client = get_client()
         with patch.object(client, 'update_call') as p:
-            client.tune_call_recording('callId', True)
-            p.assert_called_with('callId', {'recordingEnabled': True})
+            client.enable_call_recording('callId')
+            p.assert_called_with('callId', recording_enabled=True)
+
+    def test_disable_call_recording(self):
+        """
+        disable_call_recording() should call update_call with recording_enabled=False
+        """
+        client = get_client()
+        with patch.object(client, 'update_call') as p:
+            client.disable_call_recording('callId')
+            p.assert_called_with('callId', recording_enabled=False)
+
+    def test_toggle_call_recording_on(self):
+        """
+        toggle_call_recording() should call get_call with the id
+        """
+        """
+        create_call() should create a call and return id
+        """
+        estimated_response_json = {
+            'recordingEnabled': False,
+        }
+        client = get_client()
+        with patch.object(client, 'get_call', return_value = estimated_response_json) as get_mock:
+            with patch.object(client, 'enable_call_recording') as p:
+                client.toggle_call_recording('callId')
+                get_mock.assert_called_with('callId')
+                p.assert_called_with('callId')
+
+    def test_toggle_call_recording_off(self):
+        """
+        toggle_call_recording() should call get_call with the id
+        """
+        """
+        create_call() should create a call and return id
+        """
+        estimated_response_json = {
+            'recordingEnabled': True,
+        }
+        client = get_client()
+        with patch.object(client, 'get_call', return_value = estimated_response_json) as get_mock:
+            with patch.object(client, 'disable_call_recording') as p:
+                client.toggle_call_recording('callId')
+                get_mock.assert_called_with('callId')
+                p.assert_called_with('callId')
+
+    def test_toggle_call_recording_nuetral(self):
+        """
+        toggle_call_recording() should call get_call with the id
+        """
+        """
+        create_call() should create a call and return id
+        """
+        estimated_response_json = {
+            'recordingEnabled': 'wildcard',
+        }
+        client = get_client()
+        with patch.object(client, 'get_call', return_value = estimated_response_json) as get_mock:
+            client.toggle_call_recording('callId')
+            get_mock.assert_called_with('callId')
 
     def test_transfer_call(self):
         """
@@ -270,7 +328,8 @@ class CallTests(unittest.TestCase):
         client = get_client()
         with patch.object(client, 'update_call') as p:
             client.transfer_call('callId', '+1234567890')
-            p.assert_called_with('callId', {'state': 'transferring', 'transferTo': '+1234567890' })
+            p.assert_called_with('callId', state='transferring', transfer_to='+1234567890', callback_url=None,
+                                transfer_caller_id = None, whisper_audio = None)
 
     def test_transfer_call_with_caller_id(self):
         """
@@ -279,7 +338,8 @@ class CallTests(unittest.TestCase):
         client = get_client()
         with patch.object(client, 'update_call') as p:
             client.transfer_call('callId', '+1234567890', '+1234567891')
-            p.assert_called_with('callId', {'state': 'transferring', 'transferTo': '+1234567890', 'transferCallerId': '+1234567891' })
+            p.assert_called_with('callId', state='transferring', transfer_to='+1234567890', transfer_caller_id='+1234567891',
+                                 callback_url=None, whisper_audio=None)
 
     def test_transfer_call_with_whisper_audio(self):
         """
@@ -287,13 +347,20 @@ class CallTests(unittest.TestCase):
         """
         client = get_client()
         with patch.object(client, 'update_call') as p:
-            client.transfer_call('callId', '+1234567890', '+1234567891', {'fileUrl': 'url'})
-            p.assert_called_with('callId', {
-                'state': 'transferring',
-                'transferTo': '+1234567890',
-                'transferCallerId': '+1234567891',
-                'whisperAudio': {'fileUrl': 'url'}
-            })
+            my_sentence = client.build_sentence(sentence = "Hello from Bandwidth",
+                                             gender="Female",
+                                             locale="en_UK",
+                                             voice="Bridget",
+                                             loop_enabled=True
+                                             )
+            client.transfer_call('callId', '+1234567890', '+1234567891', whisper_audio=my_sentence)
+            p.assert_called_with('callId',
+                                 state='transferring',
+                                 transfer_to= '+1234567890',
+                                 transfer_caller_id='+1234567891',
+                                 whisper_audio=my_sentence,
+                                 callback_url=None
+            )
 
     def test_transfer_call_with_callback_url(self):
         """
@@ -301,11 +368,12 @@ class CallTests(unittest.TestCase):
         """
         client = get_client()
         with patch.object(client, 'update_call') as p:
-            client.transfer_call('callId', '+1234567890', '+1234567891', {'fileUrl': 'url'}, 'curl')
-            p.assert_called_with('callId', {
-                'state': 'transferring',
-                'transferTo': '+1234567890',
-                'transferCallerId': '+1234567891',
-                'whisperAudio': {'fileUrl': 'url'},
-                'callbackUrl': 'curl'
-            })
+            my_audio = client.build_audio_playback('url')
+            client.transfer_call('callId', to='+1234567890', caller_id='+1234567891', whisper_audio=my_audio, callback_url='curl')
+            p.assert_called_with('callId',
+                                state='transferring',
+                                transfer_to='+1234567890',
+                                transfer_caller_id='+1234567891',
+                                 callback_url='curl',
+                                whisper_audio =my_audio
+            )
