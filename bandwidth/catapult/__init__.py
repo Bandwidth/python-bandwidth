@@ -1300,12 +1300,12 @@ class Client:
 
         return self._make_request('post', '/users/%s/conferences' % self.user_id, json=kwargs)[2]
 
-    def get_conference(self, id):
+    def get_conference(self, conference_id):
         """
         Get information about a conference
 
-        :type id: str
-        :param id: id of a conference
+        :type conference_id: str
+        :param conference_id: id of a conference
 
         :rtype: dict
         :returns: conference information
@@ -1333,15 +1333,15 @@ class Client:
             ##     'mute'              : False,
             ##     'state'             : 'created'}
         """
-        return self._make_request('get', '/users/%s/conferences/%s' % (self.user_id, id))[0]
+        return self._make_request('get', '/users/%s/conferences/%s' % (self.user_id, conference_id))[0]
 
-    def update_conference(self, id, state = None, mute = None, hold = None, callback_url = None,
+    def update_conference(self, conference_id, state = None, mute = None, hold = None, callback_url = None,
                           callback_timeout = None, callback_http_method = None, fallback_url = None,
                           tag = None, **kwargs):
         """
         Update a conference
 
-        :param str id: id of a conference
+        :param str conference_id: id of a conference
         :param str state: Conference state. Possible state values are: "completed" to terminate the conference.
         :param str mute: If "true", all member can't speak in the conference. If "false", all members can speak in the conference
         :param str hold: If "true", all member can't hear or speak in the conference. If "false", all members can hear and speak in the conference
@@ -1366,96 +1366,155 @@ class Client:
         kwargs["fallbackUrl"] = fallback_url
         kwargs["tag"] = tag
 
-        self._make_request('post', '/users/%s/conferences/%s' % (self.user_id, id), json=kwargs)
+        self._make_request('post', '/users/%s/conferences/%s' % (self.user_id, conference_id), json=kwargs)
 
-    def play_audio_to_conference(self, id, data):
+    def play_audio_to_conference(self, conference_id, file_url= None,sentence= None,gender= None,locale= None,voice= None,loop_enabled= None, **kwargs):
         """
         Play audio to a conference
 
-        :type id: str
-        :param id: id of a conference
+        :type conference_id: str
+        :param conference_id: id of a conference
 
-        Parameters
-            fileUrl
-                The location of an audio file to play (WAV and MP3 supported).
-            sentence
-                The sentence to speak.
-            gender
-                The gender of the voice used to synthesize the sentence.
-            locale
-                The locale used to get the accent of the voice used to synthesize the sentence.
-            voice
-                The voice to speak the sentence.
-            loopEnabled
-                When value is true, the audio will keep playing in a loop.
+        :param str file_url: The location of an audio file to play (WAV and MP3 supported).
+        :param str sentence: The sentence to speak.
+        :param str gender: The gender of the voice used to synthesize the sentence.
+        :param str locale: The locale used to get the accent of the voice used to synthesize the sentence.
+        :param str voice: The voice to speak the sentence.
+        :param str loop_enabled: When value is true, the audio will keep playing in a loop.
 
 
-        :Example:
-        api.play_audio_to_conference('conferenceId', {'fileUrl': 'http://host/path/file.mp3'})
-        api.play_audio_to_conference('conferenceId', {'sentence': 'Press 0 to complete call', 'gender': 'female'})
+        Example: Play audio file to conference::
 
-        # or with extension methods
-        api.play_audio_file_to_conference('conferenceId', 'http://host/path/file.mp3')
-        api.speak_sentence_to_conference('conferenceId', 'Hello')
+            api.play_audio_to_conference('conferenceId', fileUrl = 'http://host/path/file.mp3')
+
+        Example: Speak Sentence to conference::
+
+            api.play_audio_to_conference('conferenceId', sentence='Press 0 to complete call', gender='female')
+
+        Example: Use Extensions methods
+
+            # or with extension methods
+            api.play_audio_file_to_conference('conferenceId', 'http://host/path/file.mp3')
+            api.speak_sentence_to_conference('conferenceId', 'Hello')
         """
-        self._make_request('post', '/users/%s/conferences/%s/audio' % (self.user_id, id), json=data)
+        kwargs['fileUrl']=file_url
+        kwargs['sentence']=sentence
+        kwargs['gender']=gender
+        kwargs['locale']=locale
+        kwargs['voice']=voice
+        kwargs['loopEnabled']=loop_enabled
 
-    def get_conference_members(self, id):
+        self._make_request('post', '/users/%s/conferences/%s/audio' % (self.user_id, conference_id), json=kwargs)
+
+    def list_conference_members(self, conference_id):
         """
         Get a list of members of a conference
 
-        :type id: str
-        :param id: id of a conference
+        :type conference_id: str
+        :param conference_id: id of a conference
 
         :rtype: types.GeneratorType
         :returns: list of recordings
 
         :Example:
-        list = api.get_conference_members('conferenceId')
+
+            my_conf_id = api.create_conference(from_='+19192223333')
+            print(my_conf)
+            # conf-confId
+
+            my_call_id = api.create_call(from_='+19192223333', to='+19192223334', conference_id= 'conf-confId')
+            print(my_call_id)
+            # c-callId
+
+            my_conf_member_id = api.create_conference_member(my_conf_id, call_id=my_call_id)
+            print(my_conf_member_id)
+            # member-memberId
+
+            my_conference_members = list_conference_members(my_conf_id)
+
+            print(list(my_conference_members))
+
+            ## [
+            ##    {
+            ##       'addedTime'  :'2017-01-30T22:01:11Z',
+            ##       'call'       :'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId',
+            ##       'hold'       :False,
+            ##       'id'         :'member-memberId',
+            ##       'joinTone'   :False,
+            ##       'leavingTone':False,
+            ##       'mute'       :False,
+            ##       'removedTime':'2017-01-30T22:01:21Z',
+            ##       'state'      :'completed'
+            ##    }
+            ## ]
+
+
+
         """
-        path = '/users/%s/conferences/%s/members' % (self.user_id, id)
+        path = '/users/%s/conferences/%s/members' % (self.user_id, conference_id)
         return get_lazy_enumerator(self, lambda: self._make_request('get', path))
 
-    def create_conference_member(self, id, data):
+    def create_conference_member(self, conference_id, call_id=None, join_tone=None, leaving_tone=None, mute=None, hold=None, **kwargs):
         """
         Create a conference member for a conference
 
-        :type id: str
-        :param id: id of a conference
+        :type conference_id: str
+        :param conference_id: id of a conference
 
-        Parameters
-            callId
-                The callId must refer to an active call that was created
-                using this conferenceId (required)
-            joinTone
-                If "true", will play a tone when the member joins the conference.
-                If "false", no tone is played when the member joins the conference.
-            leavingTone
-                If "true", will play a tone when the member leaves the conference.
-                If "false", no tone is played when the member leaves the conference.
-            mute
-                If "true", member can't speak in the conference.
-                If "false", this members can speak in the conference
-                (unless set at the conference level).
-            hold
-                If "true", member can't hear or speak in the conference.
-                If "false", member can hear and speak in the conference
-                (unless set at the conference level).
+        :param str call_id: The callId must refer to an active call that was created using this conferenceId (required)
+        :param bool join_tone: If "true", will play a tone when the member joins the conference. If "false", no tone is played when the member joins the conference.
+        :param bool leaving_tone: If "true", will play a tone when the member leaves the conference. If "false", no tone is played when the member leaves the conference.
+        :param bool mute: If "true", member can't speak in the conference. If "false", this members can speak in the conference (unless set at the conference level).
+        :param bool hold: If "true", member can't hear or speak in the conference. If "false", member can hear and speak in the conference (unless set at the conference level).
+
         :rtype: str
         :returns: id of create of conference member
 
-        :Example:
-        member_id = api.create_conference_member('conferenceId', {'callId': 'callId1'})
-        """
-        path = '/users/%s/conferences/%s/members' % (self.user_id, id)
-        return self._make_request('post', path, json=data)[2]
+        Example: Create Conference and add member:
 
-    def get_conference_member(self, id, member_id):
+            my_conf_id = api.create_conference(from_='+19192223333')
+            print(my_conf)
+            # conf-confId
+
+            my_call_id = api.create_call(from_='+19192223333', to='+19192223334', conference_id= 'conf-confId')
+            print(my_call_id)
+            # c-callId
+
+            my_conf_member_id = api.create_conference_member(my_conf_id, call_id=my_call_id, join_tone=True)
+            print(my_conf_member_id)
+            # member-memberId
+
+            my_conf_member = api.get_conference_member(my_conf_id, my_member_id)
+            print(my_conf_member)
+
+            ## {
+            ##     'addedTime': '2017-01-30T22:01:11Z',
+            ##     'call'         : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId',
+            ##     'hold'         : False,
+            ##     'id'           : 'member-memberId',
+            ##     'joinTone'     : False,
+            ##     'leavingTone'  : False,
+            ##     'mute'         : False,
+            ##     'removedTime'  : '2017-01-30T22:01:21Z',
+            ##     'state'        : 'completed'
+            ## }
+
+        """
+        kwargs['callId']=call_id
+        kwargs['joinTone']=join_tone
+        kwargs['leavingTone']=leaving_tone
+        kwargs['mute']=mute
+        kwargs['hold']=hold
+
+        path = '/users/%s/conferences/%s/members' % (self.user_id, conference_id)
+        return self._make_request('post', path, json=kwargs)[2]
+
+    def get_conference_member(self, conference_id, member_id):
         """
         Get a conference member
 
-        :type id: str
-        :param id: id of a conference
+        :type conference_id: str
+        :param conference_id: id of a conference
 
         :type member_id: str
         :param member_id: id of a member
@@ -1463,90 +1522,137 @@ class Client:
         :rtype: dict
         :returns: data of conference member
 
-        :Example:
-        data = api.get_conference_member('conferenceId', 'memberId')
+        Example: Create Conference and add member:
+
+            my_conf_id = api.create_conference(from_='+19192223333')
+            print(my_conf)
+            # conf-confId
+
+            my_call_id = api.create_call(from_='+19192223333', to='+19192223334', conference_id= 'conf-confId')
+            print(my_call_id)
+            # c-callId
+
+            my_conf_member_id = api.create_conference_member(my_conf_id, call_id=my_call_id, join_tone=True)
+            print(my_conf_member_id)
+            # member-memberId
+
+            my_conf_member = api.get_conference_member(my_conf_id, my_member_id)
+            print(my_conf_member)
+
+            ## {
+            ##     'addedTime': '2017-01-30T22:01:11Z',
+            ##     'call'         : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId',
+            ##     'hold'         : False,
+            ##     'id'           : 'member-memberId',
+            ##     'joinTone'     : True,
+            ##     'leavingTone'  : False,
+            ##     'mute'         : False,
+            ##     'removedTime'  : '2017-01-30T22:01:21Z',
+            ##     'state'        : 'active'
+            ## }
         """
-        path = '/users/%s/conferences/%s/members/%s' % (self.user_id, id, member_id)
+        path = '/users/%s/conferences/%s/members/%s' % (self.user_id, conference_id, member_id)
         return self._make_request('get', path)[0]
 
-    def update_conference_member(self, id, member_id, data):
+    def update_conference_member(self, conference_id, member_id, join_tone=None, leaving_tone=None, mute=None, hole=None, **kwargs):
         """
         Update a conference member
 
-        :type id: str
-        :param id: id of a conference
+        :param str conference_id: id of a conference
+        :param str member_id: id of a conference member
+        :param bool join_tone: If "true", will play a tone when the member joins the conference. If "false", no tone is played when the member joins the conference.
+        :param bool leaving_tone: If "true", will play a tone when the member leaves the conference. If "false", no tone is played when the member leaves the conference.
+        :param bool mute: If "true", member can't speak in the conference. If "false", this members can speak in the conference (unless set at the conference level).
+        :param bool hold: If "true", member can't hear or speak in the conference. If "false", member can hear and speak in the conference (unless set at the conference level).
 
-        :type member_id: str
-        :param member_id: id of a conference member
-
-        Parameters
-            joinTone
-                If "true", will play a tone when the member joins the conference.
-                If "false", no tone is played when the member joins the conference.
-            leavingTone
-                If "true", will play a tone when the member leaves the conference.
-                If "false", no tone is played when the member leaves the conference.
-            mute
-                If "true", member can't speak in the conference.
-                If "false", this members can speak in the conference
-                (unless set at the conference level).
-            hold
-                If "true", member can't hear or speak in the conference.
-                If "false", member can hear and speak in the conference
-                (unless set at the conference level).
-
-        :Example:
+        Example: update conference member::
         api.update_conference_member('conferenceId', 'memberId', {'hold': True})
-        """
-        path = '/users/%s/conferences/%s/members/%s' % (self.user_id, id, member_id)
-        self._make_request('post', path, json=data)
 
-    def play_audio_to_conference_member(self, id, member_id, data):
+            my_conf_id = api.create_conference(from_='+19192223333')
+            print(my_conf)
+            # conf-confId
+
+            my_call_id = api.create_call(from_='+19192223333', to='+19192223334', conference_id= 'conf-confId')
+            print(my_call_id)
+            # c-callId
+
+            my_conf_member_id = api.create_conference_member(my_conf_id, call_id=my_call_id, join_tone=True)
+            print(my_conf_member_id)
+            # member-memberId
+
+            my_conf_member = api.get_conference_member(my_conf_id, my_member_id)
+            print(my_conf_member)
+
+            ## {
+            ##     'addedTime': '2017-01-30T22:01:11Z',
+            ##     'call'         : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId',
+            ##     'hold'         : False,
+            ##     'id'           : 'member-memberId',
+            ##     'joinTone'     : True,
+            ##     'leavingTone'  : False,
+            ##     'mute'         : False,
+            ##     'removedTime'  : '2017-01-30T22:01:21Z',
+            ##     'state'        : 'active'
+            ## }
+
+            api.update_conference_member(my_conf_id, my_member_id, mute=True, hold=True)
+
+            my_conf = api.get_conference_member(my_member_id)
+
+            ## {
+            ##     'addedTime': '2017-01-30T22:01:11Z',
+            ##     'call'         : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId',
+            ##     'hold'         : True,
+            ##     'id'           : 'member-memberId',
+            ##     'joinTone'     : True,
+            ##     'leavingTone'  : False,
+            ##     'mute'         : True,
+            ##     'removedTime'  : '2017-01-30T22:01:21Z',
+            ##     'state'        : 'active'
+            ## }
+        """
+        kwargs['joinTone']=join_tone
+        kwargs['leavingTone']=leaving_tone
+        kwargs['mute']=mute
+        kwargs['hold']=hold
+
+        path = '/users/%s/conferences/%s/members/%s' % (self.user_id, conference_id, member_id)
+        self._make_request('post', path, json=kwargs)
+
+    def play_audio_to_conference_member(self, conference_id, member_id, data):
         """
         Play audio to a conference member
 
-        :type id: str
-        :param id: id of a conference
-
-        :type member_id: str
-        :param member_id: id of a conference member
-
-        Parameters
-            fileUrl
-                The location of an audio file to play (WAV and MP3 supported).
-            sentence
-                The sentence to speak.
-            gender
-                The gender of the voice used to synthesize the sentence.
-            locale
-                The locale used to get the accent of the voice used to synthesize the sentence.
-            voice
-                The voice to speak the sentence.
-            loopEnabled
-                When value is true, the audio will keep playing in a loop.
-
+        :param str conference_id: id of a conference
+        :param str member_id: id of a conference member
+        :param str file_url: The location of an audio file to play (WAV and MP3 supported).
+        :param str sentence: The sentence to speak.
+        :param str gender: The gender of the voice used to synthesize the sentence.
+        :param str locale: The locale used to get the accent of the voice used to synthesize the sentence.
+        :param str voice: The voice to speak the sentence.
+        :param str loop_enabled: When value is true, the audio will keep playing in a loop.
 
         :Example:
-        api.play_audio_to_conference_member('conferenceId', 'memberId', {'fileUrl': 'http://host/path/file.mp3'})
+        api.play_audio_to_conference_member('conferenceId', 'memberId', fileUrl=http://host/path/file.mp3)
         api.play_audio_to_conference_member('conferenceId', 'memberId',
-                                            {'sentence': 'Press 0 to complete call', 'gender': 'female'})
+                                            sentence='Press 0 to complete call', gender='female')
 
         # or with extension methods
         api.play_audio_file_to_conference_member('conferenceId', 'memberId', 'http://host/path/file.mp3')
         api.speak_sentence_to_conference_member('conferenceId', 'memberId', 'Hello')
         """
-        path = '/users/%s/conferences/%s/members/%s/audio' % (self.user_id, id, member_id)
+        path = '/users/%s/conferences/%s/members/%s/audio' % (self.user_id, conference_id, member_id)
         self._make_request('post', path, json=data)
 
     # extensions
 
-    def speak_sentence_to_conference_member(self, id, member_id, sentence,
+    def speak_sentence_to_conference_member(self, conference_id, member_id, sentence,
                                             gender='female', voice='susan', locale='en_US', tag=None):
         """
         Speak sentence to a conference member
 
-        :type id: str
-        :param id: id of a conference
+        :type conference_id: str
+        :param conference_id: id of a conference
 
         :type member_id: str
         :param member_id: id of a conference member
@@ -1569,20 +1675,20 @@ class Client:
         :Example:
         api.speak_sentence_to_conference_member('conferenceId', 'memberId', 'Hello')
         """
-        self.play_audio_to_conference_member(id, member_id, {
-            'sentence': sentence,
-            'gender': gender,
-            'voice': voice,
-            'locale': locale,
-            'tag': tag
-        })
+        self.play_audio_to_conference_member(conference_id, member_id,
+            sentence = sentence,
+            gender   = gender,
+            voice    = voice,
+            locale   = locale,
+            tag      = tag
+        )
 
-    def play_audio_file_to_conference_member(self, id, member_id, file_url, tag=None):
+    def play_audio_file_to_conference_member(self, conference_id, member_id, file_url, tag=None):
         """
         Play audio file to a conference member
 
-        :type id: str
-        :param id: id of a conference
+        :type conference_id: str
+        :param conference_id: id of a conference
 
         :type member_id: str
         :param member_id: id of a conference member
@@ -1597,33 +1703,75 @@ class Client:
         api.play_audio_file_to_conference_member('conferenceId', 'memberId', 'http://host/path/file.mp3')
         """
 
-        self.play_audio_to_conference_member(id, member_id, {
-            'fileUrl': file_url,
-            'tag': tag
-        })
+        self.play_audio_to_conference_member(conference_id, member_id,
+            fileUrl = file_url,
+            tag     = tag
+        )
 
-    def delete_conference_member(self, id, member_id):
+    def remove_conference_member(self, conference_id, member_id):
         """
         Remove a conference member
 
-        :type id: str
-        :param id: id of a conference
+        :type conference_id: str
+        :param conference_id: id of a conference
 
         :type member_id: str
         :param member_id: id of a conference member
 
-        :Example:
-        api.delete_conference_member('conferenceId', 'memberId')
+        Example: Remove Member from Conference::
+
+            my_conf = api.get_conference('conferenceId')
+            my_conf_members = list(api.list_conference_members(my_conf['id']))
+            print(my_conf_members)
+
+            ## [{ 'addedTime'  : '2017-01-30T23:17:11Z',
+            ##    'call'       : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId',
+            ##    'hold'       : False,
+            ##    'id'         : 'member-memberId',
+            ##    'joinTone'   : False,
+            ##    'leavingTone': False,
+            ##    'mute'       : False,
+            ##    'state'      : 'active'},
+            ##  { 'addedTime'  : '2017-01-30T23:17:14Z',
+            ##    'call'       : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId2',
+            ##    'hold'       : False,
+            ##    'id'         : 'member-memberId2',
+            ##    'joinTone'   : False,
+            ##    'leavingTone': False,
+            ##    'mute'       : False,
+            ##    'state'      : 'active'}]
+
+            api.remove_conference_member(my_conf['id'], my_conf_members[1]['id'])
+
+            my_conf_members = list(api.list_conference_members(my_conf['id']))
+            print(my_conf_members)
+
+            ## [{ 'addedTime'  : '2017-01-30T23:17:11Z',
+            ##    'call'       : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId',
+            ##    'hold'       : False,
+            ##    'id'         : 'member-memberId',
+            ##    'joinTone'   : False,
+            ##    'leavingTone': False,
+            ##    'mute'       : False,
+            ##    'state'      : 'active'},
+            ##  { 'addedTime'  : '2017-01-30T23:17:14Z',
+            ##    'call'       : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId2',
+            ##    'hold'       : False,
+            ##    'id'         : 'member-memberId2',
+            ##    'joinTone'   : False,
+            ##    'leavingTone': False,
+            ##    'mute'       : False,
+            ##    'state'      : 'completed'}]
 
         """
-        self.update_conference_member(id, member_id, {'state': 'completed'})
+        self.update_conference_member(conference_id, member_id, state='completed')
 
-    def hold_conference_member(self, id, member_id, hold):
+    def hold_conference_member(self, conference_id, member_id, hold):
         """
         Hold or unhold a conference member
 
-        :type id: str
-        :param id: id of a conference
+        :type conference_id: str
+        :param conference_id: id of a conference
 
         :type member_id: str
         :param member_id: id of a conference member
@@ -1634,14 +1782,14 @@ class Client:
         :Example:
         api.hold_conference_member('conferenceId', 'memberId', True)
         """
-        self.update_conference_member(id, member_id, {'hold': hold})
+        self.update_conference_member(conference_id, member_id, hold=hold)
 
-    def mute_conference_member(self, id, member_id, mute):
+    def mute_conference_member(self, conference_id, member_id, mute):
         """
         Mute or unmute a conference member
 
-        :type id: str
-        :param id: id of a conference
+        :type conference_id: str
+        :param conference_id: id of a conference
 
         :type member_id: str
         :param member_id: id of a conference member
@@ -1652,27 +1800,27 @@ class Client:
         :Example:
         api.mute_conference_member('conferenceId', 'memberId', True)
         """
-        self.update_conference_member(id, member_id, {'mute': mute})
+        self.update_conference_member(conference_id, member_id, mute=mute)
 
-    def terminate_conference(self, id):
+    def terminate_conference(self, conference_id):
         """
         Terminate of current conference
 
-        :type id: str
-        :param id: id of a conference
+        :type conference_id: str
+        :param conference_id: id of a conference
 
         :Example:
         api.terminate_conference('conferenceId')
 
         """
-        self.update_conference(id, {'state': 'completed'})
+        self.update_conference(conference_id, state='completed')
 
-    def hold_conference(self, id, hold):
+    def hold_conference(self, conference_id, hold):
         """
         Hold or unhold a conference
 
-        :type id: str
-        :param id: id of a conference
+        :type conference_id: str
+        :param conference_id: id of a conference
 
         :type hold: bool
         :param hold: hold (if true) or unhold (if false) a conference
@@ -1680,9 +1828,9 @@ class Client:
         :Example:
         api.hold_conference('conferenceId', True)
         """
-        self.update_conference(id, {'hold': hold})
+        self.update_conference(conference_id, hold=hold)
 
-    def mute_conference(self, id, mute):
+    def mute_conference(self, conference_id, mute):
         """
         Mute or unmute a conference
 
@@ -1695,7 +1843,7 @@ class Client:
         :Example:
         api.mute_conference('conferenceId', True)
         """
-        self.update_conference(id, {'mute': mute})
+        self.update_conference(conference_id, mute=mute)
 
     """
     Domain API
