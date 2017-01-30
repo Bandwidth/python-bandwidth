@@ -12,7 +12,7 @@ bandwidth.client module
 Calls
 ------
 .. autoclass:: bandwidth.catapult.Client
-    :members: list_calls, create_call, get_call, update_call, play_audio_to_call, send_dtmf_to_call, list_call_recordings, list_call_transcriptions, list_call_events, get_call_event, create_call_gather, get_call_gather, update_call_gather
+    :members: list_calls, create_call, get_call, update_call, play_audio_to_call, send_dtmf_to_call, list_call_recordings, list_call_transcriptions, list_call_events, get_call_event, create_call_gather, get_call_gather, update_call_gather, answer_call, reject_call, hangup_call, enable_call_recording, disable_call_recording, toggle_call_recording, transfer_call
 
 
 Account

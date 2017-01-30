@@ -191,6 +191,24 @@
 <em class="property">class </em><code class="descclassname">bandwidth.catapult.</code><code class="descname">Client</code><span class="sig-paren">(</span><em>user_id=None</em>, <em>api_token=None</em>, <em>api_secret=None</em>, <em>**other_options</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client" title="Permalink to this definition">¶</a></dt>
 <dd><p>Catapult client</p>
 <dl class="method">
+<dt id="bandwidth.catapult.Client.answer_call">
+<code class="descname">answer_call</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.answer_call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Answer incoming call</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> (<em>str</em>) &#8211; id of a call</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Answer incoming call:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">answer_call</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="bandwidth.catapult.Client.create_call">
 <code class="descname">create_call</code><span class="sig-paren">(</span><em>from_</em>, <em>to</em>, <em>call_timeout=None</em>, <em>callback_url=None</em>, <em>callback_timeout=None</em>, <em>callback_http_method=None</em>, <em>fallback_url=None</em>, <em>bridge_id=None</em>, <em>conference_id=None</em>, <em>recording_enabled=None</em>, <em>recording_file_format=None</em>, <em>recording_max_duration=None</em>, <em>transcription_enabled=None</em>, <em>tag=None</em>, <em>sip_headers=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.create_call" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a call</p>
@@ -290,6 +308,42 @@ this gather operation.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="bandwidth.catapult.Client.disable_call_recording">
+<code class="descname">disable_call_recording</code><span class="sig-paren">(</span><em>call_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.disable_call_recording" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn off call recording</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>call_id</strong> (<em>str</em>) &#8211; id of a call</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Disable Call Recording:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">disable_call_recording</span><span class="p">(</span><span class="s1">&#39;c-callId&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="bandwidth.catapult.Client.enable_call_recording">
+<code class="descname">enable_call_recording</code><span class="sig-paren">(</span><em>call_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.enable_call_recording" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn on call recording</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>call_id</strong> (<em>str</em>) &#8211; id of a call</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Enable Call Recording:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">enable_call_recording</span><span class="p">(</span><span class="s1">&#39;c-callId&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="bandwidth.catapult.Client.get_call">
 <code class="descname">get_call</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.get_call" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get information about a call</p>
@@ -377,6 +431,24 @@ this gather operation.</li>
 </table>
 <p>Get Gather information for a previously created gather:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call_gather</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">,</span> <span class="s1">&#39;gatherId&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="bandwidth.catapult.Client.hangup_call">
+<code class="descname">hangup_call</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.hangup_call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complete active call</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> (<em>str</em>) &#8211; id of a call</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Hangup call:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">hangup_call</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -537,23 +609,43 @@ this gather operation.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>id</strong> (<em>str</em>) &#8211; id of a call</li>
+<li><strong>file_url</strong> (<em>str</em>) &#8211; The location of an audio file to play (WAV and MP3 supported).</li>
+<li><strong>sentence</strong> (<em>str</em>) &#8211; The sentence to speak.</li>
+<li><strong>gender</strong> (<em>str</em>) &#8211; The gender of the voice used to synthesize the sentence.</li>
+<li><strong>locale</strong> (<em>str</em>) &#8211; The locale used to get the accent of the voice used to synthesize the sentence.</li>
+<li><strong>voice</strong> (<em>str</em>) &#8211; The voice to speak the sentence.</li>
+<li><strong>loop_enabled</strong> (<em>bool</em>) &#8211; When value is true, the audio will keep playing in a loop.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Play audio in file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">play_audio_to_call</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">,</span> <span class="n">fileUrl</span><span class="o">=</span> <span class="s1">&#39;http://host/path/file.mp3&#39;</span><span class="p">)</span>
+<span class="n">api</span><span class="o">.</span><span class="n">play_audio_to_call</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">,</span> <span class="n">sentence</span><span class="o">=</span><span class="s1">&#39;Press 0 to complete call&#39;</span><span class="p">,</span> <span class="n">gender</span><span class="o">=</span><span class="s1">&#39;female&#39;</span><span class="p">)</span>
+<span class="c1"># or with extension methods</span>
+<span class="n">api</span><span class="o">.</span><span class="n">play_audio_file_to_call</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">,</span> <span class="s1">&#39;http://host/path/file.mp3&#39;</span><span class="p">)</span>
+<span class="n">api</span><span class="o">.</span><span class="n">speak_sentence_to_call</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">,</span> <span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="bandwidth.catapult.Client.reject_call">
+<code class="descname">reject_call</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.reject_call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reject incoming call</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> (<em>str</em>) &#8211; id of a call</td>
 </tr>
 </tbody>
 </table>
-<p>Parameters
-:param str file_url: The location of an audio file to play (WAV and MP3 supported).
-:param str sentence: The sentence to speak.
-:param str gender: The gender of the voice used to synthesize the sentence.
-:param str locale: The locale used to get the accent of the voice used to synthesize the sentence.
-:param str voice: The voice to speak the sentence.
-:param bool loop_enabled: When value is true, the audio will keep playing in a loop.</p>
-<p>Play audio in file:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">play_audio_to_call</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">,</span> <span class="n">fileUrl</span><span class="o">=</span> <span class="s1">&#39;http://host/path/file.mp3&#39;</span><span class="p">)</span>
-<span class="n">api</span><span class="o">.</span><span class="n">play_audio_to_call</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;sentence&#39;</span><span class="p">:</span> <span class="s1">&#39;Press 0 to complete call&#39;</span><span class="p">,</span> <span class="s1">&#39;gender&#39;</span><span class="p">:</span> <span class="s1">&#39;female&#39;</span><span class="p">})</span>
-<span class="c1"># or with extension methods</span>
-<span class="n">api</span><span class="o">.</span><span class="n">play_audio_file_to_call</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">,</span> <span class="s1">&#39;http://host/path/file.mp3&#39;</span><span class="p">)</span>
-<span class="n">api</span><span class="o">.</span><span class="n">speak_sentence_to_call</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">,</span> <span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
+<p>Example: Reject incoming call:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">reject_call</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -581,6 +673,78 @@ this gather operation.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="bandwidth.catapult.Client.toggle_call_recording">
+<code class="descname">toggle_call_recording</code><span class="sig-paren">(</span><em>call_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.toggle_call_recording" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetches the current call state and either toggles recording on or off</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>call_id</strong> (<em>str</em>) &#8211; id of the call to toggle</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Toggle the call recording:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_call_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_call</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="s1">&#39;+19192223333&#39;</span><span class="p">,</span> <span class="n">from_</span><span class="o">=</span><span class="s1">&#39;+18281114444&#39;</span><span class="p">)</span>
+<span class="n">my_call</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call</span><span class="p">(</span><span class="n">my_call_id</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_call</span><span class="p">[</span><span class="s1">&#39;recordingEnabled&#39;</span><span class="p">])</span>
+<span class="c1">## False</span>
+
+<span class="n">api</span><span class="o">.</span><span class="n">toggle_call_recording</span><span class="p">(</span><span class="n">my_call_id</span><span class="p">)</span>
+<span class="n">my_call</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call</span><span class="p">(</span><span class="n">my_call_id</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_call</span><span class="p">[</span><span class="s1">&#39;recordingEnabled&#39;</span><span class="p">])</span>
+<span class="c1">## True</span>
+
+<span class="n">api</span><span class="o">.</span><span class="n">toggle_call_recording</span><span class="p">(</span><span class="n">my_call_id</span><span class="p">)</span>
+<span class="n">my_call</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call</span><span class="p">(</span><span class="n">my_call_id</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_call</span><span class="p">[</span><span class="s1">&#39;recordingEnabled&#39;</span><span class="p">])</span>
+<span class="c1">## False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="bandwidth.catapult.Client.transfer_call">
+<code class="descname">transfer_call</code><span class="sig-paren">(</span><em>call_id</em>, <em>to</em>, <em>caller_id=None</em>, <em>whisper_audio=None</em>, <em>callback_url=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.transfer_call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transfer a call</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>call_id</strong> (<em>str</em>) &#8211; id of a call</li>
+<li><strong>to</strong> (<em>str</em>) &#8211; number that the call is going to be transferred to.</li>
+<li><strong>caller_id</strong> (<em>str</em>) &#8211; caller id that will be used when the call is transferred</li>
+<li><strong>whisper_audio</strong> (<em>dict</em>) &#8211; audio to be played to the caller that the call will be transferred to</li>
+<li><strong>callback_url</strong> (<em>str</em>) &#8211; URL where the call events for the new call will be sent upon transferring</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns str:</th><td class="field-body"><p class="first last">id of created call</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Transfer with whisper:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_sentence</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">build_sentence</span><span class="p">(</span><span class="n">sentence</span> <span class="o">=</span> <span class="s2">&quot;Hello from Bandwidth&quot;</span><span class="p">,</span>
+                     <span class="n">gender</span><span class="o">=</span><span class="s2">&quot;Female&quot;</span><span class="p">,</span>
+                     <span class="n">locale</span><span class="o">=</span><span class="s2">&quot;en_UK&quot;</span><span class="p">,</span>
+                     <span class="n">voice</span><span class="o">=</span><span class="s2">&quot;Bridget&quot;</span><span class="p">,</span>
+                     <span class="n">loop_enabled</span><span class="o">=</span><span class="bp">True</span>
+                    <span class="p">)</span>
+<span class="n">my_call</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call</span><span class="p">(</span><span class="s1">&#39;c-callId&#39;</span><span class="p">)</span>
+<span class="n">api</span><span class="o">.</span><span class="n">transfer_call</span><span class="p">(</span><span class="s1">&#39;c-callId&#39;</span><span class="p">,</span> <span class="n">to</span> <span class="o">=</span> <span class="s1">&#39;+1234564890&#39;</span><span class="p">,</span> <span class="n">caller_id</span> <span class="o">=</span> <span class="n">my_call</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">],</span> <span class="n">whisper_audio</span> <span class="o">=</span> <span class="n">my_sentence</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>Example: Transfer with whisper audio playback:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_audio</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">build_audio_playback</span><span class="p">(</span><span class="s1">&#39;http://my_site.com/file.mp3&#39;</span><span class="p">,</span> <span class="n">loop_enabled</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">my_call</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call</span><span class="p">(</span><span class="s1">&#39;c-callId&#39;</span><span class="p">)</span>
+<span class="n">api</span><span class="o">.</span><span class="n">transfer_call</span><span class="p">(</span><span class="s1">&#39;c-callId&#39;</span><span class="p">,</span> <span class="n">to</span> <span class="o">=</span> <span class="s1">&#39;+1234564890&#39;</span><span class="p">,</span> <span class="n">whisper_audio</span> <span class="o">=</span> <span class="n">my_audio</span> <span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="bandwidth.catapult.Client.update_call">
 <code class="descname">update_call</code><span class="sig-paren">(</span><em>id</em>, <em>state=None</em>, <em>recording_enabled=None</em>, <em>recording_file_format=None</em>, <em>transfer_to=None</em>, <em>transfer_caller_id=None</em>, <em>whisper_audio=None</em>, <em>callback_url=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.update_call" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update a call</p>
@@ -592,12 +756,12 @@ this gather operation.</li>
 <li><strong>id</strong> (<em>str</em>) &#8211; id of a call</li>
 <li><strong>state</strong> (<em>str</em>) &#8211; The call state. Possible values: rejected to reject not answer, active to answer the call,
 completed to hangup the call, transferring to start and connect call to a new outbound call.</li>
-<li><strong>recording_enabled</strong> (<em>str</em>) &#8211; Indicates if the call should be recorded. Values true or false. You can turn recording
+<li><strong>recording_enabled</strong> (<em>bool</em>) &#8211; Indicates if the call should be recorded. Values true or false. You can turn recording
 on/off and have multiple recordings on a single call.</li>
 <li><strong>recording_file_format</strong> (<em>str</em>) &#8211; The file format of the recorded call. Supported values are wav (default) and mp3.</li>
 <li><strong>transfer_to</strong> (<em>str</em>) &#8211; Phone number or SIP address that the call is going to be transferred to.</li>
 <li><strong>transfer_caller_id</strong> (<em>str</em>) &#8211; This is the caller id that will be used when the call is transferred.</li>
-<li><strong>whisper_audio</strong> (<em>str</em>) &#8211; Audio to be played to the caller that the call will be transferred to.</li>
+<li><strong>whisper_audio</strong> (<em>dict</em>) &#8211; Audio to be played to the caller that the call will be transferred to.</li>
 <li><strong>callback_url</strong> (<em>str</em>) &#8211; The server URL where the call events for the new call will be sent upon transferring.</li>
 </ul>
 </td>
