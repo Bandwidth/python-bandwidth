@@ -1335,9 +1335,9 @@ class Client:
         """
         return self._make_request('get', '/users/%s/conferences/%s' % (self.user_id, conference_id))[0]
 
-    def update_conference(self, conference_id, state = None, mute = None, hold = None, callback_url = None,
-                          callback_timeout = None, callback_http_method = None, fallback_url = None,
-                          tag = None, **kwargs):
+    def update_conference(self, conference_id, state=None, mute=None, hold=None, callback_url=None,
+                          callback_timeout=None, callback_http_method=None, fallback_url=None,
+                          tag=None, **kwargs):
         """
         Update a conference
 
@@ -1353,7 +1353,7 @@ class Client:
 
         Example: End conference::
 
-            api.update_conference('conferenceId', {'state': 'completed'})
+            api.update_conference('conferenceId', state='completed')
 
         """
 
@@ -1554,7 +1554,7 @@ class Client:
         path = '/users/%s/conferences/%s/members/%s' % (self.user_id, conference_id, member_id)
         return self._make_request('get', path)[0]
 
-    def update_conference_member(self, conference_id, member_id, join_tone=None, leaving_tone=None, mute=None, hole=None, **kwargs):
+    def update_conference_member(self, conference_id, member_id, join_tone=None, leaving_tone=None, mute=None, hold=None, **kwargs):
         """
         Update a conference member
 
@@ -1566,7 +1566,6 @@ class Client:
         :param bool hold: If "true", member can't hear or speak in the conference. If "false", member can hear and speak in the conference (unless set at the conference level).
 
         Example: update conference member::
-        api.update_conference_member('conferenceId', 'memberId', {'hold': True})
 
             my_conf_id = api.create_conference(from_='+19192223333')
             print(my_conf)
@@ -1619,7 +1618,7 @@ class Client:
         path = '/users/%s/conferences/%s/members/%s' % (self.user_id, conference_id, member_id)
         self._make_request('post', path, json=kwargs)
 
-    def play_audio_to_conference_member(self, conference_id, member_id, data):
+    def play_audio_to_conference_member(self, conference_id, member_id, file_url= None,sentence= None,gender= None,locale= None,voice= None,loop_enabled= None, **kwargs):
         """
         Play audio to a conference member
 
@@ -1641,8 +1640,16 @@ class Client:
         api.play_audio_file_to_conference_member('conferenceId', 'memberId', 'http://host/path/file.mp3')
         api.speak_sentence_to_conference_member('conferenceId', 'memberId', 'Hello')
         """
+
+        kwargs['fileUrl']=file_url
+        kwargs['sentence']=sentence
+        kwargs['gender']=gender
+        kwargs['locale']=locale
+        kwargs['voice']=voice
+        kwargs['loopEnabled']=loop_enabled
+
         path = '/users/%s/conferences/%s/members/%s/audio' % (self.user_id, conference_id, member_id)
-        self._make_request('post', path, json=data)
+        self._make_request('post', path, json=kwargs)
 
     # extensions
 
@@ -1704,7 +1711,7 @@ class Client:
         """
 
         self.play_audio_to_conference_member(conference_id, member_id,
-            fileUrl = file_url,
+            file_url = file_url,
             tag     = tag
         )
 
