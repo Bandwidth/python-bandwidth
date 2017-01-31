@@ -1863,111 +1863,218 @@ class Client:
     """
     Domain API
     """
-    def get_domains(self, query=None):
+    def list_domains(self, size=None, **kwargs):
         """
         Get a list of domains
 
-        Query parameters
-            size
-                Used for pagination to indicate the size of each page requested for querying a list
-                of items. If no value is specified the default value is 25. (Maximum value 100)
+        :param int size: Used for pagination to indicate the size of each page requested for querying a list of items. If no value is specified the default value is 25. (Maximum value 100)
         :rtype: types.GeneratorType
         :returns: list of domains
 
-        :Example:
-        list = api.get_domains()
-        """
-        path = '/users/%s/domains' % self.user_id
-        return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=query))
+        Example: Fetch domains and print::
 
-    def create_domain(self, data):
+            domain_list = api.list_domains(size=10)
+            print(list(domain_list))
+
+            ## [{   'endpointsUrl': 'https://api.catapult.inetwork.com/v1/users/u-abc123/domains/endpoints',
+            ##     'id'           : 'rd-domainId',
+            ##     'name'         : 'siplearn1'},
+            ## {   'endpointsUrl' : 'https://api.catapult.inetwork.com/v1/users/u-abc123/domains/endpoints',
+            ##     'id'           : 'rd-domainId2',
+            ##     'name'         : 'siplearn2'}]
+
+        Example: Search for domain based on name::
+
+            domain_list = api.list_domains(size=100)
+
+            domain_name = ''
+
+            while domain_name != 'My Prod Site':
+                my_domain = next(domain_list)
+                domain_name = my_domain['name']
+
+            print(my_domain)
+            ## {   'description' : 'Python Docs Example',
+            ##     'endpointsUrl': 'https://api.catapult.inetwork.com/v1/users/u-abc123/domains/rd-domainId/endpoints',
+            ##     'id'          : 'rd-domainId',
+            ##     'name'        : 'My Prod Site'}
+
+
+        """
+        kwargs['size']=size
+        path = '/users/%s/domains' % self.user_id
+        return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
+
+    def create_domain(self, name, description=None, **kwargs):
         """
         Create a domain
 
-        Parameters
-            name
-                The name is a unique URI to be used in DNS lookups
-            description
-                String to describe the domain
+        :param str name: The name is a unique URI to be used in DNS lookups
+        :param str description: String to describe the domain
+
         :rtype: str
         :returns: id of created domain
 
-        :Example:
-        id = api.create_domain({'name': 'qwerty'})
-        """
-        return self._make_request('post', '/users/%s/domains' % self.user_id, json=data)[2]
+        Example: Create Domain::
 
-    def delete_domain(self, id):
+            domain_id = api.create_domain(name='qwerty', description='Python Docs Example')
+
+            print(domain_id)
+            # rd-domainId
+        """
+        kwargs['name']=name
+        kwargs['description']=description
+        return self._make_request('post', '/users/%s/domains' % self.user_id, json=kwargs)[2]
+
+    def get_domain(self, domain_id):
+        """
+        Get information about a domain
+
+        :type domain_id: str
+        :param domain_id: id of the domain
+
+        :rtype: dict
+        :returns: domain information
+
+        Example: Create then fetch domain::
+
+            domain_id = api.create_domain(name='qwerty', description='Python Docs Example')
+
+            print(domain_id)
+            # rd-domainId
+
+            my_domain = api.get_domain(domain_id)
+
+            print(my_domain)
+            ## {   'description' : 'Python Docs Example',
+            ##     'endpointsUrl': 'https://api.catapult.inetwork.com/v1/users/u-abc123/domains/rd-domainId/endpoints',
+            ##     'id'          : 'rd-domainId',
+            ##     'name'        : 'qwerty'}
+        """
+        return self._make_request('get', '/users/%s/domains/%s' % (self.user_id, domain_id))[0]
+
+    def delete_domain(self, domain_id):
         """
         Delete a domain
 
-        :type id: str
-        :param id: id of a domain
+        :type domain_id: str
+        :param domain_id: id of a domain
 
-        :Example:
-        api.delete_domain('domainId')
+        Example: Delete domain 'domainId'
+
+            api.delete_domain('domainId')
         """
-        self._make_request('delete', '/users/%s/domains/%s' % (self.user_id, id))
-    """
-    Endpoint API
-    """
-    def get_domain_endpoints(self, id, query=None):
+        self._make_request('delete', '/users/%s/domains/%s' % (self.user_id, domain_id))
+
+    def list_domain_endpoints(self, domain_id, size=None, **kwargs):
         """
         Get a list of domain's endpoints
 
-        :type id: str
-        :param id: id of a domain
-
-        Query parameters
-            size
-                Used for pagination to indicate the size of each page requested for querying a list
-                of items. If no value is specified the default value is 25. (Maximum value 1000)
+        :type domain_id: str
+        :param domain_id: id of a domain
+        :param int size: Used for pagination to indicate the size of each page requested for querying a list of items. If no value is specified the default value is 25. (Maximum value 1000)
         :rtype: types.GeneratorType
         :returns: list of endpoints
 
-        :Example:
-        list = api.get_domain_endpoints()
-        """
-        path = '/users/%s/domains/%s/endpoints' % (self.user_id, id)
-        return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=query))
+        Example: List and interate over::
 
-    def create_domain_endpoint(self, id, data):
+            endpoint_list = api.list_domain_endpoints('rd-domainId', size=1000)
+
+            for endpoint in endpoint_list:
+                print(endpoint['id'])
+            ##re-endpointId1
+            ##re-endpointId2
+
+        Example: List and print all::
+
+            endpoint_list = api.list_domain_endpoints('rd-domainId', size=1000)
+
+            print(list(endpoint_list))
+
+            ## [
+            ##     {
+            ##         'applicationId':'a-appId',
+            ##         'credentials'  :{
+            ##             'realm'    :'creds.bwapp.bwsip.io',
+            ##             'username' :'user1'
+            ##         },
+            ##         'description'  :"Your SIP Account",
+            ##         'domainId'     :'rd-domainId',
+            ##         'enabled'      :True,
+            ##         'id'           :'re-endpointId1',
+            ##         'name'         :'User1_endpoint',
+            ##         'sipUri'       :'sip:user1@creds.bwapp.bwsip.io'
+            ##     },
+            ##     {
+            ##         'applicationId':'a-appId',
+            ##         'credentials'  :{
+            ##             'realm'    :'creds1.bwapp.bwsip.io',
+            ##             'username' :'user2'
+            ##         },
+            ##         'description'  :"Your SIP Account",
+            ##         'domainId'     :'rd-domainId',
+            ##         'enabled'      :True,
+            ##         'id'           :'re-endpointId2',
+            ##         'name'         :'User2_endpoint',
+            ##         'sipUri'       :'sip:user2@creds.bwapp.bwsip.io'
+            ##     }
+            ## ]
+
+        """
+        kwargs['size']=size
+        path = '/users/%s/domains/%s/endpoints' % (self.user_id, domain_id)
+        return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
+
+    def create_domain_endpoint(self, domain_id, name, password, description=None, application_id=None, enabled=True, **kwargs):
         """
         Create a domain endpoint
 
-        :type id: str
-        :param id: id of a domain
-
-        Parameters
-            name
-                The name of endpoint
-            description
-                String to describe the endpoint
-            applicationId
-                Id of application which will handle calls and messages of this endpoint
-            enabled
-                When set to true, SIP clients can register as this device to receive and
-                make calls. When set to false, registration, inbound, and outbound
-                calling will not succeed.
-            credentials.password
-                Password of created SIP account
+        :param str domain_id: id of a domain
+        :param str name: The name of endpoint
+        :param str description: String to describe the endpoint
+        :param str application_id: Id of application which will handle calls and messages of this endpoint
+        :param bool enabled: When set to true, SIP clients can register as this device to receive and make calls. When set to false, registration, inbound, and outbound calling will not succeed.
+        :param str password: Password of created SIP account
 
 
         :rtype: str
         :returns: id of endpoint
 
-        :Example:
-        id = api.create_domain_endpoint({'name': 'my-sip'})
-        """
-        data['domainId'] = id
-        return self._make_request('post', '/users/%s/domains/%s/endpoints' % (self.user_id, id), json=data)[2]
+        Example: Create Endpoint on Domain 'rd-domainId'
 
-    def get_domain_endpoint(self, id, endpoint_id):
+            endpoint_id = api.create_domain_endpoint('rd-domainId', endpoint_name='User3_endpoint', password='AtLeast6Chars')
+            print(endpoint_id)
+            # re-endpointId3
+
+            my_endpoint = api.get_domain_endpoint(endpoint_id)
+            print(my_endpoint)
+
+            ## {
+            ##     'credentials' :{
+            ##         'realm'   :'qwerty.bwapp.bwsip.io',
+            ##         'username':'User3_endpoint'
+            ##     },
+            ##     'domainId'    :'rd-domainId',
+            ##     'enabled'     :True,
+            ##     'id'          :'re-endpointId3',
+            ##     'name'        :'User3_endpoint',
+            ##     'sipUri'      :'sip:user5@qwerty.bwapp.bwsip.io'
+            ## }
+
+        """
+        kwargs['name'] = name
+        kwargs['description'] = description
+        kwargs['applicationId'] = application_id
+        kwargs['enabled'] = enabled
+        kwargs['credentials'] = dict(password=password)
+        return self._make_request('post', '/users/%s/domains/%s/endpoints' % (self.user_id, domain_id), json=kwargs)[2]
+
+    def get_domain_endpoint(self, domain_id, endpoint_id):
         """
         Get information about an endpoint
 
-        :type id: str
-        :param id: id of a domain
+        :type domain_id: str
+        :param domain_id: id of a domain
 
         :type endpoint_id: str
         :param endpoint_id: id of a endpoint
@@ -1975,52 +2082,114 @@ class Client:
         :rtype: dict
         :returns: call information
 
-        :Example:
-        data = api.get_domain_endpoint('domainId', 'endpointId')
-        """
-        return self._make_request('get', '/users/%s/domains/%s/endpoints/%s' % (self.user_id, id, endpoint_id))[0]
+        Example: Create Endpoint on Domain 'rd-domainId' then fetch the endpoint
 
-    def update_domain_endpoint(self, id, endpoint_id, data):
+            endpoint_id = api.create_domain_endpoint('rd-domainId', endpoint_name='User3_endpoint', password='AtLeast6Chars')
+            print(endpoint_id)
+            # re-endpointId3
+
+            my_endpoint = api.get_domain_endpoint(endpoint_id)
+            print(my_endpoint)
+
+            ## {
+            ##     'credentials' :{
+            ##         'realm'   :'qwerty.bwapp.bwsip.io',
+            ##         'username':'User3_endpoint'
+            ##     },
+            ##     'domainId'    :'rd-domainId',
+            ##     'enabled'     :True,
+            ##     'id'          :'re-endpointId3',
+            ##     'name'        :'User3_endpoint',
+            ##     'sipUri'      :'sip:user5@qwerty.bwapp.bwsip.io'
+            ## }
+        """
+        return self._make_request('get', '/users/%s/domains/%s/endpoints/%s' % (self.user_id, domain_id, endpoint_id))[0]
+
+    def update_domain_endpoint(self, domain_id, endpoint_id, password=None, description=None, application_id=None, enabled=True, **kwargs):
         """
         Update information about an endpoint
 
-        :type id: str
-        :param id: id of a domain
+        :param str domain_id: id of a domain
+        :param str endpoint_id: id of a endpoint
+        :param str description: String to describe the endpoint
+        :param str application_id: Id of application which will handle calls and messages of this endpoint
+        :param bool enabled: When set to true, SIP clients can register as this device to receive and make calls. When set to false, registration, inbound, and outbound calling will not succeed.
+        :param str password: Password of created SIP account
 
-        :type endpoint_id: str
-        :param endpoint_id: id of a endpoint
+        Example: Update password and disable the endpoint::
 
-        Parameters
-            description
-                String to describe the endpoint
-            applicationId
-                Id of application which will handle calls and messages of this endpoint
-            enabled
-                When set to true, SIP clients can register as this device to receive and
-                make calls. When set to false, registration, inbound, and outbound
-                calling will not succeed.
-            credentials.password
-                Password of created SIP account
 
-        :Example:
-        api.update_domain_endpoint('domainId', 'endpointId', {'enabled': False})
+            my_endpoint = api.get_domain_endpoint('rd-domainId', re-endpointId')
+            print(my_endpoint)
+
+            ## {
+            ##     'credentials' :{
+            ##         'realm'   :'qwerty.bwapp.bwsip.io',
+            ##         'username':'user5'
+            ##     },
+            ##     'domainId'    :'rd-domainId',
+            ##     'enabled'     :True,
+            ##     'id'          :'re-endpointId',
+            ##     'name'        :'user3',
+            ##     'sipUri'      :'sip:user5@qwerty.bwapp.bwsip.io'
+            ## }
+
+            api.update_domain_endpoint('rd-domainId', 're-endpointId', enabled=False, password='abc123')
+            my_endpoint = api.get_domain_endpoint('rd-domainId', re-endpointId')
+            print(my_endpoint)
+
+            ## {
+            ##     'credentials' :{
+            ##         'realm'   :'qwerty.bwapp.bwsip.io',
+            ##         'username':'user5'
+            ##     },
+            ##     'domainId'    :'rd-domainId',
+            ##     'enabled'     :False,
+            ##     'id'          :'re-endpointId',
+            ##     'name'        :'user3',
+            ##     'sipUri'      :'sip:user5@qwerty.bwapp.bwsip.io'
+            ## }
         """
-        self._make_request('post', '/users/%s/domains/%s/endpoints/%s' % (self.user_id, id, endpoint_id), json=data)
 
-    def delete_domain_endpoint(self, id, endpoint_id):
+        kwargs['description']= description
+        kwargs['applicationId']=application_id
+        kwargs['enabled']=enabled
+        kwargs['credentials']=dict(password=password)
+
+        self._make_request('post', '/users/%s/domains/%s/endpoints/%s' % (self.user_id, id, endpoint_id), json=kwargs)
+
+    def delete_domain_endpoint(self, domain_id, endpoint_id):
         """
         Remove an endpoint
 
-        :type id: str
-        :param id: id of a domain
+        :param str domain_id: id of a domain
+        :param str endpoint_id: id of a endpoint
 
-        :type endpoint_id: str
-        :param endpoint_id: id of a endpoint
+        Example: Delete and try to fetch endpoint::
 
-        :Example:
-        api.delete_domain_endpoint('domainId', 'endpointId')
+            my_endpoint = api.get_domain_endpoint('rd-domainId', re-endpointId')
+            print(my_endpoint)
+            ## {
+            ##     'credentials' :{
+            ##         'realm'   :'qwerty.bwapp.bwsip.io',
+            ##         'username':'user5'
+            ##     },
+            ##     'domainId'    :'rd-domainId',
+            ##     'enabled'     :False,
+            ##     'id'          :'re-endpointId',
+            ##     'name'        :'user3',
+            ##     'sipUri'      :'sip:user5@qwerty.bwapp.bwsip.io'
+            ## }
+            api.delete_domain_endpoint(d, e)
+
+            try:
+                my_endpoint = api.get_domain_endpoint(d, e)
+            except Exception as e:
+                print(e)
+            ## CatapultException(404, "The endpoint 're-endpointId' could not be found")
+
         """
-        self._make_request('delete', '/users/%s/domains/%s/endpoints/%s' % (self.user_id, id, endpoint_id))
+        self._make_request('delete', '/users/%s/domains/%s/endpoints/%s' % (self.user_id, domain_id, endpoint_id))
 
     def create_domain_endpoint_auth_token(self, id, endpoint_id, data={'expires': 3600}):
         """

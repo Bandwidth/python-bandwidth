@@ -51,11 +51,11 @@ class BridgesTests(unittest.TestCase):
         """
         estimated_json="""
         {
-            "id": "bridgeId",
-            "state": "completed",
-            "bridgeAudio": "true",
-            "calls":"https://.../v1/users/{userId}/bridges/{bridgeId}/calls",
-            "createdTime": "2013-04-22T13:55:30.279Z",
+            "id"           : "bridgeId",
+            "state"        : "completed",
+            "bridgeAudio"  : "true",
+            "calls"        : "https://.../v1/users/{userId}/bridges/{bridgeId}/calls",
+            "createdTime"  : "2013-04-22T13:55:30.279Z",
             "activatedTime": "2013-04-22T13:55:30.280Z",
             "completedTime": "2013-04-22T13:59:30.122Z"
         }
