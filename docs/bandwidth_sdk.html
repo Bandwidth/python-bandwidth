@@ -1535,14 +1535,71 @@ used to place calls later.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="bandwidth.catapult.Client.create_conference_member">
+<code class="descname">create_conference_member</code><span class="sig-paren">(</span><em>conference_id</em>, <em>call_id=None</em>, <em>join_tone=None</em>, <em>leaving_tone=None</em>, <em>mute=None</em>, <em>hold=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.create_conference_member" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a conference member for a conference</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>conference_id</strong> (<em>str</em>) &#8211; id of a conference</li>
+<li><strong>call_id</strong> (<em>str</em>) &#8211; The callId must refer to an active call that was created using this conferenceId (required)</li>
+<li><strong>join_tone</strong> (<em>bool</em>) &#8211; If &#8220;true&#8221;, will play a tone when the member joins the conference. If &#8220;false&#8221;, no tone is played when the member joins the conference.</li>
+<li><strong>leaving_tone</strong> (<em>bool</em>) &#8211; If &#8220;true&#8221;, will play a tone when the member leaves the conference. If &#8220;false&#8221;, no tone is played when the member leaves the conference.</li>
+<li><strong>mute</strong> (<em>bool</em>) &#8211; If &#8220;true&#8221;, member can&#8217;t speak in the conference. If &#8220;false&#8221;, this members can speak in the conference (unless set at the conference level).</li>
+<li><strong>hold</strong> (<em>bool</em>) &#8211; If &#8220;true&#8221;, member can&#8217;t hear or speak in the conference. If &#8220;false&#8221;, member can hear and speak in the conference (unless set at the conference level).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">str</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">id of create of conference member</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Create Conference and add member:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_conf_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_conference</span><span class="p">(</span><span class="n">from_</span><span class="o">=</span><span class="s1">&#39;+19192223333&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_conf</span><span class="p">)</span>
+<span class="c1"># conf-confId</span>
+
+<span class="n">my_call_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_call</span><span class="p">(</span><span class="n">from_</span><span class="o">=</span><span class="s1">&#39;+19192223333&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;+19192223334&#39;</span><span class="p">,</span> <span class="n">conference_id</span><span class="o">=</span> <span class="s1">&#39;conf-confId&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_call_id</span><span class="p">)</span>
+<span class="c1"># c-callId</span>
+
+<span class="n">my_conf_member_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_conference_member</span><span class="p">(</span><span class="n">my_conf_id</span><span class="p">,</span> <span class="n">call_id</span><span class="o">=</span><span class="n">my_call_id</span><span class="p">,</span> <span class="n">join_tone</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_conf_member_id</span><span class="p">)</span>
+<span class="c1"># member-memberId</span>
+
+<span class="n">my_conf_member</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_conference_member</span><span class="p">(</span><span class="n">my_conf_id</span><span class="p">,</span> <span class="n">my_member_id</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_conf_member</span><span class="p">)</span>
+
+<span class="c1">## {</span>
+<span class="c1">##     &#39;addedTime&#39;: &#39;2017-01-30T22:01:11Z&#39;,</span>
+<span class="c1">##     &#39;call&#39;         : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId&#39;,</span>
+<span class="c1">##     &#39;hold&#39;         : False,</span>
+<span class="c1">##     &#39;id&#39;           : &#39;member-memberId&#39;,</span>
+<span class="c1">##     &#39;joinTone&#39;     : False,</span>
+<span class="c1">##     &#39;leavingTone&#39;  : False,</span>
+<span class="c1">##     &#39;mute&#39;         : False,</span>
+<span class="c1">##     &#39;removedTime&#39;  : &#39;2017-01-30T22:01:21Z&#39;,</span>
+<span class="c1">##     &#39;state&#39;        : &#39;completed&#39;</span>
+<span class="c1">## }</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="bandwidth.catapult.Client.get_conference">
-<code class="descname">get_conference</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.get_conference" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_conference</code><span class="sig-paren">(</span><em>conference_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.get_conference" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get information about a conference</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> (<em>str</em>) &#8211; id of a conference</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>conference_id</strong> (<em>str</em>) &#8211; id of a conference</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
 </tr>
@@ -1576,15 +1633,411 @@ used to place calls later.</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="bandwidth.catapult.Client.update_conference">
-<code class="descname">update_conference</code><span class="sig-paren">(</span><em>id</em>, <em>state=None</em>, <em>mute=None</em>, <em>hold=None</em>, <em>callback_url=None</em>, <em>callback_timeout=None</em>, <em>callback_http_method=None</em>, <em>fallback_url=None</em>, <em>tag=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.update_conference" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update a conference</p>
+<dt id="bandwidth.catapult.Client.get_conference_member">
+<code class="descname">get_conference_member</code><span class="sig-paren">(</span><em>conference_id</em>, <em>member_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.get_conference_member" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a conference member</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>conference_id</strong> (<em>str</em>) &#8211; id of a conference</li>
+<li><strong>member_id</strong> (<em>str</em>) &#8211; id of a member</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">dict</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">data of conference member</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Create Conference and add member:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_conf_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_conference</span><span class="p">(</span><span class="n">from_</span><span class="o">=</span><span class="s1">&#39;+19192223333&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_conf</span><span class="p">)</span>
+<span class="c1"># conf-confId</span>
+
+<span class="n">my_call_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_call</span><span class="p">(</span><span class="n">from_</span><span class="o">=</span><span class="s1">&#39;+19192223333&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;+19192223334&#39;</span><span class="p">,</span> <span class="n">conference_id</span><span class="o">=</span> <span class="s1">&#39;conf-confId&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_call_id</span><span class="p">)</span>
+<span class="c1"># c-callId</span>
+
+<span class="n">my_conf_member_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_conference_member</span><span class="p">(</span><span class="n">my_conf_id</span><span class="p">,</span> <span class="n">call_id</span><span class="o">=</span><span class="n">my_call_id</span><span class="p">,</span> <span class="n">join_tone</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_conf_member_id</span><span class="p">)</span>
+<span class="c1"># member-memberId</span>
+
+<span class="n">my_conf_member</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_conference_member</span><span class="p">(</span><span class="n">my_conf_id</span><span class="p">,</span> <span class="n">my_member_id</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_conf_member</span><span class="p">)</span>
+
+<span class="c1">## {</span>
+<span class="c1">##     &#39;addedTime&#39;: &#39;2017-01-30T22:01:11Z&#39;,</span>
+<span class="c1">##     &#39;call&#39;         : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId&#39;,</span>
+<span class="c1">##     &#39;hold&#39;         : False,</span>
+<span class="c1">##     &#39;id&#39;           : &#39;member-memberId&#39;,</span>
+<span class="c1">##     &#39;joinTone&#39;     : True,</span>
+<span class="c1">##     &#39;leavingTone&#39;  : False,</span>
+<span class="c1">##     &#39;mute&#39;         : False,</span>
+<span class="c1">##     &#39;removedTime&#39;  : &#39;2017-01-30T22:01:21Z&#39;,</span>
+<span class="c1">##     &#39;state&#39;        : &#39;active&#39;</span>
+<span class="c1">## }</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="bandwidth.catapult.Client.hold_conference">
+<code class="descname">hold_conference</code><span class="sig-paren">(</span><em>conference_id</em>, <em>hold</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.hold_conference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hold or unhold a conference</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>conference_id</strong> (<em>str</em>) &#8211; id of a conference</li>
+<li><strong>hold</strong> (<em>bool</em>) &#8211; hold (if true) or unhold (if false) a conference</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Put entire confernce on hold, where no one can hear:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">hold_conference</span><span class="p">(</span><span class="s1">&#39;conferenceId&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="bandwidth.catapult.Client.hold_conference_member">
+<code class="descname">hold_conference_member</code><span class="sig-paren">(</span><em>conference_id</em>, <em>member_id</em>, <em>hold</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.hold_conference_member" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hold or unhold a conference member</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>conference_id</strong> (<em>str</em>) &#8211; id of a conference</li>
+<li><strong>member_id</strong> (<em>str</em>) &#8211; id of a conference member</li>
+<li><strong>hold</strong> (<em>bool</em>) &#8211; hold (if true) or unhold (if false) a member</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Put specific conference member on hold:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">hold_conference_member</span><span class="p">(</span><span class="s1">&#39;conferenceId&#39;</span><span class="p">,</span> <span class="s1">&#39;memberId&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="bandwidth.catapult.Client.list_conference_members">
+<code class="descname">list_conference_members</code><span class="sig-paren">(</span><em>conference_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.list_conference_members" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of members of a conference</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>conference_id</strong> (<em>str</em>) &#8211; id of a conference</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">types.GeneratorType</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of recordings</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Fetch and list conference members:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_conf_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_conference</span><span class="p">(</span><span class="n">from_</span><span class="o">=</span><span class="s1">&#39;+19192223333&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_conf</span><span class="p">)</span>
+<span class="c1"># conf-confId</span>
+
+<span class="n">my_call_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_call</span><span class="p">(</span><span class="n">from_</span><span class="o">=</span><span class="s1">&#39;+19192223333&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;+19192223334&#39;</span><span class="p">,</span> <span class="n">conference_id</span><span class="o">=</span> <span class="s1">&#39;conf-confId&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_call_id</span><span class="p">)</span>
+<span class="c1"># c-callId</span>
+
+<span class="n">my_conf_member_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_conference_member</span><span class="p">(</span><span class="n">my_conf_id</span><span class="p">,</span> <span class="n">call_id</span><span class="o">=</span><span class="n">my_call_id</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_conf_member_id</span><span class="p">)</span>
+<span class="c1"># member-memberId</span>
+
+<span class="n">my_conference_members</span> <span class="o">=</span> <span class="n">list_conference_members</span><span class="p">(</span><span class="n">my_conf_id</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">my_conference_members</span><span class="p">))</span>
+
+<span class="c1">## [</span>
+<span class="c1">##    {</span>
+<span class="c1">##       &#39;addedTime&#39;  :&#39;2017-01-30T22:01:11Z&#39;,</span>
+<span class="c1">##       &#39;call&#39;       :&#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId&#39;,</span>
+<span class="c1">##       &#39;hold&#39;       :False,</span>
+<span class="c1">##       &#39;id&#39;         :&#39;member-memberId&#39;,</span>
+<span class="c1">##       &#39;joinTone&#39;   :False,</span>
+<span class="c1">##       &#39;leavingTone&#39;:False,</span>
+<span class="c1">##       &#39;mute&#39;       :False,</span>
+<span class="c1">##       &#39;removedTime&#39;:&#39;2017-01-30T22:01:21Z&#39;,</span>
+<span class="c1">##       &#39;state&#39;      :&#39;completed&#39;</span>
+<span class="c1">##    }</span>
+<span class="c1">## ]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="bandwidth.catapult.Client.mute_conference">
+<code class="descname">mute_conference</code><span class="sig-paren">(</span><em>conference_id</em>, <em>mute</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.mute_conference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mute or unmute a conference</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>id</strong> (<em>str</em>) &#8211; id of a conference</li>
+<li><strong>mute</strong> (<em>bool</em>) &#8211; mute (if true) or unmute (if false) a conference</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Mute the entire Conference, where no one can speak:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">mute_conference</span><span class="p">(</span><span class="s1">&#39;conferenceId&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="bandwidth.catapult.Client.mute_conference_member">
+<code class="descname">mute_conference_member</code><span class="sig-paren">(</span><em>conference_id</em>, <em>member_id</em>, <em>mute</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.mute_conference_member" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mute or unmute a conference member</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>conference_id</strong> (<em>str</em>) &#8211; id of a conference</li>
+<li><strong>member_id</strong> (<em>str</em>) &#8211; id of a conference member</li>
+<li><strong>mute</strong> (<em>bool</em>) &#8211; mute (if true) or unmute (if false) a member</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Mute specific conference member:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">mute_conference_member</span><span class="p">(</span><span class="s1">&#39;conferenceId&#39;</span><span class="p">,</span> <span class="s1">&#39;memberId&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="bandwidth.catapult.Client.play_audio_file_to_conference_member">
+<code class="descname">play_audio_file_to_conference_member</code><span class="sig-paren">(</span><em>conference_id</em>, <em>member_id</em>, <em>file_url</em>, <em>tag=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.play_audio_file_to_conference_member" title="Permalink to this definition">¶</a></dt>
+<dd><p>Play audio file to a conference member</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>conference_id</strong> (<em>str</em>) &#8211; id of a conference</li>
+<li><strong>member_id</strong> (<em>str</em>) &#8211; id of a conference member</li>
+<li><strong>file_url</strong> (<em>str</em>) &#8211; URL to remote file to play</li>
+<li><strong>tag</strong> (<em>str</em>) &#8211; A string that will be included in the callback events of the call.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Play an audio file to specific member:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">play_audio_file_to_conference_member</span><span class="p">(</span><span class="s1">&#39;conferenceId&#39;</span><span class="p">,</span> <span class="s1">&#39;memberId&#39;</span><span class="p">,</span> <span class="s1">&#39;http://host/path/file.mp3&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="bandwidth.catapult.Client.play_audio_to_conference">
+<code class="descname">play_audio_to_conference</code><span class="sig-paren">(</span><em>conference_id</em>, <em>file_url=None</em>, <em>sentence=None</em>, <em>gender=None</em>, <em>locale=None</em>, <em>voice=None</em>, <em>loop_enabled=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.play_audio_to_conference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Play audio to a conference</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>conference_id</strong> (<em>str</em>) &#8211; id of a conference</li>
+<li><strong>file_url</strong> (<em>str</em>) &#8211; The location of an audio file to play (WAV and MP3 supported).</li>
+<li><strong>sentence</strong> (<em>str</em>) &#8211; The sentence to speak.</li>
+<li><strong>gender</strong> (<em>str</em>) &#8211; The gender of the voice used to synthesize the sentence.</li>
+<li><strong>locale</strong> (<em>str</em>) &#8211; The locale used to get the accent of the voice used to synthesize the sentence.</li>
+<li><strong>voice</strong> (<em>str</em>) &#8211; The voice to speak the sentence.</li>
+<li><strong>loop_enabled</strong> (<em>str</em>) &#8211; When value is true, the audio will keep playing in a loop.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Play audio file to conference:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">play_audio_to_conference</span><span class="p">(</span><span class="s1">&#39;conferenceId&#39;</span><span class="p">,</span> <span class="n">fileUrl</span> <span class="o">=</span> <span class="s1">&#39;http://host/path/file.mp3&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Example: Speak Sentence to conference:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">play_audio_to_conference</span><span class="p">(</span><span class="s1">&#39;conferenceId&#39;</span><span class="p">,</span> <span class="n">sentence</span><span class="o">=</span><span class="s1">&#39;Press 0 to complete call&#39;</span><span class="p">,</span> <span class="n">gender</span><span class="o">=</span><span class="s1">&#39;female&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Example: Use Extensions methods:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># or with extension methods</span>
+<span class="n">api</span><span class="o">.</span><span class="n">play_audio_file_to_conference</span><span class="p">(</span><span class="s1">&#39;conferenceId&#39;</span><span class="p">,</span> <span class="s1">&#39;http://host/path/file.mp3&#39;</span><span class="p">)</span>
+<span class="n">api</span><span class="o">.</span><span class="n">speak_sentence_to_conference</span><span class="p">(</span><span class="s1">&#39;conferenceId&#39;</span><span class="p">,</span> <span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="bandwidth.catapult.Client.play_audio_to_conference_member">
+<code class="descname">play_audio_to_conference_member</code><span class="sig-paren">(</span><em>conference_id</em>, <em>member_id</em>, <em>file_url=None</em>, <em>sentence=None</em>, <em>gender=None</em>, <em>locale=None</em>, <em>voice=None</em>, <em>loop_enabled=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.play_audio_to_conference_member" title="Permalink to this definition">¶</a></dt>
+<dd><p>Play audio to a conference member</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>conference_id</strong> (<em>str</em>) &#8211; id of a conference</li>
+<li><strong>member_id</strong> (<em>str</em>) &#8211; id of a conference member</li>
+<li><strong>file_url</strong> (<em>str</em>) &#8211; The location of an audio file to play (WAV and MP3 supported).</li>
+<li><strong>sentence</strong> (<em>str</em>) &#8211; The sentence to speak.</li>
+<li><strong>gender</strong> (<em>str</em>) &#8211; The gender of the voice used to synthesize the sentence.</li>
+<li><strong>locale</strong> (<em>str</em>) &#8211; The locale used to get the accent of the voice used to synthesize the sentence.</li>
+<li><strong>voice</strong> (<em>str</em>) &#8211; The voice to speak the sentence.</li>
+<li><strong>loop_enabled</strong> (<em>str</em>) &#8211; When value is true, the audio will keep playing in a loop.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Play audio to specific conference member:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>api.play_audio_to_conference_member(&#39;conferenceId&#39;, &#39;memberId&#39;, fileUrl=http://host/path/file.mp3)
+api.play_audio_to_conference_member(&#39;conferenceId&#39;, &#39;memberId&#39;,
+                                    sentence=&#39;Press 0 to complete call&#39;, gender=&#39;female&#39;)
+
+# or with extension methods
+api.play_audio_file_to_conference_member(&#39;conferenceId&#39;, &#39;memberId&#39;, &#39;http://host/path/file.mp3&#39;)
+api.speak_sentence_to_conference_member(&#39;conferenceId&#39;, &#39;memberId&#39;, &#39;Hello&#39;)
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="bandwidth.catapult.Client.remove_conference_member">
+<code class="descname">remove_conference_member</code><span class="sig-paren">(</span><em>conference_id</em>, <em>member_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.remove_conference_member" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a conference member</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>conference_id</strong> (<em>str</em>) &#8211; id of a conference</li>
+<li><strong>member_id</strong> (<em>str</em>) &#8211; id of a conference member</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Remove Member from Conference:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_conf</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_conference</span><span class="p">(</span><span class="s1">&#39;conferenceId&#39;</span><span class="p">)</span>
+<span class="n">my_conf_members</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">list_conference_members</span><span class="p">(</span><span class="n">my_conf</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_conf_members</span><span class="p">)</span>
+
+<span class="c1">## [{ &#39;addedTime&#39;  : &#39;2017-01-30T23:17:11Z&#39;,</span>
+<span class="c1">##    &#39;call&#39;       : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId&#39;,</span>
+<span class="c1">##    &#39;hold&#39;       : False,</span>
+<span class="c1">##    &#39;id&#39;         : &#39;member-memberId&#39;,</span>
+<span class="c1">##    &#39;joinTone&#39;   : False,</span>
+<span class="c1">##    &#39;leavingTone&#39;: False,</span>
+<span class="c1">##    &#39;mute&#39;       : False,</span>
+<span class="c1">##    &#39;state&#39;      : &#39;active&#39;},</span>
+<span class="c1">##  { &#39;addedTime&#39;  : &#39;2017-01-30T23:17:14Z&#39;,</span>
+<span class="c1">##    &#39;call&#39;       : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId2&#39;,</span>
+<span class="c1">##    &#39;hold&#39;       : False,</span>
+<span class="c1">##    &#39;id&#39;         : &#39;member-memberId2&#39;,</span>
+<span class="c1">##    &#39;joinTone&#39;   : False,</span>
+<span class="c1">##    &#39;leavingTone&#39;: False,</span>
+<span class="c1">##    &#39;mute&#39;       : False,</span>
+<span class="c1">##    &#39;state&#39;      : &#39;active&#39;}]</span>
+
+<span class="n">api</span><span class="o">.</span><span class="n">remove_conference_member</span><span class="p">(</span><span class="n">my_conf</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">my_conf_members</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+
+<span class="n">my_conf_members</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">list_conference_members</span><span class="p">(</span><span class="n">my_conf</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_conf_members</span><span class="p">)</span>
+
+<span class="c1">## [{ &#39;addedTime&#39;  : &#39;2017-01-30T23:17:11Z&#39;,</span>
+<span class="c1">##    &#39;call&#39;       : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId&#39;,</span>
+<span class="c1">##    &#39;hold&#39;       : False,</span>
+<span class="c1">##    &#39;id&#39;         : &#39;member-memberId&#39;,</span>
+<span class="c1">##    &#39;joinTone&#39;   : False,</span>
+<span class="c1">##    &#39;leavingTone&#39;: False,</span>
+<span class="c1">##    &#39;mute&#39;       : False,</span>
+<span class="c1">##    &#39;state&#39;      : &#39;active&#39;},</span>
+<span class="c1">##  { &#39;addedTime&#39;  : &#39;2017-01-30T23:17:14Z&#39;,</span>
+<span class="c1">##    &#39;call&#39;       : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId2&#39;,</span>
+<span class="c1">##    &#39;hold&#39;       : False,</span>
+<span class="c1">##    &#39;id&#39;         : &#39;member-memberId2&#39;,</span>
+<span class="c1">##    &#39;joinTone&#39;   : False,</span>
+<span class="c1">##    &#39;leavingTone&#39;: False,</span>
+<span class="c1">##    &#39;mute&#39;       : False,</span>
+<span class="c1">##    &#39;state&#39;      : &#39;completed&#39;}]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="bandwidth.catapult.Client.speak_sentence_to_conference_member">
+<code class="descname">speak_sentence_to_conference_member</code><span class="sig-paren">(</span><em>conference_id</em>, <em>member_id</em>, <em>sentence</em>, <em>gender='female'</em>, <em>voice='susan'</em>, <em>locale='en_US'</em>, <em>tag=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.speak_sentence_to_conference_member" title="Permalink to this definition">¶</a></dt>
+<dd><p>Speak sentence to a conference member</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>conference_id</strong> (<em>str</em>) &#8211; id of a conference</li>
+<li><strong>member_id</strong> (<em>str</em>) &#8211; id of a conference member</li>
+<li><strong>sentence</strong> (<em>str</em>) &#8211; sentence to say</li>
+<li><strong>gender</strong> (<em>str</em>) &#8211; gender of voice</li>
+<li><strong>voice</strong> (<em>str</em>) &#8211; voice name</li>
+<li><strong>locale</strong> (<em>str</em>) &#8211; locale name</li>
+<li><strong>tag</strong> (<em>str</em>) &#8211; A string that will be included in the callback events of the call.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Speak sentence to specific confernce member:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">speak_sentence_to_conference_member</span><span class="p">(</span><span class="s1">&#39;conferenceId&#39;</span><span class="p">,</span> <span class="s1">&#39;memberId&#39;</span><span class="p">,</span> <span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="bandwidth.catapult.Client.terminate_conference">
+<code class="descname">terminate_conference</code><span class="sig-paren">(</span><em>conference_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.terminate_conference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Terminate of current conference</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>conference_id</strong> (<em>str</em>) &#8211; id of a conference</td>
+</tr>
+</tbody>
+</table>
+<p>Example: End the Conference:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">terminate_conference</span><span class="p">(</span><span class="s1">&#39;conferenceId&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="bandwidth.catapult.Client.update_conference">
+<code class="descname">update_conference</code><span class="sig-paren">(</span><em>conference_id</em>, <em>state=None</em>, <em>mute=None</em>, <em>hold=None</em>, <em>callback_url=None</em>, <em>callback_timeout=None</em>, <em>callback_http_method=None</em>, <em>fallback_url=None</em>, <em>tag=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.update_conference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update a conference</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>conference_id</strong> (<em>str</em>) &#8211; id of a conference</li>
 <li><strong>state</strong> (<em>str</em>) &#8211; Conference state. Possible state values are: &#8220;completed&#8221; to terminate the conference.</li>
 <li><strong>mute</strong> (<em>str</em>) &#8211; If &#8220;true&#8221;, all member can&#8217;t speak in the conference. If &#8220;false&#8221;, all members can speak in the conference</li>
 <li><strong>hold</strong> (<em>str</em>) &#8211; If &#8220;true&#8221;, all member can&#8217;t hear or speak in the conference. If &#8220;false&#8221;, all members can hear and speak in the conference</li>
@@ -1599,7 +2052,74 @@ used to place calls later.</li>
 </tbody>
 </table>
 <p>Example: End conference:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">update_conference</span><span class="p">(</span><span class="s1">&#39;conferenceId&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="s1">&#39;completed&#39;</span><span class="p">})</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">update_conference</span><span class="p">(</span><span class="s1">&#39;conferenceId&#39;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s1">&#39;completed&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="bandwidth.catapult.Client.update_conference_member">
+<code class="descname">update_conference_member</code><span class="sig-paren">(</span><em>conference_id</em>, <em>member_id</em>, <em>join_tone=None</em>, <em>leaving_tone=None</em>, <em>mute=None</em>, <em>hold=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.update_conference_member" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update a conference member</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>conference_id</strong> (<em>str</em>) &#8211; id of a conference</li>
+<li><strong>member_id</strong> (<em>str</em>) &#8211; id of a conference member</li>
+<li><strong>join_tone</strong> (<em>bool</em>) &#8211; If &#8220;true&#8221;, will play a tone when the member joins the conference. If &#8220;false&#8221;, no tone is played when the member joins the conference.</li>
+<li><strong>leaving_tone</strong> (<em>bool</em>) &#8211; If &#8220;true&#8221;, will play a tone when the member leaves the conference. If &#8220;false&#8221;, no tone is played when the member leaves the conference.</li>
+<li><strong>mute</strong> (<em>bool</em>) &#8211; If &#8220;true&#8221;, member can&#8217;t speak in the conference. If &#8220;false&#8221;, this members can speak in the conference (unless set at the conference level).</li>
+<li><strong>hold</strong> (<em>bool</em>) &#8211; If &#8220;true&#8221;, member can&#8217;t hear or speak in the conference. If &#8220;false&#8221;, member can hear and speak in the conference (unless set at the conference level).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: update conference member:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_conf_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_conference</span><span class="p">(</span><span class="n">from_</span><span class="o">=</span><span class="s1">&#39;+19192223333&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_conf</span><span class="p">)</span>
+<span class="c1"># conf-confId</span>
+
+<span class="n">my_call_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_call</span><span class="p">(</span><span class="n">from_</span><span class="o">=</span><span class="s1">&#39;+19192223333&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;+19192223334&#39;</span><span class="p">,</span> <span class="n">conference_id</span><span class="o">=</span> <span class="s1">&#39;conf-confId&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_call_id</span><span class="p">)</span>
+<span class="c1"># c-callId</span>
+
+<span class="n">my_conf_member_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_conference_member</span><span class="p">(</span><span class="n">my_conf_id</span><span class="p">,</span> <span class="n">call_id</span><span class="o">=</span><span class="n">my_call_id</span><span class="p">,</span> <span class="n">join_tone</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_conf_member_id</span><span class="p">)</span>
+<span class="c1"># member-memberId</span>
+
+<span class="n">my_conf_member</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_conference_member</span><span class="p">(</span><span class="n">my_conf_id</span><span class="p">,</span> <span class="n">my_member_id</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_conf_member</span><span class="p">)</span>
+
+<span class="c1">## {</span>
+<span class="c1">##     &#39;addedTime&#39;: &#39;2017-01-30T22:01:11Z&#39;,</span>
+<span class="c1">##     &#39;call&#39;         : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId&#39;,</span>
+<span class="c1">##     &#39;hold&#39;         : False,</span>
+<span class="c1">##     &#39;id&#39;           : &#39;member-memberId&#39;,</span>
+<span class="c1">##     &#39;joinTone&#39;     : True,</span>
+<span class="c1">##     &#39;leavingTone&#39;  : False,</span>
+<span class="c1">##     &#39;mute&#39;         : False,</span>
+<span class="c1">##     &#39;removedTime&#39;  : &#39;2017-01-30T22:01:21Z&#39;,</span>
+<span class="c1">##     &#39;state&#39;        : &#39;active&#39;</span>
+<span class="c1">## }</span>
+
+<span class="n">api</span><span class="o">.</span><span class="n">update_conference_member</span><span class="p">(</span><span class="n">my_conf_id</span><span class="p">,</span> <span class="n">my_member_id</span><span class="p">,</span> <span class="n">mute</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">hold</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">my_conf</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_conference_member</span><span class="p">(</span><span class="n">my_member_id</span><span class="p">)</span>
+
+<span class="c1">## {</span>
+<span class="c1">##     &#39;addedTime&#39;: &#39;2017-01-30T22:01:11Z&#39;,</span>
+<span class="c1">##     &#39;call&#39;         : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId&#39;,</span>
+<span class="c1">##     &#39;hold&#39;         : True,</span>
+<span class="c1">##     &#39;id&#39;           : &#39;member-memberId&#39;,</span>
+<span class="c1">##     &#39;joinTone&#39;     : True,</span>
+<span class="c1">##     &#39;leavingTone&#39;  : False,</span>
+<span class="c1">##     &#39;mute&#39;         : True,</span>
+<span class="c1">##     &#39;removedTime&#39;  : &#39;2017-01-30T22:01:21Z&#39;,</span>
+<span class="c1">##     &#39;state&#39;        : &#39;active&#39;</span>
+<span class="c1">## }</span>
 </pre></div>
 </div>
 </dd></dl>

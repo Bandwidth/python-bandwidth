@@ -38,4 +38,4 @@ Bridges
 Conferences
 -----------
 .. autoclass:: bandwidth.catapult.Client
-    :members: create_conference, get_conference, update_conference
+    :members: create_conference, get_conference, update_conference, play_audio_to_conference, list_conference_members, create_conference_member, get_conference_member, update_conference_member, play_audio_to_conference_member, speak_sentence_to_conference_member, play_audio_file_to_conference_member, remove_conference_member, hold_conference_member, mute_conference_member, terminate_conference, hold_conference, mute_conference
