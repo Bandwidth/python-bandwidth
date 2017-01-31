@@ -1391,7 +1391,7 @@ class Client:
 
             api.play_audio_to_conference('conferenceId', sentence='Press 0 to complete call', gender='female')
 
-        Example: Use Extensions methods
+        Example: Use Extensions methods::
 
             # or with extension methods
             api.play_audio_file_to_conference('conferenceId', 'http://host/path/file.mp3')
@@ -1416,7 +1416,7 @@ class Client:
         :rtype: types.GeneratorType
         :returns: list of recordings
 
-        :Example:
+        Example: Fetch and list conference members::
 
             my_conf_id = api.create_conference(from_='+19192223333')
             print(my_conf)
@@ -1470,7 +1470,7 @@ class Client:
         :rtype: str
         :returns: id of create of conference member
 
-        Example: Create Conference and add member:
+        Example: Create Conference and add member::
 
             my_conf_id = api.create_conference(from_='+19192223333')
             print(my_conf)
@@ -1522,7 +1522,7 @@ class Client:
         :rtype: dict
         :returns: data of conference member
 
-        Example: Create Conference and add member:
+        Example: Create Conference and add member::
 
             my_conf_id = api.create_conference(from_='+19192223333')
             print(my_conf)
@@ -1631,14 +1631,15 @@ class Client:
         :param str voice: The voice to speak the sentence.
         :param str loop_enabled: When value is true, the audio will keep playing in a loop.
 
-        :Example:
-        api.play_audio_to_conference_member('conferenceId', 'memberId', fileUrl=http://host/path/file.mp3)
-        api.play_audio_to_conference_member('conferenceId', 'memberId',
-                                            sentence='Press 0 to complete call', gender='female')
+        Example: Play audio to specific conference member::
 
-        # or with extension methods
-        api.play_audio_file_to_conference_member('conferenceId', 'memberId', 'http://host/path/file.mp3')
-        api.speak_sentence_to_conference_member('conferenceId', 'memberId', 'Hello')
+            api.play_audio_to_conference_member('conferenceId', 'memberId', fileUrl=http://host/path/file.mp3)
+            api.play_audio_to_conference_member('conferenceId', 'memberId',
+                                                sentence='Press 0 to complete call', gender='female')
+
+            # or with extension methods
+            api.play_audio_file_to_conference_member('conferenceId', 'memberId', 'http://host/path/file.mp3')
+            api.speak_sentence_to_conference_member('conferenceId', 'memberId', 'Hello')
         """
 
         kwargs['fileUrl']=file_url
@@ -1679,8 +1680,9 @@ class Client:
         :type tag: str
         :param tag: A string that will be included in the callback events of the call.
 
-        :Example:
-        api.speak_sentence_to_conference_member('conferenceId', 'memberId', 'Hello')
+        Example: Speak sentence to specific confernce member::
+
+            api.speak_sentence_to_conference_member('conferenceId', 'memberId', 'Hello')
         """
         self.play_audio_to_conference_member(conference_id, member_id,
             sentence = sentence,
@@ -1706,8 +1708,9 @@ class Client:
         :type tag: str
         :param tag: A string that will be included in the callback events of the call.
 
-        :Example:
-        api.play_audio_file_to_conference_member('conferenceId', 'memberId', 'http://host/path/file.mp3')
+        Example: Play an audio file to specific member::
+
+            api.play_audio_file_to_conference_member('conferenceId', 'memberId', 'http://host/path/file.mp3')
         """
 
         self.play_audio_to_conference_member(conference_id, member_id,
@@ -1786,8 +1789,9 @@ class Client:
         :type hold: bool
         :param hold: hold (if true) or unhold (if false) a member
 
-        :Example:
-        api.hold_conference_member('conferenceId', 'memberId', True)
+        Example: Put specific conference member on hold::
+
+            api.hold_conference_member('conferenceId', 'memberId', True)
         """
         self.update_conference_member(conference_id, member_id, hold=hold)
 
@@ -1804,8 +1808,9 @@ class Client:
         :type mute: bool
         :param mute: mute (if true) or unmute (if false) a member
 
-        :Example:
-        api.mute_conference_member('conferenceId', 'memberId', True)
+        Example: Mute specific conference member::
+
+            api.mute_conference_member('conferenceId', 'memberId', True)
         """
         self.update_conference_member(conference_id, member_id, mute=mute)
 
@@ -1816,8 +1821,9 @@ class Client:
         :type conference_id: str
         :param conference_id: id of a conference
 
-        :Example:
-        api.terminate_conference('conferenceId')
+        Example: End the Conference::
+
+            api.terminate_conference('conferenceId')
 
         """
         self.update_conference(conference_id, state='completed')
@@ -1832,8 +1838,9 @@ class Client:
         :type hold: bool
         :param hold: hold (if true) or unhold (if false) a conference
 
-        :Example:
-        api.hold_conference('conferenceId', True)
+        Example: Put entire confernce on hold, where no one can hear::
+
+            api.hold_conference('conferenceId', True)
         """
         self.update_conference(conference_id, hold=hold)
 
@@ -1847,8 +1854,9 @@ class Client:
         :type mute: bool
         :param mute: mute (if true) or unmute (if false) a conference
 
-        :Example:
-        api.mute_conference('conferenceId', True)
+        Example: Mute the entire Conference, where no one can speak::
+
+            api.mute_conference('conferenceId', True)
         """
         self.update_conference(conference_id, mute=mute)
 
