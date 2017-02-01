@@ -18,9 +18,11 @@ def _set_media_name(recording):
 @play_audio('bridge')
 @play_audio('conference')
 class Client:
+
     """
     Catapult client
     """
+
     def __init__(self, user_id=None, api_token=None, api_secret=None, **other_options):
         """
         Initialize the catatpult client.
@@ -48,7 +50,8 @@ class Client:
             raise ValueError('Arguments user_id, api_token and api_secret are required. '
                              'Use bandwidth.client("catapult", "YOUR-USER-ID", "YOUR-API-TOKEN", "YOUR-API-SECRET")')
         self.user_id = user_id
-        self.api_endpoint = other_options.get('api_endpoint', 'https://api.catapult.inetwork.com')
+        self.api_endpoint = other_options.get(
+            'api_endpoint', 'https://api.catapult.inetwork.com')
         self.api_version = other_options.get('api_version', 'v1')
         self.auth = (api_token, api_secret)
 
@@ -62,9 +65,11 @@ class Client:
         if response.status_code >= 400:
             if response.headers.get('content-type') == 'application/json':
                 data = response.json()
-                raise CatapultException(response.status_code, data['message'], code=data.get('code'))
+                raise CatapultException(
+                    response.status_code, data['message'], code=data.get('code'))
             else:
-                raise CatapultException(response.status_code, response.content.decode('utf-8')[:79])
+                raise CatapultException(
+                    response.status_code, response.content.decode('utf-8')[:79])
 
     def _make_request(self, method, url, *args, **kwargs):
         response = self._request(method, url, *args, **kwargs)
@@ -129,10 +134,10 @@ class Client:
         kwargs["loopEnabled"] = loop_enabled
         return kwargs
 
-
     """
     Account API
     """
+
     def get_account(self):
         """
         Get an Account object
@@ -146,16 +151,26 @@ class Client:
         """
         return self._make_request('get', '/users/%s/account' % self.user_id)[0]
 
-    def get_account_transactions(self, max_items=None, to_date=None, from_date=None, type=None, size=None, number=None, **kwargs):
+    def get_account_transactions(self,
+                                 max_items=None,
+                                 to_date=None,
+                                 from_date=None,
+                                 trans_type=None,
+                                 size=None,
+                                 number=None,
+                                 **kwargs):
         """
         Get the transactions from the user's account
 
         :param str max_items: Limit the number of transactions that will be returned.
-        :param str to_date: Return only transactions that are newer than the parameter. Format: "yyyy-MM-dd'T'HH:mm:ssZ"
-        :param str from_date: Return only transactions that are older than the parameter. Format: "yyyy-MM-dd'T'HH:mm:ssZ"
-        :param str type: Return only transactions that are this type.
-        :param int size: Used for pagination to indicate the size of each page requested for querying a list of items. If no value is specified the default value is 25. (Maximum value 1000)
-
+        :param str to_date: Return only transactions that are newer than the parameter. \
+            Format: "yyyy-MM-dd'T'HH:mm:ssZ"
+        :param str from_date: Return only transactions that are older than the parameter. \
+            Format: "yyyy-MM-dd'T'HH:mm:ssZ"
+        :param str trans_type: Return only transactions that are this type.
+        :param int size: Used for pagination to indicate the size of each page requested for querying a list of items. \
+            If no value is specified the default value is 25. (Maximum value 1000)
+        :param str number: Search transactions by phone number
         :rtype: types.GeneratorType
         :returns: list of transactions
 
@@ -182,7 +197,7 @@ class Client:
         kwargs["maxItems"] = max_items
         kwargs["toDate"] = to_date
         kwargs["fromDate"] = from_date
-        kwargs["type"] = type
+        kwargs["type"] = trans_type
         kwargs["size"] = size
         kwargs["number"] = number
 
@@ -197,8 +212,10 @@ class Client:
         :param str conference_id: The id of the conference for querying a list of calls history
         :param str ``from_``: The number to filter calls that came from
         :param str to: The number to filter calls that was called to
-        :param str sort_order: How to sort the calls. Values are asc or desc If no value is specified the default value is desc
-        :param int size: Used for pagination to indicate the size of each page requested for querying a list of items. If no value is specified the default value is 25. (Maximum value 1000)
+        :param str sort_order: How to sort the calls. \
+            Values are asc or desc If no value is specified the default value is desc
+        :param int size: Used for pagination to indicate the size of each page requested for querying a list of items. \
+            If no value is specified the default value is 25. (Maximum value 1000)
 
         :rtype: types.GeneratorType
         :returns: list of calls
@@ -269,11 +286,23 @@ class Client:
         path = '/users/%s/calls' % self.user_id
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
 
-    def create_call(self, from_, to, call_timeout=None, callback_url=None,
-                    callback_timeout=None, callback_http_method=None, fallback_url=None,
-                    bridge_id=None, conference_id=None, recording_enabled=None,
-                    recording_file_format=None, recording_max_duration=None,
-                    transcription_enabled=None, tag=None, sip_headers=None, **kwargs):
+    def create_call(self,
+                    from_,
+                    to,
+                    call_timeout=None,
+                    callback_url=None,
+                    callback_timeout=None,
+                    callback_http_method=None,
+                    fallback_url=None,
+                    bridge_id=None,
+                    conference_id=None,
+                    recording_enabled=False,
+                    recording_file_format=None,
+                    recording_max_duration=None,
+                    transcription_enabled=False,
+                    tag=None,
+                    sip_headers=None,
+                    **kwargs):
         """
         Create a call
 
@@ -291,11 +320,13 @@ class Client:
         :param str bridge_id: The id of the bridge where the call will be added.
         :param str conference_id: Id of the conference where the call will be added. This property is required
                 if you want to add this call to a conference.
-        :param str recording_enabled: Indicates if the call should be recorded after being created. Set to "true"
+        :param bool recording_enabled: Indicates if the call should be recorded after being created. Set to "true"
                 to enable. Default is "false".
-        :param str recording_file_format: The file format of the recorded call. Supported values are wav (default) and mp3.
-        :param str recording_max_duration: Indicates the maximum duration of call recording in seconds. Default value is 1 hour.
-        :param str transcription_enabled: Whether all the recordings for this call is going to be automatically transcribed.
+        :param str recording_file_format: The file format of the recorded call. \
+            Supported values are wav (default) and mp3.
+        :param str recording_max_duration: Indicates the maximum duration of call recording in seconds. \
+            Default value is 1 hour.
+        :param bool transcription_enabled: Recordings for this call is going to be automatically transcribed.
         :param str tag: A string that will be included in the callback events of the call.
         :param str sip_headers: Map of Sip headers prefixed by "X-". Up to 5 headers can be sent per call.
         :rtype: str
@@ -303,7 +334,10 @@ class Client:
 
         Example: Create an outbound phone call::
 
-            call_id = api.create_call(from_ = '+1234567890', to = '+1234567891', callback_url = "http://yoursite.com/calls")
+            call_id = api.create_call(from_='+1234567890',
+                                      to='+1234567891',
+                                      callback_url='http://yoursite.com/calls')
+
             print(call_id)
             ## c-abc123
 
@@ -340,12 +374,12 @@ class Client:
         kwargs["sipHeaders"] = sip_headers
         return self._make_request('post', '/users/%s/calls' % self.user_id, json=kwargs)[2]
 
-    def get_call(self, id):
+    def get_call(self, call_id):
         """
         Get information about a call
 
-        :type id: str
-        :param id: id of a call
+        :type call_id: str
+        :param call_id: id of a call
 
         :rtype: dict
         :returns: call information
@@ -368,22 +402,31 @@ class Client:
             ##     'transcriptionEnabled': False,
             ##     'transcriptions'      : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/transcriptions'}
         """
-        return self._make_request('get', '/users/%s/calls/%s' % (self.user_id, id))[0]
+        return self._make_request('get', '/users/%s/calls/%s' % (self.user_id, call_id))[0]
 
-    def update_call(self, id, state=None, recording_enabled=None, recording_file_format=None,
-                    transfer_to=None, transfer_caller_id=None, whisper_audio=None, callback_url=None, **kwargs):
+    def update_call(self,
+                    call_id,
+                    state=None,
+                    recording_enabled=None,
+                    recording_file_format=None,
+                    transfer_to=None,
+                    transfer_caller_id=None,
+                    whisper_audio=None,
+                    callback_url=None,
+                    **kwargs):
         """
 
         Update a call
 
-        :type id: str
-        :param id: id of a call
+        :type call_id: str
+        :param call_id: id of a call
 
         :param str state: The call state. Possible values: rejected to reject not answer, active to answer the call,
             completed to hangup the call, transferring to start and connect call to a new outbound call.
-        :param bool recording_enabled: Indicates if the call should be recorded. Values true or false. You can turn recording
-            on/off and have multiple recordings on a single call.
-        :param str recording_file_format: The file format of the recorded call. Supported values are wav (default) and mp3.
+        :param bool recording_enabled: Indicates if the call should be recorded. \
+            Values true or false. You can turn recording on/off and have multiple recordings on a single call.
+        :param str recording_file_format: The file format of the recorded call. \
+            Supported values are wav (default) and mp3.
         :param str transfer_to: Phone number or SIP address that the call is going to be transferred to.
         :param str transfer_caller_id: This is the caller id that will be used when the call is transferred.
         :param dict whisper_audio: Audio to be played to the caller that the call will be transferred to.
@@ -412,13 +455,21 @@ class Client:
         kwargs["transferCallerId"] = transfer_caller_id
         kwargs["whisperAudio"] = whisper_audio
         kwargs["callbackUrl"] = callback_url
-        return self._make_request('post', '/users/%s/calls/%s' % (self.user_id, id), json=kwargs)[2]
+        return self._make_request('post', '/users/%s/calls/%s' % (self.user_id, call_id), json=kwargs)[2]
 
-    def play_audio_to_call(self, id, file_url = None, sentence = None, gender = None, locale = None, voice = None, loop_enabled = None, **kwargs):
+    def play_audio_to_call(self,
+                           call_id,
+                           file_url=None,
+                           sentence=None,
+                           gender=None,
+                           locale=None,
+                           voice=None,
+                           loop_enabled=None,
+                           **kwargs):
         """
         Play audio to a call
 
-        :param str id: id of a call
+        :param str call_id: id of a call
         :param str file_url: The location of an audio file to play (WAV and MP3 supported).
         :param str sentence: The sentence to speak.
         :param str gender: The gender of the voice used to synthesize the sentence.
@@ -442,13 +493,14 @@ class Client:
         kwargs["locale"] = locale
         kwargs["voice"] = voice
         kwargs["loopEnabled"] = loop_enabled
-        self._make_request('post', '/users/%s/calls/%s/audio' % (self.user_id, id), json=kwargs)
+        self._make_request(
+            'post', '/users/%s/calls/%s/audio' % (self.user_id, call_id), json=kwargs)
 
-    def send_dtmf_to_call(self, id, dtmf_out, **kwargs):
+    def send_dtmf_to_call(self, call_id, dtmf_out, **kwargs):
         """
         Send DTMF (phone keypad digit presses).
 
-        :param str id: id of a call
+        :param str call_id: id of a call
         :param str dtmf_out: String containing the DTMF characters to be sent in a call.
 
         Example: Send Digits to call::
@@ -456,14 +508,15 @@ class Client:
             api.send_dtmf_to_cal('c-callId', '1234')
         """
         kwargs["dtmfOut"] = dtmf_out
-        self._make_request('post', '/users/%s/calls/%s/dtmf' % (self.user_id, id), json=kwargs)
+        self._make_request('post', '/users/%s/calls/%s/dtmf' %
+                           (self.user_id, call_id), json=kwargs)
 
-    def list_call_recordings(self, id):
+    def list_call_recordings(self, call_id):
         """
         Get a list of recordings of a call
 
-        :type id: str
-        :param id: id of a call
+        :type call_id: str
+        :param call_id: id of a call
 
         :rtype: types.GeneratorType
         :returns: list of recordings
@@ -475,12 +528,12 @@ class Client:
         path = '/users/%s/calls/%s/recordings' % (self.user_id, id)
         return get_lazy_enumerator(self, lambda:  self._make_request('get', path))
 
-    def list_call_transcriptions(self, id):
+    def list_call_transcriptions(self, call_id):
         """
         Get a list of transcriptions of a call
 
-        :type id: str
-        :param id: id of a call
+        :type call_id: str
+        :param call_id: id of a call
 
         :rtype: types.GeneratorType
         :returns: list of transcriptions
@@ -489,15 +542,14 @@ class Client:
 
             list = api.get_call_transcriptions('callId')
         """
-        path = '/users/%s/calls/%s/transcriptions' % (self.user_id, id)
+        path = '/users/%s/calls/%s/transcriptions' % (self.user_id, call_id)
         return get_lazy_enumerator(self, lambda: self._make_request('get', path))
 
-    def list_call_events(self, id):
+    def list_call_events(self, call_id):
         """
         Get a list of events of a call
 
-        :type id: str
-        :param id: id of a call
+        :param str call_id: id of a call
 
         :rtype: types.GeneratorType
         :returns: list of events
@@ -505,17 +557,16 @@ class Client:
         Fetch all events for calls::
 
             list = api.get_call_events('callId')
-
         """
-        path = '/users/%s/calls/%s/events' % (self.user_id, id)
+        path = '/users/%s/calls/%s/events' % (self.user_id, call_id)
         return get_lazy_enumerator(self, lambda: self._make_request('get', path))
 
-    def get_call_event(self, id, event_id):
+    def get_call_event(self, call_id, event_id):
         """
         Get an event of a call
 
-        :type id: str
-        :param id: id of a call
+        :type call_id: str
+        :param call_id: id of a call
 
         :type event_id: str
         :param event_id: id of an event
@@ -527,14 +578,19 @@ class Client:
 
             data = api.get_call_event('callId', 'eventId')
         """
-        return self._make_request('get', '/users/%s/calls/%s/events/%s' % (self.user_id, id, event_id))[0]
+        return self._make_request('get', '/users/%s/calls/%s/events/%s' % (self.user_id, call_id, event_id))[0]
 
-    def create_call_gather(self, id, max_digits = None, inter_digit_timeout = None, terminating_digits = None, tag = None, **kwargs):
+    def create_call_gather(self, call_id,
+                           max_digits=None,
+                           inter_digit_timeout=None,
+                           terminating_digits=None,
+                           tag=None,
+                           **kwargs):
         """
         Create a gather for a call
 
-        :type id: str
-        :param id: id of a call
+        :type call_id: str
+        :param call_id: id of a call
 
         :param int max_digits: The maximum number of digits to collect, not including terminating digits (maximum 30).
         :param int inter_digit_timeout: Stop gathering if a DTMF digit is not detected in this many seconds
@@ -557,14 +613,14 @@ class Client:
         kwargs['terminatingDigits'] = terminating_digits
         kwargs['tag'] = tag
 
-        return self._make_request('post', '/users/%s/calls/%s/gather' % (self.user_id, id), json=kwargs)[2]
+        return self._make_request('post', '/users/%s/calls/%s/gather' % (self.user_id, call_id), json=kwargs)[2]
 
-    def get_call_gather(self, id, gather_id):
+    def get_call_gather(self, call_id, gather_id):
         """
         Get a gather of a call
 
-        :type id: str
-        :param id: id of a call
+        :type call_id: str
+        :param call_id: id of a call
 
         :type gather_id: str
         :param gather_id: id of a gather
@@ -576,14 +632,14 @@ class Client:
 
             data = api.get_call_gather('callId', 'gatherId')
         """
-        return self._make_request('get', '/users/%s/calls/%s/gather/%s' % (self.user_id, id, gather_id))[0]
+        return self._make_request('get', '/users/%s/calls/%s/gather/%s' % (self.user_id, call_id, gather_id))[0]
 
-    def update_call_gather(self, id, gather_id, state=None, **kwargs):
+    def update_call_gather(self, call_id, gather_id, state=None, **kwargs):
         """
         Update a gather of a call
 
-        :type id: str
-        :param id: id of a call
+        :type call_id: str
+        :param call_id: id of a call
         :type gather_id: str
         :param gather_id: id of a gather
         :param str state: The only update allowed is state:completed to stop the gather.
@@ -593,48 +649,49 @@ class Client:
             api.update_call_gather('callId', 'gatherId', state = 'completed')
         """
         kwargs['state'] = state
-        return self._make_request('post', '/users/%s/calls/%s/gather/%s' % (self.user_id, id, gather_id), json=kwargs)
+        return self._make_request('post', '/users/%s/calls/%s/gather/%s' % (self.user_id, call_id, gather_id),
+                                  json=kwargs)
 
     # extensions
 
-    def answer_call(self, id):
+    def answer_call(self, call_id):
         """
         Answer incoming call
 
-        :type id: str
-        :param id: id of a call
+        :type call_id: str
+        :param call_id: id of a call
 
         Example: Answer incoming call::
 
             api.answer_call('callId')
         """
-        return self.update_call(id, state='active')
+        return self.update_call(call_id, state='active')
 
-    def reject_call(self, id):
+    def reject_call(self, call_id):
         """
         Reject incoming call
 
-        :type id: str
-        :param id: id of a call
+        :type call_id: str
+        :param call_id: id of a call
 
         Example: Reject incoming call::
 
             api.reject_call('callId')
         """
-        return self.update_call(id, state='rejected')
+        return self.update_call(call_id, state='rejected')
 
-    def hangup_call(self, id):
+    def hangup_call(self, call_id):
         """
         Complete active call
 
-        :type id: str
-        :param id: id of a call
+        :type call_id: str
+        :param call_id: id of a call
 
         Example: Hangup call::
 
             api.hangup_call('callId')
         """
-        return self.update_call(id, state='completed')
+        return self.update_call(call_id, state='completed')
 
     def enable_call_recording(self, call_id):
         """
@@ -736,12 +793,14 @@ class Client:
 
         """
 
-        return self.update_call(call_id, state='transferring', transfer_caller_id=caller_id, transfer_to=to,
-                                callback_url=callback_url, whisper_audio=whisper_audio, **kwargs)
+        return self.update_call(call_id,
+                                state='transferring',
+                                transfer_caller_id=caller_id,
+                                transfer_to=to,
+                                callback_url=callback_url,
+                                whisper_audio=whisper_audio,
+                                **kwargs)
 
-    """
-    Application API
-    """
     def list_applications(self, size=None, **kwargs):
         """
         Get a list of user's applications
@@ -781,22 +840,35 @@ class Client:
         path = '/users/%s/applications' % self.user_id
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
 
-    def create_application(self, name, incoming_call_url = None, incoming_call_url_callback_timeout = None,
-                            incoming_call_fallback_url = None, incoming_message_url = None,
-                            incoming_message_url_callback_timeout = None, incoming_message_fallback_url = None,
-                            callback_http_method = None, auto_answer = None, **kwargs):
+    def create_application(self,
+                           name,
+                           incoming_call_url=None,
+                           incoming_call_url_callback_timeout=None,
+                           incoming_call_fallback_url=None,
+                           incoming_message_url=None,
+                           incoming_message_url_callback_timeout=None,
+                           incoming_message_fallback_url=None,
+                           callback_http_method=None,
+                           auto_answer=None,
+                           **kwargs):
         """
         Creates an application that can handle calls and messages for one of your phone number.
 
         :param str name: A name you choose for this application (required).
         :param str incoming_call_url: A URL where call events will be sent for an inbound call.
-        :param str incoming_call_url_callback_timeout: Determine how long should the platform wait for inconmingCallUrl's response before timing out in milliseconds.
-        :param str incoming_call_fallback_url: The URL used to send the callback event if the request to incomingCallUrl fails.
+        :param str incoming_call_url_callback_timeout: Determine how long should the platform wait for
+            inconmingCallUrl's response before timing out in milliseconds.
+        :param str incoming_call_fallback_url: The URL used to send the callback event
+            if the request to incomingCallUrl fails.
         :param str incoming_message_url: A URL where message events will be sent for an inbound SMS message
-        :param str incoming_message_url_callback_timeout: Determine how long should the platform wait for incomingMessageUrl's response before timing out in milliseconds.
-        :param str incoming_message_fallback_url: The URL used to send the callback event if the request to incomingMessageUrl fails.
-        :param str callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST. (If not set the default is HTTP POST)
-        :param str auto_answer: Determines whether or not an incoming call should be automatically answered. Default value is 'true'.
+        :param str incoming_message_url_callback_timeout: Determine how long should the platform wait for
+            incomingMessageUrl's response before timing out in milliseconds.
+        :param str incoming_message_fallback_url: The URL used to send the callback event if the request to
+            incomingMessageUrl fails.
+        :param str callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST.\
+            (If not set the default is HTTP POST)
+        :param str auto_answer: Determines whether or not an incoming call should be automatically answered. \
+            Default value is 'true'.
 
         :rtype: str
         :returns: id of created application
@@ -828,22 +900,24 @@ class Client:
         """
         kwargs["name"] = name
         kwargs["incomingCallUrl"] = incoming_call_url
-        kwargs["incomingCallUrlCallbackTimeout"] = incoming_call_url_callback_timeout
+        kwargs[
+            "incomingCallUrlCallbackTimeout"] = incoming_call_url_callback_timeout
         kwargs["incomingCallFallbackUrl"] = incoming_call_fallback_url
         kwargs["incomingMessageUrl"] = incoming_message_url
-        kwargs["incomingMessageUrlCallbackTimeout"] = incoming_message_url_callback_timeout
+        kwargs[
+            "incomingMessageUrlCallbackTimeout"] = incoming_message_url_callback_timeout
         kwargs["incomingMessageFallbackUrl"] = incoming_message_fallback_url
         kwargs["callbackHttpMethod"] = callback_http_method
         kwargs["autoAnswer"] = auto_answer
 
         return self._make_request('post', '/users/%s/applications' % self.user_id, json=kwargs)[2]
 
-    def get_application(self, id):
+    def get_application(self, app_id):
         """
         Gets information about an application
 
-        :type id: str
-        :param id: id of an application
+        :type app_id: str
+        :param app_id: id of an application
 
         :rtype: dict
         :returns: application information
@@ -864,14 +938,14 @@ class Client:
             print(my_app["id"])
             ## a-1232asf123
         """
-        return self._make_request('get', '/users/%s/applications/%s' % (self.user_id, id))[0]
+        return self._make_request('get', '/users/%s/applications/%s' % (self.user_id, app_id))[0]
 
-    def delete_application(self, id):
+    def delete_application(self, app_id):
         """
         Remove an application
 
-        :type id: str
-        :param id: id of an application
+        :type app_id: str
+        :param app_id: id of an application
 
         Example: Delete single application::
 
@@ -884,23 +958,30 @@ class Client:
             ## The application a-appId could not be found
 
         """
-        self._make_request('delete', '/users/%s/applications/%s' % (self.user_id, id))
+        self._make_request(
+            'delete', '/users/%s/applications/%s' % (self.user_id, app_id))
 
-    """
-    Available number API
-    """
-    def search_available_local_numbers(self, city = None, state = None, zip = None, area_code = None,
-                                        local_number = None, in_local_calling_area = None,
-                                        quantity = None, pattern = None, **kwargs):
+    def search_available_local_numbers(self,
+                                       city=None,
+                                       state=None,
+                                       zip_code=None,
+                                       area_code=None,
+                                       local_number=None,
+                                       in_local_calling_area=None,
+                                       quantity=None,
+                                       pattern=None,
+                                       **kwargs):
         """
         Searches for available local or toll free numbers.
 
         :param str city: A city name
         :param str state: A two-letter US state abbreviation
-        :param str zip: A 5-digit US ZIP code
+        :param str zip_code: A 5-digit US ZIP code
         :param str area_code: A 3-digit telephone area code
-        :param str local_number: It is defined as the first digits of a telephone number inside an area code for filtering the results. It must have at least 3 digits and the areaCode field must be filled.
-        :param str in_local_calling_area: Boolean value to indicate that the search for available numbers must consider overlayed areas.
+        :param str local_number: It is defined as the first digits of a telephone number inside an area code for
+            filtering the results. It must have at least 3 digits and the areaCode field must be filled.
+        :param str in_local_calling_area: Boolean value to indicate that the search for available numbers
+            must consider overlayed areas.
         :param int quantity: The maximum number of numbers to return (default 10, maximum 5000)
         :param str pattern: A number pattern that may include letters, digits, and the wildcard characters
 
@@ -939,7 +1020,7 @@ class Client:
         """
         kwargs["city"] = city
         kwargs["state"] = state
-        kwargs["zip"] = zip
+        kwargs["zip"] = zip_code
         kwargs["areaCode"] = area_code
         kwargs["localNumber"] = local_number
         kwargs["inLocalCallingArea"] = in_local_calling_area
@@ -947,7 +1028,7 @@ class Client:
         kwargs["pattern"] = pattern
         return self._make_request('get', '/availableNumbers/local', params=kwargs)[0]
 
-    def search_available_toll_free_numbers(self, quantity = None, pattern = None, **kwargs):
+    def search_available_toll_free_numbers(self, quantity=None, pattern=None, **kwargs):
         """
         Searches for available local or toll free numbers.
 
@@ -957,7 +1038,7 @@ class Client:
         :rtype: list
         :returns: list of numbers
 
-        Example: Serach for 3 toll free numbers with pattern 456::
+        Example: Search for 3 toll free numbers with pattern 456::
 
             numbers = api.search_available_toll_free_numbers(pattern = '*456', quantity = 3)
 
@@ -985,18 +1066,26 @@ class Client:
         kwargs["pattern"] = pattern
         return self._make_request('get', '/availableNumbers/tollFree', params=kwargs)[0]
 
-    def search_and_order_local_numbers(self, city = None, state = None, zip = None,
-                                           area_code = None, local_number = None,
-                                           in_local_calling_area = None, quantity = None, **kwargs):
+    def search_and_order_local_numbers(self,
+                                       city=None,
+                                       state=None,
+                                       zip_code=None,
+                                       area_code=None,
+                                       local_number=None,
+                                       in_local_calling_area=None,
+                                       quantity=None,
+                                       **kwargs):
         """
         Searches and orders for available local numbers.
 
         :param str city: A city name
         :param str state: A two-letter US state abbreviation
-        :param str zip: A 5-digit US ZIP code
+        :param str zip_code: A 5-digit US ZIP code
         :param str area_code: A 3-digit telephone area code
-        :param str local_number: It is defined as the first digits of a telephone number inside an area code for filtering the results. It must have at least 3 digits and the areaCode field must be filled.
-        :param str in_local_calling_area: Boolean value to indicate that the search for available numbers must consider overlayed areas.
+        :param str local_number: It is defined as the first digits of a telephone number inside an area code for
+            filtering the results. It must have at least 3 digits and the areaCode field must be filled.
+        :param str in_local_calling_area: Boolean value to indicate that the search for available numbers
+            must consider overlayed areas.
         :param str quantity: The maximum number of numbers to return (default 10, maximum 5000)
 
         :rtype: list
@@ -1020,16 +1109,16 @@ class Client:
         """
         kwargs["city"] = city
         kwargs["state"] = state
-        kwargs["zip"] = zip
+        kwargs["zip"] = zip_code
         kwargs["areaCode"] = area_code
         kwargs["localNumber"] = local_number
         kwargs["inLocalCallingArea"] = in_local_calling_area
         kwargs["quantity"] = quantity
-        list = self._make_request('post', '/availableNumbers/local', params=kwargs)[0]
-        for item in list:
+        number_list = self._make_request(
+            'post', '/availableNumbers/local', params=kwargs)[0]
+        for item in number_list:
             item['id'] = item.get('location', '').split('/')[-1]
-        return list
-
+        return number_list
 
     def search_and_order_toll_free_numbers(self, quantity, **kwargs):
         """
@@ -1057,7 +1146,8 @@ class Client:
 
         """
         kwargs["quantity"] = quantity
-        list = self._make_request('post', '/availableNumbers/tollFree', params=kwargs)[0]
+        list = self._make_request(
+            'post', '/availableNumbers/tollFree', params=kwargs)[0]
         for item in list:
             item['id'] = item.get('location', '').split('/')[-1]
         return list
@@ -1066,7 +1156,8 @@ class Client:
         """
         Get a list of bridges
 
-        :param int size: Used for pagination to indicate the size of each page requested for querying a list of items. If no value is specified the default value is 25. (Maximum value 1000)
+        :param int size: Used for pagination to indicate the size of each page requested for querying a list of items.
+            If no value is specified the default value is 25. (Maximum value 1000)
 
         :rtype: types.GeneratorType
         :returns: list of bridges
@@ -1088,12 +1179,13 @@ class Client:
         path = '/users/%s/bridges' % self.user_id
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
 
-    def create_bridge(self, call_ids = None, bridge_audio = None, **kwargs):
+    def create_bridge(self, call_ids=None, bridge_audio=None, **kwargs):
         """
         Create a bridge
 
         :param bool bridge_audio: Enable/Disable two way audio path (default = true)
-        :param str call_ids: The first of the call ids in the bridge. If either of the call ids is not provided the bridge is logically created and it can be used to place calls later.
+        :param str call_ids: The first of the call ids in the bridge. If either of the call ids is not provided the
+            bridge is logically created and it can be used to place calls later.
 
         :rtype: str
         :returns: id of created bridge
@@ -1109,12 +1201,12 @@ class Client:
         kwargs["bridgeAudio"] = bridge_audio
         return self._make_request('post', '/users/%s/bridges' % self.user_id, json=kwargs)[2]
 
-    def get_bridge(self, id):
+    def get_bridge(self, bridge_id):
         """
         Gets information about a bridge
 
-        :type id: str
-        :param id: id of a bridge
+        :type bridge_id: str
+        :param bridge_id: id of a bridge
 
         :rtype: dict
         :returns: bridge information
@@ -1133,14 +1225,14 @@ class Client:
             print(my_bridge["state"])
             ## created
         """
-        return self._make_request('get', '/users/%s/bridges/%s' % (self.user_id, id))[0]
+        return self._make_request('get', '/users/%s/bridges/%s' % (self.user_id, bridge_id))[0]
 
-    def update_bridge(self, id, call_ids = None, bridge_audio = None, **kwargs):
+    def update_bridge(self, bridge_id, call_ids=None, bridge_audio=None, **kwargs):
         """
         Update a bridge
 
-        :type id: str
-        :param id: id of a bridge
+        :type bridge_id: str
+        :param bridge_id: id of a bridge
 
         :param bool bridge_audio: Enable/Disable two way audio path (default = true)
         :param str call_ids: The first of the call ids in the bridge. If either of the call ids
@@ -1163,14 +1255,15 @@ class Client:
         """
         kwargs["callIds"] = call_ids
         kwargs["bridgeAudio"] = bridge_audio
-        self._make_request('post', '/users/%s/bridges/%s' % (self.user_id, id), json=kwargs)
+        self._make_request('post', '/users/%s/bridges/%s' %
+                           (self.user_id, bridge_id), json=kwargs)
 
-    def list_bridge_calls(self, id):
+    def list_bridge_calls(self, bridge_id):
         """
         Get a list of calls of a bridge
 
-        :type id: str
-        :param id: id of a bridge
+        :type bridge_id: str
+        :param bridge_id: id of a bridge
 
         :rtype: types.GeneratorType
         :returns: list of calls
@@ -1209,29 +1302,28 @@ class Client:
             ##     }
             ## ]
         """
-        path = '/users/%s/bridges/%s/calls' % (self.user_id, id)
+        path = '/users/%s/bridges/%s/calls' % (self.user_id, bridge_id)
         return get_lazy_enumerator(self, lambda: self._make_request('get', path))
 
-    def play_audio_to_bridge(self, id, data):
+
+    def play_audio_to_bridge(self, bridge_id,
+                             file_url=None,
+                             sentence=None,
+                             gender=None,
+                             locale=None,
+                             voice=None,
+                             loop_enabled=None,
+                             **kwargs):
         """
         Play audio to a bridge
 
-        :type id: str
-        :param id: id of a bridge
-
-        Parameters
-            fileUrl
-                The location of an audio file to play (WAV and MP3 supported).
-            sentence
-                The sentence to speak.
-            gender
-                The gender of the voice used to synthesize the sentence.
-            locale
-                The locale used to get the accent of the voice used to synthesize the sentence.
-            voice
-                The voice to speak the sentence.
-            loopEnabled
-                When value is true, the audio will keep playing in a loop.
+        :param str bridge_id: id of a bridge
+        :param str file_url: The location of an audio file to play (WAV and MP3 supported).
+        :param str sentence: The sentence to speak.
+        :param str gender: The gender of the voice used to synthesize the sentence.
+        :param str locale: The locale used to get the accent of the voice used to synthesize the sentence.
+        :param str voice: The voice to speak the sentence.
+        :param bool loop_enabled: When value is true, the audio will keep playing in a loop.
 
 
         Examples: Play either file for speak sentence::
@@ -1243,18 +1335,34 @@ class Client:
             api.play_audio_file_to_bridge('bridgeId', 'http://host/path/file.mp3')
             api.speak_sentence_to_bridge('bridgeId', 'Hello')
         """
-        self._make_request('post', '/users/%s/bridges/%s/audio' % (self.user_id, id), json=data)
+        kwargs["fileUrl"] = file_url
+        kwargs["sentence"] = sentence
+        kwargs["gender"] = gender
+        kwargs["locale"] = locale
+        kwargs["voice"] = voice
+        kwargs["loopEnabled"] = loop_enabled
+        self._make_request(
+            'post', '/users/%s/bridges/%s/audio' % (self.user_id, bridge_id), json=kwargs)
 
-    def create_conference(self, from_ , callback_url = None, callback_timeout = None,
-                          callback_http_method = None, fallback_url = None, tag = None, **kwargs):
+    def create_conference(self,
+                          from_,
+                          callback_url=None,
+                          callback_timeout=None,
+                          callback_http_method=None,
+                          fallback_url=None,
+                          tag=None,
+                          **kwargs):
         """
         Create a conference
 
         :param str ``from_``: The phone number that will host the conference (required)
-        :param str callback_url: The full server URL where the conference events related to the Conerence will be sent to.
-        :param str callback_timeout: Determine how long should the platform wait for callbackUrl's response before timing out in milliseconds.
-        :param str callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST. Values are "GET" or "POST" (if not set the default is POST).
-        :param str fallback_url: The full server URL used to send the callback event if the request to callbackUrl fails.
+        :param str callback_url: The full server URL where the conference events related to the Conference will be sent
+        :param str callback_timeout: Determine how long should the
+            platform wait for callbackUrl's response before timing out in milliseconds.
+        :param str callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST. \
+            Values are "GET" or "POST" (if not set the default is POST).
+        :param str fallback_url: The full server URL used to send the callback event if the request to callbackUrl
+            fails or timesout
         :param str tag: A string that will be included in the callback events of the conference.
 
         :rtype: str
@@ -1335,20 +1443,33 @@ class Client:
         """
         return self._make_request('get', '/users/%s/conferences/%s' % (self.user_id, conference_id))[0]
 
-    def update_conference(self, conference_id, state=None, mute=None, hold=None, callback_url=None,
-                          callback_timeout=None, callback_http_method=None, fallback_url=None,
-                          tag=None, **kwargs):
+    def update_conference(self,
+                          conference_id,
+                          state=None,
+                          mute=None,
+                          hold=None,
+                          callback_url=None,
+                          callback_timeout=None,
+                          callback_http_method=None,
+                          fallback_url=None,
+                          tag=None,
+                          **kwargs):
         """
         Update a conference
 
         :param str conference_id: id of a conference
         :param str state: Conference state. Possible state values are: "completed" to terminate the conference.
-        :param str mute: If "true", all member can't speak in the conference. If "false", all members can speak in the conference
-        :param str hold: If "true", all member can't hear or speak in the conference. If "false", all members can hear and speak in the conference
-        :param str callback_url: The full server URL where the conference events related to the Conerence will be sent to.
-        :param str callback_timeout: Determine how long should the platform wait for callbackUrl's response before timing out in milliseconds.
-        :param str callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST. Values are "GET" or "POST" (if not set the default is POST).
-        :param str fallback_url: The full server URL used to send the callback event if the request to callbackUrl fails.
+        :param str mute: If "true", all member can't speak in the conference.\
+            If "false", all members can speak in the conference
+        :param str hold: If "true", all member can't hear or speak in the conference. \
+            If "false", all members can hear and speak in the conference
+        :param str callback_url: The full server URL where the conference events related to the conference will be sent
+        :param str callback_timeout: Determine how long should the platform wait for callbackUrl's response before
+            timing out in milliseconds.
+        :param str callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST. \
+            Values are "GET" or "POST" (if not set the default is POST).
+        :param str fallback_url: The full server URL used to send the callback event
+            if the request to callbackUrl fails.
         :param str tag: A string that will be included in the callback events of the conference.
 
         Example: End conference::
@@ -1366,9 +1487,18 @@ class Client:
         kwargs["fallbackUrl"] = fallback_url
         kwargs["tag"] = tag
 
-        self._make_request('post', '/users/%s/conferences/%s' % (self.user_id, conference_id), json=kwargs)
+        self._make_request('post', '/users/%s/conferences/%s' %
+                           (self.user_id, conference_id), json=kwargs)
 
-    def play_audio_to_conference(self, conference_id, file_url= None,sentence= None,gender= None,locale= None,voice= None,loop_enabled= None, **kwargs):
+    def play_audio_to_conference(self,
+                                 conference_id,
+                                 file_url=None,
+                                 sentence=None,
+                                 gender=None,
+                                 locale=None,
+                                 voice=None,
+                                 loop_enabled=None,
+                                 **kwargs):
         """
         Play audio to a conference
 
@@ -1397,14 +1527,15 @@ class Client:
             api.play_audio_file_to_conference('conferenceId', 'http://host/path/file.mp3')
             api.speak_sentence_to_conference('conferenceId', 'Hello')
         """
-        kwargs['fileUrl']=file_url
-        kwargs['sentence']=sentence
-        kwargs['gender']=gender
-        kwargs['locale']=locale
-        kwargs['voice']=voice
-        kwargs['loopEnabled']=loop_enabled
+        kwargs['fileUrl'] = file_url
+        kwargs['sentence'] = sentence
+        kwargs['gender'] = gender
+        kwargs['locale'] = locale
+        kwargs['voice'] = voice
+        kwargs['loopEnabled'] = loop_enabled
 
-        self._make_request('post', '/users/%s/conferences/%s/audio' % (self.user_id, conference_id), json=kwargs)
+        self._make_request('post', '/users/%s/conferences/%s/audio' %
+                           (self.user_id, conference_id), json=kwargs)
 
     def list_conference_members(self, conference_id):
         """
@@ -1451,10 +1582,18 @@ class Client:
 
 
         """
-        path = '/users/%s/conferences/%s/members' % (self.user_id, conference_id)
+        path = '/users/%s/conferences/%s/members' % (
+            self.user_id, conference_id)
         return get_lazy_enumerator(self, lambda: self._make_request('get', path))
 
-    def create_conference_member(self, conference_id, call_id=None, join_tone=None, leaving_tone=None, mute=None, hold=None, **kwargs):
+    def create_conference_member(self,
+                                 conference_id,
+                                 call_id=None,
+                                 join_tone=None,
+                                 leaving_tone=None,
+                                 mute=None,
+                                 hold=None,
+                                 **kwargs):
         """
         Create a conference member for a conference
 
@@ -1462,10 +1601,14 @@ class Client:
         :param conference_id: id of a conference
 
         :param str call_id: The callId must refer to an active call that was created using this conferenceId (required)
-        :param bool join_tone: If "true", will play a tone when the member joins the conference. If "false", no tone is played when the member joins the conference.
-        :param bool leaving_tone: If "true", will play a tone when the member leaves the conference. If "false", no tone is played when the member leaves the conference.
-        :param bool mute: If "true", member can't speak in the conference. If "false", this members can speak in the conference (unless set at the conference level).
-        :param bool hold: If "true", member can't hear or speak in the conference. If "false", member can hear and speak in the conference (unless set at the conference level).
+        :param bool join_tone: If "true", will play a tone when the member joins the conference. \
+            If "false", no tone is played when the member joins the conference.
+        :param bool leaving_tone: If "true", will play a tone when the member leaves the conference.\
+            If "false", no tone is played when the member leaves the conference.
+        :param bool mute: If "true", member can't speak in the conference.\
+            If "false", this members can speak in the conference (unless set at the conference level).
+        :param bool hold: If "true", member can't hear or speak in the conference.\
+            If "false", member can hear and speak in the conference (unless set at the conference level).
 
         :rtype: str
         :returns: id of create of conference member
@@ -1500,13 +1643,14 @@ class Client:
             ## }
 
         """
-        kwargs['callId']=call_id
-        kwargs['joinTone']=join_tone
-        kwargs['leavingTone']=leaving_tone
-        kwargs['mute']=mute
-        kwargs['hold']=hold
+        kwargs['callId'] = call_id
+        kwargs['joinTone'] = join_tone
+        kwargs['leavingTone'] = leaving_tone
+        kwargs['mute'] = mute
+        kwargs['hold'] = hold
 
-        path = '/users/%s/conferences/%s/members' % (self.user_id, conference_id)
+        path = '/users/%s/conferences/%s/members' % (
+            self.user_id, conference_id)
         return self._make_request('post', path, json=kwargs)[2]
 
     def get_conference_member(self, conference_id, member_id):
@@ -1551,19 +1695,31 @@ class Client:
             ##     'state'        : 'active'
             ## }
         """
-        path = '/users/%s/conferences/%s/members/%s' % (self.user_id, conference_id, member_id)
+        path = '/users/%s/conferences/%s/members/%s' % (
+            self.user_id, conference_id, member_id)
         return self._make_request('get', path)[0]
 
-    def update_conference_member(self, conference_id, member_id, join_tone=None, leaving_tone=None, mute=None, hold=None, **kwargs):
+    def update_conference_member(self,
+                                 conference_id,
+                                 member_id,
+                                 join_tone=None,
+                                 leaving_tone=None,
+                                 mute=None,
+                                 hold=None,
+                                 **kwargs):
         """
         Update a conference member
 
         :param str conference_id: id of a conference
         :param str member_id: id of a conference member
-        :param bool join_tone: If "true", will play a tone when the member joins the conference. If "false", no tone is played when the member joins the conference.
-        :param bool leaving_tone: If "true", will play a tone when the member leaves the conference. If "false", no tone is played when the member leaves the conference.
-        :param bool mute: If "true", member can't speak in the conference. If "false", this members can speak in the conference (unless set at the conference level).
-        :param bool hold: If "true", member can't hear or speak in the conference. If "false", member can hear and speak in the conference (unless set at the conference level).
+        :param bool join_tone: If "true", will play a tone when the member joins the conference. \
+            If "false", no tone is played when the member joins the conference.
+        :param bool leaving_tone: If "true", will play a tone when the member leaves the conference. \
+            If "false", no tone is played when the member leaves the conference.
+        :param bool mute: If "true", member can't speak in the conference. \
+            If "false", this members can speak in the conference (unless set at the conference level).
+        :param bool hold: If "true", member can't hear or speak in the conference. \
+            If "false", member can hear and speak in the conference (unless set at the conference level).
 
         Example: update conference member::
 
@@ -1610,15 +1766,25 @@ class Client:
             ##     'state'        : 'active'
             ## }
         """
-        kwargs['joinTone']=join_tone
-        kwargs['leavingTone']=leaving_tone
-        kwargs['mute']=mute
-        kwargs['hold']=hold
+        kwargs['joinTone'] = join_tone
+        kwargs['leavingTone'] = leaving_tone
+        kwargs['mute'] = mute
+        kwargs['hold'] = hold
 
-        path = '/users/%s/conferences/%s/members/%s' % (self.user_id, conference_id, member_id)
+        path = '/users/%s/conferences/%s/members/%s' % (
+            self.user_id, conference_id, member_id)
         self._make_request('post', path, json=kwargs)
 
-    def play_audio_to_conference_member(self, conference_id, member_id, file_url= None,sentence= None,gender= None,locale= None,voice= None,loop_enabled= None, **kwargs):
+    def play_audio_to_conference_member(self,
+                                        conference_id,
+                                        member_id,
+                                        file_url=None,
+                                        sentence=None,
+                                        gender=None,
+                                        locale=None,
+                                        voice=None,
+                                        loop_enabled=None,
+                                        **kwargs):
         """
         Play audio to a conference member
 
@@ -1642,20 +1808,27 @@ class Client:
             api.speak_sentence_to_conference_member('conferenceId', 'memberId', 'Hello')
         """
 
-        kwargs['fileUrl']=file_url
-        kwargs['sentence']=sentence
-        kwargs['gender']=gender
-        kwargs['locale']=locale
-        kwargs['voice']=voice
-        kwargs['loopEnabled']=loop_enabled
+        kwargs['fileUrl'] = file_url
+        kwargs['sentence'] = sentence
+        kwargs['gender'] = gender
+        kwargs['locale'] = locale
+        kwargs['voice'] = voice
+        kwargs['loopEnabled'] = loop_enabled
 
-        path = '/users/%s/conferences/%s/members/%s/audio' % (self.user_id, conference_id, member_id)
+        path = '/users/%s/conferences/%s/members/%s/audio' % (
+            self.user_id, conference_id, member_id)
         self._make_request('post', path, json=kwargs)
 
     # extensions
 
-    def speak_sentence_to_conference_member(self, conference_id, member_id, sentence,
-                                            gender='female', voice='susan', locale='en_US', tag=None):
+    def speak_sentence_to_conference_member(self,
+                                            conference_id,
+                                            member_id,
+                                            sentence,
+                                            gender='female',
+                                            voice='susan',
+                                            locale='en_US',
+                                            tag=None):
         """
         Speak sentence to a conference member
 
@@ -1680,17 +1853,17 @@ class Client:
         :type tag: str
         :param tag: A string that will be included in the callback events of the call.
 
-        Example: Speak sentence to specific confernce member::
+        Example: Speak sentence to specific conference member::
 
             api.speak_sentence_to_conference_member('conferenceId', 'memberId', 'Hello')
         """
         self.play_audio_to_conference_member(conference_id, member_id,
-            sentence = sentence,
-            gender   = gender,
-            voice    = voice,
-            locale   = locale,
-            tag      = tag
-        )
+                                             sentence=sentence,
+                                             gender=gender,
+                                             voice=voice,
+                                             locale=locale,
+                                             tag=tag
+                                             )
 
     def play_audio_file_to_conference_member(self, conference_id, member_id, file_url, tag=None):
         """
@@ -1714,9 +1887,9 @@ class Client:
         """
 
         self.play_audio_to_conference_member(conference_id, member_id,
-            file_url = file_url,
-            tag     = tag
-        )
+                                             file_url=file_url,
+                                             tag=tag
+                                             )
 
     def remove_conference_member(self, conference_id, member_id):
         """
@@ -1774,7 +1947,8 @@ class Client:
             ##    'state'      : 'completed'}]
 
         """
-        self.update_conference_member(conference_id, member_id, state='completed')
+        self.update_conference_member(
+            conference_id, member_id, state='completed')
 
     def hold_conference_member(self, conference_id, member_id, hold):
         """
@@ -1848,8 +2022,8 @@ class Client:
         """
         Mute or unmute a conference
 
-        :type id: str
-        :param id: id of a conference
+        :type conference_id: str
+        :param conference_id: id of a conference
 
         :type mute: bool
         :param mute: mute (if true) or unmute (if false) a conference
@@ -1860,14 +2034,13 @@ class Client:
         """
         self.update_conference(conference_id, mute=mute)
 
-    """
-    Domain API
-    """
+
     def list_domains(self, size=None, **kwargs):
         """
         Get a list of domains
 
-        :param int size: Used for pagination to indicate the size of each page requested for querying a list of items. If no value is specified the default value is 25. (Maximum value 100)
+        :param int size: Used for pagination to indicate the size of each page requested for querying a list of items. \
+            If no value is specified the default value is 25. (Maximum value 100)
         :rtype: types.GeneratorType
         :returns: list of domains
 
@@ -1901,7 +2074,7 @@ class Client:
 
 
         """
-        kwargs['size']=size
+        kwargs['size'] = size
         path = '/users/%s/domains' % self.user_id
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
 
@@ -1922,8 +2095,8 @@ class Client:
             print(domain_id)
             # rd-domainId
         """
-        kwargs['name']=name
-        kwargs['description']=description
+        kwargs['name'] = name
+        kwargs['description'] = description
         return self._make_request('post', '/users/%s/domains' % self.user_id, json=kwargs)[2]
 
     def get_domain(self, domain_id):
@@ -1964,7 +2137,8 @@ class Client:
 
             api.delete_domain('domainId')
         """
-        self._make_request('delete', '/users/%s/domains/%s' % (self.user_id, domain_id))
+        self._make_request('delete', '/users/%s/domains/%s' %
+                           (self.user_id, domain_id))
 
     def list_domain_endpoints(self, domain_id, size=None, **kwargs):
         """
@@ -1972,11 +2146,12 @@ class Client:
 
         :type domain_id: str
         :param domain_id: id of a domain
-        :param int size: Used for pagination to indicate the size of each page requested for querying a list of items. If no value is specified the default value is 25. (Maximum value 1000)
+        :param int size: Used for pagination to indicate the size of each page requested for querying a list of items.\
+            If no value is specified the default value is 25. (Maximum value 1000)
         :rtype: types.GeneratorType
         :returns: list of endpoints
 
-        Example: List and interate over::
+        Example: List and iterate over::
 
             endpoint_list = api.list_domain_endpoints('rd-domainId', size=1000)
 
@@ -2021,7 +2196,7 @@ class Client:
             ## ]
 
         """
-        kwargs['size']=size
+        kwargs['size'] = size
         path = '/users/%s/domains/%s/endpoints' % (self.user_id, domain_id)
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
 
@@ -2033,7 +2208,8 @@ class Client:
         :param str name: The name of endpoint
         :param str description: String to describe the endpoint
         :param str application_id: Id of application which will handle calls and messages of this endpoint
-        :param bool enabled: When set to true, SIP clients can register as this device to receive and make calls. When set to false, registration, inbound, and outbound calling will not succeed.
+        :param bool enabled: When set to true, SIP clients can register as this device to receive and make calls. \
+            When set to false, registration, inbound, and outbound calling will not succeed.
         :param str password: Password of created SIP account
 
 
@@ -2042,7 +2218,9 @@ class Client:
 
         Example: Create Endpoint on Domain 'rd-domainId'
 
-            endpoint_id = api.create_domain_endpoint('rd-domainId', endpoint_name='User3_endpoint', password='AtLeast6Chars')
+            endpoint_id = api.create_domain_endpoint('rd-domainId',
+                                                     endpoint_name='User3_endpoint',
+                                                     password='AtLeast6Chars')
             print(endpoint_id)
             # re-endpointId3
 
@@ -2084,8 +2262,10 @@ class Client:
 
         Example: Create Endpoint on Domain 'rd-domainId' then fetch the endpoint
 
-            endpoint_id = api.create_domain_endpoint('rd-domainId', endpoint_name='User3_endpoint', password='AtLeast6Chars')
-            print(endpoint_id)
+            endpoint_id = api.create_domain_endpoint('rd-domainId',
+                                                     endpoint_name='User3_endpoint',
+                                                     password='AtLeast6Chars')
+             print(endpoint_id)
             # re-endpointId3
 
             my_endpoint = api.get_domain_endpoint(endpoint_id)
@@ -2103,9 +2283,17 @@ class Client:
             ##     'sipUri'      :'sip:user5@qwerty.bwapp.bwsip.io'
             ## }
         """
-        return self._make_request('get', '/users/%s/domains/%s/endpoints/%s' % (self.user_id, domain_id, endpoint_id))[0]
+        return self._make_request('get', '/users/%s/domains/%s/endpoints/%s' % (self.user_id,
+                                                                                domain_id, endpoint_id))[0]
 
-    def update_domain_endpoint(self, domain_id, endpoint_id, password=None, description=None, application_id=None, enabled=True, **kwargs):
+    def update_domain_endpoint(self,
+                               domain_id,
+                               endpoint_id,
+                               password=None,
+                               description=None,
+                               application_id=None,
+                               enabled=True,
+                               **kwargs):
         """
         Update information about an endpoint
 
@@ -2113,7 +2301,8 @@ class Client:
         :param str endpoint_id: id of a endpoint
         :param str description: String to describe the endpoint
         :param str application_id: Id of application which will handle calls and messages of this endpoint
-        :param bool enabled: When set to true, SIP clients can register as this device to receive and make calls. When set to false, registration, inbound, and outbound calling will not succeed.
+        :param bool enabled: When set to true, SIP clients can register as this device to receive and make calls. \
+            When set to false, registration, inbound, and outbound calling will not succeed.
         :param str password: Password of created SIP account
 
         Example: Update password and disable the endpoint::
@@ -2151,12 +2340,13 @@ class Client:
             ## }
         """
 
-        kwargs['description']= description
-        kwargs['applicationId']=application_id
-        kwargs['enabled']=enabled
-        kwargs['credentials']=dict(password=password)
+        kwargs['description'] = description
+        kwargs['applicationId'] = application_id
+        kwargs['enabled'] = enabled
+        kwargs['credentials'] = dict(password=password)
 
-        self._make_request('post', '/users/%s/domains/%s/endpoints/%s' % (self.user_id, id, endpoint_id), json=kwargs)
+        self._make_request('post', '/users/%s/domains/%s/endpoints/%s' %
+                           (self.user_id, domain_id, endpoint_id), json=kwargs)
 
     def delete_domain_endpoint(self, domain_id, endpoint_id):
         """
@@ -2189,27 +2379,29 @@ class Client:
             ## CatapultException(404, "The endpoint 're-endpointId' could not be found")
 
         """
-        self._make_request('delete', '/users/%s/domains/%s/endpoints/%s' % (self.user_id, domain_id, endpoint_id))
+        self._make_request(
+            'delete', '/users/%s/domains/%s/endpoints/%s' % (self.user_id, domain_id, endpoint_id))
 
-    def create_domain_endpoint_auth_token(self, id, endpoint_id, data={'expires': 3600}):
+    def create_domain_endpoint_auth_token(self, domain_id, endpoint_id, expires=3600, **kwargs):
         """
         Create auth token for an endpoint
 
-        :type id: str
-        :param id: id of a domain
-
-        :type endpoint_id: str
-        :param endpoint_id: id of a endpoint
+        :param str domain_id: id of a domain
+        :param str endpoint_id: id of a endpoint
+        :param int expires: Token life in minutes
 
         :Example:
         token = api.create_domain_endpoint_auth_token('domainId', 'endpointId')
         """
-        path = '/users/%s/domains/%s/endpoints/%s/tokens' % (self.user_id, id, endpoint_id)
-        return self._make_request('post', path, json=data)[0]
+        kwargs['expires'] = expires
+        path = '/users/%s/domains/%s/endpoints/%s/tokens' % (
+            self.user_id, id, endpoint_id)
+        return self._make_request('post', path, json=kwargs)[0]
 
     """
     Error API
     """
+
     def get_errors(self, query=None):
         """
         Get a list of errors
@@ -2246,6 +2438,7 @@ class Client:
     """
     Media API
     """
+
     def get_media_files(self):
         """
         Gets a list of user's media files.
@@ -2333,6 +2526,7 @@ class Client:
     """
     Message API
     """
+
     def get_messages(self, query=None):
         """
         Get a list of user's messages
@@ -2405,7 +2599,7 @@ class Client:
             )
         """
         kwargs["from"] = from_
-        kwargs["to"]= to
+        kwargs["to"] = to
         return self._make_request('post', '/users/%s/messages' % self.user_id, json=kwargs)[2]
 
     def send_messages(self, messages_data):
@@ -2449,7 +2643,8 @@ class Client:
             {'from': '+1234567980', 'to': '+1234567982', 'text': 'SMS message2'}
         ])
         """
-        results = self._make_request('post', '/users/%s/messages' % self.user_id, json=messages_data)[0]
+        results = self._make_request(
+            'post', '/users/%s/messages' % self.user_id, json=messages_data)[0]
         for i in range(0, len(messages_data)):
             item = results[i]
             item['id'] = item.get('location', '').split('/')[-1]
@@ -2474,6 +2669,7 @@ class Client:
     """
     NumberInfo API
     """
+
     def get_number_info(self, number):
         """
         Gets CNAM information about phone number
@@ -2494,7 +2690,8 @@ class Client:
     """
     PhoneNumber API
     """
-    def get_phone_numbers(self, application_id = None, state = None, name = None, city = None, number_state = None, size = None, **kwargs):
+
+    def get_phone_numbers(self, application_id=None, state=None, name=None, city=None, number_state=None, size=None, **kwargs):
         """
         Get a list of user's phone numbers
 
@@ -2523,13 +2720,12 @@ class Client:
         list = api.get_phone_numbers()
         """
 
-        kwargs['applicationId']=application_id
-        kwargs['state']=state
-        kwargs['name']=name
-        kwargs['city']=city
-        kwargs['numberState']=number_state
-        kwargs['size']=size
-
+        kwargs['applicationId'] = application_id
+        kwargs['state'] = state
+        kwargs['name'] = name
+        kwargs['city'] = city
+        kwargs['numberState'] = number_state
+        kwargs['size'] = size
 
         path = '/users/%s/phoneNumbers' % self.user_id
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
@@ -2592,7 +2788,8 @@ class Client:
         :Example:
         data = api.update_phone_number('numberId', {'applicationId': 'appId1'})
         """
-        self._make_request('post', '/users/%s/phoneNumbers/%s' % (self.user_id, id), json=data)
+        self._make_request(
+            'post', '/users/%s/phoneNumbers/%s' % (self.user_id, id), json=data)
 
     def delete_phone_number(self, id):
         """
@@ -2604,11 +2801,13 @@ class Client:
         :Example:
         api.delete_phone_number('numberId')
         """
-        self._make_request('delete', '/users/%s/phoneNumbers/%s' % (self.user_id, id))
+        self._make_request(
+            'delete', '/users/%s/phoneNumbers/%s' % (self.user_id, id))
 
     """
     Recording API
     """
+
     def get_recordings(self, query=None):
         """
         Get a list of call recordings
@@ -2646,6 +2845,7 @@ class Client:
     """
     Transcription API
     """
+
     def get_transcriptions(self, recording_id, query=None):
         """
         Get a list of transcriptions
@@ -2663,7 +2863,8 @@ class Client:
         :Example:
         list = api.get_transcriptions('recordingId')
         """
-        path = '/users/%s/recordings/%s/transcriptions' % (self.user_id, recording_id)
+        path = '/users/%s/recordings/%s/transcriptions' % (
+            self.user_id, recording_id)
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=query))
 
     def create_transcription(self, recording_id):
@@ -2679,7 +2880,8 @@ class Client:
         :Example:
         id = api.create_transcirption('recordingId')
         """
-        path = '/users/%s/recordings/%s/transcriptions' % (self.user_id, recording_id)
+        path = '/users/%s/recordings/%s/transcriptions' % (
+            self.user_id, recording_id)
         return self._make_request('post', path, json={})[2]
 
     def get_transcription(self, recording_id, id):
@@ -2698,14 +2900,17 @@ class Client:
         :Example:
         data = api.get_transcription('recordingId', 'transcriptionId')
         """
-        path = '/users/%s/recordings/%s/transcriptions/%s' % (self.user_id, recording_id, id)
+        path = '/users/%s/recordings/%s/transcriptions/%s' % (
+            self.user_id, recording_id, id)
         return self._make_request('get', path)[0]
 
 
 class CatapultException(Exception):
+
     """
     Catapult API request exception
     """
+
     def __init__(self, status_code, message, **kwargs):
         """
         Initialize the catapult exception.
