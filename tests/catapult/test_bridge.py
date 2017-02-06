@@ -1,7 +1,7 @@
 import unittest
 import six
 import requests
-from  tests.catapult.helpers import create_response, get_client, AUTH
+from tests.catapult.helpers import create_response, get_client, AUTH
 if six.PY3:
     from unittest.mock import patch
 else:
@@ -9,12 +9,14 @@ else:
 
 from bandwidth.catapult import Client
 
+
 class BridgesTests(unittest.TestCase):
+
     def test_list_bridges(self):
         """
         list_bridges() should return bridges
         """
-        estimated_json="""
+        estimated_json = """
         [{
             "id": "bridgeId",
             "state": "completed",
@@ -25,10 +27,15 @@ class BridgesTests(unittest.TestCase):
             "completedTime": "2013-04-22T13:59:30.122Z"
         }]
         """
-        with patch('requests.request', return_value = create_response(200, estimated_json)) as p:
+        with patch('requests.request', return_value=create_response(200, estimated_json)) as p:
             client = get_client()
             data = list(client.list_bridges())
-            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/bridges', auth=AUTH, params={ 'size': None })
+            p.assert_called_with(
+                'get',
+                'https://api.catapult.inetwork.com/v1/users/userId/bridges',
+                auth=AUTH,
+                params={
+                    'size': None})
             self.assertEqual('bridgeId', data[0]['id'])
 
     def test_create_bridge(self):
@@ -37,19 +44,22 @@ class BridgesTests(unittest.TestCase):
         """
         estimated_response = create_response(201)
         estimated_response.headers['Location'] = 'http://localhost/bridgeId'
-        with patch('requests.request', return_value = estimated_response) as p:
+        with patch('requests.request', return_value=estimated_response) as p:
             client = get_client()
             data = {'callIds': ['callId'], 'bridgeAudio': False}
-            id = client.create_bridge(call_ids = ['callId'], bridge_audio = False)
-            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/bridges', auth=AUTH, json= data)
+            id = client.create_bridge(call_ids=['callId'], bridge_audio=False)
+            p.assert_called_with(
+                'post',
+                'https://api.catapult.inetwork.com/v1/users/userId/bridges',
+                auth=AUTH,
+                json=data)
             self.assertEqual('bridgeId', id)
-
 
     def test_get_bridge(self):
         """
         get_bridge() should return a bridge
         """
-        estimated_json="""
+        estimated_json = """
         {
             "id"           : "bridgeId",
             "state"        : "completed",
@@ -60,7 +70,7 @@ class BridgesTests(unittest.TestCase):
             "completedTime": "2013-04-22T13:59:30.122Z"
         }
         """
-        with patch('requests.request', return_value = create_response(200, estimated_json)) as p:
+        with patch('requests.request', return_value=create_response(200, estimated_json)) as p:
             client = get_client()
             data = client.get_bridge('bridgeId')
             p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/bridges/bridgeId', auth=AUTH)
@@ -70,17 +80,21 @@ class BridgesTests(unittest.TestCase):
         """
         update_bridge() should update a bridge
         """
-        with patch('requests.request', return_value = create_response(200)) as p:
+        with patch('requests.request', return_value=create_response(200)) as p:
             client = get_client()
-            data = {'bridgeAudio': False, 'callIds' : None}
-            client.update_bridge('bridgeId', bridge_audio = False)
-            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/bridges/bridgeId', auth=AUTH, json=data)
+            data = {'bridgeAudio': False, 'callIds': None}
+            client.update_bridge('bridgeId', bridge_audio=False)
+            p.assert_called_with(
+                'post',
+                'https://api.catapult.inetwork.com/v1/users/userId/bridges/bridgeId',
+                auth=AUTH,
+                json=data)
 
     def test_list_bridge_calls(self):
         """
         list_bridge_calls() should return calls of a bridge
         """
-        estimated_json="""
+        estimated_json = """
         [{
             "activeTime": "2013-05-22T19:49:39Z",
             "direction": "out",
@@ -95,18 +109,25 @@ class BridgesTests(unittest.TestCase):
             "bridge": "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/{bridgeId}"
         }]
         """
-        with patch('requests.request', return_value = create_response(200, estimated_json)) as p:
+        with patch('requests.request', return_value=create_response(200, estimated_json)) as p:
             client = get_client()
             calls = list(client.list_bridge_calls('bridgeId'))
-            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/bridges/bridgeId/calls', auth=AUTH)
+            p.assert_called_with(
+                'get',
+                'https://api.catapult.inetwork.com/v1/users/userId/bridges/bridgeId/calls',
+                auth=AUTH)
             self.assertEqual('{callId1}', calls[0]['id'])
 
     def test_play_audio_to_bridge(self):
         """
         play_audio_to_bridge() should play audio to a bridge
         """
-        with patch('requests.request', return_value = create_response(200)) as p:
+        with patch('requests.request', return_value=create_response(200)) as p:
             client = get_client()
             data = {'fileUrl': 'url'}
             client.play_audio_to_bridge('bridgeId', data)
-            p.assert_called_with('post', 'https://api.catapult.inetwork.com/v1/users/userId/bridges/bridgeId/audio', auth=AUTH, json=data)
+            p.assert_called_with(
+                'post',
+                'https://api.catapult.inetwork.com/v1/users/userId/bridges/bridgeId/audio',
+                auth=AUTH,
+                json=data)

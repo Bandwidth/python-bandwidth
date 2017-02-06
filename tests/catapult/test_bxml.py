@@ -2,7 +2,9 @@ import unittest
 from bandwidth.catapult.bxml import Response
 from lxml.builder import E
 
+
 class ResponseTests(unittest.TestCase):
+
     def test_to_xml(self):
         """
         to_xml() should build XML

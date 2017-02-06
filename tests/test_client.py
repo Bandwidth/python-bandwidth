@@ -10,7 +10,9 @@ else:
 
 from bandwidth import client, _client_classes
 
+
 class ClientTests(unittest.TestCase):
+
     def test_call_with_supported_client(self):
         """
         Call of client() should return client instance for supported client name
@@ -41,4 +43,3 @@ class ClientTests(unittest.TestCase):
             old = p.call_count
             client('catapult', 'userId', 'token', 'secret')
             self.assertEqual(old, p.call_count)
-

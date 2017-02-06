@@ -10,12 +10,14 @@ from bandwidth.catapult.decorators import play_audio
 
 
 class DecoratorsTests(unittest.TestCase):
+
     def test_play_audio(self):
         """
         play_audio() should add methods speak_sentence and play_audio_file to class
         """
         @play_audio('test')
         class Test:
+
             def play_audio_to_test(self, id, data):
                 pass
         t = Test()
@@ -35,6 +37,3 @@ class DecoratorsTests(unittest.TestCase):
                 'fileUrl': 'url',
                 'tag': None
             })
-
-
-
