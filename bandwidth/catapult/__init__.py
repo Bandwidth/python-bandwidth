@@ -2133,7 +2133,7 @@ class Client:
         :type domain_id: str
         :param domain_id: id of a domain
 
-        Example: Delete domain 'domainId'
+        Example: Delete domain 'domainId'::
 
             api.delete_domain('domainId')
         """
@@ -2212,11 +2212,10 @@ class Client:
             When set to false, registration, inbound, and outbound calling will not succeed.
         :param str password: Password of created SIP account
 
-
         :rtype: str
         :returns: id of endpoint
 
-        Example: Create Endpoint on Domain 'rd-domainId'
+        Example: Create Endpoint on Domain 'rd-domainId'::
 
             endpoint_id = api.create_domain_endpoint('rd-domainId',
                                                      endpoint_name='User3_endpoint',
@@ -2260,12 +2259,12 @@ class Client:
         :rtype: dict
         :returns: call information
 
-        Example: Create Endpoint on Domain 'rd-domainId' then fetch the endpoint
+        Example: Create Endpoint on Domain 'rd-domainId' then fetch the endpoint::
 
             endpoint_id = api.create_domain_endpoint('rd-domainId',
                                                      endpoint_name='User3_endpoint',
                                                      password='AtLeast6Chars')
-             print(endpoint_id)
+            print(endpoint_id)
             # re-endpointId3
 
             my_endpoint = api.get_domain_endpoint(endpoint_id)
@@ -2308,7 +2307,7 @@ class Client:
         Example: Update password and disable the endpoint::
 
 
-            my_endpoint = api.get_domain_endpoint('rd-domainId', re-endpointId')
+            my_endpoint = api.get_domain_endpoint('rd-domainId', 're-endpointId')
             print(my_endpoint)
 
             ## {
@@ -2324,7 +2323,7 @@ class Client:
             ## }
 
             api.update_domain_endpoint('rd-domainId', 're-endpointId', enabled=False, password='abc123')
-            my_endpoint = api.get_domain_endpoint('rd-domainId', re-endpointId')
+            my_endpoint = api.get_domain_endpoint('rd-domainId', 're-endpointId')
             print(my_endpoint)
 
             ## {
@@ -2357,7 +2356,7 @@ class Client:
 
         Example: Delete and try to fetch endpoint::
 
-            my_endpoint = api.get_domain_endpoint('rd-domainId', re-endpointId')
+            my_endpoint = api.get_domain_endpoint('rd-domainId', 're-endpointId')
             print(my_endpoint)
             ## {
             ##     'credentials' :{
@@ -2486,19 +2485,19 @@ class Client:
             ##     'code'    :'number-allocator-unavailable',
             ##     'details' :[
             ##         {
-            ##         'id'      :'ued-kntvyotalci',
-            ##         'name'    :'requestPath',
-            ##         'value'   :'availableNumbers/local'
+            ##            'id'      :'ued-kntvyotalci',
+            ##            'name'    :'requestPath',
+            ##            'value'   :'availableNumbers/local'
             ##         },
             ##         {
-            ##         'id'      :'ued-b2dq',
-            ##         'name'    :'remoteAddress',
-            ##         'value'   :'216.82.234.65'
+            ##            'id'      :'ued-b2dq',
+            ##            'name'    :'remoteAddress',
+            ##            'value'   :'216.82.234.65'
             ##         },
             ##         {
-            ##         'id'      :'ued-wzm2ydi',
-            ##         'name'    :'requestMethod',
-            ##         'value'   :'GET'
+            ##            'id'      :'ued-wzm2ydi',
+            ##            'name'    :'requestMethod',
+            ##            'value'   :'GET'
             ##         }
             ##     ],
             ##     'id'      :'ue-errorId',
@@ -2508,7 +2507,7 @@ class Client:
         """
         return self._make_request('get', '/users/%s/errors/%s' % (self.user_id, error_id))[0]
 
-    def get_media_files(self):
+    def list_media_files(self):
         """
         Gets a list of user's media files.
 
@@ -2517,7 +2516,7 @@ class Client:
 
         Example: list media files and save any with the name `dog` in file name::
 
-            media_list = api.get_media_files()
+            media_list = api.list_media_files()
             for media in media_list:
                 if 'dog' in media['mediaName'].lower():
                     stream, content_type = api.download_media_file(media['mediaName'])
@@ -2537,7 +2536,7 @@ class Client:
 
         :type content: str|buffer|bytearray|stream|file
         :param content: content of file to upload (file object, string or buffer).
-        Don't use together with file_path
+            Don't use together with file_path
 
         :type content_type: str
         :param content_type: mime type of file
@@ -2613,10 +2612,9 @@ class Client:
                      sort_order=None,
                      size=None,
                      **kwargs):
-         """
+        """
         Get a list of user's messages
 
-        Query parameters
         :param str ``from_``: The phone number to filter the messages that came from
         :param str to: The phone number to filter the messages that was sent to
         :param str from_date_time: The starting date time to filter the messages
@@ -2624,9 +2622,9 @@ class Client:
         :param str to_date_time: The ending date time to filter the messages (must be in
             yyyy-MM-dd hh:mm:ss format, like 2014-05-25 12:00:00.)
         :param str direction: Filter by direction of message, in - a message that came from the telephone
-             network to one of your numbers (an "inbound" message) or out - a message
-             that was sent from one of your numbers to the telephone network (an "outbound"
-             message)
+            network to one of your numbers (an "inbound" message) or out - a message
+            that was sent from one of your numbers to the telephone network (an "outbound"
+            message)
         :param str state: The message state to filter. Values are 'received', 'queued', 'sending',
             'sent', 'error'
         :param str delivery_state: The message delivery state to filter. Values are 'waiting', 'delivered',
@@ -2649,6 +2647,7 @@ class Client:
             ## m-t2gspvs6iadfe
             ## m-shuh6d6pyadfe
         """
+
         kwargs['from']=from_
         kwargs['to']=to
         kwargs['fromDateTime']=from_date_time
@@ -2674,7 +2673,8 @@ class Client:
                      **kwargs):
         """
         Send a message (SMS or MMS)
-        :param str from_: One of your telephone numbers the message should come from
+
+        :param str ``from_``: One of your telephone numbers the message should come from
         :param str to: The phone number the message should be sent to
         :param str text: The contents of the text message
         :param list media: For MMS messages, a media url to the location of the media or list of medias to be sent send with the message.
@@ -2821,33 +2821,52 @@ class Client:
         return self._make_request('get', path)[0]
 
 
-    def get_phone_numbers(self, application_id=None, state=None, name=None, city=None, number_state=None, size=None, **kwargs):
+    def list_phone_numbers(self, application_id=None, state=None, name=None, city=None, number_state=None, size=None, **kwargs):
         """
         Get a list of user's phone numbers
 
-        Query parameters
-            application_id
-                Used to filter the retrieved list of numbers by an associated application ID.
-            state
-                Used to filter the retrieved list of numbers allocated for the authenticated
-                user by a US state.
-            name
-                Used to filter the retrieved list of numbers allocated for the authenticated
-                user by it's name.
-            city
-                Used to filter the retrieved list of numbers allocated for the authenticated user
-                by it's city.
-            number_state
-                Used to filter the retrieved list of numbers allocated for the authenticated user
-                by the number state.
-            size
-                Used for pagination to indicate the size of each page requested for querying a list
-                of items. If no value is specified the default value is 25. (Maximum value 1000)
+        :param str application_id: Used to filter the retrieved list of numbers by an associated application ID.
+        :param str state: Used to filter the retrieved list of numbers allocated for the authenticated
+            user by a US state.
+        :param str name: Used to filter the retrieved list of numbers allocated for the authenticated
+            user by it's name.
+        :param str city: Used to filter the retrieved list of numbers allocated for the authenticated user
+            by it's city.
+        :param str number_state: Used to filter the retrieved list of numbers allocated for the authenticated user
+            by the number state.
+        :param str size: Used for pagination to indicate the size of each page requested for querying a list
+            of items. If no value is specified the default value is 25. (Maximum value 1000)
         :rtype: types.GeneratorType
         :returns: list of phone numbers
 
-        :Example:
-        list = api.get_phone_numbers()
+        Example: List all phone numbers::
+
+            number_list = api.list_phone_numbers(size=1000)
+            print(list(number_list))
+            ## [
+            ##     {
+            ##         'city'          :'RALEIGH',
+            ##         'createdTime'   :'2017-02-06T18:41:37Z',
+            ##         'id'            :'n-n123',
+            ##         'name'          :'demo name',
+            ##         'nationalNumber':'(919) 555-5346',
+            ##         'number'        :'+19195555346',
+            ##         'numberState'   :'enabled',
+            ##         'price'         :'0.35',
+            ##         'state'         :'NC'
+            ##     },
+            ##     {
+            ##         'city'          :'RALEIGH',
+            ##         'createdTime'   :'2017-02-06T18:41:56Z',
+            ##         'id'            :'n-n1234',
+            ##         'name'          :'demo name',
+            ##         'nationalNumber':'(919) 555-5378',
+            ##         'number'        :'+19195555378',
+            ##         'numberState'   :'enabled',
+            ##         'price'         :'0.35',
+            ##         'state'         :'NC'
+            ##     }
+            ## ]
         """
 
         kwargs['applicationId']=application_id
@@ -2860,103 +2879,179 @@ class Client:
         path = '/users/%s/phoneNumbers' % self.user_id
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
 
-    def create_phone_number(self, data):
+    def order_phone_number(self,
+                            number=None,
+                            name=None,
+                            application_id=None,
+                            fallback_number=None,
+                            **kwargs):
         """
         Allocates a number so user can use it to make and receive calls and send
         and receive messages.
 
-        Parameters
-            number
-                An available telephone number you want to use
-            name
-                A name you choose for this number.
-            applicationId
-                The unique id of an Application you want to associate with this number.
-            fallbackNumber
-                Number to transfer an incoming call when the callback/fallback events can't
-                be delivered.
+        :param str number: An available telephone number you want to use
+        :param str name: A name you choose for this number.
+        :param str application_id: The unique id of an Application you want to associate with this number.
+        :param str fallback_number: Number to transfer an incoming call when the callback/fallback events can't
+            be delivered.
 
         :rtype: str
         :returns: id of created phone number
 
-        :Example:
-        id = api.create_phone_number({'number': '+1234567890'})
-        """
-        return self._make_request('post', '/users/%s/phoneNumbers' % self.user_id, json=data)[2]
+        Example: Order Number::
 
-    def get_phone_number(self, id):
+            number_id = api.create_phone_number(number='+1234567890')
+            print(number_id)
+            # n-asdf123
+        """
+
+        kwargs['number'] =number
+        kwargs['name'] =name
+        kwargs['applicationId'] =application_id
+        kwargs['fallbackNumber'] =fallback_number
+
+        return self._make_request('post', '/users/%s/phoneNumbers' % self.user_id, json=kwargs)[2]
+
+    def get_phone_number(self, number_id):
         """
         Get information about a phone number
 
-        :type id: str
-        :param id: id of a phone number
+        :type number_id: str
+        :param number_id: id of a phone number
 
         :rtype: dict
         :returns: number information
 
-        :Example:
-        data = api.get_phone_number('numberId')
-        """
-        return self._make_request('get', '/users/%s/phoneNumbers/%s' % (self.user_id, id))[0]
+        Example: Search, order, and fetch Number information::
 
-    def update_phone_number(self, id, data):
+            available_numbers = api.search_available_local_numbers(city='Raleigh', state='NC')
+
+            number_id = api.order_phone_number(available_numbers[0]['number'])
+            print(number_id)
+            # n-123
+
+            my_number = api.get_phone_number(number_id)
+            print(my_number)
+            ## {
+            ##     'city'          :'RALEIGH',
+            ##     'createdTime'   :'2017-02-06T18:27:14Z',
+            ##     'id'            :'n-123',
+            ##     'nationalNumber':'(919) 561-5039',
+            ##     'number'        :'+19195615039',
+            ##     'numberState'   :'enabled',
+            ##     'price'         :'0.35',
+            ##     'state'         :'NC'
+            ## }
+
+        """
+        return self._make_request('get', '/users/%s/phoneNumbers/%s' % (self.user_id, number_id))[0]
+
+    def update_phone_number(self, number_id,
+                            name=None,
+                            application_id=None,
+                            fallback_number=None,
+                            **kwargs):
         """
         Update information about a phone number
 
-        :type id: str
-        :param id: id of a phone number
+        :param str number_id: id of a phone number
+        :param str name: A name you choose for this number.
+        :param str application_id: The unique id of an Application you want to associate with this number.
+        :param str fallback_number: Number to transfer an incoming call when the callback/fallback events can't
+            be delivered.
 
-        Parameters
-            name
-                A name you choose for this number.
-            applicationId
-                The unique id of an Application you want to associate with this number.
-            fallbackNumber
-                Number to transfer an incoming call when the callback/fallback events can't
-                be delivered.
+        Example: Update number information::
 
-        :Example:
-        data = api.update_phone_number('numberId', {'applicationId': 'appId1'})
+            my_number = api.get_phone_number(number_id)
+            print(my_number)
+            ## {
+            ##     'city'          :'RALEIGH',
+            ##     'createdTime'   :'2017-02-06T18:27:14Z',
+            ##     'id'            :'n-123',
+            ##     'nationalNumber':'(919) 561-5039',
+            ##     'number'        :'+19195615039',
+            ##     'numberState'   :'enabled',
+            ##     'price'         :'0.35',
+            ##     'state'         :'NC'
+            ## }
+
+            api.update_phone_number(number_id, name='demo name')
+
+            my_number = api.get_phone_number(number_id)
+            print(my_number)
+            ## {
+            ##     'id'            :'n-123',
+            ##     'number'        :'+19195615039',
+            ##     'nationalNumber':'(919) 561-5039',
+            ##     'name'          :'demo name',
+            ##     'createdTime'   :'2017-02-06T18:41:56Z',
+            ##     'city'          :'RALEIGH',
+            ##     'state'         :'NC',
+            ##     'price'         :'0.35',
+            ##     'numberState'   :'enabled'
+            ## }
         """
-        self._make_request(
-            'post', '/users/%s/phoneNumbers/%s' % (self.user_id, id), json=data)
+        kwargs['name']=name
+        kwargs['applicationId']=application_id
+        kwargs['fallbackNumber']=fallback_number
 
-    def delete_phone_number(self, id):
+        self._make_request(
+            'post', '/users/%s/phoneNumbers/%s' % (self.user_id, number_id), json=kwargs)
+
+    def delete_phone_number(self, number_id):
         """
         Remove a phone number
 
-        :type id: str
-        :param id: id of a phone number
+        :type number_id: str
+        :param number_id: id of a phone number
 
-        :Example:
-        api.delete_phone_number('numberId')
+        Example: Delete phone number (release) from account::
+
+            api.delete_phone_number('numberId')
         """
         self._make_request(
-            'delete', '/users/%s/phoneNumbers/%s' % (self.user_id, id))
+            'delete', '/users/%s/phoneNumbers/%s' % (self.user_id, number_id))
 
-    """
-    Recording API
-    """
-
-    def get_recordings(self, query=None):
+    def list_recordings(self, size=None, **kwargs):
         """
         Get a list of call recordings
 
-        Query parameters
-            size
-                Used for pagination to indicate the size of each page requested for querying a list
-                of items. If no value is specified the default value is 25. (Maximum value 1000)
+        :param int size: Used for pagination to indicate the size of each page requested for querying a list
+            of items. If no value is specified the default value is 25. (Maximum value 1000)
         :rtype: types.GeneratorType
         :returns: list of recordings
 
-        :Example:
-        list = api.get_recordings()
+        Example: List all recordings::
+
+            recording_list = api.list_recordings(size=1000)
+            print(recording_list)
+            ## [
+            ##     {
+            ##         'call'     :'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId',
+            ##         'endTime'  :'2017-01-30T17:58:45Z',
+            ##         'id'       :'rec-recordingId',
+            ##         'media'    :'https://api.catapult.inetwork.com/v1/users/u-abc123/media/c-callId-1.wav',
+            ##         'mediaName':'c-callId-1.wav',
+            ##         'startTime':'2017-01-30T17:58:34Z',
+            ##         'state'    :'complete'
+            ##     },
+            ##     {
+            ##         'call'     :'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId2',
+            ##         'endTime'  :'2017-01-30T17:53:30Z',
+            ##         'id'       :'rec-recordingId2',
+            ##         'media'    :'https://api.catapult.inetwork.com/v1/users/u-abc123/media/c-callId2-1.wav',
+            ##         'mediaName':'c-callId2-1.wav',
+            ##         'startTime':'2017-01-30T17:53:20Z',
+            ##         'state'    :'complete'
+            ##     }
+            ## ]
         """
+        kwargs['size']=size
         path = '/users/%s/recordings' % self.user_id
         return lazy_map(_set_media_name,
-                        get_lazy_enumerator(self, lambda: self._make_request('get', path, params=query)))
+                        get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs)))
 
-    def get_recording(self, id):
+    def get_recording(self, recording_id):
         """
         Gets information about a recording
 
@@ -2966,36 +3061,64 @@ class Client:
         :rtype: dict
         :returns: recording information
 
-        :Example:
-        data = api.get_recording('recordingId')
+        Example: Fetch recording information::
+
+            my_recording = api.get_recording('recordingId2')
+            print(my_recording)
+
+            ## {
+            ##     'call'     :'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId2',
+            ##     'endTime'  :'2017-01-30T17:53:30Z',
+            ##     'id'       :'rec-recordingId2',
+            ##     'media'    :'https://api.catapult.inetwork.com/v1/users/u-abc123/media/c-callId2-1.wav',
+            ##     'mediaName':'c-callId2-1.wav',
+            ##     'startTime':'2017-01-30T17:53:20Z',
+            ##     'state'    :'complete'
+            ## }
         """
         path = '/users/%s/recordings/%s' % (self.user_id, id)
         return _set_media_name(self._make_request('get', path)[0])
 
-    """
-    Transcription API
-    """
-
-    def get_transcriptions(self, recording_id, query=None):
+    def list_transcriptions(self, recording_id, size=None, **kwargs):
         """
         Get a list of transcriptions
 
         :type recording_id: str
         :param recording_id: id of a recording
-
-        Query parameters
-            size
-                Used for pagination to indicate the size of each page requested for querying a list
-                of items. If no value is specified the default value is 25. (Maximum value 1000)
+        :param int size: Used for pagination to indicate the size of each page requested for querying a list
+            of items. If no value is specified the default value is 25. (Maximum value 1000)
         :rtype: types.GeneratorType
         :returns: list of transcriptions
 
-        :Example:
-        list = api.get_transcriptions('recordingId')
+        Example: Print off all transcriptions for a recording::
+
+            transcriptions_list = api.list_transcriptions('recordingId')
+            print(list(transcriptions_list))
+            ## [
+            ##     {
+            ##         'chargeableDuration': 60,
+            ##         'id': '{transcription-id}',
+            ##         'state': 'completed',
+            ##         'time': '2014-10-09T12:09:16Z',
+            ##         'text': '{transcription-text}',
+            ##         'textSize': 3627,
+            ##         'textUrl': '{url-to-full-text}'
+            ##     },
+            ##     {
+            ##         'chargeableDuration': 60,
+            ##         'id': '{transcription-id}',
+            ##         'state': 'completed',
+            ##         'text': '{transcription-text}',
+            ##         'time': '2014-10-09T14:04:44Z',
+            ##         'textSize': 72,
+            ##         'textUrl': '{url-to-full-text}'
+            ##     }
+            ## ]
         """
+        kwargs['size']=size
         path = '/users/%s/recordings/%s/transcriptions' % (
             self.user_id, recording_id)
-        return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=query))
+        return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
 
     def create_transcription(self, recording_id):
         """
@@ -3007,14 +3130,15 @@ class Client:
         :rtype: str
         :returns: id of created transcription
 
-        :Example:
-        id = api.create_transcirption('recordingId')
+        Example: Create new transcription from existing recording::
+
+            transcription_id = api.create_transcirption('recordingId')
         """
         path = '/users/%s/recordings/%s/transcriptions' % (
             self.user_id, recording_id)
         return self._make_request('post', path, json={})[2]
 
-    def get_transcription(self, recording_id, id):
+    def get_transcription(self, recording_id, transcription_id):
         """
         Get information about a transcription
 
@@ -3027,11 +3151,22 @@ class Client:
         :rtype: dict
         :returns: application information
 
-        :Example:
-        data = api.get_transcription('recordingId', 'transcriptionId')
+        Example: Fetch a single transcription on a recording::
+
+            my_transcription = api.get_transcription('recordingId', 'transcriptionId')
+            print(my_transcription)
+            ## {
+            ##     'chargeableDuration': 11,
+            ##     'id'                : '{transcriptionId}',
+            ##     'state'             : 'completed',
+            ##     'text'              : 'Hey there, I was calling to talk about plans for this saturday. ',
+            ##     'textSize'          : 63,
+            ##     'textUrl'           : 'https://api.catapult.inetwork.com/.../media/{transcriptionId}',
+            ##     'time'              : '2014-12-23T23:08:59Z'
+            ## }
         """
         path = '/users/%s/recordings/%s/transcriptions/%s' % (
-            self.user_id, recording_id, id)
+            self.user_id, recording_id, transcription_id)
         return self._make_request('get', path)[0]
 
 

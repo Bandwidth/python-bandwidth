@@ -1,0 +1,685 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Index &mdash; bandwidth_sdk 1.0.6-stable documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="bandwidth_sdk 1.0.6-stable documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="index.html" class="icon icon-home"> bandwidth_sdk
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#client-initialization">Client Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#code-samples">Code Samples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#phone-numbers">Phone Numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#calling">Calling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#messaging">Messaging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#sip">SIP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#bandwidth-xml">Bandwidth XML</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#more-examples">More examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">bandwidth_sdk</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bandwidth_sdk.html">bandwidth package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#module-bandwidth">bandwidth.client module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#calls">Calls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#account">Account</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#applications">Applications</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#available-numbers">Available Numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#bridges">Bridges</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#conferences">Conferences</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#domains">Domains</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#endpoints">Endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#errors">Errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#media">Media</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#messages">Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#numbers">Numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#recordings">Recordings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bandwidth_sdk.html#transcriptions">Transcriptions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">Test Suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing and Reporting Bugs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contribute.html#submitting-bug-reports">Submitting Bug Reports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contribute.html#contributing">Contributing</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">bandwidth_sdk</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Index</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+
+<h1 id="index">Index</h1>
+
+<div class="genindex-jumpbox">
+ <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
+ | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#O"><strong>O</strong></a>
+ | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
+ 
+</div>
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.answer_call">answer_call() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#module-bandwidth">bandwidth (module)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client">Client (class in bandwidth.catapult)</a>, <a href="bandwidth_sdk.html#bandwidth.catapult.Client">[1]</a>, <a href="bandwidth_sdk.html#bandwidth.catapult.Client">[2]</a>, <a href="bandwidth_sdk.html#bandwidth.catapult.Client">[3]</a>, <a href="bandwidth_sdk.html#bandwidth.catapult.Client">[4]</a>, <a href="bandwidth_sdk.html#bandwidth.catapult.Client">[5]</a>, <a href="bandwidth_sdk.html#bandwidth.catapult.Client">[6]</a>, <a href="bandwidth_sdk.html#bandwidth.catapult.Client">[7]</a>, <a href="bandwidth_sdk.html#bandwidth.catapult.Client">[8]</a>, <a href="bandwidth_sdk.html#bandwidth.catapult.Client">[9]</a>, <a href="bandwidth_sdk.html#bandwidth.catapult.Client">[10]</a>, <a href="bandwidth_sdk.html#bandwidth.catapult.Client">[11]</a>, <a href="bandwidth_sdk.html#bandwidth.catapult.Client">[12]</a>, <a href="bandwidth_sdk.html#bandwidth.catapult.Client">[13]</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.client">client() (in module bandwidth)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.create_application">create_application() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.create_bridge">create_bridge() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.create_call">create_call() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.create_call_gather">create_call_gather() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.create_conference">create_conference() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.create_conference_member">create_conference_member() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.create_domain">create_domain() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.create_domain_endpoint">create_domain_endpoint() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.create_domain_endpoint_auth_token">create_domain_endpoint_auth_token() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.create_transcription">create_transcription() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.delete_application">delete_application() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.delete_domain">delete_domain() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.delete_domain_endpoint">delete_domain_endpoint() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.delete_phone_number">delete_phone_number() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.disable_call_recording">disable_call_recording() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.download_media_file">download_media_file() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.enable_call_recording">enable_call_recording() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.get_account">get_account() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.get_account_transactions">get_account_transactions() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.get_application">get_application() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.get_bridge">get_bridge() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.get_call">get_call() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.get_call_event">get_call_event() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.get_call_gather">get_call_gather() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.get_conference">get_conference() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.get_conference_member">get_conference_member() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.get_domain">get_domain() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.get_domain_endpoint">get_domain_endpoint() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.get_error">get_error() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.get_message">get_message() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.get_number_info">get_number_info() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.get_phone_number">get_phone_number() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.get_recording">get_recording() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.get_transcription">get_transcription() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.hangup_call">hangup_call() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.hold_conference">hold_conference() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.hold_conference_member">hold_conference_member() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.list_applications">list_applications() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.list_bridge_calls">list_bridge_calls() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.list_bridges">list_bridges() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.list_call_events">list_call_events() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.list_call_recordings">list_call_recordings() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.list_call_transcriptions">list_call_transcriptions() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.list_calls">list_calls() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.list_conference_members">list_conference_members() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.list_domain_endpoints">list_domain_endpoints() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.list_domains">list_domains() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.list_errors">list_errors() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.list_media_files">list_media_files() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.list_messages">list_messages() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.list_phone_numbers">list_phone_numbers() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.list_recordings">list_recordings() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.list_transcriptions">list_transcriptions() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.mute_conference">mute_conference() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.mute_conference_member">mute_conference_member() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.order_phone_number">order_phone_number() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.play_audio_file_to_conference_member">play_audio_file_to_conference_member() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.play_audio_to_bridge">play_audio_to_bridge() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.play_audio_to_call">play_audio_to_call() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.play_audio_to_conference">play_audio_to_conference() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.play_audio_to_conference_member">play_audio_to_conference_member() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.reject_call">reject_call() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.remove_conference_member">remove_conference_member() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.search_and_order_local_numbers">search_and_order_local_numbers() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.search_and_order_toll_free_numbers">search_and_order_toll_free_numbers() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.search_available_local_numbers">search_available_local_numbers() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.search_available_toll_free_numbers">search_available_toll_free_numbers() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.send_dtmf_to_call">send_dtmf_to_call() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.send_message">send_message() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.send_messages">send_messages() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.speak_sentence_to_conference_member">speak_sentence_to_conference_member() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.terminate_conference">terminate_conference() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.toggle_call_recording">toggle_call_recording() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.transfer_call">transfer_call() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.update_bridge">update_bridge() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.update_call">update_call() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.update_call_gather">update_call_gather() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.update_conference">update_conference() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.update_conference_member">update_conference_member() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.update_domain_endpoint">update_domain_endpoint() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.update_phone_number">update_phone_number() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+      
+  <dt><a href="bandwidth_sdk.html#bandwidth.catapult.Client.upload_media_file">upload_media_file() (bandwidth.catapult.Client method)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Bandwidth App Platform.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.6-stable',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
