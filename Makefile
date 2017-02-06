@@ -1,10 +1,4 @@
-FLAKE=flake8 --max-line-length=120 --exclude=./tests
-PACKAGE=bandwidth
-
-default: clean req test pep
-
-pep:
-	$(FLAKE) $(PACKAGE) tests
+default: clean req test
 
 test:
 	green tests -vvv -r

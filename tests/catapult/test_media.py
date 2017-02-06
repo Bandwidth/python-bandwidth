@@ -14,9 +14,9 @@ from bandwidth.catapult import Client
 
 class MediaTests(unittest.TestCase):
 
-    def test_get_media_files(self):
+    def test_list_media_files(self):
         """
-        get_media_files() should return media files
+        list_media_files() should return media files
         """
         estimated_json = """
         [{
@@ -25,7 +25,7 @@ class MediaTests(unittest.TestCase):
         """
         with patch('requests.request', return_value=create_response(200, estimated_json)) as p:
             client = get_client()
-            data = list(client.get_media_files())
+            data = list(client.list_media_files())
             p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/media', auth=AUTH)
             self.assertEqual('file1', data[0]['mediaName'])
 

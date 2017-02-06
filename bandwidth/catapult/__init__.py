@@ -525,7 +525,7 @@ class Client:
 
             list = api.get_call_recordings('callId')
         """
-        path = '/users/%s/calls/%s/recordings' % (self.user_id, id)
+        path = '/users/%s/calls/%s/recordings' % (self.user_id, call_id)
         return get_lazy_enumerator(self, lambda: self._make_request('get', path))
 
     def list_call_transcriptions(self, call_id):
@@ -746,7 +746,7 @@ class Client:
         call_status = self.get_call(call_id)
         recording_enabled = call_status['recordingEnabled']
 
-        if recording_enabled:
+        if recording_enabled is True:
             return self.disable_call_recording(call_id)
         elif recording_enabled is False:
             return self.enable_call_recording(call_id)
@@ -1327,8 +1327,8 @@ class Client:
 
         Examples: Play either file for speak sentence::
 
-            api.play_audio_to_bridge('bridgeId', {'fileUrl': 'http://host/path/file.mp3'})
-            api.play_audio_to_bridge('bridgeId', {'sentence': 'Press 0 to complete call', 'gender': 'female'})
+            api.play_audio_to_bridge('bridgeId', fileUrl='http://host/path/file.mp3')
+            api.play_audio_to_bridge('bridgeId', sentence='Press 0 to complete call', gender='female')
 
             # or with extension methods
             api.play_audio_file_to_bridge('bridgeId', 'http://host/path/file.mp3')
@@ -2297,7 +2297,7 @@ class Client:
                                password=None,
                                description=None,
                                application_id=None,
-                               enabled=True,
+                               enabled=None,
                                **kwargs):
         """
         Update information about an endpoint
@@ -2468,7 +2468,7 @@ class Client:
             #     'time':'2016-03-28T18:31:33Z'
             # }]
         """
-
+        kwargs['size'] = size
         path = '/users/%s/errors' % self.user_id
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
 
@@ -3071,8 +3071,8 @@ class Client:
         """
         Gets information about a recording
 
-        :type id: str
-        :param id: id of a recording
+        :type recording_id: str
+        :param recording_id: id of a recording
 
         :rtype: dict
         :returns: recording information
@@ -3092,7 +3092,7 @@ class Client:
             ##     'state'    :'complete'
             ## }
         """
-        path = '/users/%s/recordings/%s' % (self.user_id, id)
+        path = '/users/%s/recordings/%s' % (self.user_id, recording_id)
         return _set_media_name(self._make_request('get', path)[0])
 
     def list_transcriptions(self, recording_id, size=None, **kwargs):

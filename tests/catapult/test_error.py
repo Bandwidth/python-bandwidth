@@ -12,9 +12,9 @@ from bandwidth.catapult import Client
 
 class ErrorTests(unittest.TestCase):
 
-    def test_get_errors(self):
+    def test_list_errors(self):
         """
-        get_errors() should return errors
+        list_errors() should return errors
         """
         estimated_json = """
         [{
@@ -27,12 +27,12 @@ class ErrorTests(unittest.TestCase):
         """
         with patch('requests.request', return_value=create_response(200, estimated_json)) as p:
             client = get_client()
-            data = list(client.get_errors())
+            data = list(client.list_errors())
             p.assert_called_with(
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/errors',
                 auth=AUTH,
-                params=None)
+                params={'size': None})
             self.assertEqual('{userErrorId}', data[0]['id'])
 
     def test_get_error(self):

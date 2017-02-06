@@ -12,9 +12,9 @@ from bandwidth.catapult import Client
 
 class TranscriptionTests(unittest.TestCase):
 
-    def test_get_transcriptions(self):
+    def test_list_transcriptions(self):
         """
-        get_transcriptions() should return transcriptions
+        list_transcriptions() should return transcriptions
         """
         estimated_json = """
         [{
@@ -29,12 +29,12 @@ class TranscriptionTests(unittest.TestCase):
         """
         with patch('requests.request', return_value=create_response(200, estimated_json)) as p:
             client = get_client()
-            data = list(client.get_transcriptions('recordingId'))
+            data = list(client.list_transcriptions('recordingId'))
             p.assert_called_with(
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/recordings/recordingId/transcriptions',
                 auth=AUTH,
-                params=None)
+                params={'size': None})
             self.assertEqual('{transcription-id}', data[0]['id'])
 
     def test_create_transcription(self):

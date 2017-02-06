@@ -97,7 +97,7 @@ class AvailableNumberTests(unittest.TestCase):
         """
         with patch('requests.request', return_value=create_response(200, estimated_json)) as p:
             client = get_client()
-            data = client.search_and_order_local_numbers(zip='27606', quantity=1)
+            data = client.search_and_order_local_numbers(zip_code='27606', quantity=1)
             p.assert_called_with(
                 'post',
                 'https://api.catapult.inetwork.com/v1/availableNumbers/local',

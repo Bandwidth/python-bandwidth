@@ -53,10 +53,10 @@ class CallTests(unittest.TestCase):
             'fallbackUrl': None,
             'bridgeId': None,
             'conferenceId': None,
-            'recordingEnabled': None,
+            'recordingEnabled': False,
             'recordingFileFormat': None,
             'recordingMaxDuration': None,
-            'transcriptionEnabled': None,
+            'transcriptionEnabled': False,
             'tag': None,
             'sipHeaders': None
         }
@@ -148,7 +148,7 @@ class CallTests(unittest.TestCase):
 
     def test_list_call_recordings(self):
         """
-        get_call_recordings() should return recordings
+        list_call_recordings() should return recordings
         """
         estimated_json = """
         [{
@@ -351,12 +351,9 @@ class CallTests(unittest.TestCase):
                 get_mock.assert_called_with('callId')
                 p.assert_called_with('callId')
 
-    def test_toggle_call_recording_nuetral(self):
+    def test_toggle_call_recording_neutral(self):
         """
         toggle_call_recording() should call get_call with the id
-        """
-        """
-        create_call() should create a call and return id
         """
         estimated_response_json = {
             'recordingEnabled': 'wildcard',

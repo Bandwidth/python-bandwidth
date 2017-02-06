@@ -12,9 +12,9 @@ from bandwidth.catapult import Client
 
 class EndpointTests(unittest.TestCase):
 
-    def test_get_domain_endpoints(self):
+    def test_list_domain_endpoints(self):
         """
-        get_domain_endpoints() should return endpoints
+        list_domain_endpoints() should return endpoints
         """
         estimated_json = """
         [{
@@ -23,12 +23,12 @@ class EndpointTests(unittest.TestCase):
         """
         with patch('requests.request', return_value=create_response(200, estimated_json)) as p:
             client = get_client()
-            data = list(client.get_domain_endpoints('domainId'))
+            data = list(client.list_domain_endpoints('domainId'))
             p.assert_called_with(
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/domains/domainId/endpoints',
                 auth=AUTH,
-                params=None)
+                params={'size': None})
             self.assertEqual('endpointId', data[0]['id'])
 
     def test_create_domain_endpoint(self):
@@ -37,15 +37,24 @@ class EndpointTests(unittest.TestCase):
         """
         estimated_response = create_response(201)
         estimated_response.headers['Location'] = 'http://localhost/endpointId'
+        estimated_request = {
+            'name': 'mysip',
+            'description': None,
+            'applicationId': None,
+            'enabled': True,
+            'credentials': {
+                'password': 'abc123'
+            }
+        }
         with patch('requests.request', return_value=estimated_response) as p:
             client = get_client()
-            data = {'name': 'mysip', 'applicationId': 'appId', 'domainId': 'domainId'}
-            id = client.create_domain_endpoint('domainId', data)
+            data = {'name': 'mysip', 'password': 'abc123'}
+            id = client.create_domain_endpoint('domainId', **data)
             p.assert_called_with(
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/domains/domainId/endpoints',
                 auth=AUTH,
-                json=data)
+                json=estimated_request)
             self.assertEqual('endpointId', id)
 
     def test_get_domain_endpoint(self):
@@ -71,15 +80,23 @@ class EndpointTests(unittest.TestCase):
         """update
         delete_domain_endpoint() should update an endpoint
         """
+        estimated_request = {
+            'description': 'My SIP',
+            'applicationId': None,
+            'enabled': None,
+            'credentials': {
+                'password': None
+            }
+        }
         with patch('requests.request', return_value=create_response(200)) as p:
             client = get_client()
             data = {'description': 'My SIP'}
-            client.update_domain_endpoint('domainId', 'endpointId', data)
+            client.update_domain_endpoint('domainId', 'endpointId', **data)
             p.assert_called_with(
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/domains/domainId/endpoints/endpointId',
                 auth=AUTH,
-                json=data)
+                json=estimated_request)
 
     def test_delete_domain_endpoint(self):
         """

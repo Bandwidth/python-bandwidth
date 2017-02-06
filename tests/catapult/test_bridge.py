@@ -122,12 +122,20 @@ class BridgesTests(unittest.TestCase):
         """
         play_audio_to_bridge() should play audio to a bridge
         """
+        estimated_request = {
+            'fileUrl': 'url',
+            'sentence': None,
+            'gender': None,
+            'locale': None,
+            'voice': None,
+            'loopEnabled': None
+        }
         with patch('requests.request', return_value=create_response(200)) as p:
             client = get_client()
-            data = {'fileUrl': 'url'}
-            client.play_audio_to_bridge('bridgeId', data)
+            data = {'file_url': 'url'}
+            client.play_audio_to_bridge('bridgeId', **data)
             p.assert_called_with(
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/bridges/bridgeId/audio',
                 auth=AUTH,
-                json=data)
+                json=estimated_request)

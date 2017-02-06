@@ -12,9 +12,9 @@ from bandwidth.catapult import Client
 
 class PhoneNumberTests(unittest.TestCase):
 
-    def test_get_phone_numbers(self):
+    def test_list_phone_numbers(self):
         """
-        get_phone_numbers() should return numbers
+        list_phone_numbers() should return numbers
         """
         estimated_request = {
             'applicationId': None,
@@ -39,7 +39,7 @@ class PhoneNumberTests(unittest.TestCase):
         """
         with patch('requests.request', return_value=create_response(200, estimated_json)) as p:
             client = get_client()
-            data = list(client.get_phone_numbers())
+            data = list(client.list_phone_numbers())
             p.assert_called_with(
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/phoneNumbers',
@@ -47,21 +47,27 @@ class PhoneNumberTests(unittest.TestCase):
                 params=estimated_request)
             self.assertEqual('{numberId1}', data[0]['id'])
 
-    def test_create_phone_number(self):
+    def test_order_phone_number(self):
         """
-        create_phone_number() should create an number and return id
+        order_phone_number() should create an number and return id
         """
         estimated_response = create_response(201)
         estimated_response.headers['Location'] = 'http://localhost/numberId'
+        estimated_request = {
+            'number': '+1234567890',
+            'name': 'MyFirstNumber',
+            'applicationId': None,
+            'fallbackNumber': None
+        }
         with patch('requests.request', return_value=estimated_response) as p:
             client = get_client()
             data = {'name': 'MyFirstNumber', 'number': '+1234567890'}
-            id = client.create_phone_number(data)
+            id = client.order_phone_number(**data)
             p.assert_called_with(
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/phoneNumbers',
                 auth=AUTH,
-                json=data)
+                json=estimated_request)
             self.assertEqual('numberId', id)
 
     def test_get_phone_number(self):
@@ -106,12 +112,17 @@ class PhoneNumberTests(unittest.TestCase):
         """
         update_phone_number() should update a phone number
         """
+        estimated_request = {
+            'name': None,
+            'applicationId': 'appId',
+            'fallbackNumber': None
+        }
         with patch('requests.request', return_value=create_response(200)) as p:
             client = get_client()
-            data = {'applicationId': 'appId'}
-            client.update_phone_number('numberId', data)
+            data = {'application_id': 'appId'}
+            client.update_phone_number('numberId', **data)
             p.assert_called_with(
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/phoneNumbers/numberId',
                 auth=AUTH,
-                json=data)
+                json=estimated_request)

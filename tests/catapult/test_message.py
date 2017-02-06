@@ -14,21 +14,32 @@ class MessageTests(unittest.TestCase):
 
     def test_get_messages(self):
         """
-        get_messages() should return messages
+        list_messages() should return messages
         """
         estimated_json = """
         [{
             "id": "messageId"
         }]
         """
+        estimated_request = {
+            'from': None,
+            'to': None,
+            'fromDateTime': None,
+            'toDateTime': None,
+            'direction': None,
+            'state': None,
+            'deliveryState': None,
+            'sortOrder': None,
+            'size': None
+        }
         with patch('requests.request', return_value=create_response(200, estimated_json)) as p:
             client = get_client()
-            data = list(client.get_messages())
+            data = list(client.list_messages())
             p.assert_called_with(
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/messages',
                 auth=AUTH,
-                params=None)
+                params=estimated_request)
             self.assertEqual('messageId', data[0]['id'])
 
     def test_send_message(self):
@@ -37,6 +48,18 @@ class MessageTests(unittest.TestCase):
         """
         estimated_response = create_response(201)
         estimated_response.headers['Location'] = 'http://localhost/messageId'
+        estimated_request = {
+            'from': 'num1',
+            'to': 'num2',
+            'text': 'text',
+            'media': None,
+            'receiptRequested': None,
+            'callbackUrl': None,
+            'callbackHttpMethod': None,
+            'callbackTimeout': None,
+            'fallbackUrl': None,
+            'tag': None
+        }
         with patch('requests.request', return_value=estimated_response) as p:
             client = get_client()
             messageID = client.send_message(
@@ -48,9 +71,7 @@ class MessageTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/messages',
                 auth=AUTH,
-                json={
-                    'from': 'num1',
-                    'to': 'num2'})
+                json=estimated_request)
             self.assertEqual('messageId', messageID)
 
     def test_send_messages(self):

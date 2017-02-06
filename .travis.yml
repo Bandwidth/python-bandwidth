@@ -5,9 +5,15 @@ python:
   - "3.4"
   - "3.5"
   - "pypy"
+  - "3.6"
 # command to install dependencies
 install:
   - pip install .
   - pip install -r requirements.txt
+
+# run pep8
+before_script:
+  - find ./bandwidth -name \*.py -exec pep8 --ignore=E402 --max-line-length 120 {} +
+  - find ./tests -name \*.py -exec pep8 --ignore=E402 --max-line-length 120 {} +
 # command to run tests
 script: green tests -r -vvv
