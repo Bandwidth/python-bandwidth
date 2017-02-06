@@ -170,7 +170,9 @@
 <li><strong>user_id</strong> (<em>str</em>) &#8211; catapult user id (for &#8216;catapult&#8217; only)</li>
 <li><strong>api_token</strong> (<em>str</em>) &#8211; catapult api token (for &#8216;catapult&#8217; only)</li>
 <li><strong>api_secret</strong> (<em>str</em>) &#8211; catapult api secret (for &#8216;catapult&#8217; only)</li>
-<li><strong>api_endpoint</strong> (<em>str</em>) &#8211; catapult api endpoint (optional, default value is <a class="reference external" href="https://api.catapult.inetwork.com">https://api.catapult.inetwork.com</a>, for &#8216;catapult&#8217; only)</li>
+
+<li><strong>api_endpoint</strong> (<em>str</em>) &#8211; catapult api endpoint
+(optional, default value is <a class="reference external" href="https://api.catapult.inetwork.com">https://api.catapult.inetwork.com</a>, for &#8216;catapult&#8217; only)</li>
 <li><strong>api_version</strong> (<em>str</em>) &#8211; catapult api version (optional, default value is v1, for &#8216;catapult&#8217; only)</li>
 </ul>
 </td>
@@ -279,7 +281,9 @@ to enable. Default is &#8220;false&#8221;.</li>
 <span class="c1">##     &#39;state&#39;               : &#39;started&#39;,</span>
 <span class="c1">##     &#39;to&#39;                  : &#39;+1234567891&#39;,</span>
 <span class="c1">##     &#39;transcriptionEnabled&#39;: False,</span>
-<span class="c1">##     &#39;transcriptions&#39;      : &#39;https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/transcriptions&#39;}</span>
+
+<span class="c1">##     &#39;transcriptions&#39;      : &#39;https://api.../v1/users/u-abc/calls/c-abc123/transcriptions&#39;}</span>
+
 </pre></div>
 </div>
 </dd></dl>
@@ -385,7 +389,7 @@ this gather operation.</li>
 <span class="c1">##     &#39;state&#39;               : &#39;started&#39;,</span>
 <span class="c1">##     &#39;to&#39;                  : &#39;+1234567891&#39;,</span>
 <span class="c1">##     &#39;transcriptionEnabled&#39;: False,</span>
-<span class="c1">##     &#39;transcriptions&#39;      : &#39;https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/transcriptions&#39;}</span>
+<span class="c1">##     &#39;transcriptions&#39;      : &#39;https://api..../v1/users/u-abc/calls/c-abc123/transcriptions&#39;}</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -583,12 +587,12 @@ this gather operation.</li>
 <span class="c1">##     &#39;id&#39;                  : &#39;c-abc123&#39;,</span>
 <span class="c1">##     &#39;recordingEnabled&#39;    : False,</span>
 <span class="c1">##     &#39;recordingFileFormat&#39; : &#39;wav&#39;,</span>
-<span class="c1">##     &#39;recordings&#39;          : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-abc123/recordings&#39;,</span>
+<span class="c1">##     &#39;recordings&#39;          : &#39;https://api.../v1/users/u-abc123/calls/c-abc123/recordings&#39;,</span>
 <span class="c1">##     &#39;startTime&#39;           : &#39;2017-01-26T16:10:11Z&#39;,</span>
 <span class="c1">##     &#39;state&#39;               : &#39;completed&#39;,</span>
 <span class="c1">##     &#39;to&#39;                  : &#39;+19192223333&#39;,</span>
 <span class="c1">##     &#39;transcriptionEnabled&#39;: False,</span>
-<span class="c1">##     &#39;transcriptions&#39;      : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-abc123/transcriptions&#39;</span>
+<span class="c1">##     &#39;transcriptions&#39;      : &#39;https://api.../v1/users/u-abc123/calls/c-abc123/transcriptions&#39;</span>
 <span class="c1">##   },</span>
 <span class="c1">##   {</span>
 <span class="c1">##     &#39;activeTime&#39;          : &#39;2016-12-29T23:50:35Z&#39;,</span>
@@ -600,12 +604,12 @@ this gather operation.</li>
 <span class="c1">##     &#39;id&#39;                  : &#39;c-xyz987&#39;,</span>
 <span class="c1">##     &#39;recordingEnabled&#39;    : False,</span>
 <span class="c1">##     &#39;recordingFileFormat&#39; : &#39;wav&#39;,</span>
-<span class="c1">##     &#39;recordings&#39;          : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-xyz987/recordings&#39;,</span>
+<span class="c1">##     &#39;recordings&#39;          : &#39;https://api.../v1/users/u-abc123/calls/c-xyz987/recordings&#39;,</span>
 <span class="c1">##     &#39;startTime&#39;           : &#39;2016-12-29T23:50:15Z&#39;,</span>
 <span class="c1">##     &#39;state&#39;               : &#39;completed&#39;,</span>
 <span class="c1">##     &#39;to&#39;                  : &#39;+19192223333&#39;,</span>
 <span class="c1">##     &#39;transcriptionEnabled&#39;: False,</span>
-<span class="c1">##     &#39;transcriptions&#39;      : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-xyz987/transcriptions&#39;</span>
+<span class="c1">##     &#39;transcriptions&#39;      : &#39;https://api.../v1/users/u-abc123/calls/c-xyz987/transcriptions&#39;</span>
 <span class="c1">##   }</span>
 <span class="c1">## ]</span>
 </pre></div>
@@ -1435,8 +1439,9 @@ If no value is specified the default value is 25. (Maximum value 1000)</td>
 </tbody>
 </table>
 <p>Examples: Play either file for speak sentence:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">play_audio_to_bridge</span><span class="p">(</span><span class="s1">&#39;bridgeId&#39;</span><span class="p">,</span> <span class="n">fileUrl</span><span class="o">=</span><span class="s1">&#39;http://host/path/file.mp3&#39;</span><span class="p">)</span>
+<span class="n">api</span><span class="o">.</span><span class="n">play_audio_to_bridge</span><span class="p">(</span><span class="s1">&#39;bridgeId&#39;</span><span class="p">,</span> <span class="n">sentence</span><span class="o">=</span><span class="s1">&#39;Press 0 to complete call&#39;</span><span class="p">,</span> <span class="n">gender</span><span class="o">=</span><span class="s1">&#39;female&#39;</span><span class="p">)</span>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">play_audio_to_bridge</span><span class="p">(</span><span class="s1">&#39;bridgeId&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;fileUrl&#39;</span><span class="p">:</span> <span class="s1">&#39;http://host/path/file.mp3&#39;</span><span class="p">})</span>
-<span class="n">api</span><span class="o">.</span><span class="n">play_audio_to_bridge</span><span class="p">(</span><span class="s1">&#39;bridgeId&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;sentence&#39;</span><span class="p">:</span> <span class="s1">&#39;Press 0 to complete call&#39;</span><span class="p">,</span> <span class="s1">&#39;gender&#39;</span><span class="p">:</span> <span class="s1">&#39;female&#39;</span><span class="p">})</span>
 
 <span class="c1"># or with extension methods</span>
 <span class="n">api</span><span class="o">.</span><span class="n">play_audio_file_to_bridge</span><span class="p">(</span><span class="s1">&#39;bridgeId&#39;</span><span class="p">,</span> <span class="s1">&#39;http://host/path/file.mp3&#39;</span><span class="p">)</span>
@@ -2518,7 +2523,7 @@ if the request to callbackUrl fails.</li>
 
 <dl class="method">
 <dt id="bandwidth.catapult.Client.update_domain_endpoint">
-<code class="descname">update_domain_endpoint</code><span class="sig-paren">(</span><em>domain_id</em>, <em>endpoint_id</em>, <em>password=None</em>, <em>description=None</em>, <em>application_id=None</em>, <em>enabled=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.update_domain_endpoint" title="Permalink to this definition">¶</a></dt>
+<code class="descname">update_domain_endpoint</code><span class="sig-paren">(</span><em>domain_id</em>, <em>endpoint_id</em>, <em>password=None</em>, <em>description=None</em>, <em>application_id=None</em>, <em>enabled=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.update_domain_endpoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update information about an endpoint</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -2898,11 +2903,14 @@ of items. If no value is specified the default value is 25. (Maximum value 1000)
 <li><strong>from_</strong> (<em>str</em>) &#8211; One of your telephone numbers the message should come from</li>
 <li><strong>to</strong> (<em>str</em>) &#8211; The phone number the message should be sent to</li>
 <li><strong>text</strong> (<em>str</em>) &#8211; The contents of the text message</li>
-<li><strong>media</strong> (<em>list</em>) &#8211; For MMS messages, a media url to the location of the media or list of medias to be sent send with the message.</li>
+<li><strong>media</strong> (<em>list</em>) &#8211; For MMS messages, a media url to the location of the media or
+list of medias to be sent send with the message.</li>
 <li><strong>receipt_requested</strong> (<em>str</em>) &#8211; Requested receipt option for outbound messages: &#8216;none&#8217;, &#8216;all&#8217;, &#8216;error&#8217;</li>
 <li><strong>callback_url</strong> (<em>str</em>) &#8211; The server URL where the events related to the outgoing message will be sent to</li>
-<li><strong>callback_http_method</strong> (<em>str</em>) &#8211; Determine if the callback event should be sent via HTTP GET or HTTP POST. Values are get or post Default is post</li>
-<li><strong>callback_timeout</strong> (<em>str</em>) &#8211; Determine how long should the platform wait for callbackUrl&#8217;s response before timing out (milliseconds).</li>
+<li><strong>callback_http_method</strong> (<em>str</em>) &#8211; Determine if the callback event should be sent via HTTP GET or HTTP POST.
+Values are get or post Default is post</li>
+<li><strong>callback_timeout</strong> (<em>str</em>) &#8211; Determine how long should the platform wait for
+callbackUrl&#8217;s response before timing out (milliseconds).</li>
 <li><strong>fallback_url</strong> (<em>str</em>) &#8211; The server URL used to send the message events if the request to callbackUrl fails.</li>
 <li><strong>tag</strong> (<em>str</em>) &#8211; Any string, it will be included in the callback events of the message.</li>
 </ul>
@@ -3253,7 +3261,7 @@ be delivered.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> (<em>str</em>) &#8211; id of a recording</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recording_id</strong> (<em>str</em>) &#8211; id of a recording</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
 </tr>

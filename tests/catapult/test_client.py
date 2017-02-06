@@ -1,7 +1,7 @@
 import unittest
 import six
 import requests
-from  tests.catapult.helpers import create_response, get_client, AUTH
+from tests.catapult.helpers import create_response, get_client, AUTH
 if six.PY3:
     from unittest.mock import patch
 else:
@@ -9,7 +9,9 @@ else:
 
 from bandwidth.catapult import Client, CatapultException
 
+
 class ClientTests(unittest.TestCase):
+
     def test_init_with_right_auth_data(self):
         """
         Client() should return client instance with right auth data
@@ -24,7 +26,7 @@ class ClientTests(unittest.TestCase):
         """
         Client() should return client instance with right auth data (different endpoint and version)
         """
-        client = Client('userId', 'apiToken', 'apiSecret', api_endpoint = 'url', api_version = 'v2')
+        client = Client('userId', 'apiToken', 'apiSecret', api_endpoint='url', api_version='v2')
         self.assertEqual('userId', client.user_id)
         self.assertTupleEqual(('apiToken', 'apiSecret'), client.auth)
         self.assertEqual('url', client.api_endpoint)
@@ -41,7 +43,7 @@ class ClientTests(unittest.TestCase):
         """
         _request() should make authorized request to absolute url
         """
-        with patch('requests.request', return_value = create_response()) as p:
+        with patch('requests.request', return_value=create_response()) as p:
             client = get_client()
             response = client._request('get', 'http://localhost')
             p.assert_called_with('get', 'http://localhost', auth=('apiToken', 'apiSecret'))
@@ -50,7 +52,7 @@ class ClientTests(unittest.TestCase):
         """
         _request() should make authorized request to relative url
         """
-        with patch('requests.request', return_value = create_response()) as p:
+        with patch('requests.request', return_value=create_response()) as p:
             client = get_client()
             response = client._request('get', '/path')
             p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/path', auth=('apiToken', 'apiSecret'))
@@ -102,7 +104,7 @@ class ClientTests(unittest.TestCase):
         _make_request() should make request, check response and extract json data
         """
         estimated_response = create_response(200, '{"data": "data"}')
-        with patch('requests.request', return_value = estimated_response) as p:
+        with patch('requests.request', return_value=estimated_response) as p:
             client = get_client()
             data, response, _ = client._make_request('get', '/path')
             p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/path', auth=('apiToken', 'apiSecret'))
@@ -115,9 +117,23 @@ class ClientTests(unittest.TestCase):
         """
         estimated_response = create_response(201, '', 'text/html')
         estimated_response.headers['location'] = 'http://localhost/path/id'
-        with patch('requests.request', return_value = estimated_response) as p:
+        with patch('requests.request', return_value=estimated_response) as p:
             client = get_client()
             _, response, id = client._make_request('get', '/path')
             p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/path', auth=('apiToken', 'apiSecret'))
             self.assertIs(estimated_response, response)
             self.assertEqual('id', id)
+
+    def test_play_audio_methods(self):
+        """
+        client should contain play audio helpers
+        """
+        client = get_client()
+        self.assertIsNotNone(getattr(client, 'speak_sentence_to_call'))
+        self.assertIsNotNone(getattr(client, 'play_audio_file_to_call'))
+        self.assertIsNotNone(getattr(client, 'speak_sentence_to_bridge'))
+        self.assertIsNotNone(getattr(client, 'play_audio_file_to_bridge'))
+        self.assertIsNotNone(getattr(client, 'speak_sentence_to_conference'))
+        self.assertIsNotNone(getattr(client, 'play_audio_file_to_conference'))
+        self.assertIsNotNone(getattr(client, 'speak_sentence_to_conference_member'))
+        self.assertIsNotNone(getattr(client, 'play_audio_file_to_conference_member'))

@@ -9,6 +9,7 @@ class Response:
     :Example:
         response = bandwidth.catapult.bxml.Response(E.Call({'from': '+1234567890', 'to': '+1234567891'}), E.Hangup())
     """
+
     def __init__(self, *response_verbs):
         """
         Initialize Response element

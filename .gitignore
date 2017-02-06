@@ -21,6 +21,7 @@ atlassian-ide-plugin.xml
 *.sublime-workspace
 *.ropeproject
 *.patch
+*.iml
 
 # Coverage
 .coverage
@@ -70,7 +71,10 @@ deprecated/
 .bndsdkrc
 
 # sphinx
-docs/build/*
+sphinx_docs/build/*
 
 # builds
 dist
+
+pep.sh
+play.py
