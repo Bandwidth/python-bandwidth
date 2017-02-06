@@ -2176,7 +2176,7 @@ class Client:
             ##     },
             ##     'domainId'    :'rd-domainId',
             ##     'enabled'     :False,
-            ##     'id'          :'re-endpointId',
+            ##     'id'          :'re-endpointId3ndpointId',
             ##     'name'        :'user3',
             ##     'sipUri'      :'sip:user5@qwerty.bwapp.bwsip.io'
             ## }
@@ -2191,61 +2191,132 @@ class Client:
         """
         self._make_request('delete', '/users/%s/domains/%s/endpoints/%s' % (self.user_id, domain_id, endpoint_id))
 
-    def create_domain_endpoint_auth_token(self, id, endpoint_id, data={'expires': 3600}):
+    def create_domain_endpoint_auth_token(self, id, domain_id, expires=3600, **kwargs):
         """
         Create auth token for an endpoint
 
-        :type id: str
-        :param id: id of a domain
+        :param str domain_id: id of a domain
+        :param str endpoint_id: id of a endpoint
+        :param int expires: Duration of valid token.
 
-        :type endpoint_id: str
-        :param endpoint_id: id of a endpoint
+        Example: Create token::
 
-        :Example:
-        token = api.create_domain_endpoint_auth_token('domainId', 'endpointId')
+            token = api.create_domain_endpoint_auth_token('domainId', 'endpointId', 5000)
         """
-        path = '/users/%s/domains/%s/endpoints/%s/tokens' % (self.user_id, id, endpoint_id)
-        return self._make_request('post', path, json=data)[0]
+        kwargs['expires'] = expires
+        path = '/users/%s/domains/%s/endpoints/%s/tokens' % (self.user_id, domain_id, endpoint_id)
+        return self._make_request('post', path, json=kwargs)[0]
 
-    """
-    Error API
-    """
-    def get_errors(self, query=None):
+    def list_errors(self, size=None, **kwargs):
         """
         Get a list of errors
 
-        Query parameters
-            size
-                Used for pagination to indicate the size of each page requested for querying a list
-                of items. If no value is specified the default value is 25. (Maximum value 1000)
+        :param int size: Used for pagination to indicate the size of each page requested for querying a list
+            of items. If no value is specified the default value is 25. (Maximum value 1000)
         :rtype: types.GeneratorType
         :returns: list of calls
 
-        :Example:
-        list = api.get_errors()
+        Example: List all errors::
+
+            error_list = api.list_errors()
+
+            print(list(error_list))
+
+            # [{
+            #     'category':'unavailable',
+            #     'code'    :'number-allocator-unavailable',
+            #     'details':[
+            #         {
+            #             'id'   :'ued-eh3zn3dxgiin4y',
+            #             'name' :'requestPath',
+            #             'value':'availableNumbers/local'
+            #         },
+            #         {
+            #             'id'   :'ued-3fsdqiq',
+            #             'name' :'remoteAddress',
+            #             'value':'216.82.234.65'
+            #         },
+            #         {
+            #             'id'   :'ued-2r4t47bwi',
+            #             'name' :'requestMethod',
+            #             'value':'GET'
+            #         }
+            #     ],
+            #     'id'     :'ue-upvfv53xzca',
+            #     'message':'Cannot connect to the number allocator',
+            #     'time'   :'2016-03-28T18:31:33Z'
+            # },
+            # {
+            #     'category':'unavailable',
+            #     'code':'number-allocator-unavailable',
+            #     'details':[
+            #         {
+            #             'id':'ued-kntwx7vyotalci',
+            #             'name':'requestPath',
+            #             'value':'availableNumbers/local'
+            #         },
+            #         {
+            #             'id':'ued-b24vxpfskldq',
+            #             'name':'remoteAddress',
+            #             'value':'216.82.234.65'
+            #         },
+            #         {
+            #             'id':'ued-ww5rcgl7zm2ydi',
+            #             'name':'requestMethod',
+            #             'value':'GET'
+            #         }
+            #     ],
+            #     'id':'ue-pok2vg7kyuzaqq',
+            #     'message':'Cannot connect to the number allocator',
+            #     'time':'2016-03-28T18:31:33Z'
+            # }]
         """
 
         path = '/users/%s/errors' % self.user_id
-        return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=query))
+        return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
 
-    def get_error(self, id):
+    def get_error(self, error_id):
         """
         Get information about an error
 
-        :type id: str
+        :type error_id: str
         :param id: id of an error
-
         :rtype: dict
         :returns: error information
 
-        :Example:
-        data = api.get_error('errorId')
-        """
-        return self._make_request('get', '/users/%s/errors/%s' % (self.user_id, id))[0]
+        Example: Get information of specific error::
 
-    """
-    Media API
-    """
+            error = api.get_error('ue-errorId')
+            print(error)
+
+            ## {
+            ##     'category':'unavailable',
+            ##     'code'    :'number-allocator-unavailable',
+            ##     'details' :[
+            ##         {
+            ##         'id'      :'ued-kntvyotalci',
+            ##         'name'    :'requestPath',
+            ##         'value'   :'availableNumbers/local'
+            ##         },
+            ##         {
+            ##         'id'      :'ued-b2dq',
+            ##         'name'    :'remoteAddress',
+            ##         'value'   :'216.82.234.65'
+            ##         },
+            ##         {
+            ##         'id'      :'ued-wzm2ydi',
+            ##         'name'    :'requestMethod',
+            ##         'value'   :'GET'
+            ##         }
+            ##     ],
+            ##     'id'      :'ue-errorId',
+            ##     'message' :'Cannot connect to the number allocator',
+            ##     'time'    :'2016-03-28T18:31:33Z'
+            ## }
+        """
+        return self._make_request('get', '/users/%s/errors/%s' % (self.user_id, error_id))[0]
+
+
     def get_media_files(self):
         """
         Gets a list of user's media files.
@@ -2253,8 +2324,14 @@ class Client:
         :rtype: types.GeneratorType
         :returns: list of media files
 
-        :Example:
-        list = api.get_media_files()
+        Example: list media files and save any with the name `dog` in file name::
+
+            media_list = api.get_media_files()
+            for media in media_list:
+                if 'dog' in media['mediaName'].lower():
+                    stream, content_type = api.download_media_file(media['mediaName'])
+                    with io.open(media['mediaName'], 'wb') as file:
+                        file.write(stream.read())
 
         """
         path = '/users/%s/media' % self.user_id
@@ -2277,11 +2354,12 @@ class Client:
         :type file_path: str
         :param file_path: path to file to upload. Don't use together with content
 
-        :Example:
-        api.upload_media_file('file1.txt', 'content of file', 'text/plain')
+        Example: Upload text file::
 
-        # with file path
-        api.upload_media_file('file1.txt', file_path='/path/to/file1.txt')
+            api.upload_media_file('file1.txt', 'content of file', 'text/plain')
+
+            # with file path
+            api.upload_media_file('file1.txt', file_path='/path/to/file1.txt')
 
         """
         is_file_path = False
@@ -2305,8 +2383,14 @@ class Client:
         :rtype (stream, str)
         :returns stream to file to download and mime type
 
-        :Example:
-        stream, content_type = api.download_media_file('file1.txt')
+        Example: list media files and save any with the name `dog` in file name::
+
+            media_list = api.get_media_files()
+            for media in media_list:
+                if 'dog' in media['mediaName'].lower():
+                    stream, content_type = api.download_media_file(media['mediaName'])
+                    with io.open(media['mediaName'], 'wb') as file:
+                        file.write(stream.read())
         """
         path = '/users/%s/media/%s' % (self.user_id, quote(media_name))
         response = self._request('get', path, stream=True)
@@ -2320,92 +2404,153 @@ class Client:
         :type media_name: str
         :param media_name: name of file on bandwidth server
 
-        :Example:
-        api.delete_media_file('file1.txt')
+        Example: Delete a file from server::
+
+            api.delete_media_file('file1.txt')
         """
         path = '/users/%s/media/%s' % (self.user_id, quote(media_name))
         self._make_request('delete', path)
 
-    """
-    Message API
-    """
-
-    """
-    Message API
-    """
-    def get_messages(self, query=None):
+    def list_messages(self,
+                     from_=None,
+                     to=None,
+                     from_date_time=None,
+                     to_date_time=None,
+                     direction=None,
+                     state=None,
+                     delivery_state=None,
+                     sort_order=None,
+                     size=None,
+                     **kwargs):
         """
         Get a list of user's messages
 
         Query parameters
-            from
-                The phone number to filter the messages that came from
-            to
-                The phone number to filter the messages that was sent to
-            fromDateTime
-                The starting date time to filter the messages
-                (must be in yyyy-MM-dd hh:mm:ss format, like 2014-05-25 12:00:00.)
-            toDateTime
-                The ending date time to filter the messages (must be in
-                yyyy-MM-dd hh:mm:ss format, like 2014-05-25 12:00:00.)
-            direction
-                Filter by direction of message, in - a message that came from the telephone
-                 network to one of your numbers (an "inbound" message) or out - a message
-                 that was sent from one of your numbers to the telephone network (an "outbound"
-                 message)
-            state
-                The message state to filter. Values are 'received', 'queued', 'sending',
-                'sent', 'error'
-            deliveryState
-                The message delivery state to filter. Values are 'waiting', 'delivered',
-                'not-delivered'
-            sortOrder
-                How to sort the messages. Values are 'asc' or 'desc'
-            size
-                Used for pagination to indicate the size of each page requested for querying a list
-                of items. If no value is specified the default value is 25. (Maximum value 1000)
+        :param str ``from_``: The phone number to filter the messages that came from
+        :param str to: The phone number to filter the messages that was sent to
+        :param str from_date_time: The starting date time to filter the messages
+            (must be in yyyy-MM-dd hh:mm:ss format, like 2014-05-25 12:00:00.)
+        :param str to_date_time: The ending date time to filter the messages (must be in
+            yyyy-MM-dd hh:mm:ss format, like 2014-05-25 12:00:00.)
+        :param str direction: Filter by direction of message, in - a message that came from the telephone
+             network to one of your numbers (an "inbound" message) or out - a message
+             that was sent from one of your numbers to the telephone network (an "outbound"
+             message)
+        :param str state: The message state to filter. Values are 'received', 'queued', 'sending',
+            'sent', 'error'
+        :param str delivery_state: The message delivery state to filter. Values are 'waiting', 'delivered',
+            'not-delivered'
+        :param str sort_order: How to sort the messages. Values are 'asc' or 'desc'
+        :param str size: Used for pagination to indicate the size of each page requested for querying a list
+            of items. If no value is specified the default value is 25. (Maximum value 1000)
         :rtype: types.GeneratorType
         :returns: list of messages
 
-        :Example:
-        list = api.get_messages()
-        """
-        path = '/users/%s/messages' % self.user_id
-        return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=query))
+        Example: Search for all messages and are in error::
 
-    def send_message(self, from_, to, text=None, **kwargs):
+            message_list = api.list_messages()
+
+            for message in message_list:
+                if message['state'] == 'error':
+                    print(message['id'])
+            ## m-it6ewpyiyadfe
+            ## m-pjnqofcjyadfe
+            ## m-t2gspvs6iadfe
+            ## m-shuh6d6pyadfe
+            ## m-2x3silukaadfe
+            ## m-7vjvsdukqadfe
+            ## m-cjz2mnpriadfe
+            ## m-na6chcx7yadfe
+            ## m-jlgoqpkgiadfe
+            ## m-p6zrsr46qadfe
+            ## m-amffspefqadfe
+            ## m-wzhdzmliqadfe
+            ## m-nbwe5vvviadfe
+            ## m-do43q2jhyadfe
+            ## m-3flfbgcqqadfe
+            ## m-jusk7mbcyadfe
+            ## m-or2mlxznaadfe
+            ## m-rhgg4c6xaadfe
+            ## m-z33ktgydqadfe
+            ## m-ersbkbwsiadfe
+            ## m-erqwzgwpyadfe
+            ## m-6dfkcsj2qadfe
+            ## m-ywd4z2lhqadfe
+            ## m-dcfpavd3aadfe
+            ## m-goq4i7h6qadfe
+            ## m-nzix26lnyadfe
+            ## m-g3d3llnkqadfe
+            ## m-ax334cyoaadfe
+            ## m-s47fqt4xyadfe
+            ## m-wixzk6ncqadfe
+            ## m-2guhqz6zyadfe
+            ## m-447jjehdiadfe
+        """
+        kwargs['from']=from_
+        kwargs['to']=to
+        kwargs['fromDateTime']=from_date_time
+        kwargs['toDateTime']=to_date_time
+        kwargs['direction']=direction
+        kwargs['state']=state
+        kwargs['deliveryState']=delivery_state
+        kwargs['sortOrder']=sort_order
+        kwargs['size']=size
+
+        path = '/users/%s/messages' % self.user_id
+        return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
+
+    def send_message(self, from_, to,
+                     text=None,
+                     media=None,
+                     receipt_requested=None,
+                     callback_url=None,
+                     callback_http_method=None,
+                     callback_timeout=None,
+                     fallback_url=None,
+                     tag=None,
+                     **kwargs):
         """
         Send a message (SMS or MMS)
-        :param str from_: One of your telephone numbers the message should come from
         :param str from_: One of your telephone numbers the message should come from
         :param str to: The phone number the message should be sent to
         :param str text: The contents of the text message
         :param list media: For MMS messages, a media url to the location of the media or list of medias to be sent send with the message.
-        :param str receiptRequested: Requested receipt option for outbound messages: 'none', 'all', 'error'
-        :param str callbackUrl: The server URL where the events related to the outgoing message will be sent to
-        :param str callbackHttpMethod: Determine if the callback event should be sent via HTTP GET or HTTP POST. Values are get or post Default is post
-        :param str callbackTimeout: Determine how long should the platform wait for callbackUrl's response before timing out (milliseconds).
-        :param str fallbackUrl: The server URL used to send the message events if the request to callbackUrl fails.
+        :param str receipt_requested: Requested receipt option for outbound messages: 'none', 'all', 'error'
+        :param str callback_url: The server URL where the events related to the outgoing message will be sent to
+        :param str callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST. Values are get or post Default is post
+        :param str callback_timeout: Determine how long should the platform wait for callbackUrl's response before timing out (milliseconds).
+        :param str fallback_url: The server URL used to send the message events if the request to callbackUrl fails.
         :param str tag: Any string, it will be included in the callback events of the message.
         :rtype: str
         :returns: id of created message
 
-        :Example:
-        # SMS
-        id = api.send_message(
-            from_ = '+1234567980',
-            to = '+1234567981',
-            text = 'SMS message'
-            )
-        # MMS
-        id = api.send_message(
-            from = '+1234567980',
-            to = '+1234567981',
-            media = ['http://host/path/to/file']
-            )
+        Example: Send Text Message::
+
+            id = api.send_message(
+                from_ = '+1234567980',
+                to = '+1234567981',
+                text = 'SMS message'
+                )
+
+        Example: Send Picture Message::
+
+            id = api.send_message(
+                from = '+1234567980',
+                to = '+1234567981',
+                media = ['http://host/path/to/file']
+                )
         """
         kwargs["from"] = from_
         kwargs["to"]= to
+        kwargs['text'] = text
+        kwargs['media'] = media
+        kwargs['receiptRequested'] = receipt_requested
+        kwargs['callbackUrl'] = callback_url
+        kwargs['callbackHttpMethod'] = callback_http_method
+        kwargs['callbackTimeout'] = callback_timeout
+        kwargs['fallbackUrl'] = fallback_url
+        kwargs['tag'] = tag
+
         return self._make_request('post', '/users/%s/messages' % self.user_id, json=kwargs)[2]
 
     def send_messages(self, messages_data):
@@ -2443,11 +2588,12 @@ class Client:
         :rtype: list
         :returns: results of sent messages
 
-        :Example:
-        results = api.send_message([
-            {'from': '+1234567980', 'to': '+1234567981', 'text': 'SMS message'},
-            {'from': '+1234567980', 'to': '+1234567982', 'text': 'SMS message2'}
-        ])
+        Example: Bulk Send Picture or Text messages (or both)::
+
+            results = api.send_message([
+                {'from': '+1234567980', 'to': '+1234567981', 'text': 'SMS message'},
+                {'from': '+1234567980', 'to': '+1234567982', 'text': 'SMS message2'}
+            ])
         """
         results = self._make_request('post', '/users/%s/messages' % self.user_id, json=messages_data)[0]
         for i in range(0, len(messages_data)):
@@ -2466,14 +2612,27 @@ class Client:
         :rtype: dict
         :returns: message information
 
-        :Example:
-        data = api.get_message('messageId')
+        Example: Fetch information about single message::
+
+            my_message = api.get_message('m-na6cpyjf2qcpz6l3drhcx7y')
+            print(my_message)
+
+            ## {
+            ##     'callbackUrl'             :'https://yoursite.com/message',
+            ##     'direction'               :'in',
+            ##     'from'                    :'+19193047864',
+            ##     'id'                      :'m-messageId',
+            ##     'media'                   :[],
+            ##     'messageId'               :'m-messageId',
+            ##     'skipMMSCarrierValidation':True,
+            ##     'state'                   :'received',
+            ##     'text'                    :'Hey there',
+            ##     'time'                    :'2017-02-01T21:10:32Z',
+            ##     'to'                      :'+19191234567'
+            ## }
         """
         return self._make_request('get', '/users/%s/messages/%s' % (self.user_id, id))[0]
 
-    """
-    NumberInfo API
-    """
     def get_number_info(self, number):
         """
         Gets CNAM information about phone number
@@ -2484,16 +2643,19 @@ class Client:
         :rtype: dict
         :returns: CNAM information
 
-        :Example:
-        data = api.get_number_info('+1234567890')
+        Example: Get Number information::
+
+            data = api.get_number_info('+1234567890')
+            print(data)
+            ## {   'created': '2017-02-10T09:11:50Z',
+            ##     'name'       : 'RALEIGH, NC',
+            ##     'number'     : '+1234567890',
+            ##     'updated'    : '2017-02-10T09:11:50Z'}
 
         """
         path = '/phoneNumbers/numberInfo/%s' % quote(number)
         return self._make_request('get', path)[0]
 
-    """
-    PhoneNumber API
-    """
     def get_phone_numbers(self, application_id = None, state = None, name = None, city = None, number_state = None, size = None, **kwargs):
         """
         Get a list of user's phone numbers
@@ -2529,7 +2691,6 @@ class Client:
         kwargs['city']=city
         kwargs['numberState']=number_state
         kwargs['size']=size
-
 
         path = '/users/%s/phoneNumbers' % self.user_id
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
