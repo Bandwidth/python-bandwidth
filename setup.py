@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 def get_version():
@@ -19,7 +19,7 @@ setup(
     maintainer_email='dtolb@bandwidth.com',
     url='https://github.com/bandwidth/python-bandwidth',
     license='MIT',
-    packages=["bandwidth"],
+    packages=find_packages(exclude=['tests*']),
     long_description="Bandwidth Python API",
     classifiers=[
         'License :: OSI Approved :: Apache Software License',
