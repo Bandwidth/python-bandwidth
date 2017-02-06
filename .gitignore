@@ -76,4 +76,5 @@ sphinx_docs/build/*
 # builds
 dist
 
+pep.sh
 play.py
