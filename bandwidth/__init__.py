@@ -11,7 +11,8 @@ def client(client_name, *args, **kwargs):
     :param str user_id: catapult user id (for 'catapult' only)
     :param str api_token: catapult api token (for 'catapult' only)
     :param str api_secret: catapult api secret (for 'catapult' only)
-    :param str api_endpoint: catapult api endpoint (optional, default value is https://api.catapult.inetwork.com, for 'catapult' only)
+    :param str api_endpoint: catapult api endpoint
+        (optional, default value is https://api.catapult.inetwork.com, for 'catapult' only)
     :param str api_version: catapult api version (optional, default value is v1, for 'catapult' only)
 
 

@@ -248,12 +248,12 @@ class Client:
             ##     'id'                  : 'c-abc123',
             ##     'recordingEnabled'    : False,
             ##     'recordingFileFormat' : 'wav',
-            ##     'recordings'          : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-abc123/recordings',
+            ##     'recordings'          : 'https://api.../v1/users/u-abc123/calls/c-abc123/recordings',
             ##     'startTime'           : '2017-01-26T16:10:11Z',
             ##     'state'               : 'completed',
             ##     'to'                  : '+19192223333',
             ##     'transcriptionEnabled': False,
-            ##     'transcriptions'      : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-abc123/transcriptions'
+            ##     'transcriptions'      : 'https://api.../v1/users/u-abc123/calls/c-abc123/transcriptions'
             ##   },
             ##   {
             ##     'activeTime'          : '2016-12-29T23:50:35Z',
@@ -265,12 +265,12 @@ class Client:
             ##     'id'                  : 'c-xyz987',
             ##     'recordingEnabled'    : False,
             ##     'recordingFileFormat' : 'wav',
-            ##     'recordings'          : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-xyz987/recordings',
+            ##     'recordings'          : 'https://api.../v1/users/u-abc123/calls/c-xyz987/recordings',
             ##     'startTime'           : '2016-12-29T23:50:15Z',
             ##     'state'               : 'completed',
             ##     'to'                  : '+19192223333',
             ##     'transcriptionEnabled': False,
-            ##     'transcriptions'      : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-xyz987/transcriptions'
+            ##     'transcriptions'      : 'https://api.../v1/users/u-abc123/calls/c-xyz987/transcriptions'
             ##   }
             ## ]
 
@@ -355,7 +355,7 @@ class Client:
             ##     'state'               : 'started',
             ##     'to'                  : '+1234567891',
             ##     'transcriptionEnabled': False,
-            ##     'transcriptions'      : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/transcriptions'}
+            ##     'transcriptions'      : 'https://api.../v1/users/u-abc/calls/c-abc123/transcriptions'}
         """
         kwargs["from"] = from_
         kwargs["to"] = to
@@ -400,7 +400,7 @@ class Client:
             ##     'state'               : 'started',
             ##     'to'                  : '+1234567891',
             ##     'transcriptionEnabled': False,
-            ##     'transcriptions'      : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/transcriptions'}
+            ##     'transcriptions'      : 'https://api..../v1/users/u-abc/calls/c-abc123/transcriptions'}
         """
         return self._make_request('get', '/users/%s/calls/%s' % (self.user_id, call_id))[0]
 
@@ -748,7 +748,7 @@ class Client:
 
         if recording_enabled:
             return self.disable_call_recording(call_id)
-        elif recording_enabled == False:
+        elif recording_enabled is False:
             return self.enable_call_recording(call_id)
         else:
             return call_status
@@ -2683,11 +2683,14 @@ class Client:
         :param str ``from_``: One of your telephone numbers the message should come from
         :param str to: The phone number the message should be sent to
         :param str text: The contents of the text message
-        :param list media: For MMS messages, a media url to the location of the media or list of medias to be sent send with the message.
+        :param list media: For MMS messages, a media url to the location of the media or
+            list of medias to be sent send with the message.
         :param str receipt_requested: Requested receipt option for outbound messages: 'none', 'all', 'error'
         :param str callback_url: The server URL where the events related to the outgoing message will be sent to
-        :param str callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST. Values are get or post Default is post
-        :param str callback_timeout: Determine how long should the platform wait for callbackUrl's response before timing out (milliseconds).
+        :param str callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST.
+            Values are get or post Default is post
+        :param str callback_timeout: Determine how long should the platform wait for
+            callbackUrl's response before timing out (milliseconds).
         :param str fallback_url: The server URL used to send the message events if the request to callbackUrl fails.
         :param str tag: Any string, it will be included in the callback events of the message.
         :rtype: str
