@@ -2648,34 +2648,6 @@ class Client:
             ## m-pjnqofcjyadfe
             ## m-t2gspvs6iadfe
             ## m-shuh6d6pyadfe
-            ## m-2x3silukaadfe
-            ## m-7vjvsdukqadfe
-            ## m-cjz2mnpriadfe
-            ## m-na6chcx7yadfe
-            ## m-jlgoqpkgiadfe
-            ## m-p6zrsr46qadfe
-            ## m-amffspefqadfe
-            ## m-wzhdzmliqadfe
-            ## m-nbwe5vvviadfe
-            ## m-do43q2jhyadfe
-            ## m-3flfbgcqqadfe
-            ## m-jusk7mbcyadfe
-            ## m-or2mlxznaadfe
-            ## m-rhgg4c6xaadfe
-            ## m-z33ktgydqadfe
-            ## m-ersbkbwsiadfe
-            ## m-erqwzgwpyadfe
-            ## m-6dfkcsj2qadfe
-            ## m-ywd4z2lhqadfe
-            ## m-dcfpavd3aadfe
-            ## m-goq4i7h6qadfe
-            ## m-nzix26lnyadfe
-            ## m-g3d3llnkqadfe
-            ## m-ax334cyoaadfe
-            ## m-s47fqt4xyadfe
-            ## m-wixzk6ncqadfe
-            ## m-2guhqz6zyadfe
-            ## m-447jjehdiadfe
         """
         kwargs['from']=from_
         kwargs['to']=to
@@ -2732,7 +2704,6 @@ class Client:
                 )
         """
         kwargs["from"] = from_
-<<<<<<< HEAD
         kwargs["to"]= to
         kwargs['text'] = text
         kwargs['media'] = media
@@ -2743,9 +2714,6 @@ class Client:
         kwargs['fallbackUrl'] = fallback_url
         kwargs['tag'] = tag
 
-=======
-        kwargs["to"] = to
->>>>>>> 800f840a5ba8c5360e735966b408cb7cdecc5e95
         return self._make_request('post', '/users/%s/messages' % self.user_id, json=kwargs)[2]
 
     def send_messages(self, messages_data):
@@ -2829,13 +2797,6 @@ class Client:
         """
         return self._make_request('get', '/users/%s/messages/%s' % (self.user_id, id))[0]
 
-<<<<<<< HEAD
-=======
-    """
-    NumberInfo API
-    """
-
->>>>>>> 800f840a5ba8c5360e735966b408cb7cdecc5e95
     def get_number_info(self, number):
         """
         Gets CNAM information about phone number
@@ -2859,15 +2820,8 @@ class Client:
         path = '/phoneNumbers/numberInfo/%s' % quote(number)
         return self._make_request('get', path)[0]
 
-<<<<<<< HEAD
-    def get_phone_numbers(self, application_id = None, state = None, name = None, city = None, number_state = None, size = None, **kwargs):
-=======
-    """
-    PhoneNumber API
-    """
 
     def get_phone_numbers(self, application_id=None, state=None, name=None, city=None, number_state=None, size=None, **kwargs):
->>>>>>> 800f840a5ba8c5360e735966b408cb7cdecc5e95
         """
         Get a list of user's phone numbers
 
@@ -2896,21 +2850,12 @@ class Client:
         list = api.get_phone_numbers()
         """
 
-<<<<<<< HEAD
         kwargs['applicationId']=application_id
         kwargs['state']=state
         kwargs['name']=name
         kwargs['city']=city
         kwargs['numberState']=number_state
         kwargs['size']=size
-=======
-        kwargs['applicationId'] = application_id
-        kwargs['state'] = state
-        kwargs['name'] = name
-        kwargs['city'] = city
-        kwargs['numberState'] = number_state
-        kwargs['size'] = size
->>>>>>> 800f840a5ba8c5360e735966b408cb7cdecc5e95
 
         path = '/users/%s/phoneNumbers' % self.user_id
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
