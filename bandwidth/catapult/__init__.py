@@ -526,7 +526,7 @@ class Client:
             list = api.get_call_recordings('callId')
         """
         path = '/users/%s/calls/%s/recordings' % (self.user_id, id)
-        return get_lazy_enumerator(self, lambda:  self._make_request('get', path))
+        return get_lazy_enumerator(self, lambda: self._make_request('get', path))
 
     def list_call_transcriptions(self, call_id):
         """
@@ -746,7 +746,7 @@ class Client:
         call_status = self.get_call(call_id)
         recording_enabled = call_status['recordingEnabled']
 
-        if recording_enabled == True:
+        if recording_enabled:
             return self.disable_call_recording(call_id)
         elif recording_enabled == False:
             return self.enable_call_recording(call_id)
@@ -1304,7 +1304,6 @@ class Client:
         """
         path = '/users/%s/bridges/%s/calls' % (self.user_id, bridge_id)
         return get_lazy_enumerator(self, lambda: self._make_request('get', path))
-
 
     def play_audio_to_bridge(self, bridge_id,
                              file_url=None,
@@ -2034,7 +2033,6 @@ class Client:
         """
         self.update_conference(conference_id, mute=mute)
 
-
     def list_domains(self, size=None, **kwargs):
         """
         Get a list of domains
@@ -2200,7 +2198,15 @@ class Client:
         path = '/users/%s/domains/%s/endpoints' % (self.user_id, domain_id)
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
 
-    def create_domain_endpoint(self, domain_id, name, password, description=None, application_id=None, enabled=True, **kwargs):
+    def create_domain_endpoint(
+            self,
+            domain_id,
+            name,
+            password,
+            description=None,
+            application_id=None,
+            enabled=True,
+            **kwargs):
         """
         Create a domain endpoint
 
@@ -2602,16 +2608,16 @@ class Client:
         self._make_request('delete', path)
 
     def list_messages(self,
-                     from_=None,
-                     to=None,
-                     from_date_time=None,
-                     to_date_time=None,
-                     direction=None,
-                     state=None,
-                     delivery_state=None,
-                     sort_order=None,
-                     size=None,
-                     **kwargs):
+                      from_=None,
+                      to=None,
+                      from_date_time=None,
+                      to_date_time=None,
+                      direction=None,
+                      state=None,
+                      delivery_state=None,
+                      sort_order=None,
+                      size=None,
+                      **kwargs):
         """
         Get a list of user's messages
 
@@ -2648,15 +2654,15 @@ class Client:
             ## m-shuh6d6pyadfe
         """
 
-        kwargs['from']=from_
-        kwargs['to']=to
-        kwargs['fromDateTime']=from_date_time
-        kwargs['toDateTime']=to_date_time
-        kwargs['direction']=direction
-        kwargs['state']=state
-        kwargs['deliveryState']=delivery_state
-        kwargs['sortOrder']=sort_order
-        kwargs['size']=size
+        kwargs['from'] = from_
+        kwargs['to'] = to
+        kwargs['fromDateTime'] = from_date_time
+        kwargs['toDateTime'] = to_date_time
+        kwargs['direction'] = direction
+        kwargs['state'] = state
+        kwargs['deliveryState'] = delivery_state
+        kwargs['sortOrder'] = sort_order
+        kwargs['size'] = size
 
         path = '/users/%s/messages' % self.user_id
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
@@ -2703,8 +2709,8 @@ class Client:
                 media = ['http://host/path/to/file']
                 )
         """
-        kwargs["from"] = from_
-        kwargs["to"]= to
+        kwargs['from'] = from_
+        kwargs['to'] = to
         kwargs['text'] = text
         kwargs['media'] = media
         kwargs['receiptRequested'] = receipt_requested
@@ -2820,8 +2826,15 @@ class Client:
         path = '/phoneNumbers/numberInfo/%s' % quote(number)
         return self._make_request('get', path)[0]
 
-
-    def list_phone_numbers(self, application_id=None, state=None, name=None, city=None, number_state=None, size=None, **kwargs):
+    def list_phone_numbers(
+            self,
+            application_id=None,
+            state=None,
+            name=None,
+            city=None,
+            number_state=None,
+            size=None,
+            **kwargs):
         """
         Get a list of user's phone numbers
 
@@ -2869,22 +2882,22 @@ class Client:
             ## ]
         """
 
-        kwargs['applicationId']=application_id
-        kwargs['state']=state
-        kwargs['name']=name
-        kwargs['city']=city
-        kwargs['numberState']=number_state
-        kwargs['size']=size
+        kwargs['applicationId'] = application_id
+        kwargs['state'] = state
+        kwargs['name'] = name
+        kwargs['city'] = city
+        kwargs['numberState'] = number_state
+        kwargs['size'] = size
 
         path = '/users/%s/phoneNumbers' % self.user_id
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
 
     def order_phone_number(self,
-                            number=None,
-                            name=None,
-                            application_id=None,
-                            fallback_number=None,
-                            **kwargs):
+                           number=None,
+                           name=None,
+                           application_id=None,
+                           fallback_number=None,
+                           **kwargs):
         """
         Allocates a number so user can use it to make and receive calls and send
         and receive messages.
@@ -2905,10 +2918,10 @@ class Client:
             # n-asdf123
         """
 
-        kwargs['number'] =number
-        kwargs['name'] =name
-        kwargs['applicationId'] =application_id
-        kwargs['fallbackNumber'] =fallback_number
+        kwargs['number'] = number
+        kwargs['name'] = name
+        kwargs['applicationId'] = application_id
+        kwargs['fallbackNumber'] = fallback_number
 
         return self._make_request('post', '/users/%s/phoneNumbers' % self.user_id, json=kwargs)[2]
 
@@ -2991,9 +3004,9 @@ class Client:
             ##     'numberState'   :'enabled'
             ## }
         """
-        kwargs['name']=name
-        kwargs['applicationId']=application_id
-        kwargs['fallbackNumber']=fallback_number
+        kwargs['name'] = name
+        kwargs['applicationId'] = application_id
+        kwargs['fallbackNumber'] = fallback_number
 
         self._make_request(
             'post', '/users/%s/phoneNumbers/%s' % (self.user_id, number_id), json=kwargs)
@@ -3046,7 +3059,7 @@ class Client:
             ##     }
             ## ]
         """
-        kwargs['size']=size
+        kwargs['size'] = size
         path = '/users/%s/recordings' % self.user_id
         return lazy_map(_set_media_name,
                         get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs)))
@@ -3115,7 +3128,7 @@ class Client:
             ##     }
             ## ]
         """
-        kwargs['size']=size
+        kwargs['size'] = size
         path = '/users/%s/recordings/%s/transcriptions' % (
             self.user_id, recording_id)
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
