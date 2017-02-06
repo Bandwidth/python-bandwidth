@@ -170,6 +170,7 @@
 <li><strong>user_id</strong> (<em>str</em>) &#8211; catapult user id (for &#8216;catapult&#8217; only)</li>
 <li><strong>api_token</strong> (<em>str</em>) &#8211; catapult api token (for &#8216;catapult&#8217; only)</li>
 <li><strong>api_secret</strong> (<em>str</em>) &#8211; catapult api secret (for &#8216;catapult&#8217; only)</li>
+
 <li><strong>api_endpoint</strong> (<em>str</em>) &#8211; catapult api endpoint
 (optional, default value is <a class="reference external" href="https://api.catapult.inetwork.com">https://api.catapult.inetwork.com</a>, for &#8216;catapult&#8217; only)</li>
 <li><strong>api_version</strong> (<em>str</em>) &#8211; catapult api version (optional, default value is v1, for &#8216;catapult&#8217; only)</li>
@@ -280,7 +281,9 @@ to enable. Default is &#8220;false&#8221;.</li>
 <span class="c1">##     &#39;state&#39;               : &#39;started&#39;,</span>
 <span class="c1">##     &#39;to&#39;                  : &#39;+1234567891&#39;,</span>
 <span class="c1">##     &#39;transcriptionEnabled&#39;: False,</span>
+
 <span class="c1">##     &#39;transcriptions&#39;      : &#39;https://api.../v1/users/u-abc/calls/c-abc123/transcriptions&#39;}</span>
+
 </pre></div>
 </div>
 </dd></dl>
@@ -1438,6 +1441,7 @@ If no value is specified the default value is 25. (Maximum value 1000)</td>
 <p>Examples: Play either file for speak sentence:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">play_audio_to_bridge</span><span class="p">(</span><span class="s1">&#39;bridgeId&#39;</span><span class="p">,</span> <span class="n">fileUrl</span><span class="o">=</span><span class="s1">&#39;http://host/path/file.mp3&#39;</span><span class="p">)</span>
 <span class="n">api</span><span class="o">.</span><span class="n">play_audio_to_bridge</span><span class="p">(</span><span class="s1">&#39;bridgeId&#39;</span><span class="p">,</span> <span class="n">sentence</span><span class="o">=</span><span class="s1">&#39;Press 0 to complete call&#39;</span><span class="p">,</span> <span class="n">gender</span><span class="o">=</span><span class="s1">&#39;female&#39;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">play_audio_to_bridge</span><span class="p">(</span><span class="s1">&#39;bridgeId&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;fileUrl&#39;</span><span class="p">:</span> <span class="s1">&#39;http://host/path/file.mp3&#39;</span><span class="p">})</span>
 
 <span class="c1"># or with extension methods</span>
 <span class="n">api</span><span class="o">.</span><span class="n">play_audio_file_to_bridge</span><span class="p">(</span><span class="s1">&#39;bridgeId&#39;</span><span class="p">,</span> <span class="s1">&#39;http://host/path/file.mp3&#39;</span><span class="p">)</span>
