@@ -1086,7 +1086,7 @@ class Client:
             filtering the results. It must have at least 3 digits and the areaCode field must be filled.
         :param str in_local_calling_area: Boolean value to indicate that the search for available numbers
             must consider overlayed areas.
-        :param str quantity: The maximum number of numbers to return (default 10, maximum 5000)
+        :param int quantity: The maximum number of numbers to return (default 10, maximum 5000)
 
         :rtype: list
         :returns: list of ordered numbers
