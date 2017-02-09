@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Test Suite &mdash; bandwidth_sdk 1.0.6-stable documentation</title>
+  <title>Errors &mdash; bandwidth_sdk 1.0.6-stable documentation</title>
   
 
   
@@ -31,8 +31,9 @@
 
   
     <link rel="top" title="bandwidth_sdk 1.0.6-stable documentation" href="index.html"/>
-        <link rel="next" title="Contributing and Reporting Bugs" href="contribute.html"/>
-        <link rel="prev" title="Transcriptions" href="transcriptions.html"/> 
+        <link rel="up" title="Methods" href="modules.html"/>
+        <link rel="next" title="Media" href="media.html"/>
+        <link rel="prev" title="Endpoints" href="endpoints.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -83,7 +84,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">Methods</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Methods</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="calls.html">Calls</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="calls.html#list-calls">list_calls</a></li>
 <li class="toctree-l3"><a class="reference internal" href="calls.html#create-call">create_call</a></li>
@@ -178,9 +179,9 @@
 <li class="toctree-l3"><a class="reference internal" href="endpoints.html#create-domain-endpoint-auth-token">create_domain_endpoint_auth_token</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="errors.html">Errors</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="errors.html#list-errors">list_errors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="errors.html#get-error">get_error</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Errors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#list-errors">list_errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-error">get_error</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="media.html">Media</a><ul>
@@ -211,7 +212,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Test Suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">Test Suite</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing and Reporting Bugs</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="contribute.html#submitting-bug-reports">Submitting Bug Reports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contribute.html#contributing">Contributing</a></li>
@@ -241,11 +242,13 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>Test Suite</li>
+          <li><a href="modules.html">Methods</a> &raquo;</li>
+      
+    <li>Errors</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/tests.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/errors.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -254,15 +257,135 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="test-suite">
-<h1>Test Suite<a class="headerlink" href="#test-suite" title="Permalink to this headline">¶</a></h1>
-<p>To run the test suite use the provided commands in the makefile:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>make req &amp;&amp; make test
+  <div class="section" id="errors">
+<h1>Errors<a class="headerlink" href="#errors" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="list-errors">
+<h2>list_errors<a class="headerlink" href="#list-errors" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.list_errors">
+<code class="descclassname">Client.</code><code class="descname">list_errors</code><span class="sig-paren">(</span><em>size=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.list_errors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of errors</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>size</strong> (<em>int</em>) &#8211; Used for pagination to indicate the size of each page requested for querying a list
+of items. If no value is specified the default value is 25. (Maximum value 1000)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">types.GeneratorType</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of calls</td>
+</tr>
+</tbody>
+</table>
+<p>Example: List all errors:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">error_list</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">list_errors</span><span class="p">()</span>
+
+<span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">error_list</span><span class="p">))</span>
+
+<span class="c1"># [{</span>
+<span class="c1">#     &#39;category&#39;:&#39;unavailable&#39;,</span>
+<span class="c1">#     &#39;code&#39;    :&#39;number-allocator-unavailable&#39;,</span>
+<span class="c1">#     &#39;details&#39;:[</span>
+<span class="c1">#         {</span>
+<span class="c1">#             &#39;id&#39;   :&#39;ued-eh3zn3dxgiin4y&#39;,</span>
+<span class="c1">#             &#39;name&#39; :&#39;requestPath&#39;,</span>
+<span class="c1">#             &#39;value&#39;:&#39;availableNumbers/local&#39;</span>
+<span class="c1">#         },</span>
+<span class="c1">#         {</span>
+<span class="c1">#             &#39;id&#39;   :&#39;ued-3fsdqiq&#39;,</span>
+<span class="c1">#             &#39;name&#39; :&#39;remoteAddress&#39;,</span>
+<span class="c1">#             &#39;value&#39;:&#39;216.82.234.65&#39;</span>
+<span class="c1">#         },</span>
+<span class="c1">#         {</span>
+<span class="c1">#             &#39;id&#39;   :&#39;ued-2r4t47bwi&#39;,</span>
+<span class="c1">#             &#39;name&#39; :&#39;requestMethod&#39;,</span>
+<span class="c1">#             &#39;value&#39;:&#39;GET&#39;</span>
+<span class="c1">#         }</span>
+<span class="c1">#     ],</span>
+<span class="c1">#     &#39;id&#39;     :&#39;ue-upvfv53xzca&#39;,</span>
+<span class="c1">#     &#39;message&#39;:&#39;Cannot connect to the number allocator&#39;,</span>
+<span class="c1">#     &#39;time&#39;   :&#39;2016-03-28T18:31:33Z&#39;</span>
+<span class="c1"># },</span>
+<span class="c1"># {</span>
+<span class="c1">#     &#39;category&#39;:&#39;unavailable&#39;,</span>
+<span class="c1">#     &#39;code&#39;:&#39;number-allocator-unavailable&#39;,</span>
+<span class="c1">#     &#39;details&#39;:[</span>
+<span class="c1">#         {</span>
+<span class="c1">#             &#39;id&#39;:&#39;ued-kntwx7vyotalci&#39;,</span>
+<span class="c1">#             &#39;name&#39;:&#39;requestPath&#39;,</span>
+<span class="c1">#             &#39;value&#39;:&#39;availableNumbers/local&#39;</span>
+<span class="c1">#         },</span>
+<span class="c1">#         {</span>
+<span class="c1">#             &#39;id&#39;:&#39;ued-b24vxpfskldq&#39;,</span>
+<span class="c1">#             &#39;name&#39;:&#39;remoteAddress&#39;,</span>
+<span class="c1">#             &#39;value&#39;:&#39;216.82.234.65&#39;</span>
+<span class="c1">#         },</span>
+<span class="c1">#         {</span>
+<span class="c1">#             &#39;id&#39;:&#39;ued-ww5rcgl7zm2ydi&#39;,</span>
+<span class="c1">#             &#39;name&#39;:&#39;requestMethod&#39;,</span>
+<span class="c1">#             &#39;value&#39;:&#39;GET&#39;</span>
+<span class="c1">#         }</span>
+<span class="c1">#     ],</span>
+<span class="c1">#     &#39;id&#39;:&#39;ue-pok2vg7kyuzaqq&#39;,</span>
+<span class="c1">#     &#39;message&#39;:&#39;Cannot connect to the number allocator&#39;,</span>
+<span class="c1">#     &#39;time&#39;:&#39;2016-03-28T18:31:33Z&#39;</span>
+<span class="c1"># }]</span>
 </pre></div>
 </div>
-<p>or:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>make req &amp;&amp; make local_test
+</dd></dl>
+
+</div>
+<div class="section" id="get-error">
+<h2>get_error<a class="headerlink" href="#get-error" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.get_error">
+<code class="descclassname">Client.</code><code class="descname">get_error</code><span class="sig-paren">(</span><em>error_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.get_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get information about an error</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> &#8211; id of an error</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">error information</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Get information of specific error:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">error</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_error</span><span class="p">(</span><span class="s1">&#39;ue-errorId&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+
+<span class="c1">## {</span>
+<span class="c1">##     &#39;category&#39;:&#39;unavailable&#39;,</span>
+<span class="c1">##     &#39;code&#39;    :&#39;number-allocator-unavailable&#39;,</span>
+<span class="c1">##     &#39;details&#39; :[</span>
+<span class="c1">##         {</span>
+<span class="c1">##            &#39;id&#39;      :&#39;ued-kntvyotalci&#39;,</span>
+<span class="c1">##            &#39;name&#39;    :&#39;requestPath&#39;,</span>
+<span class="c1">##            &#39;value&#39;   :&#39;availableNumbers/local&#39;</span>
+<span class="c1">##         },</span>
+<span class="c1">##         {</span>
+<span class="c1">##            &#39;id&#39;      :&#39;ued-b2dq&#39;,</span>
+<span class="c1">##            &#39;name&#39;    :&#39;remoteAddress&#39;,</span>
+<span class="c1">##            &#39;value&#39;   :&#39;216.82.234.65&#39;</span>
+<span class="c1">##         },</span>
+<span class="c1">##         {</span>
+<span class="c1">##            &#39;id&#39;      :&#39;ued-wzm2ydi&#39;,</span>
+<span class="c1">##            &#39;name&#39;    :&#39;requestMethod&#39;,</span>
+<span class="c1">##            &#39;value&#39;   :&#39;GET&#39;</span>
+<span class="c1">##         }</span>
+<span class="c1">##     ],</span>
+<span class="c1">##     &#39;id&#39;      :&#39;ue-errorId&#39;,</span>
+<span class="c1">##     &#39;message&#39; :&#39;Cannot connect to the number allocator&#39;,</span>
+<span class="c1">##     &#39;time&#39;    :&#39;2016-03-28T18:31:33Z&#39;</span>
+<span class="c1">## }</span>
 </pre></div>
+</div>
+</dd></dl>
+
 </div>
 </div>
 
@@ -272,10 +395,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="contribute.html" class="btn btn-neutral float-right" title="Contributing and Reporting Bugs" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="media.html" class="btn btn-neutral float-right" title="Media" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="transcriptions.html" class="btn btn-neutral" title="Transcriptions" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="endpoints.html" class="btn btn-neutral" title="Endpoints" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

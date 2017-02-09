@@ -9,7 +9,7 @@ To install the latest stable version with pip use the following command::
     pip install bandwidth_sdk
 
 If you want to install the bleeding edge version of the SDK from our
-`github repository <https://github.com/bandwidthcom/python-bandwidth>`_
+`github repository <https://github.com/bandwidth/python-bandwidth>`_
 use the following command::
 
     pip install -e git+https://github.com/bandwidth/python-bandwidth.git#egg=bandwidth_sdk
@@ -140,14 +140,45 @@ Retrieving list of calls::
 Messaging
 ---------
 
-SIP
----
+Example: Send Text Message::
 
-Bandwidth XML
--------------
+    message_id = api.send_message(from_ = '+1234567980',
+                                  to = '+1234567981',
+                                  text = 'SMS message')
+    print(message_id)
+    # m-messageId
 
-More examples
--------------
+Example: Send Picture Message::
 
-Take a look at the
-`python bandwidth examples repository <https://github.com/bandwidthcom/python-bandwidth-examples>`_
+    message_id = api.send_message(from_ = '+1234567980',
+                                  to = '+1234567981',
+                                  text = 'MMS message',
+                                  media=['http://cat.com/cat.png'])
+    print(message_id)
+    # m-messageId
+
+Example: Bulk Send Picture or Text messages (or both)::
+
+    results = api.send_message([
+        {'from': '+1234567980', 'to': '+1234567981', 'text': 'SMS message'},
+        {'from': '+1234567980', 'to': '+1234567982', 'text': 'SMS message2'}
+    ])
+
+Example: Fetch information about single message::
+
+    my_message = api.get_message('m-na6cpyjf2qcpz6l3drhcx7y')
+    print(my_message)
+
+    ## {
+    ##     'callbackUrl'             :'https://yoursite.com/message',
+    ##     'direction'               :'in',
+    ##     'from'                    :'+19193047864',
+    ##     'id'                      :'m-messageId',
+    ##     'media'                   :[],
+    ##     'messageId'               :'m-messageId',
+    ##     'skipMMSCarrierValidation':True,
+    ##     'state'                   :'received',
+    ##     'text'                    :'Hey there',
+    ##     'time'                    :'2017-02-01T21:10:32Z',
+    ##     'to'                      :'+19191234567'
+    ## }

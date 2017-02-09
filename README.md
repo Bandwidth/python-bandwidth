@@ -4,14 +4,105 @@
 
 Client library for the [Bandwidth App Platform](http://ap.bandwidth.com/docs/rest-api/)
 
-## Documentation and Tutorials
+## Full Reference
+###[dev.bandwidth.com/python-bandwidth](http://dev.bandwidth.com/python-bandwidth)
 
-Coming Soon
-
-## Installation
-
-Coming Soon
 
 ## Requirements
 * [Bandwidth Account](http://bandwidth.com/products/application-platform/?utm_medium=social&utm_source=github&utm_campaign=dtolb&utm_content=_)
 * [At least Python 2.7](https://www.python.org/downloads/)
+
+
+## Installation
+
+```bash
+pip install bandwidth-sdk==2.0.0b0
+```
+
+## Usage
+
+### Client Initialization
+```python
+import Bandwidth
+api = bandwidth.client('catapult', 'u-user', 't-token', 's-secret')
+```
+
+> Each of these code sample assumes that you have already initialized a client
+
+### Search and order phone number
+
+```python
+numbers = api.search_available_local_numbers(area_code = '910', quantity = 3)
+print(numbers[0]['number'])
+## +19104440230
+
+my_number = api.create_phone_number(numbers[0]['number'])
+
+print(my_number)
+#+19104440230
+```
+
+### Send Text Message::
+```python
+message_id = api.send_message(from_ = '+1234567980',
+                              to = '+1234567981',
+                              text = 'SMS message')
+print(message_id)
+# m-messageId
+```
+
+### Send Picture Message::
+
+```python
+message_id = api.send_message(from_ = '+1234567980',
+                              to = '+1234567981',
+                              text = 'MMS message',
+                              media=['http://cat.com/cat.png'])
+print(message_id)
+# m-messageId
+```
+
+
+### Fetch information about single message::
+```python
+my_message = api.get_message('m-messageId')
+print(my_message[state])
+## received
+```
+
+### Create an outbound call
+
+```python
+call_id = api.create_call(from_ = '+1234567890',
+	                      to = '+1234567891',
+	                      callback_url = "http://yoursite.com/calls")
+print(call_id)
+## c-abc123
+ ```
+
+### Get information on single call
+
+```python
+my_call = api.get_call('c-abc123')
+print(my_call)
+## {   'callbackUrl'         : 'http://yoursite.com/calls',
+##     'direction'           : 'out',
+##     'events'              : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/events',
+##     'from'                : '+1234567890',
+##     'id'                  : 'c-abc123',
+##     'recordingEnabled'    : False,
+##     'recordingFileFormat' : 'wav',
+##     'recordings'          : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/recordings',
+##     'startTime'           : '2017-01-26T16:10:11Z',
+##     'state'               : 'started',
+##     'to'                  : '+1234567891',
+##     'transcriptionEnabled': False,
+##     'transcriptions'      : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/transcriptions'}
+```
+
+### Retrieving list of calls
+
+```python
+call_list = api.list_calls(to = '+19192223333', size = 2)
+print(list(call_list))
+```

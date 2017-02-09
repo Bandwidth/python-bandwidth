@@ -1,0 +1,1008 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Calls &mdash; bandwidth_sdk 1.0.6-stable documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="bandwidth_sdk 1.0.6-stable documentation" href="index.html"/>
+        <link rel="up" title="Methods" href="modules.html"/>
+        <link rel="next" title="Messages" href="messages.html"/>
+        <link rel="prev" title="Methods" href="modules.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="index.html" class="icon icon-home"> bandwidth_sdk
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#client-initialization">Client Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#code-samples">Code Samples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#phone-numbers">Phone Numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#calling">Calling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#messaging">Messaging</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Methods</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="">Calls</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#list-calls">list_calls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-call">create_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-call">get_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#update-call">update_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#play-audio-to-call">play_audio_to_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#send-dtmf-to-call">send_dtmf_to_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#list-call-recordings">list_call_recordings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#list-call-transcriptions">list_call_transcriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#list-call-events">list_call_events</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-call-event">get_call_event</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-call-gather">create_call_gather</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-call-gather">get_call_gather</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#update-call-gather">update_call_gather</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#answer-call">answer_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reject-call">reject_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hangup-call">hangup_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#enable-call-recording">enable_call_recording</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#disable-call-recording">disable_call_recording</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#toggle-call-recording">toggle_call_recording</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#transfer-call">transfer_call</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="messages.html">Messages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="messages.html#list-messages">list_messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="messages.html#send-message">send_message</a></li>
+<li class="toctree-l3"><a class="reference internal" href="messages.html#send-messages">send_messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="messages.html#get-message">get_message</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="conferences.html">Conferences</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#create-conference">create_conference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#get-conference">get_conference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#update-conference">update_conference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#play-audio-to-conference">play_audio_to_conference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#list-conference-members">list_conference_members</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#create-conference-member">create_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#get-conference-member">get_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#update-conference-member">update_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#play-audio-to-conference-member">play_audio_to_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#speak-sentence-to-conference-member">speak_sentence_to_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#play-audio-file-to-conference-member">play_audio_file_to_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#remove-conference-member">remove_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#hold-conference-member">hold_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#mute-conference-member">mute_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#terminate-conference">terminate_conference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#hold-conference">hold_conference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#mute-conference">mute_conference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="account.html">Account</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="account.html#get-account">get_account</a></li>
+<li class="toctree-l3"><a class="reference internal" href="account.html#get-account-transactions">get_account_transactions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="applications.html">Applications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#list-applications">list_applications</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#create-application">create_application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#get-application">get_application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#delete-application">delete_application</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="available_numbers.html">Available Numbers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="available_numbers.html#search-available-local-numbers">search_available_local_numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="available_numbers.html#search-available-toll-free-numbers">search_available_toll_free_numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="available_numbers.html#search-and-order-local-numbers">search_and_order_local_numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="available_numbers.html#search-and-order-toll-free-numbers">search_and_order_toll_free_numbers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bridges.html">Bridges</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bridges.html#list-bridges">list_bridges</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bridges.html#create-bridge">create_bridge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bridges.html#get-bridge">get_bridge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bridges.html#update-bridge">update_bridge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bridges.html#list-bridge-calls">list_bridge_calls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bridges.html#play-audio-to-bridge">play_audio_to_bridge</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="domains.html">Domains</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="domains.html#list-domains">list_domains</a></li>
+<li class="toctree-l3"><a class="reference internal" href="domains.html#create-domain">create_domain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="domains.html#get-domain">get_domain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="domains.html#delete-domain">delete_domain</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="endpoints.html">Endpoints</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="endpoints.html#list-domain-endpoints">list_domain_endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="endpoints.html#create-domain-endpoint">create_domain_endpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="endpoints.html#get-domain-endpoint">get_domain_endpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="endpoints.html#update-domain-endpoint">update_domain_endpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="endpoints.html#delete-domain-endpoint">delete_domain_endpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="endpoints.html#create-domain-endpoint-auth-token">create_domain_endpoint_auth_token</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="errors.html">Errors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="errors.html#list-errors">list_errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="errors.html#get-error">get_error</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="media.html">Media</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="media.html#list-media-files">list_media_files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="media.html#upload-media-file">upload_media_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="media.html#download-media-file">download_media_file</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="numbers.html">Numbers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="numbers.html#get-number-info">get_number_info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="numbers.html#list-phone-numbers">list_phone_numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="numbers.html#order-phone-number">order_phone_number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="numbers.html#get-phone-number">get_phone_number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="numbers.html#update-phone-number">update_phone_number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="numbers.html#delete-phone-number">delete_phone_number</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="recordings.html">Recordings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="recordings.html#list-recordings">list_recordings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recordings.html#get-recording">get_recording</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="transcriptions.html">Transcriptions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="transcriptions.html#list-transcriptions">list_transcriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="transcriptions.html#create-transcription">create_transcription</a></li>
+<li class="toctree-l3"><a class="reference internal" href="transcriptions.html#get-transcription">get_transcription</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">Test Suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing and Reporting Bugs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contribute.html#submitting-bug-reports">Submitting Bug Reports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contribute.html#contributing">Contributing</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">bandwidth_sdk</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="modules.html">Methods</a> &raquo;</li>
+      
+    <li>Calls</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/calls.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="calls">
+<h1>Calls<a class="headerlink" href="#calls" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="list-calls">
+<h2>list_calls<a class="headerlink" href="#list-calls" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.list_calls">
+<code class="descclassname">Client.</code><code class="descname">list_calls</code><span class="sig-paren">(</span><em>bridge_id=None</em>, <em>conference_id=None</em>, <em>from_=None</em>, <em>to=None</em>, <em>size=None</em>, <em>sort_order=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.list_calls" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of calls</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>bridge_id</strong> (<em>str</em>) &#8211; The id of the bridge for querying a list of calls history</li>
+<li><strong>conference_id</strong> (<em>str</em>) &#8211; The id of the conference for querying a list of calls history</li>
+<li><strong>from_</strong> (<em>str</em>) &#8211; The number to filter calls that came from</li>
+<li><strong>to</strong> (<em>str</em>) &#8211; The number to filter calls that was called to</li>
+<li><strong>sort_order</strong> (<em>str</em>) &#8211; How to sort the calls.             Values are asc or desc If no value is specified the default value is desc</li>
+<li><strong>size</strong> (<em>int</em>) &#8211; Used for pagination to indicate the size of each page requested for querying a list of items.             If no value is specified the default value is 25. (Maximum value 1000)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">types.GeneratorType</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list of calls</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Fetch calls from specific telephone number:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">call_list</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">list_calls</span><span class="p">(</span><span class="n">from_</span> <span class="o">=</span> <span class="s1">&#39;+19192223333&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">)</span>
+
+<span class="n">total_chargeable_duration</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">for</span> <span class="n">call</span> <span class="ow">in</span> <span class="n">call_list</span><span class="p">:</span>
+    <span class="n">total_chargeable_duration</span> <span class="o">+=</span> <span class="n">call</span><span class="p">[</span><span class="s1">&#39;chargeableDuration&#39;</span><span class="p">]</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">total_chargeable_duration</span><span class="p">)</span>
+<span class="c1">## 240</span>
+</pre></div>
+</div>
+<p>Example: List Calls:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">call_list</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">list_calls</span><span class="p">(</span><span class="n">to</span> <span class="o">=</span> <span class="s1">&#39;+19192223333&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">call_list</span><span class="p">))</span>
+<span class="c1">## [</span>
+<span class="c1">##   {</span>
+<span class="c1">##     &#39;activeTime&#39;          : &#39;2017-01-26T16:10:23Z&#39;,</span>
+<span class="c1">##     &#39;callbackUrl&#39;         : &#39;http://yoursite.com/calls&#39;,</span>
+<span class="c1">##     &#39;chargeableDuration&#39;  : 60,</span>
+<span class="c1">##     &#39;direction&#39;           : &#39;out&#39;,</span>
+<span class="c1">##     &#39;endTime&#39;             : &#39;2017-01-26T16:10:33Z&#39;,</span>
+<span class="c1">##     &#39;events&#39;              : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-abc123/events&#39;,</span>
+<span class="c1">##     &#39;from&#39;                : &#39;+17079311113&#39;,</span>
+<span class="c1">##     &#39;id&#39;                  : &#39;c-abc123&#39;,</span>
+<span class="c1">##     &#39;recordingEnabled&#39;    : False,</span>
+<span class="c1">##     &#39;recordingFileFormat&#39; : &#39;wav&#39;,</span>
+<span class="c1">##     &#39;recordings&#39;          : &#39;https://api.../v1/users/u-abc123/calls/c-abc123/recordings&#39;,</span>
+<span class="c1">##     &#39;startTime&#39;           : &#39;2017-01-26T16:10:11Z&#39;,</span>
+<span class="c1">##     &#39;state&#39;               : &#39;completed&#39;,</span>
+<span class="c1">##     &#39;to&#39;                  : &#39;+19192223333&#39;,</span>
+<span class="c1">##     &#39;transcriptionEnabled&#39;: False,</span>
+<span class="c1">##     &#39;transcriptions&#39;      : &#39;https://api.../v1/users/u-abc123/calls/c-abc123/transcriptions&#39;</span>
+<span class="c1">##   },</span>
+<span class="c1">##   {</span>
+<span class="c1">##     &#39;activeTime&#39;          : &#39;2016-12-29T23:50:35Z&#39;,</span>
+<span class="c1">##     &#39;chargeableDuration&#39;  : 60,</span>
+<span class="c1">##     &#39;direction&#39;           : &#39;out&#39;,</span>
+<span class="c1">##     &#39;endTime&#39;             : &#39;2016-12-29T23:50:41Z&#39;,</span>
+<span class="c1">##     &#39;events&#39;              : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-xyz987/events&#39;,</span>
+<span class="c1">##     &#39;from&#39;                : &#39;+19194443333&#39;,</span>
+<span class="c1">##     &#39;id&#39;                  : &#39;c-xyz987&#39;,</span>
+<span class="c1">##     &#39;recordingEnabled&#39;    : False,</span>
+<span class="c1">##     &#39;recordingFileFormat&#39; : &#39;wav&#39;,</span>
+<span class="c1">##     &#39;recordings&#39;          : &#39;https://api.../v1/users/u-abc123/calls/c-xyz987/recordings&#39;,</span>
+<span class="c1">##     &#39;startTime&#39;           : &#39;2016-12-29T23:50:15Z&#39;,</span>
+<span class="c1">##     &#39;state&#39;               : &#39;completed&#39;,</span>
+<span class="c1">##     &#39;to&#39;                  : &#39;+19192223333&#39;,</span>
+<span class="c1">##     &#39;transcriptionEnabled&#39;: False,</span>
+<span class="c1">##     &#39;transcriptions&#39;      : &#39;https://api.../v1/users/u-abc123/calls/c-xyz987/transcriptions&#39;</span>
+<span class="c1">##   }</span>
+<span class="c1">## ]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="create-call">
+<h2>create_call<a class="headerlink" href="#create-call" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.create_call">
+<code class="descclassname">Client.</code><code class="descname">create_call</code><span class="sig-paren">(</span><em>from_</em>, <em>to</em>, <em>call_timeout=None</em>, <em>callback_url=None</em>, <em>callback_timeout=None</em>, <em>callback_http_method=None</em>, <em>fallback_url=None</em>, <em>bridge_id=None</em>, <em>conference_id=None</em>, <em>recording_enabled=False</em>, <em>recording_file_format=None</em>, <em>recording_max_duration=None</em>, <em>transcription_enabled=False</em>, <em>tag=None</em>, <em>sip_headers=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.create_call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a call</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>from_</strong> (<em>str</em>) &#8211; A Bandwidth phone number on your account the call should come from (required)</li>
+<li><strong>to</strong> (<em>str</em>) &#8211; The number to call (required)</li>
+<li><strong>call_timeout</strong> (<em>str</em>) &#8211; Determine how long should the platform wait for call answer before timing out
+in seconds.</li>
+<li><strong>callback_url</strong> (<em>str</em>) &#8211; The full server URL where the call events related to the Call will be sent to.</li>
+<li><strong>callback_timeout</strong> (<em>str</em>) &#8211; Determine how long should the platform wait for callbackUrl&#8217;s response before
+timing out in milliseconds.</li>
+<li><strong>callback_http_method</strong> (<em>str</em>) &#8211; Determine if the callback event should be sent via HTTP GET or HTTP POST.
+Values are &#8220;GET&#8221; or &#8220;POST&#8221; (if not set the default is POST).</li>
+<li><strong>fallback_url</strong> (<em>str</em>) &#8211; The full server URL used to send the callback event if the request to
+callbackUrl fails.</li>
+<li><strong>bridge_id</strong> (<em>str</em>) &#8211; The id of the bridge where the call will be added.</li>
+<li><strong>conference_id</strong> (<em>str</em>) &#8211; Id of the conference where the call will be added. This property is required
+if you want to add this call to a conference.</li>
+<li><strong>recording_enabled</strong> (<em>bool</em>) &#8211; Indicates if the call should be recorded after being created. Set to &#8220;true&#8221;
+to enable. Default is &#8220;false&#8221;.</li>
+<li><strong>recording_file_format</strong> (<em>str</em>) &#8211; The file format of the recorded call.             Supported values are wav (default) and mp3.</li>
+<li><strong>recording_max_duration</strong> (<em>str</em>) &#8211; Indicates the maximum duration of call recording in seconds.             Default value is 1 hour.</li>
+<li><strong>transcription_enabled</strong> (<em>bool</em>) &#8211; Recordings for this call is going to be automatically transcribed.</li>
+<li><strong>tag</strong> (<em>str</em>) &#8211; A string that will be included in the callback events of the call.</li>
+<li><strong>sip_headers</strong> (<em>str</em>) &#8211; Map of Sip headers prefixed by &#8220;X-&#8221;. Up to 5 headers can be sent per call.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">str</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">id of created call</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Create an outbound phone call:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">call_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_call</span><span class="p">(</span><span class="n">from_</span><span class="o">=</span><span class="s1">&#39;+1234567890&#39;</span><span class="p">,</span>
+                          <span class="n">to</span><span class="o">=</span><span class="s1">&#39;+1234567891&#39;</span><span class="p">,</span>
+                          <span class="n">callback_url</span><span class="o">=</span><span class="s1">&#39;http://yoursite.com/calls&#39;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">call_id</span><span class="p">)</span>
+<span class="c1">## c-abc123</span>
+
+<span class="n">my_call</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call</span><span class="p">(</span><span class="n">call_id</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_call</span><span class="p">)</span>
+<span class="c1">## {   &#39;callbackUrl&#39;         : &#39;http://yoursite.com/calls&#39;,</span>
+<span class="c1">##     &#39;direction&#39;           : &#39;out&#39;,</span>
+<span class="c1">##     &#39;events&#39;              : &#39;https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/events&#39;,</span>
+<span class="c1">##     &#39;from&#39;                : &#39;+1234567890&#39;,</span>
+<span class="c1">##     &#39;id&#39;                  : &#39;c-abc123&#39;,</span>
+<span class="c1">##     &#39;recordingEnabled&#39;    : False,</span>
+<span class="c1">##     &#39;recordingFileFormat&#39; : &#39;wav&#39;,</span>
+<span class="c1">##     &#39;recordings&#39;          : &#39;https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/recordings&#39;,</span>
+<span class="c1">##     &#39;startTime&#39;           : &#39;2017-01-26T16:10:11Z&#39;,</span>
+<span class="c1">##     &#39;state&#39;               : &#39;started&#39;,</span>
+<span class="c1">##     &#39;to&#39;                  : &#39;+1234567891&#39;,</span>
+<span class="c1">##     &#39;transcriptionEnabled&#39;: False,</span>
+<span class="c1">##     &#39;transcriptions&#39;      : &#39;https://api.../v1/users/u-abc/calls/c-abc123/transcriptions&#39;}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="get-call">
+<h2>get_call<a class="headerlink" href="#get-call" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.get_call">
+<code class="descclassname">Client.</code><code class="descname">get_call</code><span class="sig-paren">(</span><em>call_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.get_call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get information about a call</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>call_id</strong> (<em>str</em>) &#8211; id of a call</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">call information</td>
+</tr>
+</tbody>
+</table>
+<p>Fetch and Print Call:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_call</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call</span><span class="p">(</span><span class="n">call_id</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_call</span><span class="p">)</span>
+<span class="c1">## {   &#39;callbackUrl&#39;         : &#39;http://yoursite.com/calls&#39;,</span>
+<span class="c1">##     &#39;direction&#39;           : &#39;out&#39;,</span>
+<span class="c1">##     &#39;events&#39;              : &#39;https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/events&#39;,</span>
+<span class="c1">##     &#39;from&#39;                : &#39;+1234567890&#39;,</span>
+<span class="c1">##     &#39;id&#39;                  : &#39;c-abc123&#39;,</span>
+<span class="c1">##     &#39;recordingEnabled&#39;    : False,</span>
+<span class="c1">##     &#39;recordingFileFormat&#39; : &#39;wav&#39;,</span>
+<span class="c1">##     &#39;recordings&#39;          : &#39;https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/recordings&#39;,</span>
+<span class="c1">##     &#39;startTime&#39;           : &#39;2017-01-26T16:10:11Z&#39;,</span>
+<span class="c1">##     &#39;state&#39;               : &#39;started&#39;,</span>
+<span class="c1">##     &#39;to&#39;                  : &#39;+1234567891&#39;,</span>
+<span class="c1">##     &#39;transcriptionEnabled&#39;: False,</span>
+<span class="c1">##     &#39;transcriptions&#39;      : &#39;https://api..../v1/users/u-abc/calls/c-abc123/transcriptions&#39;}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="update-call">
+<h2>update_call<a class="headerlink" href="#update-call" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.update_call">
+<code class="descclassname">Client.</code><code class="descname">update_call</code><span class="sig-paren">(</span><em>call_id</em>, <em>state=None</em>, <em>recording_enabled=None</em>, <em>recording_file_format=None</em>, <em>transfer_to=None</em>, <em>transfer_caller_id=None</em>, <em>whisper_audio=None</em>, <em>callback_url=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.update_call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update a call</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>call_id</strong> (<em>str</em>) &#8211; id of a call</li>
+<li><strong>state</strong> (<em>str</em>) &#8211; The call state. Possible values: rejected to reject not answer, active to answer the call,
+completed to hangup the call, transferring to start and connect call to a new outbound call.</li>
+<li><strong>recording_enabled</strong> (<em>bool</em>) &#8211; Indicates if the call should be recorded.             Values true or false. You can turn recording on/off and have multiple recordings on a single call.</li>
+<li><strong>recording_file_format</strong> (<em>str</em>) &#8211; The file format of the recorded call.             Supported values are wav (default) and mp3.</li>
+<li><strong>transfer_to</strong> (<em>str</em>) &#8211; Phone number or SIP address that the call is going to be transferred to.</li>
+<li><strong>transfer_caller_id</strong> (<em>str</em>) &#8211; This is the caller id that will be used when the call is transferred.</li>
+<li><strong>whisper_audio</strong> (<em>dict</em>) &#8211; Audio to be played to the caller that the call will be transferred to.</li>
+<li><strong>callback_url</strong> (<em>str</em>) &#8211; The server URL where the call events for the new call will be sent upon transferring.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Update call with state = completed. (Hang up the call):</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_call</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call</span><span class="p">(</span><span class="n">call_id</span><span class="p">)</span>
+<span class="n">my_call_state</span> <span class="o">=</span> <span class="n">my_call</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">]</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_call_state</span><span class="p">)</span>
+<span class="c1">## started</span>
+
+<span class="n">api</span><span class="o">.</span><span class="n">update_call</span><span class="p">(</span><span class="n">my_call</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">state</span><span class="o">=</span><span class="s1">&#39;completed&#39;</span><span class="p">)</span>
+
+<span class="n">my_call</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call</span><span class="p">(</span><span class="n">my_call</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_call</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">])</span>
+<span class="c1">## completed</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="play-audio-to-call">
+<h2>play_audio_to_call<a class="headerlink" href="#play-audio-to-call" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.play_audio_to_call">
+<code class="descclassname">Client.</code><code class="descname">play_audio_to_call</code><span class="sig-paren">(</span><em>call_id</em>, <em>file_url=None</em>, <em>sentence=None</em>, <em>gender=None</em>, <em>locale=None</em>, <em>voice=None</em>, <em>loop_enabled=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.play_audio_to_call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Play audio to a call</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>call_id</strong> (<em>str</em>) &#8211; id of a call</li>
+<li><strong>file_url</strong> (<em>str</em>) &#8211; The location of an audio file to play (WAV and MP3 supported).</li>
+<li><strong>sentence</strong> (<em>str</em>) &#8211; The sentence to speak.</li>
+<li><strong>gender</strong> (<em>str</em>) &#8211; The gender of the voice used to synthesize the sentence.</li>
+<li><strong>locale</strong> (<em>str</em>) &#8211; The locale used to get the accent of the voice used to synthesize the sentence.</li>
+<li><strong>voice</strong> (<em>str</em>) &#8211; The voice to speak the sentence.</li>
+<li><strong>loop_enabled</strong> (<em>bool</em>) &#8211; When value is true, the audio will keep playing in a loop.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Play audio in file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">play_audio_to_call</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">,</span> <span class="n">fileUrl</span><span class="o">=</span> <span class="s1">&#39;http://host/path/file.mp3&#39;</span><span class="p">)</span>
+<span class="n">api</span><span class="o">.</span><span class="n">play_audio_to_call</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">,</span> <span class="n">sentence</span><span class="o">=</span><span class="s1">&#39;Press 0 to complete call&#39;</span><span class="p">,</span> <span class="n">gender</span><span class="o">=</span><span class="s1">&#39;female&#39;</span><span class="p">)</span>
+<span class="c1"># or with extension methods</span>
+<span class="n">api</span><span class="o">.</span><span class="n">play_audio_file_to_call</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">,</span> <span class="s1">&#39;http://host/path/file.mp3&#39;</span><span class="p">)</span>
+<span class="n">api</span><span class="o">.</span><span class="n">speak_sentence_to_call</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">,</span> <span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="send-dtmf-to-call">
+<h2>send_dtmf_to_call<a class="headerlink" href="#send-dtmf-to-call" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.send_dtmf_to_call">
+<code class="descclassname">Client.</code><code class="descname">send_dtmf_to_call</code><span class="sig-paren">(</span><em>call_id</em>, <em>dtmf_out</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.send_dtmf_to_call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send DTMF (phone keypad digit presses).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>call_id</strong> (<em>str</em>) &#8211; id of a call</li>
+<li><strong>dtmf_out</strong> (<em>str</em>) &#8211; String containing the DTMF characters to be sent in a call.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Send Digits to call:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">send_dtmf_to_cal</span><span class="p">(</span><span class="s1">&#39;c-callId&#39;</span><span class="p">,</span> <span class="s1">&#39;1234&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="list-call-recordings">
+<h2>list_call_recordings<a class="headerlink" href="#list-call-recordings" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.list_call_recordings">
+<code class="descclassname">Client.</code><code class="descname">list_call_recordings</code><span class="sig-paren">(</span><em>call_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.list_call_recordings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of recordings of a call</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>call_id</strong> (<em>str</em>) &#8211; id of a call</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">types.GeneratorType</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of recordings</td>
+</tr>
+</tbody>
+</table>
+<p>Fetch all call recordings for a call:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="nb">list</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call_recordings</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="list-call-transcriptions">
+<h2>list_call_transcriptions<a class="headerlink" href="#list-call-transcriptions" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.list_call_transcriptions">
+<code class="descclassname">Client.</code><code class="descname">list_call_transcriptions</code><span class="sig-paren">(</span><em>call_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.list_call_transcriptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of transcriptions of a call</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>call_id</strong> (<em>str</em>) &#8211; id of a call</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">types.GeneratorType</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of transcriptions</td>
+</tr>
+</tbody>
+</table>
+<p>Get all transcriptions for calls:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="nb">list</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call_transcriptions</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="list-call-events">
+<h2>list_call_events<a class="headerlink" href="#list-call-events" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.list_call_events">
+<code class="descclassname">Client.</code><code class="descname">list_call_events</code><span class="sig-paren">(</span><em>call_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.list_call_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of events of a call</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>call_id</strong> (<em>str</em>) &#8211; id of a call</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">types.GeneratorType</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of events</td>
+</tr>
+</tbody>
+</table>
+<p>Fetch all events for calls:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="nb">list</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call_events</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="get-call-event">
+<h2>get_call_event<a class="headerlink" href="#get-call-event" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.get_call_event">
+<code class="descclassname">Client.</code><code class="descname">get_call_event</code><span class="sig-paren">(</span><em>call_id</em>, <em>event_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.get_call_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an event of a call</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>call_id</strong> (<em>str</em>) &#8211; id of a call</li>
+<li><strong>event_id</strong> (<em>str</em>) &#8211; id of an event</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">dict</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">data of event</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Fetch information on a specific event:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call_event</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">,</span> <span class="s1">&#39;eventId&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="create-call-gather">
+<h2>create_call_gather<a class="headerlink" href="#create-call-gather" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.create_call_gather">
+<code class="descclassname">Client.</code><code class="descname">create_call_gather</code><span class="sig-paren">(</span><em>call_id</em>, <em>max_digits=None</em>, <em>inter_digit_timeout=None</em>, <em>terminating_digits=None</em>, <em>tag=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.create_call_gather" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a gather for a call</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>call_id</strong> (<em>str</em>) &#8211; id of a call</li>
+<li><strong>max_digits</strong> (<em>int</em>) &#8211; The maximum number of digits to collect, not including terminating digits (maximum 30).</li>
+<li><strong>inter_digit_timeout</strong> (<em>int</em>) &#8211; Stop gathering if a DTMF digit is not detected in this many seconds
+(default 5.0; maximum 30.0).</li>
+<li><strong>terminating_digits</strong> (<em>str</em>) &#8211; A string of DTMF digits that end the gather operation immediately
+if any one of them is detected</li>
+<li><strong>tag</strong> (<em>str</em>) &#8211; A string you choose that will be included with the response and events for
+this gather operation.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">str</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">id of create of gather</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Create gather for only single digit:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">gather_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_call_gather</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">,</span> <span class="n">max_digits</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="get-call-gather">
+<h2>get_call_gather<a class="headerlink" href="#get-call-gather" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.get_call_gather">
+<code class="descclassname">Client.</code><code class="descname">get_call_gather</code><span class="sig-paren">(</span><em>call_id</em>, <em>gather_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.get_call_gather" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a gather of a call</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>call_id</strong> (<em>str</em>) &#8211; id of a call</li>
+<li><strong>gather_id</strong> (<em>str</em>) &#8211; id of a gather</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">dict</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">data of gather</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Get Gather information for a previously created gather:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call_gather</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">,</span> <span class="s1">&#39;gatherId&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="update-call-gather">
+<h2>update_call_gather<a class="headerlink" href="#update-call-gather" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.update_call_gather">
+<code class="descclassname">Client.</code><code class="descname">update_call_gather</code><span class="sig-paren">(</span><em>call_id</em>, <em>gather_id</em>, <em>state=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.update_call_gather" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update a gather of a call</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>call_id</strong> (<em>str</em>) &#8211; id of a call</li>
+<li><strong>gather_id</strong> (<em>str</em>) &#8211; id of a gather</li>
+<li><strong>state</strong> (<em>str</em>) &#8211; The only update allowed is state:completed to stop the gather.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>End gather:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">update_call_gather</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">,</span> <span class="s1">&#39;gatherId&#39;</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="s1">&#39;completed&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="answer-call">
+<h2>answer_call<a class="headerlink" href="#answer-call" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.answer_call">
+<code class="descclassname">Client.</code><code class="descname">answer_call</code><span class="sig-paren">(</span><em>call_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.answer_call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Answer incoming call</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>call_id</strong> (<em>str</em>) &#8211; id of a call</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Answer incoming call:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">answer_call</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="reject-call">
+<h2>reject_call<a class="headerlink" href="#reject-call" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.reject_call">
+<code class="descclassname">Client.</code><code class="descname">reject_call</code><span class="sig-paren">(</span><em>call_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.reject_call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reject incoming call</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>call_id</strong> (<em>str</em>) &#8211; id of a call</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Reject incoming call:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">reject_call</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="hangup-call">
+<h2>hangup_call<a class="headerlink" href="#hangup-call" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.hangup_call">
+<code class="descclassname">Client.</code><code class="descname">hangup_call</code><span class="sig-paren">(</span><em>call_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.hangup_call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complete active call</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>call_id</strong> (<em>str</em>) &#8211; id of a call</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Hangup call:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">hangup_call</span><span class="p">(</span><span class="s1">&#39;callId&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="enable-call-recording">
+<h2>enable_call_recording<a class="headerlink" href="#enable-call-recording" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.enable_call_recording">
+<code class="descclassname">Client.</code><code class="descname">enable_call_recording</code><span class="sig-paren">(</span><em>call_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.enable_call_recording" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn on call recording</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>call_id</strong> (<em>str</em>) &#8211; id of a call</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Enable Call Recording:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">enable_call_recording</span><span class="p">(</span><span class="s1">&#39;c-callId&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="disable-call-recording">
+<h2>disable_call_recording<a class="headerlink" href="#disable-call-recording" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.disable_call_recording">
+<code class="descclassname">Client.</code><code class="descname">disable_call_recording</code><span class="sig-paren">(</span><em>call_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.disable_call_recording" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn off call recording</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>call_id</strong> (<em>str</em>) &#8211; id of a call</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Disable Call Recording:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">disable_call_recording</span><span class="p">(</span><span class="s1">&#39;c-callId&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="toggle-call-recording">
+<h2>toggle_call_recording<a class="headerlink" href="#toggle-call-recording" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.toggle_call_recording">
+<code class="descclassname">Client.</code><code class="descname">toggle_call_recording</code><span class="sig-paren">(</span><em>call_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.toggle_call_recording" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetches the current call state and either toggles recording on or off</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>call_id</strong> (<em>str</em>) &#8211; id of the call to toggle</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Toggle the call recording:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_call_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_call</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="s1">&#39;+19192223333&#39;</span><span class="p">,</span> <span class="n">from_</span><span class="o">=</span><span class="s1">&#39;+18281114444&#39;</span><span class="p">)</span>
+<span class="n">my_call</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call</span><span class="p">(</span><span class="n">my_call_id</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_call</span><span class="p">[</span><span class="s1">&#39;recordingEnabled&#39;</span><span class="p">])</span>
+<span class="c1">## False</span>
+
+<span class="n">api</span><span class="o">.</span><span class="n">toggle_call_recording</span><span class="p">(</span><span class="n">my_call_id</span><span class="p">)</span>
+<span class="n">my_call</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call</span><span class="p">(</span><span class="n">my_call_id</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_call</span><span class="p">[</span><span class="s1">&#39;recordingEnabled&#39;</span><span class="p">])</span>
+<span class="c1">## True</span>
+
+<span class="n">api</span><span class="o">.</span><span class="n">toggle_call_recording</span><span class="p">(</span><span class="n">my_call_id</span><span class="p">)</span>
+<span class="n">my_call</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call</span><span class="p">(</span><span class="n">my_call_id</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_call</span><span class="p">[</span><span class="s1">&#39;recordingEnabled&#39;</span><span class="p">])</span>
+<span class="c1">## False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="transfer-call">
+<h2>transfer_call<a class="headerlink" href="#transfer-call" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.transfer_call">
+<code class="descclassname">Client.</code><code class="descname">transfer_call</code><span class="sig-paren">(</span><em>call_id</em>, <em>to</em>, <em>caller_id=None</em>, <em>whisper_audio=None</em>, <em>callback_url=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.transfer_call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transfer a call</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>call_id</strong> (<em>str</em>) &#8211; id of a call</li>
+<li><strong>to</strong> (<em>str</em>) &#8211; number that the call is going to be transferred to.</li>
+<li><strong>caller_id</strong> (<em>str</em>) &#8211; caller id that will be used when the call is transferred</li>
+<li><strong>whisper_audio</strong> (<em>dict</em>) &#8211; audio to be played to the caller that the call will be transferred to</li>
+<li><strong>callback_url</strong> (<em>str</em>) &#8211; URL where the call events for the new call will be sent upon transferring</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns str:</th><td class="field-body"><p class="first last">id of created call</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Transfer with whisper:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_sentence</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">build_sentence</span><span class="p">(</span><span class="n">sentence</span> <span class="o">=</span> <span class="s2">&quot;Hello from Bandwidth&quot;</span><span class="p">,</span>
+                     <span class="n">gender</span><span class="o">=</span><span class="s2">&quot;Female&quot;</span><span class="p">,</span>
+                     <span class="n">locale</span><span class="o">=</span><span class="s2">&quot;en_UK&quot;</span><span class="p">,</span>
+                     <span class="n">voice</span><span class="o">=</span><span class="s2">&quot;Bridget&quot;</span><span class="p">,</span>
+                     <span class="n">loop_enabled</span><span class="o">=</span><span class="bp">True</span>
+                    <span class="p">)</span>
+<span class="n">my_call</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call</span><span class="p">(</span><span class="s1">&#39;c-callId&#39;</span><span class="p">)</span>
+<span class="n">api</span><span class="o">.</span><span class="n">transfer_call</span><span class="p">(</span><span class="s1">&#39;c-callId&#39;</span><span class="p">,</span> <span class="n">to</span> <span class="o">=</span> <span class="s1">&#39;+1234564890&#39;</span><span class="p">,</span> <span class="n">caller_id</span> <span class="o">=</span> <span class="n">my_call</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">],</span> <span class="n">whisper_audio</span> <span class="o">=</span> <span class="n">my_sentence</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>Example: Transfer with whisper audio playback:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_audio</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">build_audio_playback</span><span class="p">(</span><span class="s1">&#39;http://my_site.com/file.mp3&#39;</span><span class="p">,</span> <span class="n">loop_enabled</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">my_call</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call</span><span class="p">(</span><span class="s1">&#39;c-callId&#39;</span><span class="p">)</span>
+<span class="n">api</span><span class="o">.</span><span class="n">transfer_call</span><span class="p">(</span><span class="s1">&#39;c-callId&#39;</span><span class="p">,</span> <span class="n">to</span> <span class="o">=</span> <span class="s1">&#39;+1234564890&#39;</span><span class="p">,</span> <span class="n">whisper_audio</span> <span class="o">=</span> <span class="n">my_audio</span> <span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="messages.html" class="btn btn-neutral float-right" title="Messages" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="modules.html" class="btn btn-neutral" title="Methods" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Bandwidth App Platform.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.6-stable',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

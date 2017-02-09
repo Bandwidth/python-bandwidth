@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Test Suite &mdash; bandwidth_sdk 1.0.6-stable documentation</title>
+  <title>Transcriptions &mdash; bandwidth_sdk 1.0.6-stable documentation</title>
   
 
   
@@ -31,8 +31,9 @@
 
   
     <link rel="top" title="bandwidth_sdk 1.0.6-stable documentation" href="index.html"/>
-        <link rel="next" title="Contributing and Reporting Bugs" href="contribute.html"/>
-        <link rel="prev" title="Transcriptions" href="transcriptions.html"/> 
+        <link rel="up" title="Methods" href="modules.html"/>
+        <link rel="next" title="Test Suite" href="tests.html"/>
+        <link rel="prev" title="Recordings" href="recordings.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -83,7 +84,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">Methods</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Methods</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="calls.html">Calls</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="calls.html#list-calls">list_calls</a></li>
 <li class="toctree-l3"><a class="reference internal" href="calls.html#create-call">create_call</a></li>
@@ -203,15 +204,15 @@
 <li class="toctree-l3"><a class="reference internal" href="recordings.html#get-recording">get_recording</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="transcriptions.html">Transcriptions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="transcriptions.html#list-transcriptions">list_transcriptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="transcriptions.html#create-transcription">create_transcription</a></li>
-<li class="toctree-l3"><a class="reference internal" href="transcriptions.html#get-transcription">get_transcription</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Transcriptions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#list-transcriptions">list_transcriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-transcription">create_transcription</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-transcription">get_transcription</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Test Suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">Test Suite</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing and Reporting Bugs</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="contribute.html#submitting-bug-reports">Submitting Bug Reports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contribute.html#contributing">Contributing</a></li>
@@ -241,11 +242,13 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>Test Suite</li>
+          <li><a href="modules.html">Methods</a> &raquo;</li>
+      
+    <li>Transcriptions</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/tests.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/transcriptions.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -254,15 +257,126 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="test-suite">
-<h1>Test Suite<a class="headerlink" href="#test-suite" title="Permalink to this headline">¶</a></h1>
-<p>To run the test suite use the provided commands in the makefile:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>make req &amp;&amp; make test
+  <div class="section" id="transcriptions">
+<h1>Transcriptions<a class="headerlink" href="#transcriptions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="list-transcriptions">
+<h2>list_transcriptions<a class="headerlink" href="#list-transcriptions" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.list_transcriptions">
+<code class="descclassname">Client.</code><code class="descname">list_transcriptions</code><span class="sig-paren">(</span><em>recording_id</em>, <em>size=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.list_transcriptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of transcriptions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>recording_id</strong> (<em>str</em>) &#8211; id of a recording</li>
+<li><strong>size</strong> (<em>int</em>) &#8211; Used for pagination to indicate the size of each page requested for querying a list
+of items. If no value is specified the default value is 25. (Maximum value 1000)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">types.GeneratorType</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list of transcriptions</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Print off all transcriptions for a recording:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">transcriptions_list</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">list_transcriptions</span><span class="p">(</span><span class="s1">&#39;recordingId&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">transcriptions_list</span><span class="p">))</span>
+<span class="c1">## [</span>
+<span class="c1">##     {</span>
+<span class="c1">##         &#39;chargeableDuration&#39;: 60,</span>
+<span class="c1">##         &#39;id&#39;: &#39;{transcription-id}&#39;,</span>
+<span class="c1">##         &#39;state&#39;: &#39;completed&#39;,</span>
+<span class="c1">##         &#39;time&#39;: &#39;2014-10-09T12:09:16Z&#39;,</span>
+<span class="c1">##         &#39;text&#39;: &#39;{transcription-text}&#39;,</span>
+<span class="c1">##         &#39;textSize&#39;: 3627,</span>
+<span class="c1">##         &#39;textUrl&#39;: &#39;{url-to-full-text}&#39;</span>
+<span class="c1">##     },</span>
+<span class="c1">##     {</span>
+<span class="c1">##         &#39;chargeableDuration&#39;: 60,</span>
+<span class="c1">##         &#39;id&#39;: &#39;{transcription-id}&#39;,</span>
+<span class="c1">##         &#39;state&#39;: &#39;completed&#39;,</span>
+<span class="c1">##         &#39;text&#39;: &#39;{transcription-text}&#39;,</span>
+<span class="c1">##         &#39;time&#39;: &#39;2014-10-09T14:04:44Z&#39;,</span>
+<span class="c1">##         &#39;textSize&#39;: 72,</span>
+<span class="c1">##         &#39;textUrl&#39;: &#39;{url-to-full-text}&#39;</span>
+<span class="c1">##     }</span>
+<span class="c1">## ]</span>
 </pre></div>
 </div>
-<p>or:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>make req &amp;&amp; make local_test
+</dd></dl>
+
+</div>
+<div class="section" id="create-transcription">
+<h2>create_transcription<a class="headerlink" href="#create-transcription" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.create_transcription">
+<code class="descclassname">Client.</code><code class="descname">create_transcription</code><span class="sig-paren">(</span><em>recording_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.create_transcription" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a transcirption for given recording</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recording_id</strong> (<em>str</em>) &#8211; id of a recording</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">id of created transcription</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Create new transcription from existing recording:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">transcription_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_transcirption</span><span class="p">(</span><span class="s1">&#39;recordingId&#39;</span><span class="p">)</span>
 </pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="get-transcription">
+<h2>get_transcription<a class="headerlink" href="#get-transcription" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.get_transcription">
+<code class="descclassname">Client.</code><code class="descname">get_transcription</code><span class="sig-paren">(</span><em>recording_id</em>, <em>transcription_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.get_transcription" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get information about a transcription</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>recording_id</strong> (<em>str</em>) &#8211; id of a recording</li>
+<li><strong>id</strong> (<em>str</em>) &#8211; id of a transcription</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">dict</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">application information</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Fetch a single transcription on a recording:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_transcription</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_transcription</span><span class="p">(</span><span class="s1">&#39;recordingId&#39;</span><span class="p">,</span> <span class="s1">&#39;transcriptionId&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_transcription</span><span class="p">)</span>
+<span class="c1">## {</span>
+<span class="c1">##     &#39;chargeableDuration&#39;: 11,</span>
+<span class="c1">##     &#39;id&#39;                : &#39;{transcriptionId}&#39;,</span>
+<span class="c1">##     &#39;state&#39;             : &#39;completed&#39;,</span>
+<span class="c1">##     &#39;text&#39;              : &#39;Hey there, I was calling to talk about plans for this saturday. &#39;,</span>
+<span class="c1">##     &#39;textSize&#39;          : 63,</span>
+<span class="c1">##     &#39;textUrl&#39;           : &#39;https://api.catapult.inetwork.com/.../media/{transcriptionId}&#39;,</span>
+<span class="c1">##     &#39;time&#39;              : &#39;2014-12-23T23:08:59Z&#39;</span>
+<span class="c1">## }</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 </div>
 
@@ -272,10 +386,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="contribute.html" class="btn btn-neutral float-right" title="Contributing and Reporting Bugs" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="tests.html" class="btn btn-neutral float-right" title="Test Suite" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="transcriptions.html" class="btn btn-neutral" title="Transcriptions" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="recordings.html" class="btn btn-neutral" title="Recordings" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

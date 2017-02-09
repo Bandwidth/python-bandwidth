@@ -1,0 +1,580 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Numbers &mdash; bandwidth_sdk 1.0.6-stable documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="bandwidth_sdk 1.0.6-stable documentation" href="index.html"/>
+        <link rel="up" title="Methods" href="modules.html"/>
+        <link rel="next" title="Recordings" href="recordings.html"/>
+        <link rel="prev" title="Media" href="media.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="index.html" class="icon icon-home"> bandwidth_sdk
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#client-initialization">Client Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#code-samples">Code Samples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#phone-numbers">Phone Numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#calling">Calling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#messaging">Messaging</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Methods</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="calls.html">Calls</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#list-calls">list_calls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#create-call">create_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#get-call">get_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#update-call">update_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#play-audio-to-call">play_audio_to_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#send-dtmf-to-call">send_dtmf_to_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#list-call-recordings">list_call_recordings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#list-call-transcriptions">list_call_transcriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#list-call-events">list_call_events</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#get-call-event">get_call_event</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#create-call-gather">create_call_gather</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#get-call-gather">get_call_gather</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#update-call-gather">update_call_gather</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#answer-call">answer_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#reject-call">reject_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#hangup-call">hangup_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#enable-call-recording">enable_call_recording</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#disable-call-recording">disable_call_recording</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#toggle-call-recording">toggle_call_recording</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#transfer-call">transfer_call</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="messages.html">Messages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="messages.html#list-messages">list_messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="messages.html#send-message">send_message</a></li>
+<li class="toctree-l3"><a class="reference internal" href="messages.html#send-messages">send_messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="messages.html#get-message">get_message</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="conferences.html">Conferences</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#create-conference">create_conference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#get-conference">get_conference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#update-conference">update_conference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#play-audio-to-conference">play_audio_to_conference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#list-conference-members">list_conference_members</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#create-conference-member">create_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#get-conference-member">get_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#update-conference-member">update_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#play-audio-to-conference-member">play_audio_to_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#speak-sentence-to-conference-member">speak_sentence_to_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#play-audio-file-to-conference-member">play_audio_file_to_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#remove-conference-member">remove_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#hold-conference-member">hold_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#mute-conference-member">mute_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#terminate-conference">terminate_conference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#hold-conference">hold_conference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#mute-conference">mute_conference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="account.html">Account</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="account.html#get-account">get_account</a></li>
+<li class="toctree-l3"><a class="reference internal" href="account.html#get-account-transactions">get_account_transactions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="applications.html">Applications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#list-applications">list_applications</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#create-application">create_application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#get-application">get_application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#delete-application">delete_application</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="available_numbers.html">Available Numbers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="available_numbers.html#search-available-local-numbers">search_available_local_numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="available_numbers.html#search-available-toll-free-numbers">search_available_toll_free_numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="available_numbers.html#search-and-order-local-numbers">search_and_order_local_numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="available_numbers.html#search-and-order-toll-free-numbers">search_and_order_toll_free_numbers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bridges.html">Bridges</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bridges.html#list-bridges">list_bridges</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bridges.html#create-bridge">create_bridge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bridges.html#get-bridge">get_bridge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bridges.html#update-bridge">update_bridge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bridges.html#list-bridge-calls">list_bridge_calls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bridges.html#play-audio-to-bridge">play_audio_to_bridge</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="domains.html">Domains</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="domains.html#list-domains">list_domains</a></li>
+<li class="toctree-l3"><a class="reference internal" href="domains.html#create-domain">create_domain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="domains.html#get-domain">get_domain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="domains.html#delete-domain">delete_domain</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="endpoints.html">Endpoints</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="endpoints.html#list-domain-endpoints">list_domain_endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="endpoints.html#create-domain-endpoint">create_domain_endpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="endpoints.html#get-domain-endpoint">get_domain_endpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="endpoints.html#update-domain-endpoint">update_domain_endpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="endpoints.html#delete-domain-endpoint">delete_domain_endpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="endpoints.html#create-domain-endpoint-auth-token">create_domain_endpoint_auth_token</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="errors.html">Errors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="errors.html#list-errors">list_errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="errors.html#get-error">get_error</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="media.html">Media</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="media.html#list-media-files">list_media_files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="media.html#upload-media-file">upload_media_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="media.html#download-media-file">download_media_file</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Numbers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#get-number-info">get_number_info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#list-phone-numbers">list_phone_numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#order-phone-number">order_phone_number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-phone-number">get_phone_number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#update-phone-number">update_phone_number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#delete-phone-number">delete_phone_number</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="recordings.html">Recordings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="recordings.html#list-recordings">list_recordings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recordings.html#get-recording">get_recording</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="transcriptions.html">Transcriptions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="transcriptions.html#list-transcriptions">list_transcriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="transcriptions.html#create-transcription">create_transcription</a></li>
+<li class="toctree-l3"><a class="reference internal" href="transcriptions.html#get-transcription">get_transcription</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">Test Suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing and Reporting Bugs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contribute.html#submitting-bug-reports">Submitting Bug Reports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contribute.html#contributing">Contributing</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">bandwidth_sdk</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="modules.html">Methods</a> &raquo;</li>
+      
+    <li>Numbers</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/numbers.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="numbers">
+<h1>Numbers<a class="headerlink" href="#numbers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="get-number-info">
+<h2>get_number_info<a class="headerlink" href="#get-number-info" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.get_number_info">
+<code class="descclassname">Client.</code><code class="descname">get_number_info</code><span class="sig-paren">(</span><em>number</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.get_number_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets CNAM information about phone number</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>number</strong> (<em>str</em>) &#8211; phone number to get information</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">CNAM information</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Get Number information:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_number_info</span><span class="p">(</span><span class="s1">&#39;+1234567890&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="c1">## {   &#39;created&#39;: &#39;2017-02-10T09:11:50Z&#39;,</span>
+<span class="c1">##     &#39;name&#39;       : &#39;RALEIGH, NC&#39;,</span>
+<span class="c1">##     &#39;number&#39;     : &#39;+1234567890&#39;,</span>
+<span class="c1">##     &#39;updated&#39;    : &#39;2017-02-10T09:11:50Z&#39;}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="list-phone-numbers">
+<h2>list_phone_numbers<a class="headerlink" href="#list-phone-numbers" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.list_phone_numbers">
+<code class="descclassname">Client.</code><code class="descname">list_phone_numbers</code><span class="sig-paren">(</span><em>application_id=None</em>, <em>state=None</em>, <em>name=None</em>, <em>city=None</em>, <em>number_state=None</em>, <em>size=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.list_phone_numbers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of user&#8217;s phone numbers</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>application_id</strong> (<em>str</em>) &#8211; Used to filter the retrieved list of numbers by an associated application ID.</li>
+<li><strong>state</strong> (<em>str</em>) &#8211; Used to filter the retrieved list of numbers allocated for the authenticated
+user by a US state.</li>
+<li><strong>name</strong> (<em>str</em>) &#8211; Used to filter the retrieved list of numbers allocated for the authenticated
+user by it&#8217;s name.</li>
+<li><strong>city</strong> (<em>str</em>) &#8211; Used to filter the retrieved list of numbers allocated for the authenticated user
+by it&#8217;s city.</li>
+<li><strong>number_state</strong> (<em>str</em>) &#8211; Used to filter the retrieved list of numbers allocated for the authenticated user
+by the number state.</li>
+<li><strong>size</strong> (<em>str</em>) &#8211; Used for pagination to indicate the size of each page requested for querying a list
+of items. If no value is specified the default value is 25. (Maximum value 1000)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">types.GeneratorType</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list of phone numbers</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: List all phone numbers:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">number_list</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">list_phone_numbers</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">number_list</span><span class="p">))</span>
+<span class="c1">## [</span>
+<span class="c1">##     {</span>
+<span class="c1">##         &#39;city&#39;          :&#39;RALEIGH&#39;,</span>
+<span class="c1">##         &#39;createdTime&#39;   :&#39;2017-02-06T18:41:37Z&#39;,</span>
+<span class="c1">##         &#39;id&#39;            :&#39;n-n123&#39;,</span>
+<span class="c1">##         &#39;name&#39;          :&#39;demo name&#39;,</span>
+<span class="c1">##         &#39;nationalNumber&#39;:&#39;(919) 555-5346&#39;,</span>
+<span class="c1">##         &#39;number&#39;        :&#39;+19195555346&#39;,</span>
+<span class="c1">##         &#39;numberState&#39;   :&#39;enabled&#39;,</span>
+<span class="c1">##         &#39;price&#39;         :&#39;0.35&#39;,</span>
+<span class="c1">##         &#39;state&#39;         :&#39;NC&#39;</span>
+<span class="c1">##     },</span>
+<span class="c1">##     {</span>
+<span class="c1">##         &#39;city&#39;          :&#39;RALEIGH&#39;,</span>
+<span class="c1">##         &#39;createdTime&#39;   :&#39;2017-02-06T18:41:56Z&#39;,</span>
+<span class="c1">##         &#39;id&#39;            :&#39;n-n1234&#39;,</span>
+<span class="c1">##         &#39;name&#39;          :&#39;demo name&#39;,</span>
+<span class="c1">##         &#39;nationalNumber&#39;:&#39;(919) 555-5378&#39;,</span>
+<span class="c1">##         &#39;number&#39;        :&#39;+19195555378&#39;,</span>
+<span class="c1">##         &#39;numberState&#39;   :&#39;enabled&#39;,</span>
+<span class="c1">##         &#39;price&#39;         :&#39;0.35&#39;,</span>
+<span class="c1">##         &#39;state&#39;         :&#39;NC&#39;</span>
+<span class="c1">##     }</span>
+<span class="c1">## ]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="order-phone-number">
+<h2>order_phone_number<a class="headerlink" href="#order-phone-number" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.order_phone_number">
+<code class="descclassname">Client.</code><code class="descname">order_phone_number</code><span class="sig-paren">(</span><em>number=None</em>, <em>name=None</em>, <em>application_id=None</em>, <em>fallback_number=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.order_phone_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allocates a number so user can use it to make and receive calls and send
+and receive messages.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>number</strong> (<em>str</em>) &#8211; An available telephone number you want to use</li>
+<li><strong>name</strong> (<em>str</em>) &#8211; A name you choose for this number.</li>
+<li><strong>application_id</strong> (<em>str</em>) &#8211; The unique id of an Application you want to associate with this number.</li>
+<li><strong>fallback_number</strong> (<em>str</em>) &#8211; Number to transfer an incoming call when the callback/fallback events can&#8217;t
+be delivered.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">str</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">id of created phone number</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Order Number:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">number_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_phone_number</span><span class="p">(</span><span class="n">number</span><span class="o">=</span><span class="s1">&#39;+1234567890&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">number_id</span><span class="p">)</span>
+<span class="c1"># n-asdf123</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="get-phone-number">
+<h2>get_phone_number<a class="headerlink" href="#get-phone-number" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.get_phone_number">
+<code class="descclassname">Client.</code><code class="descname">get_phone_number</code><span class="sig-paren">(</span><em>number_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.get_phone_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get information about a phone number</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>number_id</strong> (<em>str</em>) &#8211; id of a phone number</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">number information</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Search, order, and fetch Number information:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">available_numbers</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">search_available_local_numbers</span><span class="p">(</span><span class="n">city</span><span class="o">=</span><span class="s1">&#39;Raleigh&#39;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s1">&#39;NC&#39;</span><span class="p">)</span>
+
+<span class="n">number_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">order_phone_number</span><span class="p">(</span><span class="n">available_numbers</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;number&#39;</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="n">number_id</span><span class="p">)</span>
+<span class="c1"># n-123</span>
+
+<span class="n">my_number</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_phone_number</span><span class="p">(</span><span class="n">number_id</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_number</span><span class="p">)</span>
+<span class="c1">## {</span>
+<span class="c1">##     &#39;city&#39;          :&#39;RALEIGH&#39;,</span>
+<span class="c1">##     &#39;createdTime&#39;   :&#39;2017-02-06T18:27:14Z&#39;,</span>
+<span class="c1">##     &#39;id&#39;            :&#39;n-123&#39;,</span>
+<span class="c1">##     &#39;nationalNumber&#39;:&#39;(919) 561-5039&#39;,</span>
+<span class="c1">##     &#39;number&#39;        :&#39;+19195615039&#39;,</span>
+<span class="c1">##     &#39;numberState&#39;   :&#39;enabled&#39;,</span>
+<span class="c1">##     &#39;price&#39;         :&#39;0.35&#39;,</span>
+<span class="c1">##     &#39;state&#39;         :&#39;NC&#39;</span>
+<span class="c1">## }</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="update-phone-number">
+<h2>update_phone_number<a class="headerlink" href="#update-phone-number" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.update_phone_number">
+<code class="descclassname">Client.</code><code class="descname">update_phone_number</code><span class="sig-paren">(</span><em>number_id</em>, <em>name=None</em>, <em>application_id=None</em>, <em>fallback_number=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.update_phone_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update information about a phone number</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>number_id</strong> (<em>str</em>) &#8211; id of a phone number</li>
+<li><strong>name</strong> (<em>str</em>) &#8211; A name you choose for this number.</li>
+<li><strong>application_id</strong> (<em>str</em>) &#8211; The unique id of an Application you want to associate with this number.</li>
+<li><strong>fallback_number</strong> (<em>str</em>) &#8211; Number to transfer an incoming call when the callback/fallback events can&#8217;t
+be delivered.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Update number information:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_number</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_phone_number</span><span class="p">(</span><span class="n">number_id</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_number</span><span class="p">)</span>
+<span class="c1">## {</span>
+<span class="c1">##     &#39;city&#39;          :&#39;RALEIGH&#39;,</span>
+<span class="c1">##     &#39;createdTime&#39;   :&#39;2017-02-06T18:27:14Z&#39;,</span>
+<span class="c1">##     &#39;id&#39;            :&#39;n-123&#39;,</span>
+<span class="c1">##     &#39;nationalNumber&#39;:&#39;(919) 561-5039&#39;,</span>
+<span class="c1">##     &#39;number&#39;        :&#39;+19195615039&#39;,</span>
+<span class="c1">##     &#39;numberState&#39;   :&#39;enabled&#39;,</span>
+<span class="c1">##     &#39;price&#39;         :&#39;0.35&#39;,</span>
+<span class="c1">##     &#39;state&#39;         :&#39;NC&#39;</span>
+<span class="c1">## }</span>
+
+<span class="n">api</span><span class="o">.</span><span class="n">update_phone_number</span><span class="p">(</span><span class="n">number_id</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;demo name&#39;</span><span class="p">)</span>
+
+<span class="n">my_number</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_phone_number</span><span class="p">(</span><span class="n">number_id</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_number</span><span class="p">)</span>
+<span class="c1">## {</span>
+<span class="c1">##     &#39;id&#39;            :&#39;n-123&#39;,</span>
+<span class="c1">##     &#39;number&#39;        :&#39;+19195615039&#39;,</span>
+<span class="c1">##     &#39;nationalNumber&#39;:&#39;(919) 561-5039&#39;,</span>
+<span class="c1">##     &#39;name&#39;          :&#39;demo name&#39;,</span>
+<span class="c1">##     &#39;createdTime&#39;   :&#39;2017-02-06T18:41:56Z&#39;,</span>
+<span class="c1">##     &#39;city&#39;          :&#39;RALEIGH&#39;,</span>
+<span class="c1">##     &#39;state&#39;         :&#39;NC&#39;,</span>
+<span class="c1">##     &#39;price&#39;         :&#39;0.35&#39;,</span>
+<span class="c1">##     &#39;numberState&#39;   :&#39;enabled&#39;</span>
+<span class="c1">## }</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="delete-phone-number">
+<h2>delete_phone_number<a class="headerlink" href="#delete-phone-number" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.delete_phone_number">
+<code class="descclassname">Client.</code><code class="descname">delete_phone_number</code><span class="sig-paren">(</span><em>number_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.delete_phone_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a phone number</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>number_id</strong> (<em>str</em>) &#8211; id of a phone number</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Delete phone number (release) from account:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">delete_phone_number</span><span class="p">(</span><span class="s1">&#39;numberId&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="recordings.html" class="btn btn-neutral float-right" title="Recordings" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="media.html" class="btn btn-neutral" title="Media" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Bandwidth App Platform.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.6-stable',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

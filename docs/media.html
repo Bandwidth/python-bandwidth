@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Test Suite &mdash; bandwidth_sdk 1.0.6-stable documentation</title>
+  <title>Media &mdash; bandwidth_sdk 1.0.6-stable documentation</title>
   
 
   
@@ -31,8 +31,9 @@
 
   
     <link rel="top" title="bandwidth_sdk 1.0.6-stable documentation" href="index.html"/>
-        <link rel="next" title="Contributing and Reporting Bugs" href="contribute.html"/>
-        <link rel="prev" title="Transcriptions" href="transcriptions.html"/> 
+        <link rel="up" title="Methods" href="modules.html"/>
+        <link rel="next" title="Numbers" href="numbers.html"/>
+        <link rel="prev" title="Errors" href="errors.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -83,7 +84,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">Methods</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Methods</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="calls.html">Calls</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="calls.html#list-calls">list_calls</a></li>
 <li class="toctree-l3"><a class="reference internal" href="calls.html#create-call">create_call</a></li>
@@ -183,10 +184,10 @@
 <li class="toctree-l3"><a class="reference internal" href="errors.html#get-error">get_error</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="media.html">Media</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="media.html#list-media-files">list_media_files</a></li>
-<li class="toctree-l3"><a class="reference internal" href="media.html#upload-media-file">upload_media_file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="media.html#download-media-file">download_media_file</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Media</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#list-media-files">list_media_files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#upload-media-file">upload_media_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#download-media-file">download_media_file</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="numbers.html">Numbers</a><ul>
@@ -211,7 +212,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Test Suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">Test Suite</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing and Reporting Bugs</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="contribute.html#submitting-bug-reports">Submitting Bug Reports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contribute.html#contributing">Contributing</a></li>
@@ -241,11 +242,13 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>Test Suite</li>
+          <li><a href="modules.html">Methods</a> &raquo;</li>
+      
+    <li>Media</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/tests.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/media.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -254,15 +257,94 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="test-suite">
-<h1>Test Suite<a class="headerlink" href="#test-suite" title="Permalink to this headline">¶</a></h1>
-<p>To run the test suite use the provided commands in the makefile:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>make req &amp;&amp; make test
+  <div class="section" id="media">
+<h1>Media<a class="headerlink" href="#media" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="list-media-files">
+<h2>list_media_files<a class="headerlink" href="#list-media-files" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.list_media_files">
+<code class="descclassname">Client.</code><code class="descname">list_media_files</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.list_media_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a list of user&#8217;s media files.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">types.GeneratorType</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of media files</td>
+</tr>
+</tbody>
+</table>
+<p>Example: list media files and save any with the name <cite>dog</cite> in file name:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">media_list</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">list_media_files</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">media</span> <span class="ow">in</span> <span class="n">media_list</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s1">&#39;dog&#39;</span> <span class="ow">in</span> <span class="n">media</span><span class="p">[</span><span class="s1">&#39;mediaName&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="n">stream</span><span class="p">,</span> <span class="n">content_type</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">download_media_file</span><span class="p">(</span><span class="n">media</span><span class="p">[</span><span class="s1">&#39;mediaName&#39;</span><span class="p">])</span>
+        <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">media</span><span class="p">[</span><span class="s1">&#39;mediaName&#39;</span><span class="p">],</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="nb">file</span><span class="p">:</span>
+            <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">stream</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
 </pre></div>
 </div>
-<p>or:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>make req &amp;&amp; make local_test
+</dd></dl>
+
+</div>
+<div class="section" id="upload-media-file">
+<h2>upload_media_file<a class="headerlink" href="#upload-media-file" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.upload_media_file">
+<code class="descclassname">Client.</code><code class="descname">upload_media_file</code><span class="sig-paren">(</span><em>media_name</em>, <em>content=None</em>, <em>content_type='application/octet-stream'</em>, <em>file_path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.upload_media_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upload a file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>media_name</strong> (<em>str</em>) &#8211; name of file on bandwidth server</li>
+<li><strong>content</strong> (<em>str|buffer|bytearray|stream|file</em>) &#8211; content of file to upload (file object, string or buffer).
+Don&#8217;t use together with file_path</li>
+<li><strong>content_type</strong> (<em>str</em>) &#8211; mime type of file</li>
+<li><strong>file_path</strong> (<em>str</em>) &#8211; path to file to upload. Don&#8217;t use together with content</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Upload text file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">upload_media_file</span><span class="p">(</span><span class="s1">&#39;file1.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;content of file&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)</span>
+
+<span class="c1"># with file path</span>
+<span class="n">api</span><span class="o">.</span><span class="n">upload_media_file</span><span class="p">(</span><span class="s1">&#39;file1.txt&#39;</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="s1">&#39;/path/to/file1.txt&#39;</span><span class="p">)</span>
 </pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="download-media-file">
+<h2>download_media_file<a class="headerlink" href="#download-media-file" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.download_media_file">
+<code class="descclassname">Client.</code><code class="descname">download_media_file</code><span class="sig-paren">(</span><em>media_name</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.download_media_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download a file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>media_name</strong> (<em>str</em>) &#8211; name of file on bandwidth server</td>
+</tr>
+</tbody>
+</table>
+<p>:rtype (stream, str)
+:returns stream to file to download and mime type</p>
+<p>Example: list media files and save any with the name <cite>dog</cite> in file name:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">media_list</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_media_files</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">media</span> <span class="ow">in</span> <span class="n">media_list</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s1">&#39;dog&#39;</span> <span class="ow">in</span> <span class="n">media</span><span class="p">[</span><span class="s1">&#39;mediaName&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="n">stream</span><span class="p">,</span> <span class="n">content_type</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">download_media_file</span><span class="p">(</span><span class="n">media</span><span class="p">[</span><span class="s1">&#39;mediaName&#39;</span><span class="p">])</span>
+        <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">media</span><span class="p">[</span><span class="s1">&#39;mediaName&#39;</span><span class="p">],</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="nb">file</span><span class="p">:</span>
+            <span class="nb">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">stream</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 </div>
 
@@ -272,10 +354,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="contribute.html" class="btn btn-neutral float-right" title="Contributing and Reporting Bugs" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="numbers.html" class="btn btn-neutral float-right" title="Numbers" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="transcriptions.html" class="btn btn-neutral" title="Transcriptions" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="errors.html" class="btn btn-neutral" title="Errors" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
