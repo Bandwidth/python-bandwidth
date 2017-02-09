@@ -940,7 +940,6 @@ class Client:
         """
         return self._make_request('get', '/users/%s/applications/%s' % (self.user_id, app_id))[0]
 
-
     def update_application(self, app_id,
                            name=None,
                            incoming_call_url=None,
