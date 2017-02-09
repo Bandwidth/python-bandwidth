@@ -877,7 +877,7 @@ class Client:
 
             my_app_id = api.create_application( name                 = "MyFirstApp",
                                                 incoming_call_url    = "http://callback.com/calls",
-                                                incoming_messageUrl  = "http://callback.com/messages",
+                                                incoming_message_url  = "http://callback.com/messages",
                                                 callback_http_method = "GET")
 
             print(my_app_id)
@@ -939,6 +939,89 @@ class Client:
             ## a-1232asf123
         """
         return self._make_request('get', '/users/%s/applications/%s' % (self.user_id, app_id))[0]
+
+    def update_application(self, app_id,
+                           name=None,
+                           incoming_call_url=None,
+                           incoming_call_url_callback_timeout=None,
+                           incoming_call_fallback_url=None,
+                           incoming_message_url=None,
+                           incoming_message_url_callback_timeout=None,
+                           incoming_message_fallback_url=None,
+                           callback_http_method=None,
+                           auto_answer=None,
+                           **kwargs):
+        """
+        Updates an application that can handle calls and messages for one of your phone number.
+
+        :param str app_id: The Id of the application to upate (a-123)
+        :param str name: A name you choose for this application (required).
+        :param str incoming_call_url: A URL where call events will be sent for an inbound call.
+        :param str incoming_call_url_callback_timeout: Determine how long should the platform wait for
+            inconmingCallUrl's response before timing out in milliseconds.
+        :param str incoming_call_fallback_url: The URL used to send the callback event
+            if the request to incomingCallUrl fails.
+        :param str incoming_message_url: A URL where message events will be sent for an inbound SMS message
+        :param str incoming_message_url_callback_timeout: Determine how long should the platform wait for
+            incomingMessageUrl's response before timing out in milliseconds.
+        :param str incoming_message_fallback_url: The URL used to send the callback event if the request to
+            incomingMessageUrl fails.
+        :param str callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST.\
+            (If not set the default is HTTP POST)
+        :param str auto_answer: Determines whether or not an incoming call should be automatically answered. \
+            Default value is 'true'.
+
+        :rtype: str
+        :returns: id of created application
+
+        Example: Update Existing Application::
+
+            my_app_id = api.create_application( name                 = "MyFirstApp",
+                                                incoming_call_url    = "http://callback.com/calls",
+                                                incoming_message_url  = "http://callback.com/messages",
+                                                callback_http_method = "GET")
+
+            print(my_app_id)
+            ## a-1232asf123
+
+            my_app = api.get_application(my_app_id)
+            print(my_app)
+            {   'autoAnswer'        : True,
+                'callbackHttpMethod': 'get',
+                'id'                : 'a-1232asf123',
+                'incomingCallUrl'   : 'http://callback.com/calls',
+                'incomingMessageUrl': 'http://callback.com/messages',
+                'incomingSmsUrl'    : 'http://callback.com/messages',
+                'name'              : 'MyFirstApp'
+            }
+
+            api.update_application(my_app_id, name = "My Updated App")
+
+            my_app = api.get_application(my_app_id)
+            print(my_app)
+            {   'autoAnswer'        : True,
+                'callbackHttpMethod': 'get',
+                'id'                : 'a-1232asf123',
+                'incomingCallUrl'   : 'http://callback.com/calls',
+                'incomingMessageUrl': 'http://callback.com/messages',
+                'incomingSmsUrl'    : 'http://callback.com/messages',
+                'name'              : 'My Updated App'
+            }
+
+        """
+        kwargs["name"] = name
+        kwargs["incomingCallUrl"] = incoming_call_url
+        kwargs[
+            "incomingCallUrlCallbackTimeout"] = incoming_call_url_callback_timeout
+        kwargs["incomingCallFallbackUrl"] = incoming_call_fallback_url
+        kwargs["incomingMessageUrl"] = incoming_message_url
+        kwargs[
+            "incomingMessageUrlCallbackTimeout"] = incoming_message_url_callback_timeout
+        kwargs["incomingMessageFallbackUrl"] = incoming_message_fallback_url
+        kwargs["callbackHttpMethod"] = callback_http_method
+        kwargs["autoAnswer"] = auto_answer
+
+        self._make_request('post', '/users/%s/applications/%s' % (self.user_id, app_id), json=kwargs)
 
     def delete_application(self, app_id):
         """

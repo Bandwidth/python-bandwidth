@@ -143,6 +143,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="">Applications</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#list-applications">list_applications</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#create-application">create_application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#update-application">update_application</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#get-application">get_application</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#delete-application">delete_application</a></li>
 </ul>
@@ -344,7 +345,7 @@ incomingMessageUrl fails.</li>
 <p>Example: Create Application:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_app_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_application</span><span class="p">(</span> <span class="n">name</span>                 <span class="o">=</span> <span class="s2">&quot;MyFirstApp&quot;</span><span class="p">,</span>
                                     <span class="n">incoming_call_url</span>    <span class="o">=</span> <span class="s2">&quot;http://callback.com/calls&quot;</span><span class="p">,</span>
-                                    <span class="n">incoming_messageUrl</span>  <span class="o">=</span> <span class="s2">&quot;http://callback.com/messages&quot;</span><span class="p">,</span>
+                                    <span class="n">incoming_message_url</span>  <span class="o">=</span> <span class="s2">&quot;http://callback.com/messages&quot;</span><span class="p">,</span>
                                     <span class="n">callback_http_method</span> <span class="o">=</span> <span class="s2">&quot;GET&quot;</span><span class="p">)</span>
 
 <span class="k">print</span><span class="p">(</span><span class="n">my_app_id</span><span class="p">)</span>
@@ -363,6 +364,79 @@ incomingMessageUrl fails.</li>
 
 <span class="k">print</span><span class="p">(</span><span class="n">my_app</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
 <span class="c1">## a-1232asf123</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="update-application">
+<h2>update_application<a class="headerlink" href="#update-application" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.update_application">
+<code class="descclassname">Client.</code><code class="descname">update_application</code><span class="sig-paren">(</span><em>app_id</em>, <em>name=None</em>, <em>incoming_call_url=None</em>, <em>incoming_call_url_callback_timeout=None</em>, <em>incoming_call_fallback_url=None</em>, <em>incoming_message_url=None</em>, <em>incoming_message_url_callback_timeout=None</em>, <em>incoming_message_fallback_url=None</em>, <em>callback_http_method=None</em>, <em>auto_answer=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.update_application" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates an application that can handle calls and messages for one of your phone number.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>app_id</strong> (<em>str</em>) &#8211; The Id of the application to upate (a-123)</li>
+<li><strong>name</strong> (<em>str</em>) &#8211; A name you choose for this application (required).</li>
+<li><strong>incoming_call_url</strong> (<em>str</em>) &#8211; A URL where call events will be sent for an inbound call.</li>
+<li><strong>incoming_call_url_callback_timeout</strong> (<em>str</em>) &#8211; Determine how long should the platform wait for
+inconmingCallUrl&#8217;s response before timing out in milliseconds.</li>
+<li><strong>incoming_call_fallback_url</strong> (<em>str</em>) &#8211; The URL used to send the callback event
+if the request to incomingCallUrl fails.</li>
+<li><strong>incoming_message_url</strong> (<em>str</em>) &#8211; A URL where message events will be sent for an inbound SMS message</li>
+<li><strong>incoming_message_url_callback_timeout</strong> (<em>str</em>) &#8211; Determine how long should the platform wait for
+incomingMessageUrl&#8217;s response before timing out in milliseconds.</li>
+<li><strong>incoming_message_fallback_url</strong> (<em>str</em>) &#8211; The URL used to send the callback event if the request to
+incomingMessageUrl fails.</li>
+<li><strong>callback_http_method</strong> (<em>str</em>) &#8211; Determine if the callback event should be sent via HTTP GET or HTTP POST.            (If not set the default is HTTP POST)</li>
+<li><strong>auto_answer</strong> (<em>str</em>) &#8211; Determines whether or not an incoming call should be automatically answered.             Default value is &#8216;true&#8217;.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">str</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">id of created application</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Update Existing Application:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_app_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_application</span><span class="p">(</span> <span class="n">name</span>                 <span class="o">=</span> <span class="s2">&quot;MyFirstApp&quot;</span><span class="p">,</span>
+                                    <span class="n">incoming_call_url</span>    <span class="o">=</span> <span class="s2">&quot;http://callback.com/calls&quot;</span><span class="p">,</span>
+                                    <span class="n">incoming_message_url</span>  <span class="o">=</span> <span class="s2">&quot;http://callback.com/messages&quot;</span><span class="p">,</span>
+                                    <span class="n">callback_http_method</span> <span class="o">=</span> <span class="s2">&quot;GET&quot;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">my_app_id</span><span class="p">)</span>
+<span class="c1">## a-1232asf123</span>
+
+<span class="n">my_app</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_application</span><span class="p">(</span><span class="n">my_app_id</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_app</span><span class="p">)</span>
+<span class="p">{</span>   <span class="s1">&#39;autoAnswer&#39;</span>        <span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+    <span class="s1">&#39;callbackHttpMethod&#39;</span><span class="p">:</span> <span class="s1">&#39;get&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;id&#39;</span>                <span class="p">:</span> <span class="s1">&#39;a-1232asf123&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;incomingCallUrl&#39;</span>   <span class="p">:</span> <span class="s1">&#39;http://callback.com/calls&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;incomingMessageUrl&#39;</span><span class="p">:</span> <span class="s1">&#39;http://callback.com/messages&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;incomingSmsUrl&#39;</span>    <span class="p">:</span> <span class="s1">&#39;http://callback.com/messages&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;name&#39;</span>              <span class="p">:</span> <span class="s1">&#39;MyFirstApp&#39;</span>
+<span class="p">}</span>
+
+<span class="n">api</span><span class="o">.</span><span class="n">update_application</span><span class="p">(</span><span class="n">my_app_id</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;My Updated App&quot;</span><span class="p">)</span>
+
+<span class="n">my_app</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_application</span><span class="p">(</span><span class="n">my_app_id</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_app</span><span class="p">)</span>
+<span class="p">{</span>   <span class="s1">&#39;autoAnswer&#39;</span>        <span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+    <span class="s1">&#39;callbackHttpMethod&#39;</span><span class="p">:</span> <span class="s1">&#39;get&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;id&#39;</span>                <span class="p">:</span> <span class="s1">&#39;a-1232asf123&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;incomingCallUrl&#39;</span>   <span class="p">:</span> <span class="s1">&#39;http://callback.com/calls&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;incomingMessageUrl&#39;</span><span class="p">:</span> <span class="s1">&#39;http://callback.com/messages&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;incomingSmsUrl&#39;</span>    <span class="p">:</span> <span class="s1">&#39;http://callback.com/messages&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;name&#39;</span>              <span class="p">:</span> <span class="s1">&#39;My Updated App&#39;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </dd></dl>

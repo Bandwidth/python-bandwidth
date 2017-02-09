@@ -9,6 +9,10 @@ create_application
 ------------------
 .. automethod:: bandwidth.catapult.Client.create_application
 
+update_application
+------------------
+.. automethod:: bandwidth.catapult.Client.update_application
+
 get_application
 ------------------
 .. automethod:: bandwidth.catapult.Client.get_application
