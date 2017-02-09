@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Test Suite &mdash; bandwidth_sdk 1.0.6-stable documentation</title>
+  <title>Applications &mdash; bandwidth_sdk 1.0.6-stable documentation</title>
   
 
   
@@ -31,8 +31,9 @@
 
   
     <link rel="top" title="bandwidth_sdk 1.0.6-stable documentation" href="index.html"/>
-        <link rel="next" title="Contributing and Reporting Bugs" href="contribute.html"/>
-        <link rel="prev" title="Transcriptions" href="transcriptions.html"/> 
+        <link rel="up" title="Methods" href="modules.html"/>
+        <link rel="next" title="Available Numbers" href="available_numbers.html"/>
+        <link rel="prev" title="Account" href="account.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -83,7 +84,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">Methods</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Methods</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="calls.html">Calls</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="calls.html#list-calls">list_calls</a></li>
 <li class="toctree-l3"><a class="reference internal" href="calls.html#create-call">create_call</a></li>
@@ -139,11 +140,11 @@
 <li class="toctree-l3"><a class="reference internal" href="account.html#get-account-transactions">get_account_transactions</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="applications.html">Applications</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="applications.html#list-applications">list_applications</a></li>
-<li class="toctree-l3"><a class="reference internal" href="applications.html#create-application">create_application</a></li>
-<li class="toctree-l3"><a class="reference internal" href="applications.html#get-application">get_application</a></li>
-<li class="toctree-l3"><a class="reference internal" href="applications.html#delete-application">delete_application</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Applications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#list-applications">list_applications</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-application">create_application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-application">get_application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#delete-application">delete_application</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="available_numbers.html">Available Numbers</a><ul>
@@ -211,7 +212,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Test Suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">Test Suite</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing and Reporting Bugs</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="contribute.html#submitting-bug-reports">Submitting Bug Reports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contribute.html#contributing">Contributing</a></li>
@@ -241,11 +242,13 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>Test Suite</li>
+          <li><a href="modules.html">Methods</a> &raquo;</li>
+      
+    <li>Applications</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/tests.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/applications.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -254,15 +257,180 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="test-suite">
-<h1>Test Suite<a class="headerlink" href="#test-suite" title="Permalink to this headline">¶</a></h1>
-<p>To run the test suite use the provided commands in the makefile:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>make req &amp;&amp; make test
+  <div class="section" id="applications">
+<h1>Applications<a class="headerlink" href="#applications" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="list-applications">
+<h2>list_applications<a class="headerlink" href="#list-applications" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.list_applications">
+<code class="descclassname">Client.</code><code class="descname">list_applications</code><span class="sig-paren">(</span><em>size=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.list_applications" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of user&#8217;s applications</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>size</strong> (<em>int</em>) &#8211; Used for pagination to indicate the size of each page requested for querying a list
+of items. If no value is specified the default value is 25. (Maximum value 1000)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">types.GeneratorType</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of applications</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Fetch and print all applications:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">apps</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">list_applications</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">apps</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>or:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>make req &amp;&amp; make local_test
+<p>Example: Iterate over all applications to find specific name:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">apps</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">list_applications</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="n">app_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="k">while</span> <span class="n">app_name</span> <span class="o">!=</span> <span class="s2">&quot;MyAppName&quot;</span><span class="p">:</span>
+    <span class="n">my_app</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">apps</span><span class="p">)</span>
+    <span class="n">app_name</span> <span class="o">=</span> <span class="n">my_app</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">my_app</span><span class="p">)</span>
+
+
+<span class="c1">## {   &#39;autoAnswer&#39;: True,</span>
+<span class="c1">##     &#39;callbackHttpMethod&#39;: &#39;get&#39;,</span>
+<span class="c1">##     &#39;id&#39;: &#39;a-asdf&#39;,</span>
+<span class="c1">##     &#39;incomingCallUrl&#39;: &#39;https://test.com/callcallback/&#39;,</span>
+<span class="c1">##     &#39;incomingMessageUrl&#39;: &#39;https://test.com/msgcallback/&#39;,</span>
+<span class="c1">##     &#39;name&#39;: &#39;MyAppName&#39;</span>
+<span class="c1">## }</span>
 </pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="create-application">
+<h2>create_application<a class="headerlink" href="#create-application" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.create_application">
+<code class="descclassname">Client.</code><code class="descname">create_application</code><span class="sig-paren">(</span><em>name</em>, <em>incoming_call_url=None</em>, <em>incoming_call_url_callback_timeout=None</em>, <em>incoming_call_fallback_url=None</em>, <em>incoming_message_url=None</em>, <em>incoming_message_url_callback_timeout=None</em>, <em>incoming_message_fallback_url=None</em>, <em>callback_http_method=None</em>, <em>auto_answer=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.create_application" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an application that can handle calls and messages for one of your phone number.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>str</em>) &#8211; A name you choose for this application (required).</li>
+<li><strong>incoming_call_url</strong> (<em>str</em>) &#8211; A URL where call events will be sent for an inbound call.</li>
+<li><strong>incoming_call_url_callback_timeout</strong> (<em>str</em>) &#8211; Determine how long should the platform wait for
+inconmingCallUrl&#8217;s response before timing out in milliseconds.</li>
+<li><strong>incoming_call_fallback_url</strong> (<em>str</em>) &#8211; The URL used to send the callback event
+if the request to incomingCallUrl fails.</li>
+<li><strong>incoming_message_url</strong> (<em>str</em>) &#8211; A URL where message events will be sent for an inbound SMS message</li>
+<li><strong>incoming_message_url_callback_timeout</strong> (<em>str</em>) &#8211; Determine how long should the platform wait for
+incomingMessageUrl&#8217;s response before timing out in milliseconds.</li>
+<li><strong>incoming_message_fallback_url</strong> (<em>str</em>) &#8211; The URL used to send the callback event if the request to
+incomingMessageUrl fails.</li>
+<li><strong>callback_http_method</strong> (<em>str</em>) &#8211; Determine if the callback event should be sent via HTTP GET or HTTP POST.            (If not set the default is HTTP POST)</li>
+<li><strong>auto_answer</strong> (<em>str</em>) &#8211; Determines whether or not an incoming call should be automatically answered.             Default value is &#8216;true&#8217;.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">str</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">id of created application</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Create Application:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_app_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_application</span><span class="p">(</span> <span class="n">name</span>                 <span class="o">=</span> <span class="s2">&quot;MyFirstApp&quot;</span><span class="p">,</span>
+                                    <span class="n">incoming_call_url</span>    <span class="o">=</span> <span class="s2">&quot;http://callback.com/calls&quot;</span><span class="p">,</span>
+                                    <span class="n">incoming_messageUrl</span>  <span class="o">=</span> <span class="s2">&quot;http://callback.com/messages&quot;</span><span class="p">,</span>
+                                    <span class="n">callback_http_method</span> <span class="o">=</span> <span class="s2">&quot;GET&quot;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">my_app_id</span><span class="p">)</span>
+<span class="c1">## a-1232asf123</span>
+
+<span class="n">my_app</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_application</span><span class="p">(</span><span class="n">my_app_id</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_app</span><span class="p">)</span>
+<span class="c1">## {   &#39;autoAnswer&#39;        : True,</span>
+<span class="c1">##     &#39;callbackHttpMethod&#39;: &#39;get&#39;,</span>
+<span class="c1">##     &#39;id&#39;                : &#39;a-1232asf123&#39;,</span>
+<span class="c1">##     &#39;incomingCallUrl&#39;   : &#39;http://callback.com/calls&#39;,</span>
+<span class="c1">##     &#39;incomingMessageUrl&#39;: &#39;http://callback.com/messages&#39;,</span>
+<span class="c1">##     &#39;incomingSmsUrl&#39;    : &#39;http://callback.com/messages&#39;,</span>
+<span class="c1">##     &#39;name&#39;              : &#39;MyFirstApp2&#39;</span>
+<span class="c1">## }</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">my_app</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+<span class="c1">## a-1232asf123</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="get-application">
+<h2>get_application<a class="headerlink" href="#get-application" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.get_application">
+<code class="descclassname">Client.</code><code class="descname">get_application</code><span class="sig-paren">(</span><em>app_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.get_application" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets information about an application</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>app_id</strong> (<em>str</em>) &#8211; id of an application</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">application information</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Fetch single application:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_app</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_application</span><span class="p">(</span><span class="n">my_app_id</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_app</span><span class="p">)</span>
+<span class="c1">## {   &#39;autoAnswer&#39;: True,</span>
+<span class="c1">##     &#39;callbackHttpMethod&#39;: &#39;get&#39;,</span>
+<span class="c1">##     &#39;id&#39;: &#39;a-1232asf123&#39;,</span>
+<span class="c1">##     &#39;incomingCallUrl&#39;: &#39;http://callback.com/calls&#39;,</span>
+<span class="c1">##     &#39;incomingMessageUrl&#39;: &#39;http://callback.com/messages&#39;,</span>
+<span class="c1">##     &#39;incomingSmsUrl&#39;: &#39;http://callback.com/messages&#39;,</span>
+<span class="c1">##     &#39;name&#39;: &#39;MyFirstApp2&#39;</span>
+<span class="c1">## }</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">my_app</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+<span class="c1">## a-1232asf123</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="delete-application">
+<h2>delete_application<a class="headerlink" href="#delete-application" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.delete_application">
+<code class="descclassname">Client.</code><code class="descname">delete_application</code><span class="sig-paren">(</span><em>app_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.delete_application" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove an application</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>app_id</strong> (<em>str</em>) &#8211; id of an application</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Delete single application:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">delete_application</span><span class="p">(</span><span class="s1">&#39;a-appId&#39;</span><span class="p">)</span>
+
+<span class="k">try</span> <span class="p">:</span>
+    <span class="n">api</span><span class="o">.</span><span class="n">get_application</span><span class="p">(</span><span class="s1">&#39;a-appId&#39;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">CatapultException</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+<span class="c1">## The application a-appId could not be found</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 </div>
 
@@ -272,10 +440,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="contribute.html" class="btn btn-neutral float-right" title="Contributing and Reporting Bugs" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="available_numbers.html" class="btn btn-neutral float-right" title="Available Numbers" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="transcriptions.html" class="btn btn-neutral" title="Transcriptions" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="account.html" class="btn btn-neutral" title="Account" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

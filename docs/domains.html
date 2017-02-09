@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Test Suite &mdash; bandwidth_sdk 1.0.6-stable documentation</title>
+  <title>Domains &mdash; bandwidth_sdk 1.0.6-stable documentation</title>
   
 
   
@@ -31,8 +31,9 @@
 
   
     <link rel="top" title="bandwidth_sdk 1.0.6-stable documentation" href="index.html"/>
-        <link rel="next" title="Contributing and Reporting Bugs" href="contribute.html"/>
-        <link rel="prev" title="Transcriptions" href="transcriptions.html"/> 
+        <link rel="up" title="Methods" href="modules.html"/>
+        <link rel="next" title="Endpoints" href="endpoints.html"/>
+        <link rel="prev" title="Bridges" href="bridges.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -83,7 +84,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">Methods</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Methods</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="calls.html">Calls</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="calls.html#list-calls">list_calls</a></li>
 <li class="toctree-l3"><a class="reference internal" href="calls.html#create-call">create_call</a></li>
@@ -162,11 +163,11 @@
 <li class="toctree-l3"><a class="reference internal" href="bridges.html#play-audio-to-bridge">play_audio_to_bridge</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="domains.html">Domains</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="domains.html#list-domains">list_domains</a></li>
-<li class="toctree-l3"><a class="reference internal" href="domains.html#create-domain">create_domain</a></li>
-<li class="toctree-l3"><a class="reference internal" href="domains.html#get-domain">get_domain</a></li>
-<li class="toctree-l3"><a class="reference internal" href="domains.html#delete-domain">delete_domain</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Domains</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#list-domains">list_domains</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-domain">create_domain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-domain">get_domain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#delete-domain">delete_domain</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="endpoints.html">Endpoints</a><ul>
@@ -211,7 +212,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Test Suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">Test Suite</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing and Reporting Bugs</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="contribute.html#submitting-bug-reports">Submitting Bug Reports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contribute.html#contributing">Contributing</a></li>
@@ -241,11 +242,13 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>Test Suite</li>
+          <li><a href="modules.html">Methods</a> &raquo;</li>
+      
+    <li>Domains</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/tests.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/domains.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -254,15 +257,147 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="test-suite">
-<h1>Test Suite<a class="headerlink" href="#test-suite" title="Permalink to this headline">¶</a></h1>
-<p>To run the test suite use the provided commands in the makefile:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>make req &amp;&amp; make test
+  <div class="section" id="domains">
+<h1>Domains<a class="headerlink" href="#domains" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="list-domains">
+<h2>list_domains<a class="headerlink" href="#list-domains" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.list_domains">
+<code class="descclassname">Client.</code><code class="descname">list_domains</code><span class="sig-paren">(</span><em>size=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.list_domains" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of domains</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>size</strong> (<em>int</em>) &#8211; Used for pagination to indicate the size of each page requested for querying a list of items.             If no value is specified the default value is 25. (Maximum value 100)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">types.GeneratorType</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of domains</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Fetch domains and print:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">domain_list</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">list_domains</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">domain_list</span><span class="p">))</span>
+
+<span class="c1">## [{   &#39;endpointsUrl&#39;: &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/domains/endpoints&#39;,</span>
+<span class="c1">##     &#39;id&#39;           : &#39;rd-domainId&#39;,</span>
+<span class="c1">##     &#39;name&#39;         : &#39;siplearn1&#39;},</span>
+<span class="c1">## {   &#39;endpointsUrl&#39; : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/domains/endpoints&#39;,</span>
+<span class="c1">##     &#39;id&#39;           : &#39;rd-domainId2&#39;,</span>
+<span class="c1">##     &#39;name&#39;         : &#39;siplearn2&#39;}]</span>
 </pre></div>
 </div>
-<p>or:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>make req &amp;&amp; make local_test
+<p>Example: Search for domain based on name:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">domain_list</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">list_domains</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="n">domain_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+<span class="k">while</span> <span class="n">domain_name</span> <span class="o">!=</span> <span class="s1">&#39;My Prod Site&#39;</span><span class="p">:</span>
+    <span class="n">my_domain</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">domain_list</span><span class="p">)</span>
+    <span class="n">domain_name</span> <span class="o">=</span> <span class="n">my_domain</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">my_domain</span><span class="p">)</span>
+<span class="c1">## {   &#39;description&#39; : &#39;Python Docs Example&#39;,</span>
+<span class="c1">##     &#39;endpointsUrl&#39;: &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/domains/rd-domainId/endpoints&#39;,</span>
+<span class="c1">##     &#39;id&#39;          : &#39;rd-domainId&#39;,</span>
+<span class="c1">##     &#39;name&#39;        : &#39;My Prod Site&#39;}</span>
 </pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="create-domain">
+<h2>create_domain<a class="headerlink" href="#create-domain" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.create_domain">
+<code class="descclassname">Client.</code><code class="descname">create_domain</code><span class="sig-paren">(</span><em>name</em>, <em>description=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.create_domain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a domain</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>str</em>) &#8211; The name is a unique URI to be used in DNS lookups</li>
+<li><strong>description</strong> (<em>str</em>) &#8211; String to describe the domain</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">str</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">id of created domain</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Create Domain:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">domain_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_domain</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;qwerty&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Python Docs Example&#39;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">domain_id</span><span class="p">)</span>
+<span class="c1"># rd-domainId</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="get-domain">
+<h2>get_domain<a class="headerlink" href="#get-domain" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.get_domain">
+<code class="descclassname">Client.</code><code class="descname">get_domain</code><span class="sig-paren">(</span><em>domain_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.get_domain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get information about a domain</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>domain_id</strong> (<em>str</em>) &#8211; id of the domain</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">domain information</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Create then fetch domain:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">domain_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_domain</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;qwerty&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Python Docs Example&#39;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">domain_id</span><span class="p">)</span>
+<span class="c1"># rd-domainId</span>
+
+<span class="n">my_domain</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_domain</span><span class="p">(</span><span class="n">domain_id</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">my_domain</span><span class="p">)</span>
+<span class="c1">## {   &#39;description&#39; : &#39;Python Docs Example&#39;,</span>
+<span class="c1">##     &#39;endpointsUrl&#39;: &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/domains/rd-domainId/endpoints&#39;,</span>
+<span class="c1">##     &#39;id&#39;          : &#39;rd-domainId&#39;,</span>
+<span class="c1">##     &#39;name&#39;        : &#39;qwerty&#39;}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="delete-domain">
+<h2>delete_domain<a class="headerlink" href="#delete-domain" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.delete_domain">
+<code class="descclassname">Client.</code><code class="descname">delete_domain</code><span class="sig-paren">(</span><em>domain_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.delete_domain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a domain</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>domain_id</strong> (<em>str</em>) &#8211; id of a domain</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Delete domain &#8216;domainId&#8217;:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">delete_domain</span><span class="p">(</span><span class="s1">&#39;domainId&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 </div>
 
@@ -272,10 +407,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="contribute.html" class="btn btn-neutral float-right" title="Contributing and Reporting Bugs" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="endpoints.html" class="btn btn-neutral float-right" title="Endpoints" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="transcriptions.html" class="btn btn-neutral" title="Transcriptions" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="bridges.html" class="btn btn-neutral" title="Bridges" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

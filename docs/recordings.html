@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Test Suite &mdash; bandwidth_sdk 1.0.6-stable documentation</title>
+  <title>Recordings &mdash; bandwidth_sdk 1.0.6-stable documentation</title>
   
 
   
@@ -31,8 +31,9 @@
 
   
     <link rel="top" title="bandwidth_sdk 1.0.6-stable documentation" href="index.html"/>
-        <link rel="next" title="Contributing and Reporting Bugs" href="contribute.html"/>
-        <link rel="prev" title="Transcriptions" href="transcriptions.html"/> 
+        <link rel="up" title="Methods" href="modules.html"/>
+        <link rel="next" title="Transcriptions" href="transcriptions.html"/>
+        <link rel="prev" title="Numbers" href="numbers.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -83,7 +84,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">Methods</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Methods</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="calls.html">Calls</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="calls.html#list-calls">list_calls</a></li>
 <li class="toctree-l3"><a class="reference internal" href="calls.html#create-call">create_call</a></li>
@@ -198,9 +199,9 @@
 <li class="toctree-l3"><a class="reference internal" href="numbers.html#delete-phone-number">delete_phone_number</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="recordings.html">Recordings</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="recordings.html#list-recordings">list_recordings</a></li>
-<li class="toctree-l3"><a class="reference internal" href="recordings.html#get-recording">get_recording</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Recordings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#list-recordings">list_recordings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-recording">get_recording</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="transcriptions.html">Transcriptions</a><ul>
@@ -211,7 +212,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Test Suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">Test Suite</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing and Reporting Bugs</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="contribute.html#submitting-bug-reports">Submitting Bug Reports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contribute.html#contributing">Contributing</a></li>
@@ -241,11 +242,13 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>Test Suite</li>
+          <li><a href="modules.html">Methods</a> &raquo;</li>
+      
+    <li>Recordings</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/tests.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/recordings.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -254,15 +257,90 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="test-suite">
-<h1>Test Suite<a class="headerlink" href="#test-suite" title="Permalink to this headline">¶</a></h1>
-<p>To run the test suite use the provided commands in the makefile:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>make req &amp;&amp; make test
+  <div class="section" id="recordings">
+<h1>Recordings<a class="headerlink" href="#recordings" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="list-recordings">
+<h2>list_recordings<a class="headerlink" href="#list-recordings" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.list_recordings">
+<code class="descclassname">Client.</code><code class="descname">list_recordings</code><span class="sig-paren">(</span><em>size=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.list_recordings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of call recordings</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>size</strong> (<em>int</em>) &#8211; Used for pagination to indicate the size of each page requested for querying a list
+of items. If no value is specified the default value is 25. (Maximum value 1000)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">types.GeneratorType</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of recordings</td>
+</tr>
+</tbody>
+</table>
+<p>Example: List all recordings:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">recording_list</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">list_recordings</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">recording_list</span><span class="p">)</span>
+<span class="c1">## [</span>
+<span class="c1">##     {</span>
+<span class="c1">##         &#39;call&#39;     :&#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId&#39;,</span>
+<span class="c1">##         &#39;endTime&#39;  :&#39;2017-01-30T17:58:45Z&#39;,</span>
+<span class="c1">##         &#39;id&#39;       :&#39;rec-recordingId&#39;,</span>
+<span class="c1">##         &#39;media&#39;    :&#39;https://api.catapult.inetwork.com/v1/users/u-abc123/media/c-callId-1.wav&#39;,</span>
+<span class="c1">##         &#39;mediaName&#39;:&#39;c-callId-1.wav&#39;,</span>
+<span class="c1">##         &#39;startTime&#39;:&#39;2017-01-30T17:58:34Z&#39;,</span>
+<span class="c1">##         &#39;state&#39;    :&#39;complete&#39;</span>
+<span class="c1">##     },</span>
+<span class="c1">##     {</span>
+<span class="c1">##         &#39;call&#39;     :&#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId2&#39;,</span>
+<span class="c1">##         &#39;endTime&#39;  :&#39;2017-01-30T17:53:30Z&#39;,</span>
+<span class="c1">##         &#39;id&#39;       :&#39;rec-recordingId2&#39;,</span>
+<span class="c1">##         &#39;media&#39;    :&#39;https://api.catapult.inetwork.com/v1/users/u-abc123/media/c-callId2-1.wav&#39;,</span>
+<span class="c1">##         &#39;mediaName&#39;:&#39;c-callId2-1.wav&#39;,</span>
+<span class="c1">##         &#39;startTime&#39;:&#39;2017-01-30T17:53:20Z&#39;,</span>
+<span class="c1">##         &#39;state&#39;    :&#39;complete&#39;</span>
+<span class="c1">##     }</span>
+<span class="c1">## ]</span>
 </pre></div>
 </div>
-<p>or:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>make req &amp;&amp; make local_test
+</dd></dl>
+
+</div>
+<div class="section" id="get-recording">
+<h2>get_recording<a class="headerlink" href="#get-recording" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.get_recording">
+<code class="descclassname">Client.</code><code class="descname">get_recording</code><span class="sig-paren">(</span><em>recording_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.get_recording" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets information about a recording</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recording_id</strong> (<em>str</em>) &#8211; id of a recording</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">recording information</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Fetch recording information:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_recording</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_recording</span><span class="p">(</span><span class="s1">&#39;recordingId2&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_recording</span><span class="p">)</span>
+
+<span class="c1">## {</span>
+<span class="c1">##     &#39;call&#39;     :&#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId2&#39;,</span>
+<span class="c1">##     &#39;endTime&#39;  :&#39;2017-01-30T17:53:30Z&#39;,</span>
+<span class="c1">##     &#39;id&#39;       :&#39;rec-recordingId2&#39;,</span>
+<span class="c1">##     &#39;media&#39;    :&#39;https://api.catapult.inetwork.com/v1/users/u-abc123/media/c-callId2-1.wav&#39;,</span>
+<span class="c1">##     &#39;mediaName&#39;:&#39;c-callId2-1.wav&#39;,</span>
+<span class="c1">##     &#39;startTime&#39;:&#39;2017-01-30T17:53:20Z&#39;,</span>
+<span class="c1">##     &#39;state&#39;    :&#39;complete&#39;</span>
+<span class="c1">## }</span>
 </pre></div>
+</div>
+</dd></dl>
+
 </div>
 </div>
 
@@ -272,10 +350,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="contribute.html" class="btn btn-neutral float-right" title="Contributing and Reporting Bugs" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="transcriptions.html" class="btn btn-neutral float-right" title="Transcriptions" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="transcriptions.html" class="btn btn-neutral" title="Transcriptions" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="numbers.html" class="btn btn-neutral" title="Numbers" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

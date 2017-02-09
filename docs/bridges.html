@@ -1,0 +1,562 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Bridges &mdash; bandwidth_sdk 1.0.6-stable documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="bandwidth_sdk 1.0.6-stable documentation" href="index.html"/>
+        <link rel="up" title="Methods" href="modules.html"/>
+        <link rel="next" title="Domains" href="domains.html"/>
+        <link rel="prev" title="Available Numbers" href="available_numbers.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="index.html" class="icon icon-home"> bandwidth_sdk
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#client-initialization">Client Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#code-samples">Code Samples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#phone-numbers">Phone Numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#calling">Calling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#messaging">Messaging</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Methods</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="calls.html">Calls</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#list-calls">list_calls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#create-call">create_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#get-call">get_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#update-call">update_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#play-audio-to-call">play_audio_to_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#send-dtmf-to-call">send_dtmf_to_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#list-call-recordings">list_call_recordings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#list-call-transcriptions">list_call_transcriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#list-call-events">list_call_events</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#get-call-event">get_call_event</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#create-call-gather">create_call_gather</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#get-call-gather">get_call_gather</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#update-call-gather">update_call_gather</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#answer-call">answer_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#reject-call">reject_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#hangup-call">hangup_call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#enable-call-recording">enable_call_recording</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#disable-call-recording">disable_call_recording</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#toggle-call-recording">toggle_call_recording</a></li>
+<li class="toctree-l3"><a class="reference internal" href="calls.html#transfer-call">transfer_call</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="messages.html">Messages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="messages.html#list-messages">list_messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="messages.html#send-message">send_message</a></li>
+<li class="toctree-l3"><a class="reference internal" href="messages.html#send-messages">send_messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="messages.html#get-message">get_message</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="conferences.html">Conferences</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#create-conference">create_conference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#get-conference">get_conference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#update-conference">update_conference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#play-audio-to-conference">play_audio_to_conference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#list-conference-members">list_conference_members</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#create-conference-member">create_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#get-conference-member">get_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#update-conference-member">update_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#play-audio-to-conference-member">play_audio_to_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#speak-sentence-to-conference-member">speak_sentence_to_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#play-audio-file-to-conference-member">play_audio_file_to_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#remove-conference-member">remove_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#hold-conference-member">hold_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#mute-conference-member">mute_conference_member</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#terminate-conference">terminate_conference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#hold-conference">hold_conference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conferences.html#mute-conference">mute_conference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="account.html">Account</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="account.html#get-account">get_account</a></li>
+<li class="toctree-l3"><a class="reference internal" href="account.html#get-account-transactions">get_account_transactions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="applications.html">Applications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#list-applications">list_applications</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#create-application">create_application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#get-application">get_application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#delete-application">delete_application</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="available_numbers.html">Available Numbers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="available_numbers.html#search-available-local-numbers">search_available_local_numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="available_numbers.html#search-available-toll-free-numbers">search_available_toll_free_numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="available_numbers.html#search-and-order-local-numbers">search_and_order_local_numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="available_numbers.html#search-and-order-toll-free-numbers">search_and_order_toll_free_numbers</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Bridges</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#list-bridges">list_bridges</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-bridge">create_bridge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-bridge">get_bridge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#update-bridge">update_bridge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#list-bridge-calls">list_bridge_calls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#play-audio-to-bridge">play_audio_to_bridge</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="domains.html">Domains</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="domains.html#list-domains">list_domains</a></li>
+<li class="toctree-l3"><a class="reference internal" href="domains.html#create-domain">create_domain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="domains.html#get-domain">get_domain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="domains.html#delete-domain">delete_domain</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="endpoints.html">Endpoints</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="endpoints.html#list-domain-endpoints">list_domain_endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="endpoints.html#create-domain-endpoint">create_domain_endpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="endpoints.html#get-domain-endpoint">get_domain_endpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="endpoints.html#update-domain-endpoint">update_domain_endpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="endpoints.html#delete-domain-endpoint">delete_domain_endpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="endpoints.html#create-domain-endpoint-auth-token">create_domain_endpoint_auth_token</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="errors.html">Errors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="errors.html#list-errors">list_errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="errors.html#get-error">get_error</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="media.html">Media</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="media.html#list-media-files">list_media_files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="media.html#upload-media-file">upload_media_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="media.html#download-media-file">download_media_file</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="numbers.html">Numbers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="numbers.html#get-number-info">get_number_info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="numbers.html#list-phone-numbers">list_phone_numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="numbers.html#order-phone-number">order_phone_number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="numbers.html#get-phone-number">get_phone_number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="numbers.html#update-phone-number">update_phone_number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="numbers.html#delete-phone-number">delete_phone_number</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="recordings.html">Recordings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="recordings.html#list-recordings">list_recordings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recordings.html#get-recording">get_recording</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="transcriptions.html">Transcriptions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="transcriptions.html#list-transcriptions">list_transcriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="transcriptions.html#create-transcription">create_transcription</a></li>
+<li class="toctree-l3"><a class="reference internal" href="transcriptions.html#get-transcription">get_transcription</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">Test Suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing and Reporting Bugs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contribute.html#submitting-bug-reports">Submitting Bug Reports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contribute.html#contributing">Contributing</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">bandwidth_sdk</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="modules.html">Methods</a> &raquo;</li>
+      
+    <li>Bridges</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/bridges.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="bridges">
+<h1>Bridges<a class="headerlink" href="#bridges" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="list-bridges">
+<h2>list_bridges<a class="headerlink" href="#list-bridges" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.list_bridges">
+<code class="descclassname">Client.</code><code class="descname">list_bridges</code><span class="sig-paren">(</span><em>size=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.list_bridges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of bridges</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>size</strong> (<em>int</em>) &#8211; Used for pagination to indicate the size of each page requested for querying a list of items.
+If no value is specified the default value is 25. (Maximum value 1000)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">types.GeneratorType</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of bridges</td>
+</tr>
+</tbody>
+</table>
+<p>Example: List bridges 1000 at a time:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">bridges</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">list_bridges</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">bridge</span> <span class="ow">in</span> <span class="n">bridges</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">bridge</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+
+<span class="c1">## brg-6mv7pi22i</span>
+<span class="c1">## brg-3emq7olua</span>
+<span class="c1">## brg-bbufdc7yq</span>
+<span class="c1">## brg-dvpvd7cuy</span>
+<span class="c1">## brg-5ws2buzmq</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="create-bridge">
+<h2>create_bridge<a class="headerlink" href="#create-bridge" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.create_bridge">
+<code class="descclassname">Client.</code><code class="descname">create_bridge</code><span class="sig-paren">(</span><em>call_ids=None</em>, <em>bridge_audio=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.create_bridge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a bridge</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>bridge_audio</strong> (<em>bool</em>) &#8211; Enable/Disable two way audio path (default = true)</li>
+<li><strong>call_ids</strong> (<em>str</em>) &#8211; The first of the call ids in the bridge. If either of the call ids is not provided the
+bridge is logically created and it can be used to place calls later.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">str</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">id of created bridge</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Create bridge with 2 calls and audio:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">bridge_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_bridge</span><span class="p">(</span><span class="n">call_ids</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;callId1&#39;</span><span class="p">,</span> <span class="s1">&#39;callId2&#39;</span><span class="p">],</span> <span class="n">bridge_audio</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">bridge_id</span><span class="p">)</span>
+<span class="c1"># brg-123</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="get-bridge">
+<h2>get_bridge<a class="headerlink" href="#get-bridge" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.get_bridge">
+<code class="descclassname">Client.</code><code class="descname">get_bridge</code><span class="sig-paren">(</span><em>bridge_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.get_bridge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets information about a bridge</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>bridge_id</strong> (<em>str</em>) &#8211; id of a bridge</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">bridge information</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Fetch single bridge by ID:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_bridge</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_bridge</span><span class="p">(</span><span class="s1">&#39;brg-bridgeId&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_bridge</span><span class="p">)</span>
+
+<span class="c1">## {   &#39;bridgeAudio&#39;: True,</span>
+<span class="c1">##     &#39;calls&#39;      : &#39;https://api.catapult.inetwork.com/v1/users/u-123/bridges/brg-bridgeId/calls&#39;,</span>
+<span class="c1">##     &#39;createdTime&#39;: &#39;2017-01-26T01:15:09Z&#39;,</span>
+<span class="c1">##     &#39;id&#39;         : &#39;brg-bridgeId&#39;,</span>
+<span class="c1">##     &#39;state&#39;      : &#39;created&#39;}</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">my_bridge</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">])</span>
+<span class="c1">## created</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="update-bridge">
+<h2>update_bridge<a class="headerlink" href="#update-bridge" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.update_bridge">
+<code class="descclassname">Client.</code><code class="descname">update_bridge</code><span class="sig-paren">(</span><em>bridge_id</em>, <em>call_ids=None</em>, <em>bridge_audio=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.update_bridge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update a bridge</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bridge_id</strong> (<em>str</em>) &#8211; id of a bridge</li>
+<li><strong>bridge_audio</strong> (<em>bool</em>) &#8211; Enable/Disable two way audio path (default = true)</li>
+<li><strong>call_ids</strong> (<em>str</em>) &#8211; The first of the call ids in the bridge. If either of the call ids
+is not provided the bridge is logically created and it can be
+used to place calls later.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: stop bridging audio:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_bridge</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_bridge</span><span class="p">(</span><span class="s1">&#39;brg-bridgeId&#39;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">my_bridge</span><span class="p">[</span><span class="s2">&quot;bridgeAudio&quot;</span><span class="p">])</span>
+<span class="c1">## True</span>
+
+<span class="n">api</span><span class="o">.</span><span class="n">update_bridge</span><span class="p">(</span><span class="n">my_bridge</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">call_ids</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;callId1&#39;</span><span class="p">,</span> <span class="s1">&#39;callId2&#39;</span><span class="p">],</span> <span class="n">bridge_audio</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+<span class="n">my_bridge</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_bridge</span><span class="p">(</span><span class="n">my_bridge</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">my_bridge</span><span class="p">[</span><span class="s2">&quot;bridgeAudio&quot;</span><span class="p">])</span>
+<span class="c1">## False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="list-bridge-calls">
+<h2>list_bridge_calls<a class="headerlink" href="#list-bridge-calls" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.list_bridge_calls">
+<code class="descclassname">Client.</code><code class="descname">list_bridge_calls</code><span class="sig-paren">(</span><em>bridge_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.list_bridge_calls" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of calls of a bridge</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>bridge_id</strong> (<em>str</em>) &#8211; id of a bridge</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">types.GeneratorType</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of calls</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Fetch all calls that were in a bridge:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">call_list</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_bridge_calls</span><span class="p">(</span><span class="s1">&#39;bridgeId&#39;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">call_list</span><span class="p">))</span>
+<span class="c1">## [</span>
+<span class="c1">##     {</span>
+<span class="c1">##         &quot;activeTime&quot;      : &quot;2013-05-22T19:49:39Z&quot;,</span>
+<span class="c1">##         &quot;direction&quot;       : &quot;out&quot;,</span>
+<span class="c1">##         &quot;from&quot;            : &quot;{fromNumber}&quot;,</span>
+<span class="c1">##         &quot;id&quot;              : &quot;{callId1}&quot;,</span>
+<span class="c1">##         &quot;bridgeId&quot;        : &quot;{bridgeId}&quot;,</span>
+<span class="c1">##         &quot;startTime&quot;       : &quot;2013-05-22T19:49:35Z&quot;,</span>
+<span class="c1">##         &quot;state&quot;           : &quot;active&quot;,</span>
+<span class="c1">##         &quot;to&quot;              : &quot;{toNumber1}&quot;,</span>
+<span class="c1">##         &quot;recordingEnabled&quot;: false,</span>
+<span class="c1">##         &quot;events&quot;          : &quot;https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId1}/events&quot;,</span>
+<span class="c1">##         &quot;bridge&quot;          : &quot;https://api.catapult.inetwork.com/v1/users/{userId}/bridges/{bridgeId}&quot;</span>
+<span class="c1">##     },</span>
+<span class="c1">##     {</span>
+<span class="c1">##         &quot;activeTime&quot;      : &quot;2013-05-22T19:50:16Z&quot;,</span>
+<span class="c1">##         &quot;direction&quot;       : &quot;out&quot;,</span>
+<span class="c1">##         &quot;from&quot;            : &quot;{fromNumber}&quot;,</span>
+<span class="c1">##         &quot;id&quot;              : &quot;{callId2}&quot;,</span>
+<span class="c1">##         &quot;bridgeId&quot;        : &quot;{bridgeId}&quot;,</span>
+<span class="c1">##         &quot;startTime&quot;       : &quot;2013-05-22T19:50:16Z&quot;,</span>
+<span class="c1">##         &quot;state&quot;           : &quot;active&quot;,</span>
+<span class="c1">##         &quot;to&quot;              : &quot;{toNumber2}&quot;,</span>
+<span class="c1">##         &quot;recordingEnabled&quot;: false,</span>
+<span class="c1">##         &quot;events&quot;          : &quot;https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId2}/events&quot;,</span>
+<span class="c1">##         &quot;bridge&quot;          : &quot;https://api.catapult.inetwork.com/v1/users/{userId}/bridges/{bridgeId}&quot;</span>
+<span class="c1">##     }</span>
+<span class="c1">## ]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="play-audio-to-bridge">
+<h2>play_audio_to_bridge<a class="headerlink" href="#play-audio-to-bridge" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.play_audio_to_bridge">
+<code class="descclassname">Client.</code><code class="descname">play_audio_to_bridge</code><span class="sig-paren">(</span><em>bridge_id</em>, <em>file_url=None</em>, <em>sentence=None</em>, <em>gender=None</em>, <em>locale=None</em>, <em>voice=None</em>, <em>loop_enabled=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.play_audio_to_bridge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Play audio to a bridge</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bridge_id</strong> (<em>str</em>) &#8211; id of a bridge</li>
+<li><strong>file_url</strong> (<em>str</em>) &#8211; The location of an audio file to play (WAV and MP3 supported).</li>
+<li><strong>sentence</strong> (<em>str</em>) &#8211; The sentence to speak.</li>
+<li><strong>gender</strong> (<em>str</em>) &#8211; The gender of the voice used to synthesize the sentence.</li>
+<li><strong>locale</strong> (<em>str</em>) &#8211; The locale used to get the accent of the voice used to synthesize the sentence.</li>
+<li><strong>voice</strong> (<em>str</em>) &#8211; The voice to speak the sentence.</li>
+<li><strong>loop_enabled</strong> (<em>bool</em>) &#8211; When value is true, the audio will keep playing in a loop.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Examples: Play either file for speak sentence:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">play_audio_to_bridge</span><span class="p">(</span><span class="s1">&#39;bridgeId&#39;</span><span class="p">,</span> <span class="n">fileUrl</span><span class="o">=</span><span class="s1">&#39;http://host/path/file.mp3&#39;</span><span class="p">)</span>
+<span class="n">api</span><span class="o">.</span><span class="n">play_audio_to_bridge</span><span class="p">(</span><span class="s1">&#39;bridgeId&#39;</span><span class="p">,</span> <span class="n">sentence</span><span class="o">=</span><span class="s1">&#39;Press 0 to complete call&#39;</span><span class="p">,</span> <span class="n">gender</span><span class="o">=</span><span class="s1">&#39;female&#39;</span><span class="p">)</span>
+
+<span class="c1"># or with extension methods</span>
+<span class="n">api</span><span class="o">.</span><span class="n">play_audio_file_to_bridge</span><span class="p">(</span><span class="s1">&#39;bridgeId&#39;</span><span class="p">,</span> <span class="s1">&#39;http://host/path/file.mp3&#39;</span><span class="p">)</span>
+<span class="n">api</span><span class="o">.</span><span class="n">speak_sentence_to_bridge</span><span class="p">(</span><span class="s1">&#39;bridgeId&#39;</span><span class="p">,</span> <span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="domains.html" class="btn btn-neutral float-right" title="Domains" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="available_numbers.html" class="btn btn-neutral" title="Available Numbers" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Bandwidth App Platform.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.6-stable',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

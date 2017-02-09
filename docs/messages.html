@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Test Suite &mdash; bandwidth_sdk 1.0.6-stable documentation</title>
+  <title>Messages &mdash; bandwidth_sdk 1.0.6-stable documentation</title>
   
 
   
@@ -31,8 +31,9 @@
 
   
     <link rel="top" title="bandwidth_sdk 1.0.6-stable documentation" href="index.html"/>
-        <link rel="next" title="Contributing and Reporting Bugs" href="contribute.html"/>
-        <link rel="prev" title="Transcriptions" href="transcriptions.html"/> 
+        <link rel="up" title="Methods" href="modules.html"/>
+        <link rel="next" title="Conferences" href="conferences.html"/>
+        <link rel="prev" title="Calls" href="calls.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -83,7 +84,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">Methods</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Methods</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="calls.html">Calls</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="calls.html#list-calls">list_calls</a></li>
 <li class="toctree-l3"><a class="reference internal" href="calls.html#create-call">create_call</a></li>
@@ -107,11 +108,11 @@
 <li class="toctree-l3"><a class="reference internal" href="calls.html#transfer-call">transfer_call</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="messages.html">Messages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="messages.html#list-messages">list_messages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="messages.html#send-message">send_message</a></li>
-<li class="toctree-l3"><a class="reference internal" href="messages.html#send-messages">send_messages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="messages.html#get-message">get_message</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Messages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#list-messages">list_messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#send-message">send_message</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#send-messages">send_messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-message">get_message</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="conferences.html">Conferences</a><ul>
@@ -211,7 +212,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Test Suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">Test Suite</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing and Reporting Bugs</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="contribute.html#submitting-bug-reports">Submitting Bug Reports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contribute.html#contributing">Contributing</a></li>
@@ -241,11 +242,13 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>Test Suite</li>
+          <li><a href="modules.html">Methods</a> &raquo;</li>
+      
+    <li>Messages</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/tests.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/messages.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -254,15 +257,219 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="test-suite">
-<h1>Test Suite<a class="headerlink" href="#test-suite" title="Permalink to this headline">¶</a></h1>
-<p>To run the test suite use the provided commands in the makefile:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>make req &amp;&amp; make test
+  <div class="section" id="messages">
+<h1>Messages<a class="headerlink" href="#messages" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="list-messages">
+<h2>list_messages<a class="headerlink" href="#list-messages" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.list_messages">
+<code class="descclassname">Client.</code><code class="descname">list_messages</code><span class="sig-paren">(</span><em>from_=None</em>, <em>to=None</em>, <em>from_date_time=None</em>, <em>to_date_time=None</em>, <em>direction=None</em>, <em>state=None</em>, <em>delivery_state=None</em>, <em>sort_order=None</em>, <em>size=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.list_messages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of user&#8217;s messages</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>from_</strong> (<em>str</em>) &#8211; The phone number to filter the messages that came from</li>
+<li><strong>to</strong> (<em>str</em>) &#8211; The phone number to filter the messages that was sent to</li>
+<li><strong>from_date_time</strong> (<em>str</em>) &#8211; The starting date time to filter the messages
+(must be in yyyy-MM-dd hh:mm:ss format, like 2014-05-25 12:00:00.)</li>
+<li><strong>to_date_time</strong> (<em>str</em>) &#8211; The ending date time to filter the messages (must be in
+yyyy-MM-dd hh:mm:ss format, like 2014-05-25 12:00:00.)</li>
+<li><strong>direction</strong> (<em>str</em>) &#8211; Filter by direction of message, in - a message that came from the telephone
+network to one of your numbers (an &#8220;inbound&#8221; message) or out - a message
+that was sent from one of your numbers to the telephone network (an &#8220;outbound&#8221;
+message)</li>
+<li><strong>state</strong> (<em>str</em>) &#8211; The message state to filter. Values are &#8216;received&#8217;, &#8216;queued&#8217;, &#8216;sending&#8217;,
+&#8216;sent&#8217;, &#8216;error&#8217;</li>
+<li><strong>delivery_state</strong> (<em>str</em>) &#8211; The message delivery state to filter. Values are &#8216;waiting&#8217;, &#8216;delivered&#8217;,
+&#8216;not-delivered&#8217;</li>
+<li><strong>sort_order</strong> (<em>str</em>) &#8211; How to sort the messages. Values are &#8216;asc&#8217; or &#8216;desc&#8217;</li>
+<li><strong>size</strong> (<em>str</em>) &#8211; Used for pagination to indicate the size of each page requested for querying a list
+of items. If no value is specified the default value is 25. (Maximum value 1000)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">types.GeneratorType</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list of messages</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Search for all messages and are in error:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">message_list</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">list_messages</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">message_list</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;error&#39;</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">message</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+<span class="c1">## m-it6ewpyiyadfe</span>
+<span class="c1">## m-pjnqofcjyadfe</span>
+<span class="c1">## m-t2gspvs6iadfe</span>
+<span class="c1">## m-shuh6d6pyadfe</span>
 </pre></div>
 </div>
-<p>or:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>make req &amp;&amp; make local_test
+</dd></dl>
+
+</div>
+<div class="section" id="send-message">
+<h2>send_message<a class="headerlink" href="#send-message" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.send_message">
+<code class="descclassname">Client.</code><code class="descname">send_message</code><span class="sig-paren">(</span><em>from_</em>, <em>to</em>, <em>text=None</em>, <em>media=None</em>, <em>receipt_requested=None</em>, <em>callback_url=None</em>, <em>callback_http_method=None</em>, <em>callback_timeout=None</em>, <em>fallback_url=None</em>, <em>tag=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.send_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a message (SMS or MMS)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>from_</strong> (<em>str</em>) &#8211; One of your telephone numbers the message should come from</li>
+<li><strong>to</strong> (<em>str</em>) &#8211; The phone number the message should be sent to</li>
+<li><strong>text</strong> (<em>str</em>) &#8211; The contents of the text message</li>
+<li><strong>media</strong> (<em>list</em>) &#8211; For MMS messages, a media url to the location of the media or
+list of medias to be sent send with the message.</li>
+<li><strong>receipt_requested</strong> (<em>str</em>) &#8211; Requested receipt option for outbound messages: &#8216;none&#8217;, &#8216;all&#8217;, &#8216;error&#8217;</li>
+<li><strong>callback_url</strong> (<em>str</em>) &#8211; The server URL where the events related to the outgoing message will be sent to</li>
+<li><strong>callback_http_method</strong> (<em>str</em>) &#8211; Determine if the callback event should be sent via HTTP GET or HTTP POST.
+Values are get or post Default is post</li>
+<li><strong>callback_timeout</strong> (<em>str</em>) &#8211; Determine how long should the platform wait for
+callbackUrl&#8217;s response before timing out (milliseconds).</li>
+<li><strong>fallback_url</strong> (<em>str</em>) &#8211; The server URL used to send the message events if the request to callbackUrl fails.</li>
+<li><strong>tag</strong> (<em>str</em>) &#8211; Any string, it will be included in the callback events of the message.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">str</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">id of created message</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Send Text Message:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="nb">id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span>
+    <span class="n">from_</span> <span class="o">=</span> <span class="s1">&#39;+1234567980&#39;</span><span class="p">,</span>
+    <span class="n">to</span> <span class="o">=</span> <span class="s1">&#39;+1234567981&#39;</span><span class="p">,</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;SMS message&#39;</span>
+    <span class="p">)</span>
 </pre></div>
+</div>
+<p>Example: Send Picture Message:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>id = api.send_message(
+    from = &#39;+1234567980&#39;,
+    to = &#39;+1234567981&#39;,
+    media = [&#39;http://host/path/to/file&#39;]
+    )
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="send-messages">
+<h2>send_messages<a class="headerlink" href="#send-messages" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.send_messages">
+<code class="descclassname">Client.</code><code class="descname">send_messages</code><span class="sig-paren">(</span><em>messages_data</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.send_messages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send some messages by one request</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>messages_data</strong> (<em>list</em>) &#8211; List of messages to send</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Parameters of each message</dt>
+<dd><dl class="first last docutils">
+<dt>from</dt>
+<dd>One of your telephone numbers the message should come from</dd>
+<dt>to</dt>
+<dd>The phone number the message should be sent to</dd>
+<dt>text</dt>
+<dd>The contents of the text message</dd>
+<dt>media</dt>
+<dd>For MMS messages, a media url to the location of the media or list of medias to
+be sent send with the message.</dd>
+<dt>receiptRequested</dt>
+<dd>Requested receipt option for outbound messages: &#8216;none&#8217;, &#8216;all&#8217;, &#8216;error&#8217;</dd>
+<dt>callbackUrl</dt>
+<dd>The server URL where the events related to the outgoing message will
+be sent to</dd>
+<dt>callbackHttpMethod</dt>
+<dd>Determine if the callback event should be sent via HTTP GET or HTTP POST.
+Values are get or post Default is post</dd>
+<dt>callbackTimeout</dt>
+<dd>Determine how long should the platform wait for callbackUrl&#8217;s response
+before timing out (milliseconds).</dd>
+<dt>fallbackUrl</dt>
+<dd>The server URL used to send the message events if the request to callbackUrl fails.</dd>
+<dt>tag</dt>
+<dd>Any string, it will be included in the callback events of the message.</dd>
+</dl>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">results of sent messages</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Bulk Send Picture or Text messages (or both):</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">send_message</span><span class="p">([</span>
+    <span class="p">{</span><span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="s1">&#39;+1234567980&#39;</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="s1">&#39;+1234567981&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;SMS message&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="s1">&#39;+1234567980&#39;</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="s1">&#39;+1234567982&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;SMS message2&#39;</span><span class="p">}</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="get-message">
+<h2>get_message<a class="headerlink" href="#get-message" title="Permalink to this headline">¶</a></h2>
+<dl class="method">
+<dt id="bandwidth.catapult.Client.get_message">
+<code class="descclassname">Client.</code><code class="descname">get_message</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#bandwidth.catapult.Client.get_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get information about a message</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> (<em>str</em>) &#8211; id of a message</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">message information</td>
+</tr>
+</tbody>
+</table>
+<p>Example: Fetch information about single message:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_message</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="s1">&#39;m-na6cpyjf2qcpz6l3drhcx7y&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_message</span><span class="p">)</span>
+
+<span class="c1">## {</span>
+<span class="c1">##     &#39;callbackUrl&#39;             :&#39;https://yoursite.com/message&#39;,</span>
+<span class="c1">##     &#39;direction&#39;               :&#39;in&#39;,</span>
+<span class="c1">##     &#39;from&#39;                    :&#39;+19193047864&#39;,</span>
+<span class="c1">##     &#39;id&#39;                      :&#39;m-messageId&#39;,</span>
+<span class="c1">##     &#39;media&#39;                   :[],</span>
+<span class="c1">##     &#39;messageId&#39;               :&#39;m-messageId&#39;,</span>
+<span class="c1">##     &#39;skipMMSCarrierValidation&#39;:True,</span>
+<span class="c1">##     &#39;state&#39;                   :&#39;received&#39;,</span>
+<span class="c1">##     &#39;text&#39;                    :&#39;Hey there&#39;,</span>
+<span class="c1">##     &#39;time&#39;                    :&#39;2017-02-01T21:10:32Z&#39;,</span>
+<span class="c1">##     &#39;to&#39;                      :&#39;+19191234567&#39;</span>
+<span class="c1">## }</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 </div>
 
@@ -272,10 +479,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="contribute.html" class="btn btn-neutral float-right" title="Contributing and Reporting Bugs" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="conferences.html" class="btn btn-neutral float-right" title="Conferences" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="transcriptions.html" class="btn btn-neutral" title="Transcriptions" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="calls.html" class="btn btn-neutral" title="Calls" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
