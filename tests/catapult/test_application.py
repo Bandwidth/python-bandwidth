@@ -90,6 +90,7 @@ class ApplicationTests(unittest.TestCase):
                 'https://api.catapult.inetwork.com/v1/users/userId/applications/applicationId',
                 auth=AUTH)
             self.assertEqual('applicationId', data['id'])
+
     def test_update_application(self):
         """
         update_application() should update an application
@@ -115,7 +116,6 @@ class ApplicationTests(unittest.TestCase):
                 'https://api.catapult.inetwork.com/v1/users/userId/applications/a-123',
                 auth=AUTH,
                 json=estimated_json_request)
-
 
     def test_delete_application(self):
         """
