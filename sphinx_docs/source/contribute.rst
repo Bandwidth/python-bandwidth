@@ -5,12 +5,12 @@ Submitting Bug Reports
 ----------------------
 
 To file a bug report or request a feature submit a new issue to our
-`GitHub Issue Tracker <https://github.com/bandwidthcom/python-bandwidth/issues>`_
+`GitHub Issue Tracker <https://github.com/bandwidth/python-bandwidth/issues>`_
 
 Contributing
 ------------
 
-Fork our `GitHub repository <https://github.com/bandwidthcom/python-bandwidth>`_
+Fork our `GitHub repository <https://github.com/bandwidth/python-bandwidth>`_
 , create a new topic branch with your feature/fix, and send pull request with a
 comment that describes your changes.
 
