@@ -42,7 +42,7 @@ print(my_number)
 #+19104440230
 ```
 
-### Send Text Message::
+### Send Text Message
 ```python
 message_id = api.send_message(from_ = '+1234567980',
                               to = '+1234567981',
@@ -51,7 +51,7 @@ print(message_id)
 # m-messageId
 ```
 
-### Send Picture Message::
+### Send Picture Message
 
 ```python
 message_id = api.send_message(from_ = '+1234567980',
@@ -63,7 +63,7 @@ print(message_id)
 ```
 
 
-### Fetch information about single message::
+### Fetch information about single message
 ```python
 my_message = api.get_message('m-messageId')
 print(my_message[state])
