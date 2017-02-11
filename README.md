@@ -23,7 +23,7 @@ pip install bandwidth-sdk==2.0.0b0
 
 ### Client Initialization
 ```python
-import Bandwidth
+import bandwidth
 api = bandwidth.client('catapult', 'u-user', 't-token', 's-secret')
 ```
 

@@ -23,7 +23,7 @@ Client Initialization
 Before using the sdk you must initialize a Client with your Bandwidth App
 Platform API credentials::
 
-    import Bandwidth
+    import bandwidth
     api = bandwidth.client('catapult', 'u-user', 't-token', 's-secret')
 
 Code Samples
