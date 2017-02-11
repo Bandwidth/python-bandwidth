@@ -423,7 +423,7 @@ before timing out (milliseconds).</dd>
 </tbody>
 </table>
 <p>Example: Bulk Send Picture or Text messages (or both):</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">send_message</span><span class="p">([</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">send_messages</span><span class="p">([</span>
     <span class="p">{</span><span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="s1">&#39;+1234567980&#39;</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="s1">&#39;+1234567981&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;SMS message&#39;</span><span class="p">},</span>
     <span class="p">{</span><span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="s1">&#39;+1234567980&#39;</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="s1">&#39;+1234567982&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;SMS message2&#39;</span><span class="p">}</span>
 <span class="p">])</span>
