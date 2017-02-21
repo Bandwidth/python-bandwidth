@@ -1,12 +1,42 @@
 import requests
 import six
+import re
 import urllib
+import json
 import itertools
-from .lazy_enumerable import get_lazy_enumerator
-from .decorators import play_audio
+from bandwidth.catapult.lazy_enumerable import get_lazy_enumerator
+from bandwidth.catapult.decorators import play_audio
+from bandwidth.version import __version__ as version
 
 quote = urllib.parse.quote if six.PY3 else urllib.quote
 lazy_map = map if six.PY3 else itertools.imap
+
+def convert(s):
+    a = re.compile('((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))')
+    return a.sub(r'_\1', s).lower()
+
+def convertJSON(j):
+    out = {}
+    for k in j:
+        newK = convert(k)
+        if isinstance(j[k],dict):
+            out[newK] = convertJSON(j[k])
+        elif isinstance(j[k],list):
+            out[newK] = convertArray(j[k])
+        else:
+            out[newK] = j[k]
+    return out
+
+def convertArray(a):
+    newArr = []
+    for i in a:
+        if isinstance(i,list):
+            newArr.append(convertArray(i))
+        elif isinstance(i, dict):
+            newArr.append(convertJSON(i))
+        else:
+            newArr.append(i)
+    return newArr
 
 
 def _set_media_name(recording):
@@ -56,6 +86,7 @@ class Client:
         self.auth = (api_token, api_secret)
 
     def _request(self, method, url, *args, **kwargs):
+        print(version)
         if url.startswith('/'):
             # relative url
             url = '%s/%s%s' % (self.api_endpoint, self.api_version, url)
@@ -78,6 +109,7 @@ class Client:
         id = None
         if response.headers.get('content-type') == 'application/json':
             data = response.json()
+            data = convertJSON(data)
         location = response.headers.get('location')
         if location is not None:
             id = location.split('/')[-1]
@@ -2808,7 +2840,9 @@ class Client:
 
         return self._make_request('post', '/users/%s/messages' % self.user_id, json=kwargs)[2]
 
-    def send_messages(self, messages_data):
+
+    def send_messages(self, *messages):
+    #def send_messages(self, messages_data):
         """
         Send some messages by one request
 
@@ -2850,8 +2884,10 @@ class Client:
                 {'from': '+1234567980', 'to': '+1234567982', 'text': 'SMS message2'}
             ])
         """
+        # results = self._make_request(
+        #     'post', '/users/%s/messages' % self.user_id, json=messages_data)[0]
         results = self._make_request(
-            'post', '/users/%s/messages' % self.user_id, json=messages_data)[0]
+            'post', '/users/%s/messages' % self.user_id, json=messages)[0]
         for i in range(0, len(messages_data)):
             item = results[i]
             item['id'] = item.get('location', '').split('/')[-1]
