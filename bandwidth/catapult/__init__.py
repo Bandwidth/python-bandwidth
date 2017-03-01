@@ -5,39 +5,12 @@ import urllib
 import json
 import itertools
 from bandwidth.catapult.lazy_enumerable import get_lazy_enumerator
+from bandwidth.convert_camel import convert_object_to_snake_case
 from bandwidth.catapult.decorators import play_audio
 from bandwidth.version import __version__ as version
 
 quote = urllib.parse.quote if six.PY3 else urllib.quote
 lazy_map = map if six.PY3 else itertools.imap
-
-def convert(s):
-    a = re.compile('((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))')
-    return a.sub(r'_\1', s).lower()
-
-def convertJSON(j):
-    out = {}
-    for k in j:
-        newK = convert(k)
-        if isinstance(j[k],dict):
-            out[newK] = convertJSON(j[k])
-        elif isinstance(j[k],list):
-            out[newK] = convertArray(j[k])
-        else:
-            out[newK] = j[k]
-    return out
-
-def convertArray(a):
-    newArr = []
-    for i in a:
-        if isinstance(i,list):
-            newArr.append(convertArray(i))
-        elif isinstance(i, dict):
-            newArr.append(convertJSON(i))
-        else:
-            newArr.append(i)
-    return newArr
-
 
 def _set_media_name(recording):
     recording['mediaName'] = recording.get('media', '').split('/')[-1]
@@ -86,7 +59,6 @@ class Client:
         self.auth = (api_token, api_secret)
 
     def _request(self, method, url, *args, **kwargs):
-        print(version)
         if url.startswith('/'):
             # relative url
             url = '%s/%s%s' % (self.api_endpoint, self.api_version, url)
@@ -109,7 +81,7 @@ class Client:
         id = None
         if response.headers.get('content-type') == 'application/json':
             data = response.json()
-            data = convertJSON(data)
+            data = convert_object_to_snake_case(data)
         location = response.headers.get('location')
         if location is not None:
             id = location.split('/')[-1]
