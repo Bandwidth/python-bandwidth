@@ -451,17 +451,17 @@ before timing out (milliseconds).</dd>
 </tbody>
 </table>
 <p>Example: Fetch information about single message:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_message</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="s1">&#39;m-na6cpyjf2qcpz6l3drhcx7y&#39;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_message</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="s1">&#39;m-abc123&#39;</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">my_message</span><span class="p">)</span>
 
 <span class="c1">## {</span>
-<span class="c1">##     &#39;callbackUrl&#39;             :&#39;https://yoursite.com/message&#39;,</span>
+<span class="c1">##     &#39;callback_url&#39;             :&#39;https://yoursite.com/message&#39;,</span>
 <span class="c1">##     &#39;direction&#39;               :&#39;in&#39;,</span>
 <span class="c1">##     &#39;from&#39;                    :&#39;+19193047864&#39;,</span>
 <span class="c1">##     &#39;id&#39;                      :&#39;m-messageId&#39;,</span>
 <span class="c1">##     &#39;media&#39;                   :[],</span>
-<span class="c1">##     &#39;messageId&#39;               :&#39;m-messageId&#39;,</span>
-<span class="c1">##     &#39;skipMMSCarrierValidation&#39;:True,</span>
+<span class="c1">##     &#39;message_id&#39;               :&#39;m-messageId&#39;,</span>
+<span class="c1">##     &#39;skip_mms_carrier_validation&#39;:True,</span>
 <span class="c1">##     &#39;state&#39;                   :&#39;received&#39;,</span>
 <span class="c1">##     &#39;text&#39;                    :&#39;Hey there&#39;,</span>
 <span class="c1">##     &#39;time&#39;                    :&#39;2017-02-01T21:10:32Z&#39;,</span>

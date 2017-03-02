@@ -290,22 +290,22 @@ of items. If no value is specified the default value is 25. (Maximum value 1000)
 <span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">transcriptions_list</span><span class="p">))</span>
 <span class="c1">## [</span>
 <span class="c1">##     {</span>
-<span class="c1">##         &#39;chargeableDuration&#39;: 60,</span>
+<span class="c1">##         &#39;chargeable_duration&#39;: 60,</span>
 <span class="c1">##         &#39;id&#39;: &#39;{transcription-id}&#39;,</span>
 <span class="c1">##         &#39;state&#39;: &#39;completed&#39;,</span>
 <span class="c1">##         &#39;time&#39;: &#39;2014-10-09T12:09:16Z&#39;,</span>
 <span class="c1">##         &#39;text&#39;: &#39;{transcription-text}&#39;,</span>
-<span class="c1">##         &#39;textSize&#39;: 3627,</span>
-<span class="c1">##         &#39;textUrl&#39;: &#39;{url-to-full-text}&#39;</span>
+<span class="c1">##         &#39;text_size&#39;: 3627,</span>
+<span class="c1">##         &#39;text_url&#39;: &#39;{url-to-full-text}&#39;</span>
 <span class="c1">##     },</span>
 <span class="c1">##     {</span>
-<span class="c1">##         &#39;chargeableDuration&#39;: 60,</span>
+<span class="c1">##         &#39;chargeable_duration&#39;: 60,</span>
 <span class="c1">##         &#39;id&#39;: &#39;{transcription-id}&#39;,</span>
 <span class="c1">##         &#39;state&#39;: &#39;completed&#39;,</span>
 <span class="c1">##         &#39;text&#39;: &#39;{transcription-text}&#39;,</span>
 <span class="c1">##         &#39;time&#39;: &#39;2014-10-09T14:04:44Z&#39;,</span>
-<span class="c1">##         &#39;textSize&#39;: 72,</span>
-<span class="c1">##         &#39;textUrl&#39;: &#39;{url-to-full-text}&#39;</span>
+<span class="c1">##         &#39;text_size&#39;: 72,</span>
+<span class="c1">##         &#39;text_url&#39;: &#39;{url-to-full-text}&#39;</span>
 <span class="c1">##     }</span>
 <span class="c1">## ]</span>
 </pre></div>
@@ -366,12 +366,12 @@ of items. If no value is specified the default value is 25. (Maximum value 1000)
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_transcription</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_transcription</span><span class="p">(</span><span class="s1">&#39;recordingId&#39;</span><span class="p">,</span> <span class="s1">&#39;transcriptionId&#39;</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">my_transcription</span><span class="p">)</span>
 <span class="c1">## {</span>
-<span class="c1">##     &#39;chargeableDuration&#39;: 11,</span>
+<span class="c1">##     &#39;chargeable_duration&#39;: 11,</span>
 <span class="c1">##     &#39;id&#39;                : &#39;{transcriptionId}&#39;,</span>
 <span class="c1">##     &#39;state&#39;             : &#39;completed&#39;,</span>
 <span class="c1">##     &#39;text&#39;              : &#39;Hey there, I was calling to talk about plans for this saturday. &#39;,</span>
-<span class="c1">##     &#39;textSize&#39;          : 63,</span>
-<span class="c1">##     &#39;textUrl&#39;           : &#39;https://api.catapult.inetwork.com/.../media/{transcriptionId}&#39;,</span>
+<span class="c1">##     &#39;text_size&#39;          : 63,</span>
+<span class="c1">##     &#39;text_url&#39;           : &#39;https://api.catapult.inetwork.com/.../media/{transcriptionId}&#39;,</span>
 <span class="c1">##     &#39;time&#39;              : &#39;2014-12-23T23:08:59Z&#39;</span>
 <span class="c1">## }</span>
 </pre></div>
