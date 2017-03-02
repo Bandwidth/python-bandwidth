@@ -82,6 +82,7 @@ class Client:
         id = None
         if response.headers.get('content-type') == 'application/json':
             data = response.json()
+            data = convert_object_to_snake_case(data)
         location = response.headers.get('location')
         if location is not None:
             id = location.split('/')[-1]
@@ -155,14 +156,14 @@ class Client:
         """
         return self._make_request('get', '/users/%s/account' % self.user_id)[0]
 
-    def list_account_transactions(self,
-                                  max_items=None,
-                                  to_date=None,
-                                  from_date=None,
-                                  trans_type=None,
-                                  size=None,
-                                  number=None,
-                                  **kwargs):
+    def get_account_transactions(self,
+                                 max_items=None,
+                                 to_date=None,
+                                 from_date=None,
+                                 trans_type=None,
+                                 size=None,
+                                 number=None,
+                                 **kwargs):
         """
         Get the transactions from the user's account
 
@@ -2812,7 +2813,8 @@ class Client:
 
         return self._make_request('post', '/users/%s/messages' % self.user_id, json=kwargs)[2]
 
-    def send_messages(self, messages_data):
+    def send_messages(self, *messages):
+        # def send_messages(self, messages_data):
         """
         Send some messages by one request
 
@@ -2854,8 +2856,10 @@ class Client:
                 {'from': '+1234567980', 'to': '+1234567982', 'text': 'SMS message2'}
             ])
         """
+        # results = self._make_request(
+        #     'post', '/users/%s/messages' % self.user_id, json=messages_data)[0]
         results = self._make_request(
-            'post', '/users/%s/messages' % self.user_id, json=messages_data)[0]
+            'post', '/users/%s/messages' % self.user_id, json=messages)[0]
         for i in range(0, len(messages_data)):
             item = results[i]
             item['id'] = item.get('location', '').split('/')[-1]
