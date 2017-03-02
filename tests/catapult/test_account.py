@@ -1,7 +1,7 @@
 import unittest
 import six
 import requests
-from tests.catapult.helpers import create_response, get_client, AUTH
+from tests.catapult.helpers import create_response, get_client, AUTH, headers
 if six.PY3:
     from unittest.mock import patch
 else:
@@ -22,7 +22,11 @@ class AccountTests(unittest.TestCase):
         with patch('requests.request', return_value=create_response(200, estimated_json)) as p:
             client = get_client()
             data = client.get_account()
-            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/account', auth=AUTH)
+            p.assert_called_with(
+                'get',
+                'https://api.catapult.inetwork.com/v1/users/userId/account',
+                auth=AUTH,
+                headers=headers)
             self.assertEqual('pre-pay', data['accountType'])
 
     def test_list_account_transactions(self):
@@ -57,5 +61,6 @@ class AccountTests(unittest.TestCase):
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/account/transactions',
                 auth=AUTH,
-                params=estimated_request)
+                params=estimated_request,
+                headers=headers)
             self.assertEqual('transactionId1', data[0]['id'])

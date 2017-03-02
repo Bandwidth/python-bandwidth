@@ -1,7 +1,7 @@
 import unittest
 import six
 import requests
-from tests.catapult.helpers import create_response, get_client, AUTH
+from tests.catapult.helpers import create_response, get_client, AUTH, headers
 if six.PY3:
     from unittest.mock import patch
 else:
@@ -36,6 +36,7 @@ class CallTests(unittest.TestCase):
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/calls',
                 auth=AUTH,
+                headers=headers,
                 params=estimated_resquest)
             self.assertEqual('callId', data[0]['id'])
 
@@ -71,6 +72,7 @@ class CallTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/calls',
                 auth=AUTH,
+                headers=headers,
                 json=estimated_resquest)
             self.assertEqual('callId', id)
 
@@ -86,7 +88,11 @@ class CallTests(unittest.TestCase):
         with patch('requests.request', return_value=create_response(200, estimated_json)) as p:
             client = get_client()
             data = client.get_call('callId')
-            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId', auth=AUTH)
+            p.assert_called_with(
+                'get',
+                'https://api.catapult.inetwork.com/v1/users/userId/calls/callId',
+                headers=headers,
+                auth=AUTH)
             self.assertEqual('callId', data['id'])
 
     def test_update_call(self):
@@ -109,6 +115,7 @@ class CallTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId',
                 auth=AUTH,
+                headers=headers,
                 json=estimated_resquest)
 
     def test_play_audio_to_call(self):
@@ -130,6 +137,7 @@ class CallTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId/audio',
                 auth=AUTH,
+                headers=headers,
                 json=estimated_resquest)
 
     def test_send_dtmf_to_call(self):
@@ -143,6 +151,7 @@ class CallTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId/dtmf',
                 auth=AUTH,
+                headers=headers,
                 json={
                     'dtmfOut': 12})
 
@@ -161,6 +170,7 @@ class CallTests(unittest.TestCase):
             p.assert_called_with(
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId/recordings',
+                headers=headers,
                 auth=AUTH)
             self.assertEqual('recordingId', data[0]['id'])
 
@@ -179,6 +189,7 @@ class CallTests(unittest.TestCase):
             p.assert_called_with(
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId/transcriptions',
+                headers=headers,
                 auth=AUTH)
             self.assertEqual('transcriptionId', data[0]['id'])
 
@@ -197,6 +208,7 @@ class CallTests(unittest.TestCase):
             p.assert_called_with(
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId/events',
+                headers=headers,
                 auth=AUTH)
             self.assertEqual('eventId', data[0]['id'])
 
@@ -215,6 +227,7 @@ class CallTests(unittest.TestCase):
             p.assert_called_with(
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId/events/eventId',
+                headers=headers,
                 auth=AUTH)
             self.assertEqual('eventId', data[0]['id'])
 
@@ -236,6 +249,7 @@ class CallTests(unittest.TestCase):
             p.assert_called_with(
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId/gather',
+                headers=headers,
                 auth=AUTH,
                 json=estimated_resquest)
             self.assertEqual('gatherId', id)
@@ -255,6 +269,7 @@ class CallTests(unittest.TestCase):
             p.assert_called_with(
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId/gather/gatherId',
+                headers=headers,
                 auth=AUTH)
             self.assertEqual('gatherId', data[0]['id'])
 
@@ -269,6 +284,7 @@ class CallTests(unittest.TestCase):
             p.assert_called_with(
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId/gather/gatherId',
+                headers=headers,
                 auth=AUTH,
                 json=data)
 

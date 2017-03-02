@@ -1,7 +1,7 @@
 import unittest
 import six
 import requests
-from tests.catapult.helpers import create_response, get_client, AUTH
+from tests.catapult.helpers import create_response, get_client, AUTH, headers
 if six.PY3:
     from unittest.mock import patch
 else:
@@ -39,6 +39,7 @@ class MessageTests(unittest.TestCase):
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/messages',
                 auth=AUTH,
+                headers=headers,
                 params=estimated_request)
             self.assertEqual('messageId', data[0]['id'])
 
@@ -71,6 +72,7 @@ class MessageTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/messages',
                 auth=AUTH,
+                headers=headers,
                 json=estimated_request)
             self.assertEqual('messageId', messageID)
 
@@ -91,6 +93,7 @@ class MessageTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/messages',
                 auth=AUTH,
+                headers=headers,
                 json=data)
             self.assertEqual('messageId', results[0]['id'])
 
@@ -109,5 +112,6 @@ class MessageTests(unittest.TestCase):
             p.assert_called_with(
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/messages/messageId',
+                headers=headers,
                 auth=AUTH)
             self.assertEqual('messageId', data['id'])

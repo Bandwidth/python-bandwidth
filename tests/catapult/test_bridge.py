@@ -1,7 +1,7 @@
 import unittest
 import six
 import requests
-from tests.catapult.helpers import create_response, get_client, AUTH
+from tests.catapult.helpers import create_response, get_client, AUTH, headers
 if six.PY3:
     from unittest.mock import patch
 else:
@@ -34,6 +34,7 @@ class BridgesTests(unittest.TestCase):
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/bridges',
                 auth=AUTH,
+                headers=headers,
                 params={
                     'size': None})
             self.assertEqual('bridgeId', data[0]['id'])
@@ -52,6 +53,7 @@ class BridgesTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/bridges',
                 auth=AUTH,
+                headers=headers,
                 json=data)
             self.assertEqual('bridgeId', id)
 
@@ -73,7 +75,11 @@ class BridgesTests(unittest.TestCase):
         with patch('requests.request', return_value=create_response(200, estimated_json)) as p:
             client = get_client()
             data = client.get_bridge('bridgeId')
-            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/bridges/bridgeId', auth=AUTH)
+            p.assert_called_with(
+                'get',
+                'https://api.catapult.inetwork.com/v1/users/userId/bridges/bridgeId',
+                headers=headers,
+                auth=AUTH)
             self.assertEqual('bridgeId', data['id'])
 
     def test_update_bridge(self):
@@ -88,6 +94,7 @@ class BridgesTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/bridges/bridgeId',
                 auth=AUTH,
+                headers=headers,
                 json=data)
 
     def test_list_bridge_calls(self):
@@ -115,6 +122,7 @@ class BridgesTests(unittest.TestCase):
             p.assert_called_with(
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/bridges/bridgeId/calls',
+                headers=headers,
                 auth=AUTH)
             self.assertEqual('{callId1}', calls[0]['id'])
 
@@ -138,4 +146,5 @@ class BridgesTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/bridges/bridgeId/audio',
                 auth=AUTH,
+                headers=headers,
                 json=estimated_request)

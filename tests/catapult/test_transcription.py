@@ -1,7 +1,7 @@
 import unittest
 import six
 import requests
-from tests.catapult.helpers import create_response, get_client, AUTH
+from tests.catapult.helpers import create_response, get_client, AUTH, headers
 if six.PY3:
     from unittest.mock import patch
 else:
@@ -34,6 +34,7 @@ class TranscriptionTests(unittest.TestCase):
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/recordings/recordingId/transcriptions',
                 auth=AUTH,
+                headers=headers,
                 params={'size': None})
             self.assertEqual('{transcription-id}', data[0]['id'])
 
@@ -50,6 +51,7 @@ class TranscriptionTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/recordings/recordingId/transcriptions',
                 auth=AUTH,
+                headers=headers,
                 json={})
             self.assertEqual('transcriptionId', id)
 
@@ -74,5 +76,6 @@ class TranscriptionTests(unittest.TestCase):
             p.assert_called_with(
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/recordings/recId/transcriptions/transcriptionId',
+                headers=headers,
                 auth=AUTH)
             self.assertEqual('{transcription-id}', data['id'])

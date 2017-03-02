@@ -1,7 +1,7 @@
 import unittest
 import six
 import requests
-from tests.catapult.helpers import create_response, get_client, AUTH
+from tests.catapult.helpers import create_response, get_client, AUTH, headers
 if six.PY3:
     from unittest.mock import patch
 else:
@@ -32,6 +32,7 @@ class ErrorTests(unittest.TestCase):
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/errors',
                 auth=AUTH,
+                headers=headers,
                 params={'size': None})
             self.assertEqual('{userErrorId}', data[0]['id'])
 
@@ -51,5 +52,9 @@ class ErrorTests(unittest.TestCase):
         with patch('requests.request', return_value=create_response(200, estimated_json)) as p:
             client = get_client()
             data = client.get_error('errorId')
-            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/errors/errorId', auth=AUTH)
+            p.assert_called_with(
+                'get',
+                'https://api.catapult.inetwork.com/v1/users/userId/errors/errorId',
+                headers=headers,
+                auth=AUTH)
             self.assertEqual('{userErrorId}', data['id'])

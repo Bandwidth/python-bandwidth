@@ -2,7 +2,7 @@ import unittest
 import six
 import requests
 import json
-from tests.catapult.helpers import create_response, get_client, AUTH
+from tests.catapult.helpers import create_response, get_client, AUTH, headers
 if six.PY3:
     from unittest.mock import patch
 else:
@@ -38,6 +38,7 @@ class ApplicationTests(unittest.TestCase):
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/applications',
                 auth=AUTH,
+                headers=headers,
                 params={
                     "size": None})
             self.assertEqual(json.loads(estimated_json)[0]['id'], data[0]['id'])
@@ -66,6 +67,7 @@ class ApplicationTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/applications',
                 auth=AUTH,
+                headers=headers,
                 json=estimated_json_request)
             self.assertEqual('applicationId', id)
 
@@ -88,7 +90,8 @@ class ApplicationTests(unittest.TestCase):
             p.assert_called_with(
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/applications/applicationId',
-                auth=AUTH)
+                auth=AUTH,
+                headers=headers)
             self.assertEqual('applicationId', data['id'])
 
     def test_update_application(self):
@@ -115,6 +118,7 @@ class ApplicationTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/applications/a-123',
                 auth=AUTH,
+                headers=headers,
                 json=estimated_json_request)
 
     def test_delete_application(self):
@@ -127,4 +131,5 @@ class ApplicationTests(unittest.TestCase):
             p.assert_called_with(
                 'delete',
                 'https://api.catapult.inetwork.com/v1/users/userId/applications/applicationId',
+                headers=headers,
                 auth=AUTH)

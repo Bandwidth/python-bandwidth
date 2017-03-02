@@ -1,7 +1,7 @@
 import unittest
 import six
 import requests
-from tests.catapult.helpers import create_response, get_client, AUTH
+from tests.catapult.helpers import create_response, get_client, AUTH, headers
 if six.PY3:
     from unittest.mock import patch
 else:
@@ -46,7 +46,7 @@ class ClientTests(unittest.TestCase):
         with patch('requests.request', return_value=create_response()) as p:
             client = get_client()
             response = client._request('get', 'http://localhost')
-            p.assert_called_with('get', 'http://localhost', auth=('apiToken', 'apiSecret'))
+            p.assert_called_with('get', 'http://localhost', headers=headers, auth=('apiToken', 'apiSecret'))
 
     def test_request_with_relative_url(self):
         """
@@ -55,7 +55,8 @@ class ClientTests(unittest.TestCase):
         with patch('requests.request', return_value=create_response()) as p:
             client = get_client()
             response = client._request('get', '/path')
-            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/path', auth=('apiToken', 'apiSecret'))
+            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/path',
+                                 headers=headers, auth=('apiToken', 'apiSecret'))
 
     def test_check_response_with_json_error(self):
         """
@@ -107,7 +108,8 @@ class ClientTests(unittest.TestCase):
         with patch('requests.request', return_value=estimated_response) as p:
             client = get_client()
             data, response, _ = client._make_request('get', '/path')
-            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/path', auth=('apiToken', 'apiSecret'))
+            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/path',
+                                 headers=headers, auth=('apiToken', 'apiSecret'))
             self.assertIs(estimated_response, response)
             self.assertDictEqual({'data': 'data'}, data)
 
@@ -120,7 +122,8 @@ class ClientTests(unittest.TestCase):
         with patch('requests.request', return_value=estimated_response) as p:
             client = get_client()
             _, response, id = client._make_request('get', '/path')
-            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/path', auth=('apiToken', 'apiSecret'))
+            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/path',
+                                 headers=headers, auth=('apiToken', 'apiSecret'))
             self.assertIs(estimated_response, response)
             self.assertEqual('id', id)
 

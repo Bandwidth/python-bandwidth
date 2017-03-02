@@ -1,5 +1,10 @@
 import requests
 from bandwidth.catapult import Client
+from bandwidth.version import __version__ as version
+
+headers = {
+    'User-Agent': 'PythonSDK_' + version
+}
 
 
 def get_client():

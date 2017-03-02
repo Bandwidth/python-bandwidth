@@ -1,7 +1,7 @@
 import unittest
 import six
 import requests
-from tests.catapult.helpers import create_response, get_client, AUTH
+from tests.catapult.helpers import create_response, get_client, AUTH, headers
 if six.PY3:
     from unittest.mock import patch
 else:
@@ -25,6 +25,7 @@ class LazyEnumerableTests(unittest.TestCase):
             p.assert_called_with(
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/account/transactions?page=0&size=25',
+                headers=headers,
                 auth=AUTH)
 
     def test_get_lazy_enumerator_with_several_requests(self):
@@ -44,4 +45,5 @@ class LazyEnumerableTests(unittest.TestCase):
             p.assert_called_with(
                 'get',
                 'transactions?page=1&size=25',
+                headers=headers,
                 auth=AUTH)
