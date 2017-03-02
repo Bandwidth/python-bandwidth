@@ -1,6 +1,5 @@
 import requests
 import six
-import re
 import urllib
 import json
 import itertools
@@ -60,10 +59,18 @@ class Client:
         self.auth = (api_token, api_secret)
 
     def _request(self, method, url, *args, **kwargs):
+        user_agent = 'PythonSDK_' + version
+        if 'headers'in kwargs:
+            headers = kwargs.pop('headers')
+            headers['User-Agent'] = user_agent
+        else:
+            headers = {
+                'User-Agent': user_agent
+            }
         if url.startswith('/'):
             # relative url
             url = '%s/%s%s' % (self.api_endpoint, self.api_version, url)
-        return requests.request(method, url, auth=self.auth, *args, **kwargs)
+        return requests.request(method, url, auth=self.auth, headers=headers, *args, **kwargs)
 
     def _check_response(self, response):
         if response.status_code >= 400:

@@ -1,7 +1,7 @@
 import unittest
 import six
 import requests
-from tests.catapult.helpers import create_response, get_client, AUTH
+from tests.catapult.helpers import create_response, get_client, AUTH, headers
 if six.PY3:
     from unittest.mock import patch
 else:
@@ -28,6 +28,7 @@ class EndpointTests(unittest.TestCase):
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/domains/domainId/endpoints',
                 auth=AUTH,
+                headers=headers,
                 params={'size': None})
             self.assertEqual('endpointId', data[0]['id'])
 
@@ -54,6 +55,7 @@ class EndpointTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/domains/domainId/endpoints',
                 auth=AUTH,
+                headers=headers,
                 json=estimated_request)
             self.assertEqual('endpointId', id)
 
@@ -73,6 +75,7 @@ class EndpointTests(unittest.TestCase):
             p.assert_called_with(
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/domains/domainId/endpoints/endpointId',
+                headers=headers,
                 auth=AUTH)
             self.assertEqual('endpointId', data['id'])
 
@@ -96,6 +99,7 @@ class EndpointTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/domains/domainId/endpoints/endpointId',
                 auth=AUTH,
+                headers=headers,
                 json=estimated_request)
 
     def test_delete_domain_endpoint(self):
@@ -108,6 +112,7 @@ class EndpointTests(unittest.TestCase):
             p.assert_called_with(
                 'delete',
                 'https://api.catapult.inetwork.com/v1/users/userId/domains/domainId/endpoints/endpointId',
+                headers=headers,
                 auth=AUTH)
 
     def test_create_domain_endpoint_auth_token(self):
@@ -127,6 +132,7 @@ class EndpointTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/domains/domainId/endpoints/endpointId/tokens',
                 auth=AUTH,
+                headers=headers,
                 json={
                     'expires': 3600})
             self.assertEqual('tokenValue', t['token'])

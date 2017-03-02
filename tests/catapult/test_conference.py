@@ -1,7 +1,7 @@
 import unittest
 import six
 import requests
-from tests.catapult.helpers import create_response, get_client, AUTH
+from tests.catapult.helpers import create_response, get_client, AUTH, headers
 if six.PY3:
     from unittest.mock import patch
 else:
@@ -40,6 +40,7 @@ class ConferenceTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/conferences',
                 auth=AUTH,
+                headers=headers,
                 json=estimated_request)
             self.assertEqual('conferenceId', id)
 
@@ -58,6 +59,7 @@ class ConferenceTests(unittest.TestCase):
             p.assert_called_with(
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/conferences/conferenceId',
+                headers=headers,
                 auth=AUTH)
             self.assertEqual('conferenceId', data['id'])
 
@@ -82,6 +84,7 @@ class ConferenceTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/conferences/conferenceId',
                 auth=AUTH,
+                headers=headers,
                 json=estimated_request)
 
     def test_play_audio_to_conference(self):
@@ -105,6 +108,7 @@ class ConferenceTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/conferences/conferenceId/audio',
                 auth=AUTH,
+                headers=headers,
                 json=estimated_request)
 
     def test_create_conference_member(self):
@@ -128,6 +132,7 @@ class ConferenceTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/conferences/conferenceId/members',
                 auth=AUTH,
+                headers=headers,
                 json=estimated_request)
             self.assertEqual('memberId', id)
 
@@ -146,6 +151,7 @@ class ConferenceTests(unittest.TestCase):
             p.assert_called_with(
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/conferences/conferenceId/members',
+                headers=headers,
                 auth=AUTH)
             self.assertEqual('memberId', data[0]['id'])
 
@@ -164,6 +170,7 @@ class ConferenceTests(unittest.TestCase):
             p.assert_called_with(
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/conferences/conferenceId/members/memberId',
+                headers=headers,
                 auth=AUTH)
             self.assertEqual('memberId', data['id'])
 
@@ -186,6 +193,7 @@ class ConferenceTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/conferences/conferenceId/members/memberId',
                 auth=AUTH,
+                headers=headers,
                 json=estimated_request)
 
     def test_play_audio_to_conference_member(self):
@@ -208,6 +216,7 @@ class ConferenceTests(unittest.TestCase):
                 'post',
                 'https://api.catapult.inetwork.com/v1/users/userId/conferences/conferenceId/members/memberId/audio',
                 auth=AUTH,
+                headers=headers,
                 json=estimated_request)
 
     def test_speak_sentence_to_conference_member(self):
