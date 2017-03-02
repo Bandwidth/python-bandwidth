@@ -25,9 +25,9 @@ class AccountTests(unittest.TestCase):
             p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/account', auth=AUTH)
             self.assertEqual('pre-pay', data['accountType'])
 
-    def test_get_account_transactions(self):
+    def test_list_account_transactions(self):
         """
-        get_account_transactions() should return account transactions
+        list_account_transactions() should return account transactions
         """
         estimated_request = {
             'maxItems': None,
@@ -52,7 +52,7 @@ class AccountTests(unittest.TestCase):
         """
         with patch('requests.request', return_value=create_response(200, estimated_json)) as p:
             client = get_client()
-            data = list(client.get_account_transactions())
+            data = list(client.list_account_transactions())
             p.assert_called_with(
                 'get',
                 'https://api.catapult.inetwork.com/v1/users/userId/account/transactions',

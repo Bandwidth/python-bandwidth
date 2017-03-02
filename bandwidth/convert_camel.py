@@ -22,7 +22,12 @@ def convert_list_to_snake_case(a):
     """
     new_arr = []
     for i in a:
-        new_arr.append(convert_object_to_snake_case(i))
+        if isinstance(i, list):
+            new_arr.append(convert_list_to_snake_case(i))
+        elif isinstance(i, dict):
+            new_arr.append(convert_dict_to_snake_case(i))
+        else:
+            new_arr.append(i)
     return new_arr
 
 
@@ -37,7 +42,12 @@ def convert_dict_to_snake_case(d):
     out = {}
     for k in d:
         new_k = convert_string_to_snake_case(k)
-        out[new_k] = convert_object_to_snake_case(d[k])
+        if isinstance(d[k], dict):
+            out[new_k] = convert_dict_to_snake_case(d[k])
+        elif isinstance(d[k], list):
+            out[new_k] = convert_list_to_snake_case(d[k])
+        else:
+            out[new_k] = d[k]
     return out
 
 

@@ -12,6 +12,7 @@ from bandwidth.version import __version__ as version
 quote = urllib.parse.quote if six.PY3 else urllib.quote
 lazy_map = map if six.PY3 else itertools.imap
 
+
 def _set_media_name(recording):
     recording['mediaName'] = recording.get('media', '').split('/')[-1]
     return recording
@@ -2812,9 +2813,8 @@ class Client:
 
         return self._make_request('post', '/users/%s/messages' % self.user_id, json=kwargs)[2]
 
-
     def send_messages(self, *messages):
-    #def send_messages(self, messages_data):
+        # def send_messages(self, messages_data):
         """
         Send some messages by one request
 
