@@ -341,7 +341,7 @@ class CallTests(unittest.TestCase):
         create_call() should create a call and return id
         """
         estimated_response_json = {
-            'recordingEnabled': False,
+            'recording_enabled': False,
         }
         client = get_client()
         with patch.object(client, 'get_call', return_value=estimated_response_json) as get_mock:
@@ -358,7 +358,7 @@ class CallTests(unittest.TestCase):
         create_call() should create a call and return id
         """
         estimated_response_json = {
-            'recordingEnabled': True,
+            'recording_enabled': True,
         }
         client = get_client()
         with patch.object(client, 'get_call', return_value=estimated_response_json) as get_mock:
@@ -372,7 +372,7 @@ class CallTests(unittest.TestCase):
         toggle_call_recording() should call get_call with the id
         """
         estimated_response_json = {
-            'recordingEnabled': 'wildcard',
+            'recording_enabled': 'wildcard',
         }
         client = get_client()
         with patch.object(client, 'get_call', return_value=estimated_response_json) as get_mock:

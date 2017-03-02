@@ -1,6 +1,5 @@
 import requests
 import six
-import re
 import urllib
 import json
 import itertools
@@ -60,10 +59,18 @@ class Client:
         self.auth = (api_token, api_secret)
 
     def _request(self, method, url, *args, **kwargs):
+        user_agent = 'PythonSDK_' + version
+        headers = kwargs.pop('headers', None)
+        if headers:
+            headers['User-Agent'] = user_agent
+        else:
+            headers = {
+                'User-Agent': user_agent
+            }
         if url.startswith('/'):
             # relative url
             url = '%s/%s%s' % (self.api_endpoint, self.api_version, url)
-        return requests.request(method, url, auth=self.auth, *args, **kwargs)
+        return requests.request(method, url, auth=self.auth, headers=headers, *args, **kwargs)
 
     def _check_response(self, response):
         if response.status_code >= 400:
@@ -81,8 +88,7 @@ class Client:
         data = None
         id = None
         if response.headers.get('content-type') == 'application/json':
-            data = response.json()
-            data = convert_object_to_snake_case(data)
+            data = convert_object_to_snake_case(response.json())
         location = response.headers.get('location')
         if location is not None:
             id = location.split('/')[-1]
@@ -156,14 +162,14 @@ class Client:
         """
         return self._make_request('get', '/users/%s/account' % self.user_id)[0]
 
-    def get_account_transactions(self,
-                                 max_items=None,
-                                 to_date=None,
-                                 from_date=None,
-                                 trans_type=None,
-                                 size=None,
-                                 number=None,
-                                 **kwargs):
+    def list_account_transactions(self,
+                                  max_items=None,
+                                  to_date=None,
+                                  from_date=None,
+                                  trans_type=None,
+                                  size=None,
+                                  number=None,
+                                  **kwargs):
         """
         Get the transactions from the user's account
 
@@ -2813,8 +2819,7 @@ class Client:
 
         return self._make_request('post', '/users/%s/messages' % self.user_id, json=kwargs)[2]
 
-    def send_messages(self, *messages):
-        # def send_messages(self, messages_data):
+    def send_messages(self, messages_data):
         """
         Send some messages by one request
 
@@ -2856,10 +2861,8 @@ class Client:
                 {'from': '+1234567980', 'to': '+1234567982', 'text': 'SMS message2'}
             ])
         """
-        # results = self._make_request(
-        #     'post', '/users/%s/messages' % self.user_id, json=messages_data)[0]
         results = self._make_request(
-            'post', '/users/%s/messages' % self.user_id, json=messages)[0]
+            'post', '/users/%s/messages' % self.user_id, json=messages_data)[0]
         for i in range(0, len(messages_data)):
             item = results[i]
             item['id'] = item.get('location', '').split('/')[-1]
