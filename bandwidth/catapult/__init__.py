@@ -13,7 +13,7 @@ lazy_map = map if six.PY3 else itertools.imap
 
 
 def _set_media_name(recording):
-    recording['mediaName'] = recording.get('media', '').split('/')[-1]
+    recording['media_name'] = recording.get('media', '').split('/')[-1]
     return recording
 
 
