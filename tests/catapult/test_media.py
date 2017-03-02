@@ -26,7 +26,11 @@ class MediaTests(unittest.TestCase):
         with patch('requests.request', return_value=create_response(200, estimated_json)) as p:
             client = get_client()
             data = list(client.list_media_files())
-            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/media',headers=headers, auth=AUTH)
+            p.assert_called_with(
+                'get',
+                'https://api.catapult.inetwork.com/v1/users/userId/media',
+                headers=headers,
+                auth=AUTH)
             self.assertEqual('file1', data[0]['mediaName'])
 
     def test_upload_media_file(self):
@@ -40,7 +44,7 @@ class MediaTests(unittest.TestCase):
             }
             client = get_client()
             client.upload_media_file('file1', '123')
-            p.assert_called_with('put', 'https://api.catapult.inetwork.com/v1/users/userId/media/file1',auth=AUTH,
+            p.assert_called_with('put', 'https://api.catapult.inetwork.com/v1/users/userId/media/file1', auth=AUTH,
                                  data='123', headers=upload_headers)
 
     def test_upload_media_file_by_path(self):
@@ -88,4 +92,8 @@ class MediaTests(unittest.TestCase):
         with patch('requests.request', return_value=create_response(200)) as p:
             client = get_client()
             client.delete_media_file('file1')
-            p.assert_called_with('delete', 'https://api.catapult.inetwork.com/v1/users/userId/media/file1', headers=headers,auth=AUTH)
+            p.assert_called_with(
+                'delete',
+                'https://api.catapult.inetwork.com/v1/users/userId/media/file1',
+                headers=headers,
+                auth=AUTH)

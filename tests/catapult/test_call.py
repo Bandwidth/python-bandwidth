@@ -88,7 +88,11 @@ class CallTests(unittest.TestCase):
         with patch('requests.request', return_value=create_response(200, estimated_json)) as p:
             client = get_client()
             data = client.get_call('callId')
-            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/users/userId/calls/callId', headers=headers,auth=AUTH)
+            p.assert_called_with(
+                'get',
+                'https://api.catapult.inetwork.com/v1/users/userId/calls/callId',
+                headers=headers,
+                auth=AUTH)
             self.assertEqual('callId', data['id'])
 
     def test_update_call(self):
