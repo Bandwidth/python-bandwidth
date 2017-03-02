@@ -1,5 +1,9 @@
 import unittest
-
+import six
+if six.PY3:
+    from unittest.mock import patch
+else:
+    from mock import patch
 from tests.json.camel_test_values import before_array_dict
 from tests.json.camel_test_values import after_array_dict
 from bandwidth.convert_camel import convert_object_to_snake_case
