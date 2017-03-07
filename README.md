@@ -16,7 +16,7 @@ Client library for the [Bandwidth App Platform](http://ap.bandwidth.com/docs/res
 ## Installation
 
 ```bash
-pip install bandwidth-sdk==2.0.0b0
+pip install bandwidth-sdk==2.1.0b0
 ```
 
 ## Usage
