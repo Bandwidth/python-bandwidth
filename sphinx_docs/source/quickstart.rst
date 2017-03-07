@@ -42,22 +42,22 @@ Get available number via location search::
     numbers = api.search_available_local_numbers(area_code = '910', quantity = 3)
     print(numbers)
     ## [   {   'city'          : 'WILMINGTON',
-    ##         'nationalNumber': '(910) 444-0230',
+    ##         'national_number': '(910) 444-0230',
     ##         'number'        : '+19104440230',
     ##         'price'         : '0.35',
-    ##         'rateCenter'    : 'WILMINGTON',
+    ##         'rate_center'    : 'WILMINGTON',
     ##         'state'         : 'NC'},
     ##     {   'city'          : 'WILMINGTON',
-    ##         'nationalNumber': '(910) 444-0263',
+    ##         'national_number': '(910) 444-0263',
     ##         'number'        : '+19104440263',
     ##         'price'         : '0.35',
-    ##         'rateCenter'    : 'WILMINGTON',
+    ##         'rate_center'    : 'WILMINGTON',
     ##         'state'         : 'NC'},
     ##     {   'city'          : 'WILMINGTON',
-    ##         'nationalNumber': '(910) 444-0268',
+    ##         'national_number': '(910) 444-0268',
     ##         'number'        : '+19104440268',
     ##         'price'         : '0.35',
-    ##         'rateCenter'    : 'WILMINGTON',
+    ##         'rate_center'    : 'WILMINGTON',
     ##         'state'         : 'NC'}
     ## ]
 
@@ -79,18 +79,18 @@ Create a call::
 
     my_call = api.get_call(call_id)
     print(my_call)
-    ## {   'callbackUrl'         : 'http://yoursite.com/calls',
+    ## {   'callback_url'         : 'http://yoursite.com/calls',
     ##     'direction'           : 'out',
     ##     'events'              : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/events',
     ##     'from'                : '+1234567890',
     ##     'id'                  : 'c-abc123',
-    ##     'recordingEnabled'    : False,
-    ##     'recordingFileFormat' : 'wav',
+    ##     'recording_enabled'    : False,
+    ##     'recording_file_format' : 'wav',
     ##     'recordings'          : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/recordings',
-    ##     'startTime'           : '2017-01-26T16:10:11Z',
+    ##     'start_time'           : '2017-01-26T16:10:11Z',
     ##     'state'               : 'started',
     ##     'to'                  : '+1234567891',
-    ##     'transcriptionEnabled': False,
+    ##     'transcription_enabled': False,
     ##     'transcriptions'      : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/transcriptions'}
 
 Retrieving list of calls::
@@ -101,38 +101,38 @@ Retrieving list of calls::
     print(list(call_list))
     ## [
     ##   {
-    ##     'activeTime'          : '2017-01-26T16:10:23Z',
-    ##     'callbackUrl'         : 'http://yoursite.com/calls',
-    ##     'chargeableDuration'  : 60,
+    ##     'active_time'          : '2017-01-26T16:10:23Z',
+    ##     'callback_url'         : 'http://yoursite.com/calls',
+    ##     'chargeable_duration'  : 60,
     ##     'direction'           : 'out',
     ##     'endTime'             : '2017-01-26T16:10:33Z',
     ##     'events'              : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-abc123/events',
     ##     'from'                : '+17079311113',
     ##     'id'                  : 'c-abc123',
-    ##     'recordingEnabled'    : False,
-    ##     'recordingFileFormat' : 'wav',
+    ##     'recording_enabled'    : False,
+    ##     'recording_file_format' : 'wav',
     ##     'recordings'          : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-abc123/recordings',
-    ##     'startTime'           : '2017-01-26T16:10:11Z',
+    ##     'start_time'           : '2017-01-26T16:10:11Z',
     ##     'state'               : 'completed',
     ##     'to'                  : '+19192223333',
-    ##     'transcriptionEnabled': False,
+    ##     'transcription_enabled': False,
     ##     'transcriptions'      : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-abc123/transcriptions'
     ##   },
     ##   {
-    ##     'activeTime'          : '2016-12-29T23:50:35Z',
-    ##     'chargeableDuration'  : 60,
+    ##     'active_time'          : '2016-12-29T23:50:35Z',
+    ##     'chargeable_duration'  : 60,
     ##     'direction'           : 'out',
     ##     'endTime'             : '2016-12-29T23:50:41Z',
     ##     'events'              : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-xyz987/events',
     ##     'from'                : '+19194443333',
     ##     'id'                  : 'c-xyz987',
-    ##     'recordingEnabled'    : False,
-    ##     'recordingFileFormat' : 'wav',
+    ##     'recording_enabled'    : False,
+    ##     'recording_file_format' : 'wav',
     ##     'recordings'          : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-xyz987/recordings',
-    ##     'startTime'           : '2016-12-29T23:50:15Z',
+    ##     'start_time'           : '2016-12-29T23:50:15Z',
     ##     'state'               : 'completed',
     ##     'to'                  : '+19192223333',
-    ##     'transcriptionEnabled': False,
+    ##     'transcription_enabled': False,
     ##     'transcriptions'      : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-xyz987/transcriptions'
     ##   }
     ## ]
@@ -170,13 +170,13 @@ Example: Fetch information about single message::
     print(my_message)
 
     ## {
-    ##     'callbackUrl'             :'https://yoursite.com/message',
+    ##     'callback_url'             :'https://yoursite.com/message',
     ##     'direction'               :'in',
     ##     'from'                    :'+19193047864',
     ##     'id'                      :'m-messageId',
     ##     'media'                   :[],
-    ##     'messageId'               :'m-messageId',
-    ##     'skipMMSCarrierValidation':True,
+    ##     'message_id'               :'m-messageId',
+    ##     'skip_mms_carrier_validation':True,
     ##     'state'                   :'received',
     ##     'text'                    :'Hey there',
     ##     'time'                    :'2017-02-01T21:10:32Z',

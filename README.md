@@ -85,18 +85,18 @@ print(call_id)
 ```python
 my_call = api.get_call('c-abc123')
 print(my_call)
-## {   'callbackUrl'         : 'http://yoursite.com/calls',
+## {   'callback_url'         : 'http://yoursite.com/calls',
 ##     'direction'           : 'out',
 ##     'events'              : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/events',
 ##     'from'                : '+1234567890',
 ##     'id'                  : 'c-abc123',
-##     'recordingEnabled'    : False,
-##     'recordingFileFormat' : 'wav',
+##     'recording_enabled'    : False,
+##     'recording_file_format' : 'wav',
 ##     'recordings'          : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/recordings',
 ##     'startTime'           : '2017-01-26T16:10:11Z',
 ##     'state'               : 'started',
 ##     'to'                  : '+1234567891',
-##     'transcriptionEnabled': False,
+##     'transcription_enabled': False,
 ##     'transcriptions'      : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/transcriptions'}
 ```
 
