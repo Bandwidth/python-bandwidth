@@ -354,7 +354,7 @@ class Client:
 
             my_call = api.get_call(call_id)
             print(my_call)
-            ## {   'callbackUrl'         : 'http://yoursite.com/calls',
+            ## {   'callback_url'         : 'http://yoursite.com/calls',
             ##     'direction'           : 'out',
             ##     'events'              : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/events',
             ##     'from'                : '+1234567890',
@@ -399,7 +399,7 @@ class Client:
 
             my_call = api.get_call(call_id)
             print(my_call)
-            ## {   'callbackUrl'         : 'http://yoursite.com/calls',
+            ## {   'callback_url'         : 'http://yoursite.com/calls',
             ##     'direction'           : 'out',
             ##     'events'              : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/events',
             ##     'from'                : '+1234567890',
@@ -838,7 +838,7 @@ class Client:
             print(my_app)
 
 
-            ## {   'autoAnswer': True,
+            ## {   'auto_answer': True,
             ##     'callback_http_method': 'get',
             ##     'id': 'a-asdf',
             ##     'incoming_call_url': 'https://test.com/callcallback/',
@@ -896,7 +896,7 @@ class Client:
 
             my_app = api.get_application(my_app_id)
             print(my_app)
-            ## {   'autoAnswer'        : True,
+            ## {   'auto_answer'        : True,
             ##     'callback_http_method': 'get',
             ##     'id'                : 'a-1232asf123',
             ##     'incoming_call_url'   : 'http://callback.com/calls',
@@ -937,7 +937,7 @@ class Client:
 
             my_app = api.get_application(my_app_id)
             print(my_app)
-            ## {   'autoAnswer': True,
+            ## {   'auto_answer': True,
             ##     'callback_http_method': 'get',
             ##     'id': 'a-1232asf123',
             ##     'incoming_call_url': 'http://callback.com/calls',
@@ -997,7 +997,7 @@ class Client:
 
             my_app = api.get_application(my_app_id)
             print(my_app)
-            {   'autoAnswer'        : True,
+            {   'auto_answer'        : True,
                 'callbackHttpMethod': 'get',
                 'id'                : 'a-1232asf123',
                 'incomingCallUrl'   : 'http://callback.com/calls',
@@ -1138,15 +1138,15 @@ class Client:
 
             print(numbers)
 
-            ## [   {   'nationalNumber': '(844) 489-0456',
+            ## [   {   'national_number': '(844) 489-0456',
             ##         'number'        : '+18444890456',
             ##         'pattern_match'  : '           456',
             ##         'price'         : '0.75'},
-            ##     {   'nationalNumber': '(844) 498-2456',
+            ##     {   'national_number': '(844) 498-2456',
             ##         'number'        : '+18444982456',
             ##         'pattern_match'  : '           456',
             ##         'price'         : '0.75'},
-            ##     {   'nationalNumber': '(844) 509-4566',
+            ##     {   'national_number': '(844) 509-4566',
             ##         'number'        : '+18445094566',
             ##         'pattern_match'  : '          456 ',
             ##         'price'         : '0.75'}]
@@ -2851,6 +2851,7 @@ class Client:
                 The server URL used to send the message events if the request to callbackUrl fails.
             tag
                 Any string, it will be included in the callback events of the message.
+
         :rtype: list
         :returns: results of sent messages
 
@@ -2860,6 +2861,7 @@ class Client:
                 {'from': '+1234567980', 'to': '+1234567981', 'text': 'SMS message'},
                 {'from': '+1234567980', 'to': '+1234567982', 'text': 'SMS message2'}
             ])
+
         """
         results = self._make_request(
             'post', '/users/%s/messages' % self.user_id, json=messages_data)[0]
