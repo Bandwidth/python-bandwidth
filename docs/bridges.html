@@ -352,9 +352,9 @@ bridge is logically created and it can be used to place calls later.</li>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_bridge</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_bridge</span><span class="p">(</span><span class="s1">&#39;brg-bridgeId&#39;</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">my_bridge</span><span class="p">)</span>
 
-<span class="c1">## {   &#39;bridgeAudio&#39;: True,</span>
+<span class="c1">## {   &#39;bridge_audio&#39;: True,</span>
 <span class="c1">##     &#39;calls&#39;      : &#39;https://api.catapult.inetwork.com/v1/users/u-123/bridges/brg-bridgeId/calls&#39;,</span>
-<span class="c1">##     &#39;createdTime&#39;: &#39;2017-01-26T01:15:09Z&#39;,</span>
+<span class="c1">##     &#39;created_time&#39;: &#39;2017-01-26T01:15:09Z&#39;,</span>
 <span class="c1">##     &#39;id&#39;         : &#39;brg-bridgeId&#39;,</span>
 <span class="c1">##     &#39;state&#39;      : &#39;created&#39;}</span>
 
@@ -389,13 +389,13 @@ used to place calls later.</li>
 <p>Example: stop bridging audio:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_bridge</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_bridge</span><span class="p">(</span><span class="s1">&#39;brg-bridgeId&#39;</span><span class="p">)</span>
 
-<span class="k">print</span><span class="p">(</span><span class="n">my_bridge</span><span class="p">[</span><span class="s2">&quot;bridgeAudio&quot;</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_bridge</span><span class="p">[</span><span class="s2">&quot;bridge_audio&quot;</span><span class="p">])</span>
 <span class="c1">## True</span>
 
 <span class="n">api</span><span class="o">.</span><span class="n">update_bridge</span><span class="p">(</span><span class="n">my_bridge</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">call_ids</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;callId1&#39;</span><span class="p">,</span> <span class="s1">&#39;callId2&#39;</span><span class="p">],</span> <span class="n">bridge_audio</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
 <span class="n">my_bridge</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_bridge</span><span class="p">(</span><span class="n">my_bridge</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
 
-<span class="k">print</span><span class="p">(</span><span class="n">my_bridge</span><span class="p">[</span><span class="s2">&quot;bridgeAudio&quot;</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_bridge</span><span class="p">[</span><span class="s2">&quot;bridge_audio&quot;</span><span class="p">])</span>
 <span class="c1">## False</span>
 </pre></div>
 </div>
@@ -426,28 +426,28 @@ used to place calls later.</li>
 <span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">call_list</span><span class="p">))</span>
 <span class="c1">## [</span>
 <span class="c1">##     {</span>
-<span class="c1">##         &quot;activeTime&quot;      : &quot;2013-05-22T19:49:39Z&quot;,</span>
+<span class="c1">##         &quot;active_time&quot;      : &quot;2013-05-22T19:49:39Z&quot;,</span>
 <span class="c1">##         &quot;direction&quot;       : &quot;out&quot;,</span>
 <span class="c1">##         &quot;from&quot;            : &quot;{fromNumber}&quot;,</span>
 <span class="c1">##         &quot;id&quot;              : &quot;{callId1}&quot;,</span>
-<span class="c1">##         &quot;bridgeId&quot;        : &quot;{bridgeId}&quot;,</span>
-<span class="c1">##         &quot;startTime&quot;       : &quot;2013-05-22T19:49:35Z&quot;,</span>
+<span class="c1">##         &quot;bridge_id&quot;        : &quot;{bridgeId}&quot;,</span>
+<span class="c1">##         &quot;start_time&quot;       : &quot;2013-05-22T19:49:35Z&quot;,</span>
 <span class="c1">##         &quot;state&quot;           : &quot;active&quot;,</span>
 <span class="c1">##         &quot;to&quot;              : &quot;{toNumber1}&quot;,</span>
-<span class="c1">##         &quot;recordingEnabled&quot;: false,</span>
+<span class="c1">##         &quot;recording_enabled&quot;: false,</span>
 <span class="c1">##         &quot;events&quot;          : &quot;https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId1}/events&quot;,</span>
 <span class="c1">##         &quot;bridge&quot;          : &quot;https://api.catapult.inetwork.com/v1/users/{userId}/bridges/{bridgeId}&quot;</span>
 <span class="c1">##     },</span>
 <span class="c1">##     {</span>
-<span class="c1">##         &quot;activeTime&quot;      : &quot;2013-05-22T19:50:16Z&quot;,</span>
+<span class="c1">##         &quot;active_time&quot;      : &quot;2013-05-22T19:50:16Z&quot;,</span>
 <span class="c1">##         &quot;direction&quot;       : &quot;out&quot;,</span>
 <span class="c1">##         &quot;from&quot;            : &quot;{fromNumber}&quot;,</span>
 <span class="c1">##         &quot;id&quot;              : &quot;{callId2}&quot;,</span>
-<span class="c1">##         &quot;bridgeId&quot;        : &quot;{bridgeId}&quot;,</span>
-<span class="c1">##         &quot;startTime&quot;       : &quot;2013-05-22T19:50:16Z&quot;,</span>
+<span class="c1">##         &quot;bridge_id&quot;        : &quot;{bridgeId}&quot;,</span>
+<span class="c1">##         &quot;start_time&quot;       : &quot;2013-05-22T19:50:16Z&quot;,</span>
 <span class="c1">##         &quot;state&quot;           : &quot;active&quot;,</span>
 <span class="c1">##         &quot;to&quot;              : &quot;{toNumber2}&quot;,</span>
-<span class="c1">##         &quot;recordingEnabled&quot;: false,</span>
+<span class="c1">##         &quot;recording_enabled&quot;: false,</span>
 <span class="c1">##         &quot;events&quot;          : &quot;https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId2}/events&quot;,</span>
 <span class="c1">##         &quot;bridge&quot;          : &quot;https://api.catapult.inetwork.com/v1/users/{userId}/bridges/{bridgeId}&quot;</span>
 <span class="c1">##     }</span>

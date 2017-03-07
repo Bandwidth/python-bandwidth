@@ -27,7 +27,7 @@ class AccountTests(unittest.TestCase):
                 'https://api.catapult.inetwork.com/v1/users/userId/account',
                 auth=AUTH,
                 headers=headers)
-            self.assertEqual('pre-pay', data['accountType'])
+            self.assertEqual('pre-pay', data['account_type'])
 
     def test_list_account_transactions(self):
         """

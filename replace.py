@@ -6,14 +6,15 @@ def convert_comment_string_to_snake_case(s):
   :rtype: String
   :rertuns: String converted to snake_case
   """
-  regex = r"(\s+##\s+\'\w+)((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))(\w+\')"
-  a = re.compile("(##\s+\'\w+)((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))(\w+\')")
+  # regex = r"(\s+##\s+\'\w+)((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))(\w+\'.+)"
+  # a = re.compile("(\s+##\s+\'\w+)((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))(\w+\')")
+  regex = r"(\s+##\s+\"\w+)((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))(\w+\".+)"
+  #a = re.compile("(\s+##\s+\'\w+)((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))(\w+\')")
   # m.group(1)sub(r'_\1', s).lower()
 
   result = re.match(regex, s)
   if result:
-    print(result.group(0) + result.group(1).lower() + result.group(2))
-    return a.sub(r'\1_\2\3', s).lower()
+    return result.group(1) + "_" + result.group(2).lower() + result.group(3) + '\n'
   else:
     return s
 

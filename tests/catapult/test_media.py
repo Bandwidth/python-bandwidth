@@ -31,7 +31,7 @@ class MediaTests(unittest.TestCase):
                 'https://api.catapult.inetwork.com/v1/users/userId/media',
                 headers=headers,
                 auth=AUTH)
-            self.assertEqual('file1', data[0]['mediaName'])
+            self.assertEqual('file1', data[0]['media_name'])
 
     def test_upload_media_file(self):
         """

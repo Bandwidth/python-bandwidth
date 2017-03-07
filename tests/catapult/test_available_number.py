@@ -106,7 +106,7 @@ class AvailableNumberTests(unittest.TestCase):
                 auth=AUTH,
                 headers=headers,
                 params=estimated_json_request)
-            self.assertEqual('{national_number1}', data[0]['nationalNumber'])
+            self.assertEqual('{national_number1}', data[0]['national_number'])
             self.assertEqual('{numberId1}', data[0]['id'])
 
     def test_search_and_order_toll_free_numbers(self):
@@ -131,5 +131,5 @@ class AvailableNumberTests(unittest.TestCase):
                 auth=AUTH,
                 headers=headers,
                 params=estimated_json_request)
-            self.assertEqual('{national_number1}', data[0]['nationalNumber'])
+            self.assertEqual('{national_number1}', data[0]['national_number'])
             self.assertEqual('{numberId1}', data[0]['id'])

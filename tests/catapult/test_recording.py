@@ -36,7 +36,7 @@ class RecordingTests(unittest.TestCase):
                 headers=headers,
                 params={'size': None})
             self.assertEqual('{recordingId1}', data[0]['id'])
-            self.assertEqual('{callId1}-1.wav', data[0]['mediaName'])
+            self.assertEqual('{callId1}-1.wav', data[0]['media_name'])
 
     def test_get_recording(self):
         """
@@ -60,4 +60,4 @@ class RecordingTests(unittest.TestCase):
                 'https://api.catapult.inetwork.com/v1/users/userId/recordings/recordingId',
                 headers=headers,
                 auth=AUTH)
-            self.assertEqual('{callId1}-1.wav', data['mediaName'])
+            self.assertEqual('{callId1}-1.wav', data['media_name'])

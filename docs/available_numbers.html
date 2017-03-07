@@ -298,22 +298,22 @@ must consider overlayed areas.</li>
 <span class="k">print</span><span class="p">(</span><span class="n">numbers</span><span class="p">)</span>
 
 <span class="c1">## [   {   &#39;city&#39;          : &#39;WILMINGTON&#39;,</span>
-<span class="c1">##         &#39;nationalNumber&#39;: &#39;(910) 444-0230&#39;,</span>
+<span class="c1">##         &#39;national_number&#39;: &#39;(910) 444-0230&#39;,</span>
 <span class="c1">##         &#39;number&#39;        : &#39;+19104440230&#39;,</span>
 <span class="c1">##         &#39;price&#39;         : &#39;0.35&#39;,</span>
-<span class="c1">##         &#39;rateCenter&#39;    : &#39;WILMINGTON&#39;,</span>
+<span class="c1">##         &#39;rate_center&#39;    : &#39;WILMINGTON&#39;,</span>
 <span class="c1">##         &#39;state&#39;         : &#39;NC&#39;},</span>
 <span class="c1">##     {   &#39;city&#39;          : &#39;WILMINGTON&#39;,</span>
-<span class="c1">##         &#39;nationalNumber&#39;: &#39;(910) 444-0263&#39;,</span>
+<span class="c1">##         &#39;national_number&#39;: &#39;(910) 444-0263&#39;,</span>
 <span class="c1">##         &#39;number&#39;        : &#39;+19104440263&#39;,</span>
 <span class="c1">##         &#39;price&#39;         : &#39;0.35&#39;,</span>
-<span class="c1">##         &#39;rateCenter&#39;    : &#39;WILMINGTON&#39;,</span>
+<span class="c1">##         &#39;rate_center&#39;    : &#39;WILMINGTON&#39;,</span>
 <span class="c1">##         &#39;state&#39;         : &#39;NC&#39;},</span>
 <span class="c1">##     {   &#39;city&#39;          : &#39;WILMINGTON&#39;,</span>
-<span class="c1">##         &#39;nationalNumber&#39;: &#39;(910) 444-0268&#39;,</span>
+<span class="c1">##         &#39;national_number&#39;: &#39;(910) 444-0268&#39;,</span>
 <span class="c1">##         &#39;number&#39;        : &#39;+19104440268&#39;,</span>
 <span class="c1">##         &#39;price&#39;         : &#39;0.35&#39;,</span>
-<span class="c1">##         &#39;rateCenter&#39;    : &#39;WILMINGTON&#39;,</span>
+<span class="c1">##         &#39;rate_center&#39;    : &#39;WILMINGTON&#39;,</span>
 <span class="c1">##         &#39;state&#39;         : &#39;NC&#39;}</span>
 <span class="c1">## ]</span>
 
@@ -353,17 +353,17 @@ must consider overlayed areas.</li>
 
 <span class="k">print</span><span class="p">(</span><span class="n">numbers</span><span class="p">)</span>
 
-<span class="c1">## [   {   &#39;nationalNumber&#39;: &#39;(844) 489-0456&#39;,</span>
+<span class="c1">## [   {   &#39;national_number&#39;: &#39;(844) 489-0456&#39;,</span>
 <span class="c1">##         &#39;number&#39;        : &#39;+18444890456&#39;,</span>
-<span class="c1">##         &#39;patternMatch&#39;  : &#39;           456&#39;,</span>
+<span class="c1">##         &#39;pattern_match&#39;  : &#39;           456&#39;,</span>
 <span class="c1">##         &#39;price&#39;         : &#39;0.75&#39;},</span>
-<span class="c1">##     {   &#39;nationalNumber&#39;: &#39;(844) 498-2456&#39;,</span>
+<span class="c1">##     {   &#39;national_number&#39;: &#39;(844) 498-2456&#39;,</span>
 <span class="c1">##         &#39;number&#39;        : &#39;+18444982456&#39;,</span>
-<span class="c1">##         &#39;patternMatch&#39;  : &#39;           456&#39;,</span>
+<span class="c1">##         &#39;pattern_match&#39;  : &#39;           456&#39;,</span>
 <span class="c1">##         &#39;price&#39;         : &#39;0.75&#39;},</span>
-<span class="c1">##     {   &#39;nationalNumber&#39;: &#39;(844) 509-4566&#39;,</span>
+<span class="c1">##     {   &#39;national_number&#39;: &#39;(844) 509-4566&#39;,</span>
 <span class="c1">##         &#39;number&#39;        : &#39;+18445094566&#39;,</span>
-<span class="c1">##         &#39;patternMatch&#39;  : &#39;          456 &#39;,</span>
+<span class="c1">##         &#39;pattern_match&#39;  : &#39;          456 &#39;,</span>
 <span class="c1">##         &#39;price&#39;         : &#39;0.75&#39;}]</span>
 
 <span class="k">print</span><span class="p">(</span><span class="n">numbers</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;number&quot;</span><span class="p">])</span>
@@ -407,12 +407,12 @@ must consider overlayed areas.</li>
 <p>Example: Search _and_ order a single number:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">ordered_numbers</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">search_and_order_available_numbers</span><span class="p">(</span><span class="nb">zip</span> <span class="o">=</span> <span class="s1">&#39;27606&#39;</span><span class="p">,</span> <span class="n">quantity</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
 
-<span class="k">print</span><span class="p">(</span><span class="n">ordered_number</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">ordered_numbers</span><span class="p">)</span>
 
 <span class="c1">## [   {   &#39;city&#39;          : &#39;RALEIGH&#39;,</span>
 <span class="c1">##         &#39;id&#39;            : &#39;n-abc&#39;,</span>
 <span class="c1">##         &#39;location&#39;      : &#39;https://api.catapult.inetwork.com/v1/users/u-12/phoneNumbers/n-abc&#39;,</span>
-<span class="c1">##         &#39;nationalNumber&#39;: &#39;(919) 222-4444&#39;,</span>
+<span class="c1">##         &#39;national_number&#39;: &#39;(919) 222-4444&#39;,</span>
 <span class="c1">##         &#39;number&#39;        : &#39;+19192224444&#39;,</span>
 <span class="c1">##         &#39;price&#39;         : &#39;0.35&#39;,</span>
 <span class="c1">##         &#39;state&#39;         : &#39;NC&#39;}]</span>
@@ -445,7 +445,7 @@ must consider overlayed areas.</li>
 <span class="k">print</span><span class="p">(</span><span class="n">numbers</span><span class="p">)</span>
 
 <span class="c1">## [   {   &#39;location&#39;      : &#39;https://api.catapult.inetwork.com/v1/users/u-123/phoneNumbers/n-abc&#39;,</span>
-<span class="c1">##         &#39;nationalNumber&#39;: &#39;(844) 484-1048&#39;,</span>
+<span class="c1">##         &#39;national_number&#39;: &#39;(844) 484-1048&#39;,</span>
 <span class="c1">##         &#39;number&#39;        : &#39;+18444841048&#39;,</span>
 <span class="c1">##         &#39;price&#39;         : &#39;0.75&#39;}]</span>
 

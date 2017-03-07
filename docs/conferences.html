@@ -307,12 +307,12 @@ fails or timesout</li>
 <span class="n">my_conf</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_conference</span><span class="p">(</span><span class="n">conference_id</span><span class="p">)</span>
 
 <span class="k">print</span><span class="p">(</span><span class="n">my_conf</span><span class="p">)</span>
-<span class="c1">## {   &#39;activeMembers&#39;     : 0,</span>
-<span class="c1">##     &#39;callbackHttpMethod&#39;: &#39;post&#39;,</span>
-<span class="c1">##     &#39;callbackTimeout&#39;   : 2000,</span>
-<span class="c1">##     &#39;callbackUrl&#39;       : &#39;http://google.com&#39;,</span>
-<span class="c1">##     &#39;createdTime&#39;       : &#39;2017-01-26T01:58:59Z&#39;,</span>
-<span class="c1">##     &#39;fallbackUrl&#39;       : &#39;http://yahoo.com&#39;,</span>
+<span class="c1">## {   &#39;active_members&#39;     : 0,</span>
+<span class="c1">##     &#39;callback_http_method&#39;: &#39;post&#39;,</span>
+<span class="c1">##     &#39;callback_timeout&#39;   : 2000,</span>
+<span class="c1">##     &#39;callback_url&#39;       : &#39;http://google.com&#39;,</span>
+<span class="c1">##     &#39;created_time&#39;       : &#39;2017-01-26T01:58:59Z&#39;,</span>
+<span class="c1">##     &#39;fallback_url&#39;       : &#39;http://yahoo.com&#39;,</span>
 <span class="c1">##     &#39;from&#39;              : &#39;+12018994444&#39;,</span>
 <span class="c1">##     &#39;hold&#39;              : False,</span>
 <span class="c1">##     &#39;id&#39;                : &#39;conf-ixaagbn5wcyskisiy&#39;,</span>
@@ -351,12 +351,12 @@ fails or timesout</li>
 <span class="n">my_conf</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_conference</span><span class="p">(</span><span class="n">conference_id</span><span class="p">)</span>
 
 <span class="k">print</span><span class="p">(</span><span class="n">my_conf</span><span class="p">)</span>
-<span class="c1">## {   &#39;activeMembers&#39;     : 0,</span>
-<span class="c1">##     &#39;callbackHttpMethod&#39;: &#39;post&#39;,</span>
-<span class="c1">##     &#39;callbackTimeout&#39;   : 2000,</span>
-<span class="c1">##     &#39;callbackUrl&#39;       : &#39;http://google.com&#39;,</span>
-<span class="c1">##     &#39;createdTime&#39;       : &#39;2017-01-26T01:58:59Z&#39;,</span>
-<span class="c1">##     &#39;fallbackUrl&#39;       : &#39;http://yahoo.com&#39;,</span>
+<span class="c1">## {   &#39;active_members&#39;     : 0,</span>
+<span class="c1">##     &#39;callback_http_method&#39;: &#39;post&#39;,</span>
+<span class="c1">##     &#39;callback_timeout&#39;   : 2000,</span>
+<span class="c1">##     &#39;callback_url&#39;       : &#39;http://google.com&#39;,</span>
+<span class="c1">##     &#39;created_time&#39;       : &#39;2017-01-26T01:58:59Z&#39;,</span>
+<span class="c1">##     &#39;fallback_url&#39;       : &#39;http://yahoo.com&#39;,</span>
 <span class="c1">##     &#39;from&#39;              : &#39;+12018994444&#39;,</span>
 <span class="c1">##     &#39;hold&#39;              : False,</span>
 <span class="c1">##     &#39;id&#39;                : &#39;conf-ixaagbn5wcyskisiy&#39;,</span>
@@ -478,14 +478,14 @@ if the request to callbackUrl fails.</li>
 
 <span class="c1">## [</span>
 <span class="c1">##    {</span>
-<span class="c1">##       &#39;addedTime&#39;  :&#39;2017-01-30T22:01:11Z&#39;,</span>
+<span class="c1">##       &#39;added_time&#39;  :&#39;2017-01-30T22:01:11Z&#39;,</span>
 <span class="c1">##       &#39;call&#39;       :&#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId&#39;,</span>
 <span class="c1">##       &#39;hold&#39;       :False,</span>
 <span class="c1">##       &#39;id&#39;         :&#39;member-memberId&#39;,</span>
-<span class="c1">##       &#39;joinTone&#39;   :False,</span>
-<span class="c1">##       &#39;leavingTone&#39;:False,</span>
+<span class="c1">##       &#39;join_tone&#39;   :False,</span>
+<span class="c1">##       &#39;leaving_tone&#39;:False,</span>
 <span class="c1">##       &#39;mute&#39;       :False,</span>
-<span class="c1">##       &#39;removedTime&#39;:&#39;2017-01-30T22:01:21Z&#39;,</span>
+<span class="c1">##       &#39;removed_time&#39;:&#39;2017-01-30T22:01:21Z&#39;,</span>
 <span class="c1">##       &#39;state&#39;      :&#39;completed&#39;</span>
 <span class="c1">##    }</span>
 <span class="c1">## ]</span>
@@ -539,14 +539,14 @@ if the request to callbackUrl fails.</li>
 <span class="k">print</span><span class="p">(</span><span class="n">my_conf_member</span><span class="p">)</span>
 
 <span class="c1">## {</span>
-<span class="c1">##     &#39;addedTime&#39;: &#39;2017-01-30T22:01:11Z&#39;,</span>
+<span class="c1">##     &#39;added_time&#39;: &#39;2017-01-30T22:01:11Z&#39;,</span>
 <span class="c1">##     &#39;call&#39;         : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId&#39;,</span>
 <span class="c1">##     &#39;hold&#39;         : False,</span>
 <span class="c1">##     &#39;id&#39;           : &#39;member-memberId&#39;,</span>
-<span class="c1">##     &#39;joinTone&#39;     : False,</span>
-<span class="c1">##     &#39;leavingTone&#39;  : False,</span>
+<span class="c1">##     &#39;join_tone&#39;     : False,</span>
+<span class="c1">##     &#39;leaving_tone&#39;  : False,</span>
 <span class="c1">##     &#39;mute&#39;         : False,</span>
-<span class="c1">##     &#39;removedTime&#39;  : &#39;2017-01-30T22:01:21Z&#39;,</span>
+<span class="c1">##     &#39;removed_time&#39;  : &#39;2017-01-30T22:01:21Z&#39;,</span>
 <span class="c1">##     &#39;state&#39;        : &#39;completed&#39;</span>
 <span class="c1">## }</span>
 </pre></div>
@@ -595,14 +595,14 @@ if the request to callbackUrl fails.</li>
 <span class="k">print</span><span class="p">(</span><span class="n">my_conf_member</span><span class="p">)</span>
 
 <span class="c1">## {</span>
-<span class="c1">##     &#39;addedTime&#39;: &#39;2017-01-30T22:01:11Z&#39;,</span>
+<span class="c1">##     &#39;added_time&#39;: &#39;2017-01-30T22:01:11Z&#39;,</span>
 <span class="c1">##     &#39;call&#39;         : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId&#39;,</span>
 <span class="c1">##     &#39;hold&#39;         : False,</span>
 <span class="c1">##     &#39;id&#39;           : &#39;member-memberId&#39;,</span>
-<span class="c1">##     &#39;joinTone&#39;     : True,</span>
-<span class="c1">##     &#39;leavingTone&#39;  : False,</span>
+<span class="c1">##     &#39;join_tone&#39;     : True,</span>
+<span class="c1">##     &#39;leaving_tone&#39;  : False,</span>
 <span class="c1">##     &#39;mute&#39;         : False,</span>
-<span class="c1">##     &#39;removedTime&#39;  : &#39;2017-01-30T22:01:21Z&#39;,</span>
+<span class="c1">##     &#39;removed_time&#39;  : &#39;2017-01-30T22:01:21Z&#39;,</span>
 <span class="c1">##     &#39;state&#39;        : &#39;active&#39;</span>
 <span class="c1">## }</span>
 </pre></div>
@@ -649,14 +649,14 @@ if the request to callbackUrl fails.</li>
 <span class="k">print</span><span class="p">(</span><span class="n">my_conf_member</span><span class="p">)</span>
 
 <span class="c1">## {</span>
-<span class="c1">##     &#39;addedTime&#39;: &#39;2017-01-30T22:01:11Z&#39;,</span>
+<span class="c1">##     &#39;added_time&#39;: &#39;2017-01-30T22:01:11Z&#39;,</span>
 <span class="c1">##     &#39;call&#39;         : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId&#39;,</span>
 <span class="c1">##     &#39;hold&#39;         : False,</span>
 <span class="c1">##     &#39;id&#39;           : &#39;member-memberId&#39;,</span>
-<span class="c1">##     &#39;joinTone&#39;     : True,</span>
-<span class="c1">##     &#39;leavingTone&#39;  : False,</span>
+<span class="c1">##     &#39;join_tone&#39;     : True,</span>
+<span class="c1">##     &#39;leaving_tone&#39;  : False,</span>
 <span class="c1">##     &#39;mute&#39;         : False,</span>
-<span class="c1">##     &#39;removedTime&#39;  : &#39;2017-01-30T22:01:21Z&#39;,</span>
+<span class="c1">##     &#39;removed_time&#39;  : &#39;2017-01-30T22:01:21Z&#39;,</span>
 <span class="c1">##     &#39;state&#39;        : &#39;active&#39;</span>
 <span class="c1">## }</span>
 
@@ -665,14 +665,14 @@ if the request to callbackUrl fails.</li>
 <span class="n">my_conf</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_conference_member</span><span class="p">(</span><span class="n">my_member_id</span><span class="p">)</span>
 
 <span class="c1">## {</span>
-<span class="c1">##     &#39;addedTime&#39;: &#39;2017-01-30T22:01:11Z&#39;,</span>
+<span class="c1">##     &#39;added_time&#39;: &#39;2017-01-30T22:01:11Z&#39;,</span>
 <span class="c1">##     &#39;call&#39;         : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId&#39;,</span>
 <span class="c1">##     &#39;hold&#39;         : True,</span>
 <span class="c1">##     &#39;id&#39;           : &#39;member-memberId&#39;,</span>
-<span class="c1">##     &#39;joinTone&#39;     : True,</span>
-<span class="c1">##     &#39;leavingTone&#39;  : False,</span>
+<span class="c1">##     &#39;join_tone&#39;     : True,</span>
+<span class="c1">##     &#39;leaving_tone&#39;  : False,</span>
 <span class="c1">##     &#39;mute&#39;         : True,</span>
-<span class="c1">##     &#39;removedTime&#39;  : &#39;2017-01-30T22:01:21Z&#39;,</span>
+<span class="c1">##     &#39;removed_time&#39;  : &#39;2017-01-30T22:01:21Z&#39;,</span>
 <span class="c1">##     &#39;state&#39;        : &#39;active&#39;</span>
 <span class="c1">## }</span>
 </pre></div>
@@ -797,20 +797,20 @@ api.speak_sentence_to_conference_member(&#39;conferenceId&#39;, &#39;memberId&#3
 <span class="n">my_conf_members</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">list_conference_members</span><span class="p">(</span><span class="n">my_conf</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]))</span>
 <span class="k">print</span><span class="p">(</span><span class="n">my_conf_members</span><span class="p">)</span>
 
-<span class="c1">## [{ &#39;addedTime&#39;  : &#39;2017-01-30T23:17:11Z&#39;,</span>
+<span class="c1">## [{ &#39;added_time&#39;  : &#39;2017-01-30T23:17:11Z&#39;,</span>
 <span class="c1">##    &#39;call&#39;       : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId&#39;,</span>
 <span class="c1">##    &#39;hold&#39;       : False,</span>
 <span class="c1">##    &#39;id&#39;         : &#39;member-memberId&#39;,</span>
-<span class="c1">##    &#39;joinTone&#39;   : False,</span>
-<span class="c1">##    &#39;leavingTone&#39;: False,</span>
+<span class="c1">##    &#39;join_tone&#39;   : False,</span>
+<span class="c1">##    &#39;leaving_tone&#39;: False,</span>
 <span class="c1">##    &#39;mute&#39;       : False,</span>
 <span class="c1">##    &#39;state&#39;      : &#39;active&#39;},</span>
-<span class="c1">##  { &#39;addedTime&#39;  : &#39;2017-01-30T23:17:14Z&#39;,</span>
+<span class="c1">##  { &#39;added_time&#39;  : &#39;2017-01-30T23:17:14Z&#39;,</span>
 <span class="c1">##    &#39;call&#39;       : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId2&#39;,</span>
 <span class="c1">##    &#39;hold&#39;       : False,</span>
 <span class="c1">##    &#39;id&#39;         : &#39;member-memberId2&#39;,</span>
-<span class="c1">##    &#39;joinTone&#39;   : False,</span>
-<span class="c1">##    &#39;leavingTone&#39;: False,</span>
+<span class="c1">##    &#39;join_tone&#39;   : False,</span>
+<span class="c1">##    &#39;leaving_tone&#39;: False,</span>
 <span class="c1">##    &#39;mute&#39;       : False,</span>
 <span class="c1">##    &#39;state&#39;      : &#39;active&#39;}]</span>
 
@@ -819,20 +819,20 @@ api.speak_sentence_to_conference_member(&#39;conferenceId&#39;, &#39;memberId&#3
 <span class="n">my_conf_members</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">list_conference_members</span><span class="p">(</span><span class="n">my_conf</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]))</span>
 <span class="k">print</span><span class="p">(</span><span class="n">my_conf_members</span><span class="p">)</span>
 
-<span class="c1">## [{ &#39;addedTime&#39;  : &#39;2017-01-30T23:17:11Z&#39;,</span>
+<span class="c1">## [{ &#39;added_time&#39;  : &#39;2017-01-30T23:17:11Z&#39;,</span>
 <span class="c1">##    &#39;call&#39;       : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId&#39;,</span>
 <span class="c1">##    &#39;hold&#39;       : False,</span>
 <span class="c1">##    &#39;id&#39;         : &#39;member-memberId&#39;,</span>
-<span class="c1">##    &#39;joinTone&#39;   : False,</span>
-<span class="c1">##    &#39;leavingTone&#39;: False,</span>
+<span class="c1">##    &#39;join_tone&#39;   : False,</span>
+<span class="c1">##    &#39;leaving_tone&#39;: False,</span>
 <span class="c1">##    &#39;mute&#39;       : False,</span>
 <span class="c1">##    &#39;state&#39;      : &#39;active&#39;},</span>
-<span class="c1">##  { &#39;addedTime&#39;  : &#39;2017-01-30T23:17:14Z&#39;,</span>
+<span class="c1">##  { &#39;added_time&#39;  : &#39;2017-01-30T23:17:14Z&#39;,</span>
 <span class="c1">##    &#39;call&#39;       : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId2&#39;,</span>
 <span class="c1">##    &#39;hold&#39;       : False,</span>
 <span class="c1">##    &#39;id&#39;         : &#39;member-memberId2&#39;,</span>
-<span class="c1">##    &#39;joinTone&#39;   : False,</span>
-<span class="c1">##    &#39;leavingTone&#39;: False,</span>
+<span class="c1">##    &#39;join_tone&#39;   : False,</span>
+<span class="c1">##    &#39;leaving_tone&#39;: False,</span>
 <span class="c1">##    &#39;mute&#39;       : False,</span>
 <span class="c1">##    &#39;state&#39;      : &#39;completed&#39;}]</span>
 </pre></div>

@@ -295,11 +295,11 @@ of items. If no value is specified the default value is 25. (Maximum value 1000)
 <span class="k">print</span><span class="p">(</span><span class="n">my_app</span><span class="p">)</span>
 
 
-<span class="c1">## {   &#39;autoAnswer&#39;: True,</span>
-<span class="c1">##     &#39;callbackHttpMethod&#39;: &#39;get&#39;,</span>
+<span class="c1">## {   &#39;auto_answer&#39;: True,</span>
+<span class="c1">##     &#39;callback_http_method&#39;: &#39;get&#39;,</span>
 <span class="c1">##     &#39;id&#39;: &#39;a-asdf&#39;,</span>
-<span class="c1">##     &#39;incomingCallUrl&#39;: &#39;https://test.com/callcallback/&#39;,</span>
-<span class="c1">##     &#39;incomingMessageUrl&#39;: &#39;https://test.com/msgcallback/&#39;,</span>
+<span class="c1">##     &#39;incoming_call_url&#39;: &#39;https://test.com/callcallback/&#39;,</span>
+<span class="c1">##     &#39;incoming_message_url&#39;: &#39;https://test.com/msgcallback/&#39;,</span>
 <span class="c1">##     &#39;name&#39;: &#39;MyAppName&#39;</span>
 <span class="c1">## }</span>
 </pre></div>
@@ -353,12 +353,12 @@ incomingMessageUrl fails.</li>
 
 <span class="n">my_app</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_application</span><span class="p">(</span><span class="n">my_app_id</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">my_app</span><span class="p">)</span>
-<span class="c1">## {   &#39;autoAnswer&#39;        : True,</span>
-<span class="c1">##     &#39;callbackHttpMethod&#39;: &#39;get&#39;,</span>
+<span class="c1">## {   &#39;auto_answer&#39;        : True,</span>
+<span class="c1">##     &#39;callback_http_method&#39;: &#39;get&#39;,</span>
 <span class="c1">##     &#39;id&#39;                : &#39;a-1232asf123&#39;,</span>
-<span class="c1">##     &#39;incomingCallUrl&#39;   : &#39;http://callback.com/calls&#39;,</span>
-<span class="c1">##     &#39;incomingMessageUrl&#39;: &#39;http://callback.com/messages&#39;,</span>
-<span class="c1">##     &#39;incomingSmsUrl&#39;    : &#39;http://callback.com/messages&#39;,</span>
+<span class="c1">##     &#39;incoming_call_url&#39;   : &#39;http://callback.com/calls&#39;,</span>
+<span class="c1">##     &#39;incoming_message_url&#39;: &#39;http://callback.com/messages&#39;,</span>
+<span class="c1">##     &#39;incoming_sms_url&#39;    : &#39;http://callback.com/messages&#39;,</span>
 <span class="c1">##     &#39;name&#39;              : &#39;MyFirstApp2&#39;</span>
 <span class="c1">## }</span>
 
@@ -416,7 +416,7 @@ incomingMessageUrl fails.</li>
 
 <span class="n">my_app</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_application</span><span class="p">(</span><span class="n">my_app_id</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">my_app</span><span class="p">)</span>
-<span class="p">{</span>   <span class="s1">&#39;autoAnswer&#39;</span>        <span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+<span class="p">{</span>   <span class="s1">&#39;auto_answer&#39;</span>        <span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
     <span class="s1">&#39;callbackHttpMethod&#39;</span><span class="p">:</span> <span class="s1">&#39;get&#39;</span><span class="p">,</span>
     <span class="s1">&#39;id&#39;</span>                <span class="p">:</span> <span class="s1">&#39;a-1232asf123&#39;</span><span class="p">,</span>
     <span class="s1">&#39;incomingCallUrl&#39;</span>   <span class="p">:</span> <span class="s1">&#39;http://callback.com/calls&#39;</span><span class="p">,</span>
@@ -463,12 +463,12 @@ incomingMessageUrl fails.</li>
 <p>Example: Fetch single application:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_app</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_application</span><span class="p">(</span><span class="n">my_app_id</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">my_app</span><span class="p">)</span>
-<span class="c1">## {   &#39;autoAnswer&#39;: True,</span>
-<span class="c1">##     &#39;callbackHttpMethod&#39;: &#39;get&#39;,</span>
+<span class="c1">## {   &#39;auto_answer&#39;: True,</span>
+<span class="c1">##     &#39;callback_http_method&#39;: &#39;get&#39;,</span>
 <span class="c1">##     &#39;id&#39;: &#39;a-1232asf123&#39;,</span>
-<span class="c1">##     &#39;incomingCallUrl&#39;: &#39;http://callback.com/calls&#39;,</span>
-<span class="c1">##     &#39;incomingMessageUrl&#39;: &#39;http://callback.com/messages&#39;,</span>
-<span class="c1">##     &#39;incomingSmsUrl&#39;: &#39;http://callback.com/messages&#39;,</span>
+<span class="c1">##     &#39;incoming_call_url&#39;: &#39;http://callback.com/calls&#39;,</span>
+<span class="c1">##     &#39;incoming_message_url&#39;: &#39;http://callback.com/messages&#39;,</span>
+<span class="c1">##     &#39;incoming_sms_url&#39;: &#39;http://callback.com/messages&#39;,</span>
 <span class="c1">##     &#39;name&#39;: &#39;MyFirstApp2&#39;</span>
 <span class="c1">## }</span>
 
