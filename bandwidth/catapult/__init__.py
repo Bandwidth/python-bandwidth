@@ -3004,23 +3004,41 @@ class Client:
         :param str number: An available telephone number you want to use
         :param str name: A name you choose for this number.
         :param str application_id: The unique id of an Application you want to associate with this number.
-        :param str fallback_number: Number to transfer an incoming call when the callback/fallback events can't
-            be delivered.
+        :param str user_name: This is your user name used to log into the Bandwidth Dashboard.
+        :param str password: This is your password used to log into the Bandwidth Dashboard.
+        :param str account_id: This ID is associated with your Bandwidth Dashboard account.
+            Note: If you don’t know your Provider Account ID, please open a ticket with our support group.
+
+        :param str provider_name: Always use this provider “bandwidth-dashboard”
 
         :rtype: str
         :returns: id of created phone number
 
         Example: Order Number::
 
-            number_id = api.create_phone_number(number='+1234567890')
+            number_id = api.order_phone_number(number='+1234567890')
             print(number_id)
             # n-asdf123
         """
 
+    def import_number(self,
+                      number,
+                      name,
+                      application_id,
+                      user_name,
+                      password,
+                      account_id,
+                      provider_name='bandwidth-dashboard',
+                      **kwargs
+                      ):
+
         kwargs['number'] = number
         kwargs['name'] = name
         kwargs['applicationId'] = application_id
-        kwargs['fallbackNumber'] = fallback_number
+        kwargs['provider']['providerName'] = provider_name
+        kwargs['provider']['userName'] = user_name
+        kwargs['provider']['password'] = password
+        kwargs['provider']['accountId'] = account_id
 
         return self._make_request('post', '/users/%s/phoneNumbers' % self.user_id, json=kwargs)[2]
 
