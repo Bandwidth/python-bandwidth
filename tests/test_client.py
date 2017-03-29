@@ -1,5 +1,9 @@
+from __future__ import absolute_import
 import unittest
 import six
+
+from bandwidth import client
+from bandwidth import _client_classes
 
 if six.PY3:
     from unittest.mock import patch
@@ -7,8 +11,6 @@ if six.PY3:
 else:
     from mock import patch
     builtins = '__builtin__'
-
-from bandwidth import client, _client_classes
 
 
 class ClientTests(unittest.TestCase):

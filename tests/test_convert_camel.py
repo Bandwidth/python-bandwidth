@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import unittest
 import six
 from tests.camel_test_values import before_array_dict, after_array_dict
