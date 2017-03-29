@@ -1,5 +1,5 @@
 import unittest
-from bandwidth.catapult.bxml import Response
+from bandwidth.voice.bxml import Response
 from lxml.builder import E
 
 

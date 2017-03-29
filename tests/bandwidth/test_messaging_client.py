@@ -1,13 +1,15 @@
 import unittest
 import six
+import copy
 import requests
-from tests.catapult.helpers import create_response, get_client, AUTH, headers
+from tests.bandwidth.helpers import get_messaging_client as get_client
+from tests.bandwidth.helpers import create_response, AUTH, headers
 if six.PY3:
     from unittest.mock import patch
 else:
     from mock import patch
 
-from bandwidth.catapult import Client, CatapultException
+from bandwidth.messaging import Client, BandwidthMessageAPIException
 
 
 class ClientTests(unittest.TestCase):
@@ -58,13 +60,28 @@ class ClientTests(unittest.TestCase):
             p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/path',
                                  headers=headers, auth=('apiToken', 'apiSecret'))
 
+    def test_make_request_with_headers(self):
+        """
+        _request() should add the user agent to header
+        """
+        with patch('requests.request', return_value=create_response()) as p:
+            client = get_client()
+            req_headers={
+                'hello': 'world'
+            }
+            res_headers = copy.deepcopy(headers)
+            res_headers['hello'] = 'world'
+            response = client._request('get', '/path', headers=req_headers)
+            p.assert_called_with('get', 'https://api.catapult.inetwork.com/v1/path',
+                                 headers=res_headers, auth=('apiToken', 'apiSecret'))
+
     def test_check_response_with_json_error(self):
         """
         _check_response() should extract error data from json
         """
         response = create_response(400, '{"message": "This is error", "code": "invalid-request"}')
         client = get_client()
-        with self.assertRaises(CatapultException) as r:
+        with self.assertRaises(BandwidthMessageAPIException) as r:
             client._check_response(response)
         err = r.exception
         self.assertEqual('invalid-request', err.code)
@@ -78,7 +95,7 @@ class ClientTests(unittest.TestCase):
         """
         response = create_response(400, '{"message": "This is error"}')
         client = get_client()
-        with self.assertRaises(CatapultException) as r:
+        with self.assertRaises(BandwidthMessageAPIException) as r:
             client._check_response(response)
         err = r.exception
         self.assertEqual('400', err.code)
@@ -92,7 +109,7 @@ class ClientTests(unittest.TestCase):
         """
         response = create_response(400, 'This is error', 'text/html')
         client = get_client()
-        with self.assertRaises(CatapultException) as r:
+        with self.assertRaises(BandwidthMessageAPIException) as r:
             client._check_response(response)
         err = r.exception
         self.assertEqual('400', err.code)
@@ -126,17 +143,3 @@ class ClientTests(unittest.TestCase):
                                  headers=headers, auth=('apiToken', 'apiSecret'))
             self.assertIs(estimated_response, response)
             self.assertEqual('id', id)
-
-    def test_play_audio_methods(self):
-        """
-        client should contain play audio helpers
-        """
-        client = get_client()
-        self.assertIsNotNone(getattr(client, 'speak_sentence_to_call'))
-        self.assertIsNotNone(getattr(client, 'play_audio_file_to_call'))
-        self.assertIsNotNone(getattr(client, 'speak_sentence_to_bridge'))
-        self.assertIsNotNone(getattr(client, 'play_audio_file_to_bridge'))
-        self.assertIsNotNone(getattr(client, 'speak_sentence_to_conference'))
-        self.assertIsNotNone(getattr(client, 'play_audio_file_to_conference'))
-        self.assertIsNotNone(getattr(client, 'speak_sentence_to_conference_member'))
-        self.assertIsNotNone(getattr(client, 'play_audio_file_to_conference_member'))

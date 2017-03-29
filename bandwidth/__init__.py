@@ -1,4 +1,4 @@
-_SUPPORTED_CLIENTS = ['catapult']
+_SUPPORTED_CLIENTS = ['voice', 'messaging', 'account', 'numbers']
 
 _client_classes = {}
 

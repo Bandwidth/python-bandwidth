@@ -1,13 +1,14 @@
 import unittest
 import six
 import requests
-from tests.catapult.helpers import create_response, get_client, AUTH, headers
+from tests.bandwidth.helpers import get_voice_client as get_client
+from tests.bandwidth.helpers import create_response, AUTH, headers
 if six.PY3:
     from unittest.mock import patch
 else:
     from mock import patch
 
-from bandwidth.catapult.lazy_enumerable import get_lazy_enumerator
+from bandwidth.voice.lazy_enumerable import get_lazy_enumerator
 
 
 class LazyEnumerableTests(unittest.TestCase):

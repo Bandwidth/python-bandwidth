@@ -1,13 +1,14 @@
 import unittest
 import six
 import requests
-from tests.catapult.helpers import get_client, AUTH
+from tests.bandwidth.helpers import get_voice_client as get_client
+from tests.bandwidth.helpers import AUTH
 if six.PY3:
     from unittest.mock import patch
 else:
     from mock import patch
 
-from bandwidth.catapult import Client
+from bandwidth.voice import Client
 
 
 class AudioBuilderTests(unittest.TestCase):

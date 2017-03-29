@@ -3,9 +3,9 @@ import six
 import urllib
 import json
 import itertools
-from bandwidth.catapult.lazy_enumerable import get_lazy_enumerator
+from bandwidth.voice.lazy_enumerable import get_lazy_enumerator
 from bandwidth.convert_camel import convert_object_to_snake_case
-from bandwidth.catapult.decorators import play_audio
+from bandwidth.voice.decorators import play_audio
 from bandwidth.version import __version__ as version
 
 quote = urllib.parse.quote if six.PY3 else urllib.quote
@@ -13,7 +13,7 @@ lazy_map = map if six.PY3 else itertools.imap
 
 
 def _set_media_name(recording):
-    recording['media_name'] = recording.get('media', '').split('/')[-1]
+    recording['mediaName'] = recording.get('media', '').split('/')[-1]
     return recording
 
 
@@ -238,7 +238,7 @@ class Client:
             total_chargeable_duration = 0
 
             for call in call_list:
-                total_chargeable_duration += call['chargeable_duration']
+                total_chargeable_duration += call['chargeableDuration']
 
             print(total_chargeable_duration)
             ## 240
@@ -249,38 +249,38 @@ class Client:
             print(list(call_list))
             ## [
             ##   {
-            ##     'active_time'          : '2017-01-26T16:10:23Z',
-            ##     'callback_url'         : 'http://yoursite.com/calls',
-            ##     'chargeable_duration'  : 60,
+            ##     'activeTime'          : '2017-01-26T16:10:23Z',
+            ##     'callbackUrl'         : 'http://yoursite.com/calls',
+            ##     'chargeableDuration'  : 60,
             ##     'direction'           : 'out',
-            ##     'end_time'             : '2017-01-26T16:10:33Z',
+            ##     'endTime'             : '2017-01-26T16:10:33Z',
             ##     'events'              : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-abc123/events',
             ##     'from'                : '+17079311113',
             ##     'id'                  : 'c-abc123',
-            ##     'recording_enabled'    : False,
-            ##     'recording_file_format' : 'wav',
+            ##     'recordingEnabled'    : False,
+            ##     'recordingFileFormat' : 'wav',
             ##     'recordings'          : 'https://api.../v1/users/u-abc123/calls/c-abc123/recordings',
-            ##     'start_time'           : '2017-01-26T16:10:11Z',
+            ##     'startTime'           : '2017-01-26T16:10:11Z',
             ##     'state'               : 'completed',
             ##     'to'                  : '+19192223333',
-            ##     'transcription_enabled': False,
+            ##     'transcriptionEnabled': False,
             ##     'transcriptions'      : 'https://api.../v1/users/u-abc123/calls/c-abc123/transcriptions'
             ##   },
             ##   {
-            ##     'active_time'          : '2016-12-29T23:50:35Z',
-            ##     'chargeable_duration'  : 60,
+            ##     'activeTime'          : '2016-12-29T23:50:35Z',
+            ##     'chargeableDuration'  : 60,
             ##     'direction'           : 'out',
-            ##     'end_time'             : '2016-12-29T23:50:41Z',
+            ##     'endTime'             : '2016-12-29T23:50:41Z',
             ##     'events'              : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-xyz987/events',
             ##     'from'                : '+19194443333',
             ##     'id'                  : 'c-xyz987',
-            ##     'recording_enabled'    : False,
-            ##     'recording_file_format' : 'wav',
+            ##     'recordingEnabled'    : False,
+            ##     'recordingFileFormat' : 'wav',
             ##     'recordings'          : 'https://api.../v1/users/u-abc123/calls/c-xyz987/recordings',
-            ##     'start_time'           : '2016-12-29T23:50:15Z',
+            ##     'startTime'           : '2016-12-29T23:50:15Z',
             ##     'state'               : 'completed',
             ##     'to'                  : '+19192223333',
-            ##     'transcription_enabled': False,
+            ##     'transcriptionEnabled': False,
             ##     'transcriptions'      : 'https://api.../v1/users/u-abc123/calls/c-xyz987/transcriptions'
             ##   }
             ## ]
@@ -354,18 +354,18 @@ class Client:
 
             my_call = api.get_call(call_id)
             print(my_call)
-            ## {   'callback_url'         : 'http://yoursite.com/calls',
+            ## {   'callbackUrl'         : 'http://yoursite.com/calls',
             ##     'direction'           : 'out',
             ##     'events'              : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/events',
             ##     'from'                : '+1234567890',
             ##     'id'                  : 'c-abc123',
-            ##     'recording_enabled'    : False,
-            ##     'recording_file_format' : 'wav',
+            ##     'recordingEnabled'    : False,
+            ##     'recordingFileFormat' : 'wav',
             ##     'recordings'          : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/recordings',
-            ##     'start_time'           : '2017-01-26T16:10:11Z',
+            ##     'startTime'           : '2017-01-26T16:10:11Z',
             ##     'state'               : 'started',
             ##     'to'                  : '+1234567891',
-            ##     'transcription_enabled': False,
+            ##     'transcriptionEnabled': False,
             ##     'transcriptions'      : 'https://api.../v1/users/u-abc/calls/c-abc123/transcriptions'}
         """
         kwargs["from"] = from_
@@ -399,18 +399,18 @@ class Client:
 
             my_call = api.get_call(call_id)
             print(my_call)
-            ## {   'callback_url'         : 'http://yoursite.com/calls',
+            ## {   'callbackUrl'         : 'http://yoursite.com/calls',
             ##     'direction'           : 'out',
             ##     'events'              : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/events',
             ##     'from'                : '+1234567890',
             ##     'id'                  : 'c-abc123',
-            ##     'recording_enabled'    : False,
-            ##     'recording_file_format' : 'wav',
+            ##     'recordingEnabled'    : False,
+            ##     'recordingFileFormat' : 'wav',
             ##     'recordings'          : 'https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/recordings',
-            ##     'start_time'           : '2017-01-26T16:10:11Z',
+            ##     'startTime'           : '2017-01-26T16:10:11Z',
             ##     'state'               : 'started',
             ##     'to'                  : '+1234567891',
-            ##     'transcription_enabled': False,
+            ##     'transcriptionEnabled': False,
             ##     'transcriptions'      : 'https://api..../v1/users/u-abc/calls/c-abc123/transcriptions'}
         """
         return self._make_request('get', '/users/%s/calls/%s' % (self.user_id, call_id))[0]
@@ -740,22 +740,22 @@ class Client:
 
             my_call_id = api.create_call(to='+19192223333', from_='+18281114444')
             my_call = api.get_call(my_call_id)
-            print(my_call['recording_enabled'])
+            print(my_call['recordingEnabled'])
             ## False
 
             api.toggle_call_recording(my_call_id)
             my_call = api.get_call(my_call_id)
-            print(my_call['recording_enabled'])
+            print(my_call['recordingEnabled'])
             ## True
 
             api.toggle_call_recording(my_call_id)
             my_call = api.get_call(my_call_id)
-            print(my_call['recording_enabled'])
+            print(my_call['recordingEnabled'])
             ## False
 
         """
         call_status = self.get_call(call_id)
-        recording_enabled = call_status['recording_enabled']
+        recording_enabled = call_status['recordingEnabled']
 
         if recording_enabled is True:
             return self.disable_call_recording(call_id)
@@ -838,11 +838,11 @@ class Client:
             print(my_app)
 
 
-            ## {   'auto_answer': True,
-            ##     'callback_http_method': 'get',
+            ## {   'autoAnswer': True,
+            ##     'callbackHttpMethod': 'get',
             ##     'id': 'a-asdf',
-            ##     'incoming_call_url': 'https://test.com/callcallback/',
-            ##     'incoming_message_url': 'https://test.com/msgcallback/',
+            ##     'incomingCallUrl': 'https://test.com/callcallback/',
+            ##     'incomingMessageUrl': 'https://test.com/msgcallback/',
             ##     'name': 'MyAppName'
             ## }
 
@@ -896,12 +896,12 @@ class Client:
 
             my_app = api.get_application(my_app_id)
             print(my_app)
-            ## {   'auto_answer'        : True,
-            ##     'callback_http_method': 'get',
+            ## {   'autoAnswer'        : True,
+            ##     'callbackHttpMethod': 'get',
             ##     'id'                : 'a-1232asf123',
-            ##     'incoming_call_url'   : 'http://callback.com/calls',
-            ##     'incoming_message_url': 'http://callback.com/messages',
-            ##     'incoming_sms_url'    : 'http://callback.com/messages',
+            ##     'incomingCallUrl'   : 'http://callback.com/calls',
+            ##     'incomingMessageUrl': 'http://callback.com/messages',
+            ##     'incomingSmsUrl'    : 'http://callback.com/messages',
             ##     'name'              : 'MyFirstApp2'
             ## }
 
@@ -937,12 +937,12 @@ class Client:
 
             my_app = api.get_application(my_app_id)
             print(my_app)
-            ## {   'auto_answer': True,
-            ##     'callback_http_method': 'get',
+            ## {   'autoAnswer': True,
+            ##     'callbackHttpMethod': 'get',
             ##     'id': 'a-1232asf123',
-            ##     'incoming_call_url': 'http://callback.com/calls',
-            ##     'incoming_message_url': 'http://callback.com/messages',
-            ##     'incoming_sms_url': 'http://callback.com/messages',
+            ##     'incomingCallUrl': 'http://callback.com/calls',
+            ##     'incomingMessageUrl': 'http://callback.com/messages',
+            ##     'incomingSmsUrl': 'http://callback.com/messages',
             ##     'name': 'MyFirstApp2'
             ## }
 
@@ -997,7 +997,7 @@ class Client:
 
             my_app = api.get_application(my_app_id)
             print(my_app)
-            {   'auto_answer'        : True,
+            {   'autoAnswer'        : True,
                 'callbackHttpMethod': 'get',
                 'id'                : 'a-1232asf123',
                 'incomingCallUrl'   : 'http://callback.com/calls',
@@ -1089,22 +1089,22 @@ class Client:
             print(numbers)
 
             ## [   {   'city'          : 'WILMINGTON',
-            ##         'national_number': '(910) 444-0230',
+            ##         'nationalNumber': '(910) 444-0230',
             ##         'number'        : '+19104440230',
             ##         'price'         : '0.35',
-            ##         'rate_center'    : 'WILMINGTON',
+            ##         'rateCenter'    : 'WILMINGTON',
             ##         'state'         : 'NC'},
             ##     {   'city'          : 'WILMINGTON',
-            ##         'national_number': '(910) 444-0263',
+            ##         'nationalNumber': '(910) 444-0263',
             ##         'number'        : '+19104440263',
             ##         'price'         : '0.35',
-            ##         'rate_center'    : 'WILMINGTON',
+            ##         'rateCenter'    : 'WILMINGTON',
             ##         'state'         : 'NC'},
             ##     {   'city'          : 'WILMINGTON',
-            ##         'national_number': '(910) 444-0268',
+            ##         'nationalNumber': '(910) 444-0268',
             ##         'number'        : '+19104440268',
             ##         'price'         : '0.35',
-            ##         'rate_center'    : 'WILMINGTON',
+            ##         'rateCenter'    : 'WILMINGTON',
             ##         'state'         : 'NC'}
             ## ]
 
@@ -1138,17 +1138,17 @@ class Client:
 
             print(numbers)
 
-            ## [   {   'national_number': '(844) 489-0456',
+            ## [   {   'nationalNumber': '(844) 489-0456',
             ##         'number'        : '+18444890456',
-            ##         'pattern_match'  : '           456',
+            ##         'patternMatch'  : '           456',
             ##         'price'         : '0.75'},
-            ##     {   'national_number': '(844) 498-2456',
+            ##     {   'nationalNumber': '(844) 498-2456',
             ##         'number'        : '+18444982456',
-            ##         'pattern_match'  : '           456',
+            ##         'patternMatch'  : '           456',
             ##         'price'         : '0.75'},
-            ##     {   'national_number': '(844) 509-4566',
+            ##     {   'nationalNumber': '(844) 509-4566',
             ##         'number'        : '+18445094566',
-            ##         'pattern_match'  : '          456 ',
+            ##         'patternMatch'  : '          456 ',
             ##         'price'         : '0.75'}]
 
             print(numbers[0]["number"])
@@ -1189,12 +1189,12 @@ class Client:
 
             ordered_numbers = api.search_and_order_available_numbers(zip = '27606', quantity = 1)
 
-            print(ordered_numbers)
+            print(ordered_number)
 
             ## [   {   'city'          : 'RALEIGH',
             ##         'id'            : 'n-abc',
             ##         'location'      : 'https://api.catapult.inetwork.com/v1/users/u-12/phoneNumbers/n-abc',
-            ##         'national_number': '(919) 222-4444',
+            ##         'nationalNumber': '(919) 222-4444',
             ##         'number'        : '+19192224444',
             ##         'price'         : '0.35',
             ##         'state'         : 'NC'}]
@@ -1231,7 +1231,7 @@ class Client:
             print(numbers)
 
             ## [   {   'location'      : 'https://api.catapult.inetwork.com/v1/users/u-123/phoneNumbers/n-abc',
-            ##         'national_number': '(844) 484-1048',
+            ##         'nationalNumber': '(844) 484-1048',
             ##         'number'        : '+18444841048',
             ##         'price'         : '0.75'}]
 
@@ -1310,9 +1310,9 @@ class Client:
             my_bridge = api.get_bridge('brg-bridgeId')
             print(my_bridge)
 
-            ## {   'bridge_audio': True,
+            ## {   'bridgeAudio': True,
             ##     'calls'      : 'https://api.catapult.inetwork.com/v1/users/u-123/bridges/brg-bridgeId/calls',
-            ##     'created_time': '2017-01-26T01:15:09Z',
+            ##     'createdTime': '2017-01-26T01:15:09Z',
             ##     'id'         : 'brg-bridgeId',
             ##     'state'      : 'created'}
 
@@ -1337,13 +1337,13 @@ class Client:
 
             my_bridge = api.get_bridge('brg-bridgeId')
 
-            print(my_bridge["bridge_audio"])
+            print(my_bridge["bridgeAudio"])
             ## True
 
             api.update_bridge(my_bridge['id'], call_ids = ['callId1', 'callId2'], bridge_audio = False)
             my_bridge = api.get_bridge(my_bridge['id'])
 
-            print(my_bridge["bridge_audio"])
+            print(my_bridge["bridgeAudio"])
             ## False
 
         """
@@ -1369,28 +1369,28 @@ class Client:
             print(list(call_list))
             ## [
             ##     {
-            ##         "active_time"      : "2013-05-22T19:49:39Z",
+            ##         "activeTime"      : "2013-05-22T19:49:39Z",
             ##         "direction"       : "out",
             ##         "from"            : "{fromNumber}",
             ##         "id"              : "{callId1}",
-            ##         "bridge_id"        : "{bridgeId}",
-            ##         "start_time"       : "2013-05-22T19:49:35Z",
+            ##         "bridgeId"        : "{bridgeId}",
+            ##         "startTime"       : "2013-05-22T19:49:35Z",
             ##         "state"           : "active",
             ##         "to"              : "{toNumber1}",
-            ##         "recording_enabled": false,
+            ##         "recordingEnabled": false,
             ##         "events"          : "https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId1}/events",
             ##         "bridge"          : "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/{bridgeId}"
             ##     },
             ##     {
-            ##         "active_time"      : "2013-05-22T19:50:16Z",
+            ##         "activeTime"      : "2013-05-22T19:50:16Z",
             ##         "direction"       : "out",
             ##         "from"            : "{fromNumber}",
             ##         "id"              : "{callId2}",
-            ##         "bridge_id"        : "{bridgeId}",
-            ##         "start_time"       : "2013-05-22T19:50:16Z",
+            ##         "bridgeId"        : "{bridgeId}",
+            ##         "startTime"       : "2013-05-22T19:50:16Z",
             ##         "state"           : "active",
             ##         "to"              : "{toNumber2}",
-            ##         "recording_enabled": false,
+            ##         "recordingEnabled": false,
             ##         "events"          : "https://api.catapult.inetwork.com/v1/users/{userId}/calls/{callId2}/events",
             ##         "bridge"          : "https://api.catapult.inetwork.com/v1/users/{userId}/bridges/{bridgeId}"
             ##     }
@@ -1479,12 +1479,12 @@ class Client:
             my_conf = api.get_conference(conference_id)
 
             print(my_conf)
-            ## {   'active_members'     : 0,
-            ##     'callback_http_method': 'post',
-            ##     'callback_timeout'   : 2000,
-            ##     'callback_url'       : 'http://google.com',
-            ##     'created_time'       : '2017-01-26T01:58:59Z',
-            ##     'fallback_url'       : 'http://yahoo.com',
+            ## {   'activeMembers'     : 0,
+            ##     'callbackHttpMethod': 'post',
+            ##     'callbackTimeout'   : 2000,
+            ##     'callbackUrl'       : 'http://google.com',
+            ##     'createdTime'       : '2017-01-26T01:58:59Z',
+            ##     'fallbackUrl'       : 'http://yahoo.com',
             ##     'from'              : '+12018994444',
             ##     'hold'              : False,
             ##     'id'                : 'conf-ixaagbn5wcyskisiy',
@@ -1522,12 +1522,12 @@ class Client:
             my_conf = api.get_conference(conference_id)
 
             print(my_conf)
-            ## {   'active_members'     : 0,
-            ##     'callback_http_method': 'post',
-            ##     'callback_timeout'   : 2000,
-            ##     'callback_url'       : 'http://google.com',
-            ##     'created_time'       : '2017-01-26T01:58:59Z',
-            ##     'fallback_url'       : 'http://yahoo.com',
+            ## {   'activeMembers'     : 0,
+            ##     'callbackHttpMethod': 'post',
+            ##     'callbackTimeout'   : 2000,
+            ##     'callbackUrl'       : 'http://google.com',
+            ##     'createdTime'       : '2017-01-26T01:58:59Z',
+            ##     'fallbackUrl'       : 'http://yahoo.com',
             ##     'from'              : '+12018994444',
             ##     'hold'              : False,
             ##     'id'                : 'conf-ixaagbn5wcyskisiy',
@@ -1660,14 +1660,14 @@ class Client:
 
             ## [
             ##    {
-            ##       'added_time'  :'2017-01-30T22:01:11Z',
+            ##       'addedTime'  :'2017-01-30T22:01:11Z',
             ##       'call'       :'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId',
             ##       'hold'       :False,
             ##       'id'         :'member-memberId',
-            ##       'join_tone'   :False,
-            ##       'leaving_tone':False,
+            ##       'joinTone'   :False,
+            ##       'leavingTone':False,
             ##       'mute'       :False,
-            ##       'removed_time':'2017-01-30T22:01:21Z',
+            ##       'removedTime':'2017-01-30T22:01:21Z',
             ##       'state'      :'completed'
             ##    }
             ## ]
@@ -1724,14 +1724,14 @@ class Client:
             print(my_conf_member)
 
             ## {
-            ##     'added_time': '2017-01-30T22:01:11Z',
+            ##     'addedTime': '2017-01-30T22:01:11Z',
             ##     'call'         : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId',
             ##     'hold'         : False,
             ##     'id'           : 'member-memberId',
-            ##     'join_tone'     : False,
-            ##     'leaving_tone'  : False,
+            ##     'joinTone'     : False,
+            ##     'leavingTone'  : False,
             ##     'mute'         : False,
-            ##     'removed_time'  : '2017-01-30T22:01:21Z',
+            ##     'removedTime'  : '2017-01-30T22:01:21Z',
             ##     'state'        : 'completed'
             ## }
 
@@ -1777,14 +1777,14 @@ class Client:
             print(my_conf_member)
 
             ## {
-            ##     'added_time': '2017-01-30T22:01:11Z',
+            ##     'addedTime': '2017-01-30T22:01:11Z',
             ##     'call'         : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId',
             ##     'hold'         : False,
             ##     'id'           : 'member-memberId',
-            ##     'join_tone'     : True,
-            ##     'leaving_tone'  : False,
+            ##     'joinTone'     : True,
+            ##     'leavingTone'  : False,
             ##     'mute'         : False,
-            ##     'removed_time'  : '2017-01-30T22:01:21Z',
+            ##     'removedTime'  : '2017-01-30T22:01:21Z',
             ##     'state'        : 'active'
             ## }
         """
@@ -1832,14 +1832,14 @@ class Client:
             print(my_conf_member)
 
             ## {
-            ##     'added_time': '2017-01-30T22:01:11Z',
+            ##     'addedTime': '2017-01-30T22:01:11Z',
             ##     'call'         : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId',
             ##     'hold'         : False,
             ##     'id'           : 'member-memberId',
-            ##     'join_tone'     : True,
-            ##     'leaving_tone'  : False,
+            ##     'joinTone'     : True,
+            ##     'leavingTone'  : False,
             ##     'mute'         : False,
-            ##     'removed_time'  : '2017-01-30T22:01:21Z',
+            ##     'removedTime'  : '2017-01-30T22:01:21Z',
             ##     'state'        : 'active'
             ## }
 
@@ -1848,14 +1848,14 @@ class Client:
             my_conf = api.get_conference_member(my_member_id)
 
             ## {
-            ##     'added_time': '2017-01-30T22:01:11Z',
+            ##     'addedTime': '2017-01-30T22:01:11Z',
             ##     'call'         : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId',
             ##     'hold'         : True,
             ##     'id'           : 'member-memberId',
-            ##     'join_tone'     : True,
-            ##     'leaving_tone'  : False,
+            ##     'joinTone'     : True,
+            ##     'leavingTone'  : False,
             ##     'mute'         : True,
-            ##     'removed_time'  : '2017-01-30T22:01:21Z',
+            ##     'removedTime'  : '2017-01-30T22:01:21Z',
             ##     'state'        : 'active'
             ## }
         """
@@ -2000,20 +2000,20 @@ class Client:
             my_conf_members = list(api.list_conference_members(my_conf['id']))
             print(my_conf_members)
 
-            ## [{ 'added_time'  : '2017-01-30T23:17:11Z',
+            ## [{ 'addedTime'  : '2017-01-30T23:17:11Z',
             ##    'call'       : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId',
             ##    'hold'       : False,
             ##    'id'         : 'member-memberId',
-            ##    'join_tone'   : False,
-            ##    'leaving_tone': False,
+            ##    'joinTone'   : False,
+            ##    'leavingTone': False,
             ##    'mute'       : False,
             ##    'state'      : 'active'},
-            ##  { 'added_time'  : '2017-01-30T23:17:14Z',
+            ##  { 'addedTime'  : '2017-01-30T23:17:14Z',
             ##    'call'       : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId2',
             ##    'hold'       : False,
             ##    'id'         : 'member-memberId2',
-            ##    'join_tone'   : False,
-            ##    'leaving_tone': False,
+            ##    'joinTone'   : False,
+            ##    'leavingTone': False,
             ##    'mute'       : False,
             ##    'state'      : 'active'}]
 
@@ -2022,20 +2022,20 @@ class Client:
             my_conf_members = list(api.list_conference_members(my_conf['id']))
             print(my_conf_members)
 
-            ## [{ 'added_time'  : '2017-01-30T23:17:11Z',
+            ## [{ 'addedTime'  : '2017-01-30T23:17:11Z',
             ##    'call'       : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId',
             ##    'hold'       : False,
             ##    'id'         : 'member-memberId',
-            ##    'join_tone'   : False,
-            ##    'leaving_tone': False,
+            ##    'joinTone'   : False,
+            ##    'leavingTone': False,
             ##    'mute'       : False,
             ##    'state'      : 'active'},
-            ##  { 'added_time'  : '2017-01-30T23:17:14Z',
+            ##  { 'addedTime'  : '2017-01-30T23:17:14Z',
             ##    'call'       : 'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId2',
             ##    'hold'       : False,
             ##    'id'         : 'member-memberId2',
-            ##    'join_tone'   : False,
-            ##    'leaving_tone': False,
+            ##    'joinTone'   : False,
+            ##    'leavingTone': False,
             ##    'mute'       : False,
             ##    'state'      : 'completed'}]
 
@@ -2141,10 +2141,10 @@ class Client:
             domain_list = api.list_domains(size=10)
             print(list(domain_list))
 
-            ## [{   'endpoints_url': 'https://api.catapult.inetwork.com/v1/users/u-abc123/domains/endpoints',
+            ## [{   'endpointsUrl': 'https://api.catapult.inetwork.com/v1/users/u-abc123/domains/endpoints',
             ##     'id'           : 'rd-domainId',
             ##     'name'         : 'siplearn1'},
-            ## {   'endpoints_url' : 'https://api.catapult.inetwork.com/v1/users/u-abc123/domains/endpoints',
+            ## {   'endpointsUrl' : 'https://api.catapult.inetwork.com/v1/users/u-abc123/domains/endpoints',
             ##     'id'           : 'rd-domainId2',
             ##     'name'         : 'siplearn2'}]
 
@@ -2160,7 +2160,7 @@ class Client:
 
             print(my_domain)
             ## {   'description' : 'Python Docs Example',
-            ##     'endpoints_url': 'https://api.catapult.inetwork.com/v1/users/u-abc123/domains/rd-domainId/endpoints',
+            ##     'endpointsUrl': 'https://api.catapult.inetwork.com/v1/users/u-abc123/domains/rd-domainId/endpoints',
             ##     'id'          : 'rd-domainId',
             ##     'name'        : 'My Prod Site'}
 
@@ -2212,7 +2212,7 @@ class Client:
 
             print(my_domain)
             ## {   'description' : 'Python Docs Example',
-            ##     'endpoints_url': 'https://api.catapult.inetwork.com/v1/users/u-abc123/domains/rd-domainId/endpoints',
+            ##     'endpointsUrl': 'https://api.catapult.inetwork.com/v1/users/u-abc123/domains/rd-domainId/endpoints',
             ##     'id'          : 'rd-domainId',
             ##     'name'        : 'qwerty'}
         """
@@ -2260,30 +2260,30 @@ class Client:
 
             ## [
             ##     {
-            ##         'application_id':'a-appId',
+            ##         'applicationId':'a-appId',
             ##         'credentials'  :{
             ##             'realm'    :'creds.bwapp.bwsip.io',
             ##             'username' :'user1'
             ##         },
             ##         'description'  :"Your SIP Account",
-            ##         'domain_id'     :'rd-domainId',
+            ##         'domainId'     :'rd-domainId',
             ##         'enabled'      :True,
             ##         'id'           :'re-endpointId1',
             ##         'name'         :'User1_endpoint',
-            ##         'sip_uri'       :'sip:user1@creds.bwapp.bwsip.io'
+            ##         'sipUri'       :'sip:user1@creds.bwapp.bwsip.io'
             ##     },
             ##     {
-            ##         'application_id':'a-appId',
+            ##         'applicationId':'a-appId',
             ##         'credentials'  :{
             ##             'realm'    :'creds1.bwapp.bwsip.io',
             ##             'username' :'user2'
             ##         },
             ##         'description'  :"Your SIP Account",
-            ##         'domain_id'     :'rd-domainId',
+            ##         'domainId'     :'rd-domainId',
             ##         'enabled'      :True,
             ##         'id'           :'re-endpointId2',
             ##         'name'         :'User2_endpoint',
-            ##         'sip_uri'       :'sip:user2@creds.bwapp.bwsip.io'
+            ##         'sipUri'       :'sip:user2@creds.bwapp.bwsip.io'
             ##     }
             ## ]
 
@@ -2331,11 +2331,11 @@ class Client:
             ##         'realm'   :'qwerty.bwapp.bwsip.io',
             ##         'username':'User3_endpoint'
             ##     },
-            ##     'domain_id'    :'rd-domainId',
+            ##     'domainId'    :'rd-domainId',
             ##     'enabled'     :True,
             ##     'id'          :'re-endpointId3',
             ##     'name'        :'User3_endpoint',
-            ##     'sip_uri'      :'sip:user5@qwerty.bwapp.bwsip.io'
+            ##     'sipUri'      :'sip:user5@qwerty.bwapp.bwsip.io'
             ## }
 
         """
@@ -2375,11 +2375,11 @@ class Client:
             ##         'realm'   :'qwerty.bwapp.bwsip.io',
             ##         'username':'User3_endpoint'
             ##     },
-            ##     'domain_id'    :'rd-domainId',
+            ##     'domainId'    :'rd-domainId',
             ##     'enabled'     :True,
             ##     'id'          :'re-endpointId3',
             ##     'name'        :'User3_endpoint',
-            ##     'sip_uri'      :'sip:user5@qwerty.bwapp.bwsip.io'
+            ##     'sipUri'      :'sip:user5@qwerty.bwapp.bwsip.io'
             ## }
         """
         return self._make_request('get', '/users/%s/domains/%s/endpoints/%s' % (self.user_id,
@@ -2415,11 +2415,11 @@ class Client:
             ##         'realm'   :'qwerty.bwapp.bwsip.io',
             ##         'username':'user5'
             ##     },
-            ##     'domain_id'    :'rd-domainId',
+            ##     'domainId'    :'rd-domainId',
             ##     'enabled'     :True,
             ##     'id'          :'re-endpointId',
             ##     'name'        :'user3',
-            ##     'sip_uri'      :'sip:user5@qwerty.bwapp.bwsip.io'
+            ##     'sipUri'      :'sip:user5@qwerty.bwapp.bwsip.io'
             ## }
 
             api.update_domain_endpoint('rd-domainId', 're-endpointId', enabled=False, password='abc123')
@@ -2431,11 +2431,11 @@ class Client:
             ##         'realm'   :'qwerty.bwapp.bwsip.io',
             ##         'username':'user5'
             ##     },
-            ##     'domain_id'    :'rd-domainId',
+            ##     'domainId'    :'rd-domainId',
             ##     'enabled'     :False,
             ##     'id'          :'re-endpointId',
             ##     'name'        :'user3',
-            ##     'sip_uri'      :'sip:user5@qwerty.bwapp.bwsip.io'
+            ##     'sipUri'      :'sip:user5@qwerty.bwapp.bwsip.io'
             ## }
         """
 
@@ -2463,11 +2463,11 @@ class Client:
             ##         'realm'   :'qwerty.bwapp.bwsip.io',
             ##         'username':'user5'
             ##     },
-            ##     'domain_id'    :'rd-domainId',
+            ##     'domainId'    :'rd-domainId',
             ##     'enabled'     :False,
             ##     'id'          :'re-endpointId3ndpointId',
             ##     'name'        :'user3',
-            ##     'sip_uri'      :'sip:user5@qwerty.bwapp.bwsip.io'
+            ##     'sipUri'      :'sip:user5@qwerty.bwapp.bwsip.io'
             ## }
             api.delete_domain_endpoint(d, e)
 
@@ -2618,9 +2618,9 @@ class Client:
 
             media_list = api.list_media_files()
             for media in media_list:
-                if 'dog' in media['media_name'].lower():
-                    stream, content_type = api.download_media_file(media['media_name'])
-                    with io.open(media['media_name'], 'wb') as file:
+                if 'dog' in media['mediaName'].lower():
+                    stream, content_type = api.download_media_file(media['mediaName'])
+                    with io.open(media['mediaName'], 'wb') as file:
                         file.write(stream.read())
 
         """
@@ -2677,9 +2677,9 @@ class Client:
 
             media_list = api.get_media_files()
             for media in media_list:
-                if 'dog' in media['media_name'].lower():
-                    stream, content_type = api.download_media_file(media['media_name'])
-                    with io.open(media['media_name'], 'wb') as file:
+                if 'dog' in media['mediaName'].lower():
+                    stream, content_type = api.download_media_file(media['mediaName'])
+                    with io.open(media['mediaName'], 'wb') as file:
                         file.write(stream.read())
         """
         path = '/users/%s/media/%s' % (self.user_id, quote(media_name))
@@ -2851,7 +2851,6 @@ class Client:
                 The server URL used to send the message events if the request to callbackUrl fails.
             tag
                 Any string, it will be included in the callback events of the message.
-
         :rtype: list
         :returns: results of sent messages
 
@@ -2861,7 +2860,6 @@ class Client:
                 {'from': '+1234567980', 'to': '+1234567981', 'text': 'SMS message'},
                 {'from': '+1234567980', 'to': '+1234567982', 'text': 'SMS message2'}
             ])
-
         """
         results = self._make_request(
             'post', '/users/%s/messages' % self.user_id, json=messages_data)[0]
@@ -2883,17 +2881,17 @@ class Client:
 
         Example: Fetch information about single message::
 
-            my_message = api.get_message('m-abc123')
+            my_message = api.get_message('m-na6cpyjf2qcpz6l3drhcx7y')
             print(my_message)
 
             ## {
-            ##     'callback_url'             :'https://yoursite.com/message',
+            ##     'callbackUrl'             :'https://yoursite.com/message',
             ##     'direction'               :'in',
             ##     'from'                    :'+19193047864',
             ##     'id'                      :'m-messageId',
             ##     'media'                   :[],
-            ##     'message_id'               :'m-messageId',
-            ##     'skip_mms_carrier_validation':True,
+            ##     'messageId'               :'m-messageId',
+            ##     'skipMMSCarrierValidation':True,
             ##     'state'                   :'received',
             ##     'text'                    :'Hey there',
             ##     'time'                    :'2017-02-01T21:10:32Z',
@@ -2958,23 +2956,23 @@ class Client:
             ## [
             ##     {
             ##         'city'          :'RALEIGH',
-            ##         'created_time'   :'2017-02-06T18:41:37Z',
+            ##         'createdTime'   :'2017-02-06T18:41:37Z',
             ##         'id'            :'n-n123',
             ##         'name'          :'demo name',
-            ##         'national_number':'(919) 555-5346',
+            ##         'nationalNumber':'(919) 555-5346',
             ##         'number'        :'+19195555346',
-            ##         'number_state'   :'enabled',
+            ##         'numberState'   :'enabled',
             ##         'price'         :'0.35',
             ##         'state'         :'NC'
             ##     },
             ##     {
             ##         'city'          :'RALEIGH',
-            ##         'created_time'   :'2017-02-06T18:41:56Z',
+            ##         'createdTime'   :'2017-02-06T18:41:56Z',
             ##         'id'            :'n-n1234',
             ##         'name'          :'demo name',
-            ##         'national_number':'(919) 555-5378',
+            ##         'nationalNumber':'(919) 555-5378',
             ##         'number'        :'+19195555378',
-            ##         'number_state'   :'enabled',
+            ##         'numberState'   :'enabled',
             ##         'price'         :'0.35',
             ##         'state'         :'NC'
             ##     }
@@ -3046,11 +3044,11 @@ class Client:
             print(my_number)
             ## {
             ##     'city'          :'RALEIGH',
-            ##     'created_time'   :'2017-02-06T18:27:14Z',
+            ##     'createdTime'   :'2017-02-06T18:27:14Z',
             ##     'id'            :'n-123',
-            ##     'national_number':'(919) 561-5039',
+            ##     'nationalNumber':'(919) 561-5039',
             ##     'number'        :'+19195615039',
-            ##     'number_state'   :'enabled',
+            ##     'numberState'   :'enabled',
             ##     'price'         :'0.35',
             ##     'state'         :'NC'
             ## }
@@ -3078,11 +3076,11 @@ class Client:
             print(my_number)
             ## {
             ##     'city'          :'RALEIGH',
-            ##     'created_time'   :'2017-02-06T18:27:14Z',
+            ##     'createdTime'   :'2017-02-06T18:27:14Z',
             ##     'id'            :'n-123',
-            ##     'national_number':'(919) 561-5039',
+            ##     'nationalNumber':'(919) 561-5039',
             ##     'number'        :'+19195615039',
-            ##     'number_state'   :'enabled',
+            ##     'numberState'   :'enabled',
             ##     'price'         :'0.35',
             ##     'state'         :'NC'
             ## }
@@ -3094,13 +3092,13 @@ class Client:
             ## {
             ##     'id'            :'n-123',
             ##     'number'        :'+19195615039',
-            ##     'national_number':'(919) 561-5039',
+            ##     'nationalNumber':'(919) 561-5039',
             ##     'name'          :'demo name',
-            ##     'created_time'   :'2017-02-06T18:41:56Z',
+            ##     'createdTime'   :'2017-02-06T18:41:56Z',
             ##     'city'          :'RALEIGH',
             ##     'state'         :'NC',
             ##     'price'         :'0.35',
-            ##     'number_state'   :'enabled'
+            ##     'numberState'   :'enabled'
             ## }
         """
         kwargs['name'] = name
@@ -3140,20 +3138,20 @@ class Client:
             ## [
             ##     {
             ##         'call'     :'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId',
-            ##         'end_time'  :'2017-01-30T17:58:45Z',
+            ##         'endTime'  :'2017-01-30T17:58:45Z',
             ##         'id'       :'rec-recordingId',
             ##         'media'    :'https://api.catapult.inetwork.com/v1/users/u-abc123/media/c-callId-1.wav',
-            ##         'media_name':'c-callId-1.wav',
-            ##         'start_time':'2017-01-30T17:58:34Z',
+            ##         'mediaName':'c-callId-1.wav',
+            ##         'startTime':'2017-01-30T17:58:34Z',
             ##         'state'    :'complete'
             ##     },
             ##     {
             ##         'call'     :'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId2',
-            ##         'end_time'  :'2017-01-30T17:53:30Z',
+            ##         'endTime'  :'2017-01-30T17:53:30Z',
             ##         'id'       :'rec-recordingId2',
             ##         'media'    :'https://api.catapult.inetwork.com/v1/users/u-abc123/media/c-callId2-1.wav',
-            ##         'media_name':'c-callId2-1.wav',
-            ##         'start_time':'2017-01-30T17:53:20Z',
+            ##         'mediaName':'c-callId2-1.wav',
+            ##         'startTime':'2017-01-30T17:53:20Z',
             ##         'state'    :'complete'
             ##     }
             ## ]
@@ -3180,11 +3178,11 @@ class Client:
 
             ## {
             ##     'call'     :'https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-callId2',
-            ##     'end_time'  :'2017-01-30T17:53:30Z',
+            ##     'endTime'  :'2017-01-30T17:53:30Z',
             ##     'id'       :'rec-recordingId2',
             ##     'media'    :'https://api.catapult.inetwork.com/v1/users/u-abc123/media/c-callId2-1.wav',
-            ##     'media_name':'c-callId2-1.wav',
-            ##     'start_time':'2017-01-30T17:53:20Z',
+            ##     'mediaName':'c-callId2-1.wav',
+            ##     'startTime':'2017-01-30T17:53:20Z',
             ##     'state'    :'complete'
             ## }
         """
@@ -3208,22 +3206,22 @@ class Client:
             print(list(transcriptions_list))
             ## [
             ##     {
-            ##         'chargeable_duration': 60,
+            ##         'chargeableDuration': 60,
             ##         'id': '{transcription-id}',
             ##         'state': 'completed',
             ##         'time': '2014-10-09T12:09:16Z',
             ##         'text': '{transcription-text}',
-            ##         'text_size': 3627,
-            ##         'text_url': '{url-to-full-text}'
+            ##         'textSize': 3627,
+            ##         'textUrl': '{url-to-full-text}'
             ##     },
             ##     {
-            ##         'chargeable_duration': 60,
+            ##         'chargeableDuration': 60,
             ##         'id': '{transcription-id}',
             ##         'state': 'completed',
             ##         'text': '{transcription-text}',
             ##         'time': '2014-10-09T14:04:44Z',
-            ##         'text_size': 72,
-            ##         'text_url': '{url-to-full-text}'
+            ##         'textSize': 72,
+            ##         'textUrl': '{url-to-full-text}'
             ##     }
             ## ]
         """
@@ -3268,12 +3266,12 @@ class Client:
             my_transcription = api.get_transcription('recordingId', 'transcriptionId')
             print(my_transcription)
             ## {
-            ##     'chargeable_duration': 11,
+            ##     'chargeableDuration': 11,
             ##     'id'                : '{transcriptionId}',
             ##     'state'             : 'completed',
             ##     'text'              : 'Hey there, I was calling to talk about plans for this saturday. ',
-            ##     'text_size'          : 63,
-            ##     'text_url'           : 'https://api.catapult.inetwork.com/.../media/{transcriptionId}',
+            ##     'textSize'          : 63,
+            ##     'textUrl'           : 'https://api.catapult.inetwork.com/.../media/{transcriptionId}',
             ##     'time'              : '2014-12-23T23:08:59Z'
             ## }
         """

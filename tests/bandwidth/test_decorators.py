@@ -6,7 +6,7 @@ if six.PY3:
 else:
     from mock import patch
 
-from bandwidth.catapult.decorators import play_audio
+from bandwidth.voice.decorators import play_audio
 
 
 class DecoratorsTests(unittest.TestCase):
