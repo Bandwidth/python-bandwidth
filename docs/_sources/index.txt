@@ -7,13 +7,53 @@ bandwidth_sdk is a python library for working with the
 Complete original documentation of the API can be found
 `here <http://dev.bandwidth.com>`_
 
+The Bandwidth-Python API is broken up into logical pieces:
+
+* Voice API
+* Account API
+* Messaging API
+
+Before using the sdk you must initialize at least one client with your Bandwidth App
+Platform API credentials::
+
+    import bandwidth
+    voice_api = bandwidth.client('voice', 'u-user', 't-token', 's-secret')
+    messaging_api = bandwidth.client('messaging', 'u-user', 't-token', 's-secret')
+    account_api = bandwidth.client('account', 'u-user', 't-token', 's-secret')
+
+Voice API
+~~~~~~~~~
+* Phone Calls
+* Conferences
+* Recordings
+* Transcriptions
+
+Messaging API
+~~~~~~~~~~~~~
+* Send MMS
+* Send SMS
+* Fetch Messages
+
+Account API
+~~~~~~~~~~~
+* Account
+* Applications
+* Search for numbers
+* Register Domains and Endpoints
+* Fetch Errors
+* Upload/Download Media
+* Order/update Phone Numbers
+
 Contents:
+~~~~~~~~~
 
 .. toctree::
-   :maxdepth: 5
+   :maxdepth: 3
 
    quickstart
-   modules
+   messaging_api
+   voice_api
+   account_api
    tests
    contribute
 

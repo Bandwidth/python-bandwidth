@@ -3,8 +3,8 @@ Recordings
 
 list_recordings
 ---------------
-.. automethod:: bandwidth.catapult.Client.list_recordings
+.. automethod:: bandwidth.voice.Client.list_recordings
 
 get_recording
 ---------------
-.. automethod:: bandwidth.catapult.Client.get_recording
+.. automethod:: bandwidth.voice.Client.get_recording

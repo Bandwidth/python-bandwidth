@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Quickstart Guide &mdash; bandwidth_sdk 1.0.6-stable documentation</title>
+  <title>Account Api &mdash; bandwidth_sdk 1.0.6-stable documentation</title>
   
 
   
@@ -31,8 +31,8 @@
 
   
     <link rel="top" title="bandwidth_sdk 1.0.6-stable documentation" href="index.html"/>
-        <link rel="next" title="Messaging API" href="messaging_api.html"/>
-        <link rel="prev" title="Bandwidth App Platform SDK" href="index.html"/> 
+        <link rel="next" title="Account" href="account.html"/>
+        <link rel="prev" title="Transcriptions" href="transcriptions.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -72,13 +72,13 @@
           
           
               <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="">Quickstart Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#client-initialization">Client Initialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#code-samples">Code Samples</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#phone-numbers">Phone Numbers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#calling">Calling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#messaging">Messaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#client-initialization">Client Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#code-samples">Code Samples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#phone-numbers">Phone Numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#calling">Calling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#messaging">Messaging</a></li>
 </ul>
 </li>
 </ul>
@@ -167,9 +167,9 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="account_api.html">Account Api</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="account_api.html#client-initialization">Client Initialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="account_api.html#account-methods">Account Methods</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Account Api</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#client-initialization">Client Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#account-methods">Account Methods</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="account.html">Account</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="account.html#get-account">get_account</a></li>
 <li class="toctree-l4"><a class="reference internal" href="account.html#get-account-transactions">get_account_transactions</a></li>
@@ -260,11 +260,11 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>Quickstart Guide</li>
+    <li>Account Api</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/quickstart.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/account_api.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -273,45 +273,29 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="quickstart-guide">
-<h1>Quickstart Guide<a class="headerlink" href="#quickstart-guide" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>To install the latest stable version with pip use the following command:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>pip install bandwidth_sdk
-</pre></div>
-</div>
-<p>If you want to install the bleeding edge version of the SDK from our
-<a class="reference external" href="https://github.com/bandwidth/python-bandwidth">github repository</a>
-use the following command:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>pip install -e git+https://github.com/bandwidth/python-bandwidth.git#egg=bandwidth_sdk
-</pre></div>
-</div>
-<p>Note: This may have to be run as <cite>root</cite> or with <cite>&#8211;user</cite> flag if you are not
-using python virtual environment.</p>
-</div>
+  <div class="section" id="account-api">
+<h1>Account Api<a class="headerlink" href="#account-api" title="Permalink to this headline">¶</a></h1>
+<p>The account API contains the methods to interact with account features:</p>
+<ul class="simple">
+<li>Account</li>
+<li>Applications</li>
+<li>Search for numbers</li>
+<li>Register Domains and Endpoints</li>
+<li>Fetch Errors</li>
+<li>Upload/Download Media</li>
+<li>Order/update Phone Numbers</li>
+</ul>
 <div class="section" id="client-initialization">
 <h2>Client Initialization<a class="headerlink" href="#client-initialization" title="Permalink to this headline">¶</a></h2>
 <p>Before using the sdk you must initialize a Client with your Bandwidth App
 Platform API credentials:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bandwidth</span>
-<span class="n">voice_api</span> <span class="o">=</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;voice&#39;</span><span class="p">,</span> <span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
-<span class="n">messaging_api</span> <span class="o">=</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;messaging&#39;</span><span class="p">,</span> <span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
 <span class="n">account_api</span> <span class="o">=</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;account&#39;</span><span class="p">,</span> <span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="code-samples">
-<h2>Code Samples<a class="headerlink" href="#code-samples" title="Permalink to this headline">¶</a></h2>
-<p>Each of these code sample assumes that you have already initialized a client
-as described above.</p>
-<div class="section" id="phone-numbers">
-<h3>Phone Numbers<a class="headerlink" href="#phone-numbers" title="Permalink to this headline">¶</a></h3>
-<p>Get available number via location search:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">Bandwidth</span>
-<span class="n">account_api</span> <span class="o">=</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;account&#39;</span><span class="p">,</span> <span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
+
 <span class="n">numbers</span> <span class="o">=</span> <span class="n">account_api</span><span class="o">.</span><span class="n">search_available_local_numbers</span><span class="p">(</span><span class="n">area_code</span> <span class="o">=</span> <span class="s1">&#39;910&#39;</span><span class="p">,</span> <span class="n">quantity</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>
+
 <span class="k">print</span><span class="p">(</span><span class="n">numbers</span><span class="p">)</span>
+
 <span class="c1">## [   {   &#39;city&#39;          : &#39;WILMINGTON&#39;,</span>
 <span class="c1">##         &#39;national_number&#39;: &#39;(910) 444-0230&#39;,</span>
 <span class="c1">##         &#39;number&#39;        : &#39;+19104440230&#39;,</span>
@@ -332,129 +316,72 @@ as described above.</p>
 <span class="c1">##         &#39;state&#39;         : &#39;NC&#39;}</span>
 <span class="c1">## ]</span>
 
-<span class="n">my_number</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">create_phone_number</span><span class="p">(</span><span class="n">numbers</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;number&#39;</span><span class="p">])</span>
-
-<span class="k">print</span><span class="p">(</span><span class="n">my_number</span><span class="p">)</span>
-<span class="c1">#+19104440230</span>
+<span class="k">print</span><span class="p">(</span><span class="n">numbers</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;number&quot;</span><span class="p">])</span>
+<span class="c1">## +19104440230</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="calling">
-<h3>Calling<a class="headerlink" href="#calling" title="Permalink to this headline">¶</a></h3>
-<p>Create a call:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">Bandwidth</span>
-<span class="n">voice_api</span> <span class="o">=</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;voice&#39;</span><span class="p">,</span> <span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
-<span class="n">call_id</span> <span class="o">=</span> <span class="n">voice_api</span><span class="o">.</span><span class="n">create_call</span><span class="p">(</span><span class="n">from_</span> <span class="o">=</span> <span class="s1">&#39;+1234567890&#39;</span><span class="p">,</span> <span class="n">to</span> <span class="o">=</span> <span class="s1">&#39;+1234567891&#39;</span><span class="p">,</span> <span class="n">callback_url</span> <span class="o">=</span> <span class="s2">&quot;http://yoursite.com/calls&quot;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">call_id</span><span class="p">)</span>
-<span class="c1">## c-abc123</span>
-
-<span class="n">my_call</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_call</span><span class="p">(</span><span class="n">call_id</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">my_call</span><span class="p">)</span>
-<span class="c1">## {   &#39;callback_url&#39;         : &#39;http://yoursite.com/calls&#39;,</span>
-<span class="c1">##     &#39;direction&#39;           : &#39;out&#39;,</span>
-<span class="c1">##     &#39;events&#39;              : &#39;https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/events&#39;,</span>
-<span class="c1">##     &#39;from&#39;                : &#39;+1234567890&#39;,</span>
-<span class="c1">##     &#39;id&#39;                  : &#39;c-abc123&#39;,</span>
-<span class="c1">##     &#39;recording_enabled&#39;    : False,</span>
-<span class="c1">##     &#39;recording_file_format&#39; : &#39;wav&#39;,</span>
-<span class="c1">##     &#39;recordings&#39;          : &#39;https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/recordings&#39;,</span>
-<span class="c1">##     &#39;start_time&#39;           : &#39;2017-01-26T16:10:11Z&#39;,</span>
-<span class="c1">##     &#39;state&#39;               : &#39;started&#39;,</span>
-<span class="c1">##     &#39;to&#39;                  : &#39;+1234567891&#39;,</span>
-<span class="c1">##     &#39;transcription_enabled&#39;: False,</span>
-<span class="c1">##     &#39;transcriptions&#39;      : &#39;https://api.catapult.inetwork.com/v1/users/u-abc/calls/c-abc123/transcriptions&#39;}</span>
-</pre></div>
-</div>
-<p>Retrieving list of calls:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">Bandwidth</span>
-<span class="n">voice_api</span> <span class="o">=</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;voice&#39;</span><span class="p">,</span> <span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
-<span class="n">call_list</span> <span class="o">=</span> <span class="n">voice_api</span><span class="o">.</span><span class="n">list_calls</span><span class="p">(</span><span class="n">to</span> <span class="o">=</span> <span class="s1">&#39;+19192223333&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">call_list</span><span class="p">))</span>
-<span class="c1">## [</span>
-<span class="c1">##   {</span>
-<span class="c1">##     &#39;active_time&#39;          : &#39;2017-01-26T16:10:23Z&#39;,</span>
-<span class="c1">##     &#39;callback_url&#39;         : &#39;http://yoursite.com/calls&#39;,</span>
-<span class="c1">##     &#39;chargeable_duration&#39;  : 60,</span>
-<span class="c1">##     &#39;direction&#39;           : &#39;out&#39;,</span>
-<span class="c1">##     &#39;endTime&#39;             : &#39;2017-01-26T16:10:33Z&#39;,</span>
-<span class="c1">##     &#39;events&#39;              : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-abc123/events&#39;,</span>
-<span class="c1">##     &#39;from&#39;                : &#39;+17079311113&#39;,</span>
-<span class="c1">##     &#39;id&#39;                  : &#39;c-abc123&#39;,</span>
-<span class="c1">##     &#39;recording_enabled&#39;    : False,</span>
-<span class="c1">##     &#39;recording_file_format&#39; : &#39;wav&#39;,</span>
-<span class="c1">##     &#39;recordings&#39;          : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-abc123/recordings&#39;,</span>
-<span class="c1">##     &#39;start_time&#39;           : &#39;2017-01-26T16:10:11Z&#39;,</span>
-<span class="c1">##     &#39;state&#39;               : &#39;completed&#39;,</span>
-<span class="c1">##     &#39;to&#39;                  : &#39;+19192223333&#39;,</span>
-<span class="c1">##     &#39;transcription_enabled&#39;: False,</span>
-<span class="c1">##     &#39;transcriptions&#39;      : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-abc123/transcriptions&#39;</span>
-<span class="c1">##   },</span>
-<span class="c1">##   {</span>
-<span class="c1">##     &#39;active_time&#39;          : &#39;2016-12-29T23:50:35Z&#39;,</span>
-<span class="c1">##     &#39;chargeable_duration&#39;  : 60,</span>
-<span class="c1">##     &#39;direction&#39;           : &#39;out&#39;,</span>
-<span class="c1">##     &#39;endTime&#39;             : &#39;2016-12-29T23:50:41Z&#39;,</span>
-<span class="c1">##     &#39;events&#39;              : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-xyz987/events&#39;,</span>
-<span class="c1">##     &#39;from&#39;                : &#39;+19194443333&#39;,</span>
-<span class="c1">##     &#39;id&#39;                  : &#39;c-xyz987&#39;,</span>
-<span class="c1">##     &#39;recording_enabled&#39;    : False,</span>
-<span class="c1">##     &#39;recording_file_format&#39; : &#39;wav&#39;,</span>
-<span class="c1">##     &#39;recordings&#39;          : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-xyz987/recordings&#39;,</span>
-<span class="c1">##     &#39;start_time&#39;           : &#39;2016-12-29T23:50:15Z&#39;,</span>
-<span class="c1">##     &#39;state&#39;               : &#39;completed&#39;,</span>
-<span class="c1">##     &#39;to&#39;                  : &#39;+19192223333&#39;,</span>
-<span class="c1">##     &#39;transcription_enabled&#39;: False,</span>
-<span class="c1">##     &#39;transcriptions&#39;      : &#39;https://api.catapult.inetwork.com/v1/users/u-abc123/calls/c-xyz987/transcriptions&#39;</span>
-<span class="c1">##   }</span>
-<span class="c1">## ]</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="messaging">
-<h3>Messaging<a class="headerlink" href="#messaging" title="Permalink to this headline">¶</a></h3>
-<p>Example: Send Text Message:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">message_id</span> <span class="o">=</span> <span class="n">messaging_api</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">from_</span> <span class="o">=</span> <span class="s1">&#39;+1234567980&#39;</span><span class="p">,</span>
-                              <span class="n">to</span> <span class="o">=</span> <span class="s1">&#39;+1234567981&#39;</span><span class="p">,</span>
-                              <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;SMS message&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">message_id</span><span class="p">)</span>
-<span class="c1"># m-messageId</span>
-</pre></div>
-</div>
-<p>Example: Send Picture Message:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">message_id</span> <span class="o">=</span> <span class="n">messaging_api</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">from_</span> <span class="o">=</span> <span class="s1">&#39;+1234567980&#39;</span><span class="p">,</span>
-                              <span class="n">to</span> <span class="o">=</span> <span class="s1">&#39;+1234567981&#39;</span><span class="p">,</span>
-                              <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;MMS message&#39;</span><span class="p">,</span>
-                              <span class="n">media</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;http://cat.com/cat.png&#39;</span><span class="p">])</span>
-<span class="k">print</span><span class="p">(</span><span class="n">message_id</span><span class="p">)</span>
-<span class="c1"># m-messageId</span>
-</pre></div>
-</div>
-<p>Example: Bulk Send Picture or Text messages (or both):</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">messaging_api</span><span class="o">.</span><span class="n">send_messages</span><span class="p">([</span>
-    <span class="p">{</span><span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="s1">&#39;+1234567980&#39;</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="s1">&#39;+1234567981&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;SMS message&#39;</span><span class="p">},</span>
-    <span class="p">{</span><span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="s1">&#39;+1234567980&#39;</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="s1">&#39;+1234567982&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;SMS message2&#39;</span><span class="p">}</span>
-<span class="p">])</span>
-</pre></div>
-</div>
-<p>Example: Fetch information about single message:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_message</span> <span class="o">=</span> <span class="n">messaging_api</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span><span class="s1">&#39;m-na6cpyjf2qcpz6l3drhcx7y&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">my_message</span><span class="p">)</span>
-
-<span class="c1">## {</span>
-<span class="c1">##     &#39;callback_url&#39;             :&#39;https://yoursite.com/message&#39;,</span>
-<span class="c1">##     &#39;direction&#39;               :&#39;in&#39;,</span>
-<span class="c1">##     &#39;from&#39;                    :&#39;+19193047864&#39;,</span>
-<span class="c1">##     &#39;id&#39;                      :&#39;m-messageId&#39;,</span>
-<span class="c1">##     &#39;media&#39;                   :[],</span>
-<span class="c1">##     &#39;message_id&#39;               :&#39;m-messageId&#39;,</span>
-<span class="c1">##     &#39;skip_mms_carrier_validation&#39;:True,</span>
-<span class="c1">##     &#39;state&#39;                   :&#39;received&#39;,</span>
-<span class="c1">##     &#39;text&#39;                    :&#39;Hey there&#39;,</span>
-<span class="c1">##     &#39;time&#39;                    :&#39;2017-02-01T21:10:32Z&#39;,</span>
-<span class="c1">##     &#39;to&#39;                      :&#39;+19191234567&#39;</span>
-<span class="c1">## }</span>
-</pre></div>
-</div>
+<div class="section" id="account-methods">
+<h2>Account Methods<a class="headerlink" href="#account-methods" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="account.html">Account</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="account.html#get-account">get_account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="account.html#get-account-transactions">get_account_transactions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="applications.html">Applications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="applications.html#list-applications">list_applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="applications.html#create-application">create_application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="applications.html#update-application">update_application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="applications.html#get-application">get_application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="applications.html#delete-application">delete_application</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="available_numbers.html">Available Numbers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="available_numbers.html#search-available-local-numbers">search_available_local_numbers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="available_numbers.html#search-available-toll-free-numbers">search_available_toll_free_numbers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="available_numbers.html#search-and-order-local-numbers">search_and_order_local_numbers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="available_numbers.html#search-and-order-toll-free-numbers">search_and_order_toll_free_numbers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="domains.html">Domains</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="domains.html#list-domains">list_domains</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains.html#create-domain">create_domain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains.html#get-domain">get_domain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains.html#delete-domain">delete_domain</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="endpoints.html">Endpoints</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="endpoints.html#list-domain-endpoints">list_domain_endpoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="endpoints.html#create-domain-endpoint">create_domain_endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="endpoints.html#get-domain-endpoint">get_domain_endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="endpoints.html#update-domain-endpoint">update_domain_endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="endpoints.html#delete-domain-endpoint">delete_domain_endpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="endpoints.html#create-domain-endpoint-auth-token">create_domain_endpoint_auth_token</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="errors.html">Errors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="errors.html#list-errors">list_errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="errors.html#get-error">get_error</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="media.html">Media</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="media.html#list-media-files">list_media_files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="media.html#upload-media-file">upload_media_file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="media.html#download-media-file">download_media_file</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="numbers.html">Numbers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="numbers.html#get-number-info">get_number_info</a></li>
+<li class="toctree-l2"><a class="reference internal" href="numbers.html#list-phone-numbers">list_phone_numbers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="numbers.html#order-phone-number">order_phone_number</a></li>
+<li class="toctree-l2"><a class="reference internal" href="numbers.html#get-phone-number">get_phone_number</a></li>
+<li class="toctree-l2"><a class="reference internal" href="numbers.html#update-phone-number">update_phone_number</a></li>
+<li class="toctree-l2"><a class="reference internal" href="numbers.html#delete-phone-number">delete_phone_number</a></li>
+</ul>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -465,10 +392,10 @@ as described above.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="messaging_api.html" class="btn btn-neutral float-right" title="Messaging API" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="account.html" class="btn btn-neutral float-right" title="Account" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="Bandwidth App Platform SDK" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="transcriptions.html" class="btn btn-neutral" title="Transcriptions" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

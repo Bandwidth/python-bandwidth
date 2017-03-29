@@ -24,7 +24,9 @@ Before using the sdk you must initialize a Client with your Bandwidth App
 Platform API credentials::
 
     import bandwidth
-    api = bandwidth.client('catapult', 'u-user', 't-token', 's-secret')
+    voice_api = bandwidth.client('voice', 'u-user', 't-token', 's-secret')
+    messaging_api = bandwidth.client('messaging', 'u-user', 't-token', 's-secret')
+    account_api = bandwidth.client('account', 'u-user', 't-token', 's-secret')
 
 Code Samples
 ^^^^^^^^^^^^
@@ -38,8 +40,8 @@ Phone Numbers
 Get available number via location search::
 
     import Bandwidth
-    api = bandwidth.client('catapult', 'u-user', 't-token', 's-secret')
-    numbers = api.search_available_local_numbers(area_code = '910', quantity = 3)
+    account_api = bandwidth.client('account', 'u-user', 't-token', 's-secret')
+    numbers = account_api.search_available_local_numbers(area_code = '910', quantity = 3)
     print(numbers)
     ## [   {   'city'          : 'WILMINGTON',
     ##         'national_number': '(910) 444-0230',
@@ -72,8 +74,8 @@ Calling
 Create a call::
 
     import Bandwidth
-    api = bandwidth.client('catapult', 'u-user', 't-token', 's-secret')
-    call_id = api.create_call(from_ = '+1234567890', to = '+1234567891', callback_url = "http://yoursite.com/calls")
+    voice_api = bandwidth.client('voice', 'u-user', 't-token', 's-secret')
+    call_id = voice_api.create_call(from_ = '+1234567890', to = '+1234567891', callback_url = "http://yoursite.com/calls")
     print(call_id)
     ## c-abc123
 
@@ -96,8 +98,8 @@ Create a call::
 Retrieving list of calls::
 
     import Bandwidth
-    api = bandwidth.client('catapult', 'u-user', 't-token', 's-secret')
-    call_list = api.list_calls(to = '+19192223333', size = 2)
+    voice_api = bandwidth.client('voice', 'u-user', 't-token', 's-secret')
+    call_list = voice_api.list_calls(to = '+19192223333', size = 2)
     print(list(call_list))
     ## [
     ##   {
@@ -142,7 +144,7 @@ Messaging
 
 Example: Send Text Message::
 
-    message_id = api.send_message(from_ = '+1234567980',
+    message_id = messaging_api.send_message(from_ = '+1234567980',
                                   to = '+1234567981',
                                   text = 'SMS message')
     print(message_id)
@@ -150,7 +152,7 @@ Example: Send Text Message::
 
 Example: Send Picture Message::
 
-    message_id = api.send_message(from_ = '+1234567980',
+    message_id = messaging_api.send_message(from_ = '+1234567980',
                                   to = '+1234567981',
                                   text = 'MMS message',
                                   media=['http://cat.com/cat.png'])
@@ -159,14 +161,14 @@ Example: Send Picture Message::
 
 Example: Bulk Send Picture or Text messages (or both)::
 
-    results = api.send_messages([
+    results = messaging_api.send_messages([
         {'from': '+1234567980', 'to': '+1234567981', 'text': 'SMS message'},
         {'from': '+1234567980', 'to': '+1234567982', 'text': 'SMS message2'}
     ])
 
 Example: Fetch information about single message::
 
-    my_message = api.get_message('m-na6cpyjf2qcpz6l3drhcx7y')
+    my_message = messaging_api.get_message('m-na6cpyjf2qcpz6l3drhcx7y')
     print(my_message)
 
     ## {
