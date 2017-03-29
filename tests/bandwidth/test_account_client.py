@@ -66,7 +66,7 @@ class ClientTests(unittest.TestCase):
         """
         with patch('requests.request', return_value=create_response()) as p:
             client = get_client()
-            req_headers={
+            req_headers = {
                 'hello': 'world'
             }
             res_headers = copy.deepcopy(headers)
@@ -129,7 +129,6 @@ class ClientTests(unittest.TestCase):
                                  headers=headers, auth=('apiToken', 'apiSecret'))
             self.assertIs(estimated_response, response)
             self.assertDictEqual({'data': 'data'}, data)
-
 
     def test_make_request_with_location_header(self):
         """

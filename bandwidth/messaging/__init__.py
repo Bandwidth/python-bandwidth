@@ -10,6 +10,7 @@ from bandwidth.version import __version__ as version
 quote = urllib.parse.quote if six.PY3 else urllib.quote
 lazy_map = map if six.PY3 else itertools.imap
 
+
 class Client:
 
     """

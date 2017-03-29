@@ -66,7 +66,7 @@ class ClientTests(unittest.TestCase):
         """
         with patch('requests.request', return_value=create_response()) as p:
             client = get_client()
-            req_headers={
+            req_headers = {
                 'hello': 'world'
             }
             res_headers = copy.deepcopy(headers)

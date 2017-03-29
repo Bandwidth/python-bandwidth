@@ -756,14 +756,14 @@ class Client:
         return get_lazy_enumerator(self, lambda: self._make_request('get', path, params=kwargs))
 
     def create_domain_endpoint(
-        self,
-        domain_id,
-        name,
-        password,
-        description=None,
-        application_id=None,
-        enabled=True,
-        **kwargs):
+            self,
+            domain_id,
+            name,
+            password,
+            description=None,
+            application_id=None,
+            enabled=True,
+            **kwargs):
         """
         Create a domain endpoint
 
@@ -1188,14 +1188,14 @@ class Client:
         return self._make_request('get', path)[0]
 
     def list_phone_numbers(
-        self,
-        application_id=None,
-        state=None,
-        name=None,
-        city=None,
-        number_state=None,
-        size=None,
-        **kwargs):
+            self,
+            application_id=None,
+            state=None,
+            name=None,
+            city=None,
+            number_state=None,
+            size=None,
+            **kwargs):
         """
         Get a list of user's phone numbers
 

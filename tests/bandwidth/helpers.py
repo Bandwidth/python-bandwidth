@@ -8,6 +8,7 @@ headers = {
     'User-Agent': 'PythonSDK_' + version
 }
 
+
 def get_account_client():
     return AccountClient('userId', 'apiToken', 'apiSecret')
 
