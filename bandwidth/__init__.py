@@ -1,4 +1,4 @@
-_SUPPORTED_CLIENTS = ['catapult']
+_SUPPORTED_CLIENTS = ['voice', 'messaging', 'account', 'numbers']
 
 _client_classes = {}
 
@@ -21,7 +21,11 @@ def client(client_name, *args, **kwargs):
 
     :Example: Create Catapult Client
 
-    >>> api = bandwidth.client('catapult', 'YOUR_USER_ID', 'YOUR_API_TOKEN', 'YOUR_API_SECRET')
+    >>> voice_api = bandwidth.client('voice', 'YOUR_USER_ID', 'YOUR_API_TOKEN', 'YOUR_API_SECRET')
+
+    >>> account_api = bandwidth.client('account', 'YOUR_USER_ID', 'YOUR_API_TOKEN', 'YOUR_API_SECRET')
+
+    >>> messaging_api = bandwidth.client('messaging', 'YOUR_USER_ID', 'YOUR_API_TOKEN', 'YOUR_API_SECRET')
 
     """
 

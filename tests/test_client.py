@@ -1,5 +1,9 @@
+from __future__ import absolute_import
 import unittest
 import six
+
+from bandwidth import client
+from bandwidth import _client_classes
 
 if six.PY3:
     from unittest.mock import patch
@@ -8,8 +12,6 @@ else:
     from mock import patch
     builtins = '__builtin__'
 
-from bandwidth import client, _client_classes
-
 
 class ClientTests(unittest.TestCase):
 
@@ -17,13 +19,13 @@ class ClientTests(unittest.TestCase):
         """
         Call of client() should return client instance for supported client name
         """
-        self.assertIsNotNone(client('catapult', 'userId', 'token', 'secret'))
+        self.assertIsNotNone(client('voice', 'userId', 'token', 'secret'))
 
     def test_call_with_supported_client_different_case(self):
         """
         Call of client() should return client instance for supported client name (case insensitive)
         """
-        self.assertIsNotNone(client('CAtapult', 'userId', 'token', 'secret'))
+        self.assertIsNotNone(client('VOIce', 'userId', 'token', 'secret'))
 
     def test_call_with_unsupported_client(self):
         """
@@ -39,7 +41,7 @@ class ClientTests(unittest.TestCase):
         _client_classes = {}
         orig_import = __import__
         with patch('%s.__import__' % builtins, side_effect=orig_import) as p:
-            client('catapult', 'userId', 'token', 'secret')
+            client('voice', 'userId', 'token', 'secret')
             old = p.call_count
-            client('catapult', 'userId', 'token', 'secret')
+            client('voice', 'userId', 'token', 'secret')
             self.assertEqual(old, p.call_count)
