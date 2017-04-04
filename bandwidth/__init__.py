@@ -36,6 +36,9 @@ def client(client_name, *args, **kwargs):
         raise ValueError('Invalid client name "%s". Valid values are %s' % (client_name, client_names))
     client_class = _client_classes.get(name)
     if client_class is None:
-        client_class = getattr(__import__('bandwidth.%s' % name), name).Client
+        if name is 'messaging' and kwargs.get('api_version', 'v1') is 'v2':
+            client_class = getattr(__import__('bandwidth.%s' % 'v2_messaging'), 'v2_messaging').Client
+        else:
+            client_class = getattr(__import__('bandwidth.%s' % name), name).Client
         _client_classes[name] = client_class
     return client_class(*args, **kwargs)
