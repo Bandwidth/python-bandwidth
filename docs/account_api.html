@@ -169,6 +169,10 @@
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Account Api</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#client-initialization">Client Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#code-samples">Code Samples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phone-numbers">Phone Numbers</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#account-methods">Account Methods</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="account.html">Account</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="account.html#get-account">get_account</a></li>
@@ -289,8 +293,24 @@
 <h2>Client Initialization<a class="headerlink" href="#client-initialization" title="Permalink to this headline">¶</a></h2>
 <p>Before using the sdk you must initialize a Client with your Bandwidth App
 Platform API credentials:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bandwidth</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Single import</span>
+<span class="kn">import</span> <span class="nn">bandwidth</span>
 <span class="n">account_api</span> <span class="o">=</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;account&#39;</span><span class="p">,</span> <span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
+
+<span class="c1"># OR for IDE goodness with auto completes</span>
+<span class="kn">from</span> <span class="nn">bandwidth</span> <span class="kn">import</span> <span class="n">account</span>
+<span class="n">account_api</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="code-samples">
+<h2>Code Samples<a class="headerlink" href="#code-samples" title="Permalink to this headline">¶</a></h2>
+<p>Each of these samples assumes you have already have a bandwidth account</p>
+<div class="section" id="phone-numbers">
+<h3>Phone Numbers<a class="headerlink" href="#phone-numbers" title="Permalink to this headline">¶</a></h3>
+<p>Get available number via location search:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bandwidth</span> <span class="kn">import</span> <span class="n">account</span>
+<span class="n">account_api</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
 
 <span class="n">numbers</span> <span class="o">=</span> <span class="n">account_api</span><span class="o">.</span><span class="n">search_available_local_numbers</span><span class="p">(</span><span class="n">area_code</span> <span class="o">=</span> <span class="s1">&#39;910&#39;</span><span class="p">,</span> <span class="n">quantity</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>
 
@@ -319,6 +339,7 @@ Platform API credentials:</p>
 <span class="k">print</span><span class="p">(</span><span class="n">numbers</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;number&quot;</span><span class="p">])</span>
 <span class="c1">## +19104440230</span>
 </pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="account-methods">

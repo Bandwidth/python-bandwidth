@@ -169,6 +169,10 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="account_api.html">Account Api</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="account_api.html#client-initialization">Client Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="account_api.html#code-samples">Code Samples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="account_api.html#phone-numbers">Phone Numbers</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="account_api.html#account-methods">Account Methods</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="account.html">Account</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="account.html#get-account">get_account</a></li>
@@ -278,7 +282,7 @@
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>To install the latest stable version with pip use the following command:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>pip install bandwidth_sdk
+<div class="highlight-python"><div class="highlight"><pre><span></span>pip install bandwidth-sdk==3.0.0b0
 </pre></div>
 </div>
 <p>If you want to install the bleeding edge version of the SDK from our
@@ -300,6 +304,13 @@ Platform API credentials:</p>
 <span class="n">account_api</span> <span class="o">=</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;account&#39;</span><span class="p">,</span> <span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Or import each individually for better IDE integration:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bandwidth</span> <span class="kn">import</span> <span class="n">messaging</span><span class="p">,</span> <span class="n">voice</span><span class="p">,</span> <span class="n">account</span>
+<span class="n">messaging_api</span> <span class="o">=</span> <span class="n">messaging</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
+<span class="n">voice_api</span> <span class="o">=</span> <span class="n">voice</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
+<span class="n">account_api</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="code-samples">
 <h2>Code Samples<a class="headerlink" href="#code-samples" title="Permalink to this headline">¶</a></h2>
@@ -308,7 +319,7 @@ as described above.</p>
 <div class="section" id="phone-numbers">
 <h3>Phone Numbers<a class="headerlink" href="#phone-numbers" title="Permalink to this headline">¶</a></h3>
 <p>Get available number via location search:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">Bandwidth</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bandwidth</span>
 <span class="n">account_api</span> <span class="o">=</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;account&#39;</span><span class="p">,</span> <span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
 <span class="n">numbers</span> <span class="o">=</span> <span class="n">account_api</span><span class="o">.</span><span class="n">search_available_local_numbers</span><span class="p">(</span><span class="n">area_code</span> <span class="o">=</span> <span class="s1">&#39;910&#39;</span><span class="p">,</span> <span class="n">quantity</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">numbers</span><span class="p">)</span>
@@ -342,7 +353,7 @@ as described above.</p>
 <div class="section" id="calling">
 <h3>Calling<a class="headerlink" href="#calling" title="Permalink to this headline">¶</a></h3>
 <p>Create a call:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">Bandwidth</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bandwidth</span>
 <span class="n">voice_api</span> <span class="o">=</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;voice&#39;</span><span class="p">,</span> <span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
 <span class="n">call_id</span> <span class="o">=</span> <span class="n">voice_api</span><span class="o">.</span><span class="n">create_call</span><span class="p">(</span><span class="n">from_</span> <span class="o">=</span> <span class="s1">&#39;+1234567890&#39;</span><span class="p">,</span> <span class="n">to</span> <span class="o">=</span> <span class="s1">&#39;+1234567891&#39;</span><span class="p">,</span> <span class="n">callback_url</span> <span class="o">=</span> <span class="s2">&quot;http://yoursite.com/calls&quot;</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">call_id</span><span class="p">)</span>
@@ -366,7 +377,7 @@ as described above.</p>
 </pre></div>
 </div>
 <p>Retrieving list of calls:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">Bandwidth</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bandwidth</span>
 <span class="n">voice_api</span> <span class="o">=</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;voice&#39;</span><span class="p">,</span> <span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
 <span class="n">call_list</span> <span class="o">=</span> <span class="n">voice_api</span><span class="o">.</span><span class="n">list_calls</span><span class="p">(</span><span class="n">to</span> <span class="o">=</span> <span class="s1">&#39;+19192223333&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">call_list</span><span class="p">))</span>

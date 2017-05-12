@@ -169,6 +169,10 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="account_api.html">Account Api</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="account_api.html#client-initialization">Client Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="account_api.html#code-samples">Code Samples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="account_api.html#phone-numbers">Phone Numbers</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="account_api.html#account-methods">Account Methods</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="account.html">Account</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="account.html#get-account">get_account</a></li>
@@ -286,12 +290,17 @@
 <h2>Client Initialization<a class="headerlink" href="#client-initialization" title="Permalink to this headline">¶</a></h2>
 <p>Before using the sdk you must initialize a Client with your Bandwidth App
 Platform API credentials:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bandwidth</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># single import</span>
+<span class="kn">import</span> <span class="nn">bandwidth</span>
 <span class="n">voice_api</span> <span class="o">=</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;voice&#39;</span><span class="p">,</span> <span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
+
+<span class="c1"># OR for IDE goodness with auto completes</span>
+<span class="kn">from</span> <span class="nn">bandwidth</span> <span class="kn">import</span> <span class="n">voice</span>
+<span class="n">voice_api</span> <span class="o">=</span> <span class="n">voice</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Create a call:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">Bandwidth</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bandwidth</span>
 <span class="n">voice_api</span> <span class="o">=</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;voice&#39;</span><span class="p">,</span> <span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
 <span class="n">call_id</span> <span class="o">=</span> <span class="n">voice_api</span><span class="o">.</span><span class="n">create_call</span><span class="p">(</span><span class="n">from_</span> <span class="o">=</span> <span class="s1">&#39;+1234567890&#39;</span><span class="p">,</span> <span class="n">to</span> <span class="o">=</span> <span class="s1">&#39;+1234567891&#39;</span><span class="p">,</span> <span class="n">callback_url</span> <span class="o">=</span> <span class="s2">&quot;http://yoursite.com/calls&quot;</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">call_id</span><span class="p">)</span>
@@ -315,7 +324,7 @@ Platform API credentials:</p>
 </pre></div>
 </div>
 <p>Retrieving list of calls:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">Bandwidth</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bandwidth</span>
 <span class="n">voice_api</span> <span class="o">=</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;voice&#39;</span><span class="p">,</span> <span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
 <span class="n">call_list</span> <span class="o">=</span> <span class="n">voice_api</span><span class="o">.</span><span class="n">list_calls</span><span class="p">(</span><span class="n">to</span> <span class="o">=</span> <span class="s1">&#39;+19192223333&#39;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">call_list</span><span class="p">))</span>

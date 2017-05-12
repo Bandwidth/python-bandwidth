@@ -6,7 +6,7 @@ Installation
 
 To install the latest stable version with pip use the following command::
 
-    pip install bandwidth_sdk
+    pip install bandwidth-sdk==3.0.0b0
 
 If you want to install the bleeding edge version of the SDK from our
 `github repository <https://github.com/bandwidth/python-bandwidth>`_
@@ -28,6 +28,13 @@ Platform API credentials::
     messaging_api = bandwidth.client('messaging', 'u-user', 't-token', 's-secret')
     account_api = bandwidth.client('account', 'u-user', 't-token', 's-secret')
 
+Or import each individually for better IDE integration::
+
+    from bandwidth import messaging, voice, account
+    messaging_api = messaging.Client('u-user', 't-token', 's-secret')
+    voice_api = voice.Client('u-user', 't-token', 's-secret')
+    account_api = account.Client('u-user', 't-token', 's-secret')
+
 Code Samples
 ^^^^^^^^^^^^
 
@@ -39,7 +46,7 @@ Phone Numbers
 
 Get available number via location search::
 
-    import Bandwidth
+    import bandwidth
     account_api = bandwidth.client('account', 'u-user', 't-token', 's-secret')
     numbers = account_api.search_available_local_numbers(area_code = '910', quantity = 3)
     print(numbers)
@@ -73,7 +80,7 @@ Calling
 
 Create a call::
 
-    import Bandwidth
+    import bandwidth
     voice_api = bandwidth.client('voice', 'u-user', 't-token', 's-secret')
     call_id = voice_api.create_call(from_ = '+1234567890', to = '+1234567891', callback_url = "http://yoursite.com/calls")
     print(call_id)
@@ -97,7 +104,7 @@ Create a call::
 
 Retrieving list of calls::
 
-    import Bandwidth
+    import bandwidth
     voice_api = bandwidth.client('voice', 'u-user', 't-token', 's-secret')
     call_list = voice_api.list_calls(to = '+19192223333', size = 2)
     print(list(call_list))
