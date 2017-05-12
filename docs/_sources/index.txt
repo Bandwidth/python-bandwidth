@@ -21,6 +21,13 @@ Platform API credentials::
     messaging_api = bandwidth.client('messaging', 'u-user', 't-token', 's-secret')
     account_api = bandwidth.client('account', 'u-user', 't-token', 's-secret')
 
+Or import each individually for better IDE integration::
+
+    from bandwidth import messaging, voice, account
+    messaging_api = messaging.Client('u-user', 't-token', 's-secret')
+    voice_api = voice.Client('u-user', 't-token', 's-secret')
+    account_api = account.Client('u-user', 't-token', 's-secret')
+
 Voice API
 ~~~~~~~~~
 * Phone Calls

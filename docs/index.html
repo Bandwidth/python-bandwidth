@@ -168,6 +168,10 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="account_api.html">Account Api</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="account_api.html#client-initialization">Client Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="account_api.html#code-samples">Code Samples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="account_api.html#phone-numbers">Phone Numbers</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="account_api.html#account-methods">Account Methods</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="account.html">Account</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="account.html#get-account">get_account</a></li>
@@ -292,6 +296,13 @@ Platform API credentials:</p>
 <span class="n">account_api</span> <span class="o">=</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;account&#39;</span><span class="p">,</span> <span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Or import each individually for better IDE integration:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bandwidth</span> <span class="kn">import</span> <span class="n">messaging</span><span class="p">,</span> <span class="n">voice</span><span class="p">,</span> <span class="n">account</span>
+<span class="n">messaging_api</span> <span class="o">=</span> <span class="n">messaging</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
+<span class="n">voice_api</span> <span class="o">=</span> <span class="n">voice</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
+<span class="n">account_api</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="s1">&#39;u-user&#39;</span><span class="p">,</span> <span class="s1">&#39;t-token&#39;</span><span class="p">,</span> <span class="s1">&#39;s-secret&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="section" id="voice-api">
 <h2>Voice API<a class="headerlink" href="#voice-api" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -358,6 +369,10 @@ Platform API credentials:</p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="account_api.html">Account Api</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="account_api.html#client-initialization">Client Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="account_api.html#code-samples">Code Samples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="account_api.html#phone-numbers">Phone Numbers</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="account_api.html#account-methods">Account Methods</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="account.html">Account</a></li>
 <li class="toctree-l3"><a class="reference internal" href="applications.html">Applications</a></li>
