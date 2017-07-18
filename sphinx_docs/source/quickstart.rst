@@ -70,10 +70,10 @@ Get available number via location search::
     ##         'state'         : 'NC'}
     ## ]
 
-    my_number = api.create_phone_number(numbers[0]['number'])
+    my_number = api.order_phone_number(numbers[0]['number'])
 
     print(my_number)
-    #+19104440230
+    #n-rnd5ecson3da39fchqmrj3q
 
 Calling
 -------

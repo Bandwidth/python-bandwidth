@@ -41,14 +41,14 @@ account_api = account.Client('u-user', 't-token', 's-secret')
 ### Search and order phone number
 
 ```python
-numbers = api.search_available_local_numbers(area_code = '910', quantity = 3)
+numbers = account_api.search_available_local_numbers(area_code = '910', quantity = 3)
 print(numbers[0]['number'])
 ## +19104440230
 
-my_number = api.create_phone_number(numbers[0]['number'])
+my_number = account_api.order_phone_number(numbers[0]['number'])
 
 print(my_number)
-#+19104440230
+#n-rnd5eag33safchqmrj3q
 ```
 
 ### Send Text Message
