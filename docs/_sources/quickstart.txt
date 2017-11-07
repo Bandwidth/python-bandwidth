@@ -6,7 +6,7 @@ Installation
 
 To install the latest stable version with pip use the following command::
 
-    pip install bandwidth-sdk==3.0.0b0
+    pip install bandwidth-sdk
 
 If you want to install the bleeding edge version of the SDK from our
 `github repository <https://github.com/bandwidth/python-bandwidth>`_
