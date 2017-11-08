@@ -1,11 +1,15 @@
-Bandwidth App Platform SDK
+Bandwidth SDK
 ==========================
 
-bandwidth_sdk is a python library for working with the
-`Bandwidth App Platform <https://catapult.inetwork.com/pages/home.jsf>`_.
+bandwidth_sdk is a python library for working with
+`Bandwidth Voice And Messaging APIs <http://dev.bandwidth.com>`_.
 
 Complete original documentation of the API can be found
 `here <http://dev.bandwidth.com>`_
+
+Install the SDK with pip::
+
+    pip install bandwidth-sdk
 
 The Bandwidth-Python API is broken up into logical pieces:
 
