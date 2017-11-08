@@ -7,6 +7,8 @@ bandwidth_sdk is a python library for working with the
 Complete original documentation of the API can be found
 `here <http://dev.bandwidth.com>`_
 
+    pip install bandwidth-sdk
+
 The Bandwidth-Python API is broken up into logical pieces:
 
 * Voice API
