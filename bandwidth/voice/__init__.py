@@ -917,7 +917,7 @@ class Client:
 
         Examples: Play either file for speak sentence::
 
-            api.play_audio_to_bridge('bridgeId', fileUrl='http://host/path/file.mp3')
+            api.play_audio_to_bridge('bridgeId', file_url='http://host/path/file.mp3')
             api.play_audio_to_bridge('bridgeId', sentence='Press 0 to complete call', gender='female')
 
             # or with extension methods
@@ -1104,7 +1104,7 @@ class Client:
 
         Example: Play audio file to conference::
 
-            api.play_audio_to_conference('conferenceId', fileUrl = 'http://host/path/file.mp3')
+            api.play_audio_to_conference('conferenceId', file_url='http://host/path/file.mp3')
 
         Example: Speak Sentence to conference::
 
@@ -1388,7 +1388,7 @@ class Client:
 
         Example: Play audio to specific conference member::
 
-            api.play_audio_to_conference_member('conferenceId', 'memberId', fileUrl=http://host/path/file.mp3)
+            api.play_audio_to_conference_member('conferenceId', 'memberId', file_url='http://host/path/file.mp3')
             api.play_audio_to_conference_member('conferenceId', 'memberId',
                                                 sentence='Press 0 to complete call', gender='female')
 

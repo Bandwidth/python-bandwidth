@@ -447,7 +447,7 @@ if the request to callbackUrl fails.</li>
 </tbody>
 </table>
 <p>Example: Play audio file to conference:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">play_audio_to_conference</span><span class="p">(</span><span class="s1">&#39;conferenceId&#39;</span><span class="p">,</span> <span class="n">fileUrl</span> <span class="o">=</span> <span class="s1">&#39;http://host/path/file.mp3&#39;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">play_audio_to_conference</span><span class="p">(</span><span class="s1">&#39;conferenceId&#39;</span><span class="p">,</span> <span class="n">file_url</span><span class="o">=</span><span class="s1">&#39;http://host/path/file.mp3&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Example: Speak Sentence to conference:</p>
@@ -727,13 +727,13 @@ if the request to callbackUrl fails.</li>
 </tbody>
 </table>
 <p>Example: Play audio to specific conference member:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>api.play_audio_to_conference_member(&#39;conferenceId&#39;, &#39;memberId&#39;, fileUrl=http://host/path/file.mp3)
-api.play_audio_to_conference_member(&#39;conferenceId&#39;, &#39;memberId&#39;,
-                                    sentence=&#39;Press 0 to complete call&#39;, gender=&#39;female&#39;)
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">play_audio_to_conference_member</span><span class="p">(</span><span class="s1">&#39;conferenceId&#39;</span><span class="p">,</span> <span class="s1">&#39;memberId&#39;</span><span class="p">,</span> <span class="n">file_url</span><span class="o">=</span><span class="s1">&#39;http://host/path/file.mp3&#39;</span><span class="p">)</span>
+<span class="n">api</span><span class="o">.</span><span class="n">play_audio_to_conference_member</span><span class="p">(</span><span class="s1">&#39;conferenceId&#39;</span><span class="p">,</span> <span class="s1">&#39;memberId&#39;</span><span class="p">,</span>
+                                    <span class="n">sentence</span><span class="o">=</span><span class="s1">&#39;Press 0 to complete call&#39;</span><span class="p">,</span> <span class="n">gender</span><span class="o">=</span><span class="s1">&#39;female&#39;</span><span class="p">)</span>
 
-# or with extension methods
-api.play_audio_file_to_conference_member(&#39;conferenceId&#39;, &#39;memberId&#39;, &#39;http://host/path/file.mp3&#39;)
-api.speak_sentence_to_conference_member(&#39;conferenceId&#39;, &#39;memberId&#39;, &#39;Hello&#39;)
+<span class="c1"># or with extension methods</span>
+<span class="n">api</span><span class="o">.</span><span class="n">play_audio_file_to_conference_member</span><span class="p">(</span><span class="s1">&#39;conferenceId&#39;</span><span class="p">,</span> <span class="s1">&#39;memberId&#39;</span><span class="p">,</span> <span class="s1">&#39;http://host/path/file.mp3&#39;</span><span class="p">)</span>
+<span class="n">api</span><span class="o">.</span><span class="n">speak_sentence_to_conference_member</span><span class="p">(</span><span class="s1">&#39;conferenceId&#39;</span><span class="p">,</span> <span class="s1">&#39;memberId&#39;</span><span class="p">,</span> <span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
