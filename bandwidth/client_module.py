@@ -3,6 +3,7 @@ _SUPPORTED_CLIENTS = ['voice', 'messaging', 'account', 'numbers']
 
 _client_classes = {}
 
+
 def client(client_name, *args, **kwargs):
     """
     Initialize the bandwidth sdk client.
