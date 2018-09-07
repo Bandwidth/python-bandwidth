@@ -7,7 +7,8 @@ class Response:
     BXML Response element
 
     :Example:
-        response = bandwidth.catapult.bxml.Response(E.Call({'from': '+1234567890', 'to': '+1234567891'}), E.Hangup())
+        from bandwidth.voice.bxml import Response
+        response = Response(E.Call({'from': '+1234567890', 'to': '+1234567891'}), E.Hangup())
     """
 
     def __init__(self, *response_verbs):
