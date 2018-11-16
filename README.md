@@ -1,11 +1,12 @@
 # Bandwidth Python API
 
-[![Build Status](https://travis-ci.org/Bandwidth/python-bandwidth.svg?branch=master)](https://travis-ci.org/Bandwidth/python-bandwidth) [![Can I Use Python 3?](https://caniusepython3.com/project/bandwidth-sdk.svg)](https://caniusepython3.com/project/bandwidth-sdk)
+[![Build Status](https://travis-ci.org/Bandwidth/python-bandwidth.svg?branch=master)](https://travis-ci.org/Bandwidth/python-bandwidth) [![Can I Use Python 3?](https://caniusepython3.com/project/bandwidth-sdk.svg)](https://caniusepython3.com/project/bandwidth-sdk)[![Documentation Status](https://readthedocs.org/projects/bandwidth-sdk/badge/?version=latest)](http://bandwidth-sdk.readthedocs.io/en/latest/?badge=latest)
+
 
 Client library for the [Bandwidth App Platform](http://ap.bandwidth.com/docs/rest-api/)
 
 ## Full Reference
-###[dev.bandwidth.com/python-bandwidth](http://dev.bandwidth.com/python-bandwidth)
+### [dev.bandwidth.com/python-bandwidth](http://dev.bandwidth.com/python-bandwidth)
 
 
 ## Requirements
@@ -16,7 +17,7 @@ Client library for the [Bandwidth App Platform](http://ap.bandwidth.com/docs/res
 ## Installation
 
 ```bash
-pip install bandwidth-sdk==2.1.0b0
+pip install bandwidth-sdk
 ```
 
 ## Usage
@@ -24,7 +25,16 @@ pip install bandwidth-sdk==2.1.0b0
 ### Client Initialization
 ```python
 import bandwidth
-api = bandwidth.client('catapult', 'u-user', 't-token', 's-secret')
+voice_api = bandwidth.client('voice', 'u-user', 't-token', 's-secret')
+messaging_api = bandwidth.client('messaging', 'u-user', 't-token', 's-secret')
+account_api = bandwidth.client('account', 'u-user', 't-token', 's-secret')
+
+## Or import each individually for better IDE integration::
+
+from bandwidth import messaging, voice, account
+messaging_api = messaging.Client('u-user', 't-token', 's-secret')
+voice_api = voice.Client('u-user', 't-token', 's-secret')
+account_api = account.Client('u-user', 't-token', 's-secret')
 ```
 
 > Each of these code sample assumes that you have already initialized a client
@@ -32,14 +42,14 @@ api = bandwidth.client('catapult', 'u-user', 't-token', 's-secret')
 ### Search and order phone number
 
 ```python
-numbers = api.search_available_local_numbers(area_code = '910', quantity = 3)
+numbers = account_api.search_available_local_numbers(area_code = '910', quantity = 3)
 print(numbers[0]['number'])
 ## +19104440230
 
-my_number = api.create_phone_number(numbers[0]['number'])
+my_number = account_api.order_phone_number(numbers[0]['number'])
 
 print(my_number)
-#+19104440230
+#n-rnd5eag33safchqmrj3q
 ```
 
 ### Send Text Message
@@ -74,8 +84,8 @@ print(my_message[state])
 
 ```python
 call_id = api.create_call(from_ = '+1234567890',
-	                      to = '+1234567891',
-	                      callback_url = "http://yoursite.com/calls")
+                          to = '+1234567891',
+                          callback_url = "http://yoursite.com/calls")
 print(call_id)
 ## c-abc123
  ```

@@ -9,8 +9,14 @@ Client Initialization
 Before using the sdk you must initialize a Client with your Bandwidth App
 Platform API credentials::
 
+    # Root import
     import bandwidth
     messaging_api = bandwidth.client('messaging', 'u-user', 't-token', 's-secret')
+
+    # OR for IDE goodness with auto completes
+    from bandwidth import messaging
+    messaging_api = messaging.Client('u-user', 't-token', 's-secret')
+
 
 Example: Send Text Message::
 
