@@ -85,60 +85,52 @@ class Client:
             id = location.split('/')[-1]
         return (data, response, id)
 
-    def send_message(self, from_, to,
+    def send_message(from_, to,
+                     application_id,
                      text=None,
                      media=None,
-                     receipt_requested=None,
-                     callback_url=None,
-                     callback_http_method=None,
-                     callback_timeout=None,
-                     fallback_url=None,
                      tag=None,
                      **kwargs):
         """
         Send a message (SMS or MMS)
-
         :param str ``from_``: One of your telephone numbers the message should come from
-        :param str to: The phone number the message should be sent to
+        :param list to: The phone numbers the message should be sent to.
+        :param str application_id: The ID of the Application your
+            from number is associated with in the Bandwidth Phone Number Dashboard.
         :param str text: The contents of the text message
         :param list media: For MMS messages, a media url to the location of the media or
             list of medias to be sent send with the message.
-        :param str receipt_requested: Requested receipt option for outbound messages: 'none', 'all', 'error'
-        :param str callback_url: The server URL where the events related to the outgoing message will be sent to
-        :param str callback_http_method: Determine if the callback event should be sent via HTTP GET or HTTP POST.
-            Values are get or post Default is post
-        :param str callback_timeout: Determine how long should the platform wait for
-            callbackUrl's response before timing out (milliseconds).
-        :param str fallback_url: The server URL used to send the message events if the request to callbackUrl fails.
         :param str tag: Any string, it will be included in the callback events of the message.
-        :rtype: str
-        :returns: id of created message
-
+        :rtype: Dict
+        :returns: object of created message
         Example: Send Text Message::
-
             id = api.send_message(
                 from_ = '+1234567980',
-                to = '+1234567981',
-                text = 'SMS message'
+                to = ['+1234567981'],
+                text = 'SMS message',
+                application_id = '93de2206-9669-4e07-948d-329f4b722ee2'
                 )
-
-        Example: Send Picture Message::
-
+        Example: Send Group Multi-Media Message::
             id = api.send_message(
                 from_ = '+1234567980',
-                to = '+1234567981',
-                media = ['http://host/path/to/file']
+                to = ['+1234567981','+1234567999'],
+                media = ['http://host/path/to/file'],
+                text = 'Group MMS message',
+                application_id = '93de2206-9669-4e07-948d-329f4b722ee2'
+                )
+        Example: Send Toll-free Message::
+            id = api.send_message(
+                from_ = '+18331231234',
+                to = ['+1234567999'],
+                text = 'Toll-free SMS',
+                application_id = '93de2206-9669-4e07-948d-329f4b722ee2'
                 )
         """
         kwargs['from'] = from_
         kwargs['to'] = to
         kwargs['text'] = text
         kwargs['media'] = media
-        kwargs['receiptRequested'] = receipt_requested
-        kwargs['callbackUrl'] = callback_url
-        kwargs['callbackHttpMethod'] = callback_http_method
-        kwargs['callbackTimeout'] = callback_timeout
-        kwargs['fallbackUrl'] = fallback_url
+        kwargs['applicationId'] = application_id
         kwargs['tag'] = tag
 
         return self._make_request('post', '/users/%s/messages' % self.user_id, json=kwargs)
