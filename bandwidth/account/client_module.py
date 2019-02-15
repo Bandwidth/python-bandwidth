@@ -68,7 +68,7 @@ class Client:
 
     def _check_response(self, response):
         if response.status_code >= 400:
-            if response.headers.get('content-type') == 'application/json':
+            if "application/json" in response.headers.get('content-type'):
                 data = response.json()
                 raise BandwidthAccountAPIException(
                     response.status_code, data['message'], code=data.get('code'))
