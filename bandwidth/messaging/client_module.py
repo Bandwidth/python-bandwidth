@@ -67,7 +67,7 @@ class Client:
 
     def _check_response(self, response):
         if response.status_code >= 400:
-            if response.headers.get('content-type').startsWith("application/json"):
+            if response.headers.get('content-type').startswith("application/json"):
                 data = response.json()
                 raise BandwidthMessageAPIException(
                     response.status_code, data['message'], code=data.get('code'))
@@ -80,7 +80,7 @@ class Client:
         self._check_response(response)
         data = None
         id = None
-        if response.headers.get('content-type').startsWith("application/json"):
+        if response.headers.get('content-type').startswith("application/json"):
             data = convert_object_to_snake_case(response.json())
         location = response.headers.get('location')
         if location is not None:

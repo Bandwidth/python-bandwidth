@@ -76,7 +76,7 @@ class Client:
 
     def _check_response(self, response):
         if response.status_code >= 400:
-            if response.headers.get('content-type').startsWith("application/json"):
+            if response.headers.get('content-type').startswith("application/json"):
                 data = response.json()
                 raise BandwidthVoiceAPIException(
                     response.status_code, data['message'], code=data.get('code'))
