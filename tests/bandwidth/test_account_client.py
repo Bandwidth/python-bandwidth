@@ -160,4 +160,3 @@ class ClientTests(unittest.TestCase):
         encoded_string = "Home%281%29-m-m4dh5ym.jpg"
         non_encoded_string = "Home(1)-m-m4dh5ym.jpg"
         self.assertEqual(encoded_string, client._encode_if_not_encoded(non_encoded_string))
-
