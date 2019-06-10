@@ -15,7 +15,6 @@ unquote = urllib.parse.unquote if six.PY3 else urllib.unquote
 lazy_map = map if six.PY3 else itertools.imap
 
 
-
 class Client:
 
     """
@@ -53,7 +52,7 @@ class Client:
             'api_endpoint', 'https://api.catapult.inetwork.com')
         self.api_version = other_options.get('api_version', 'v1')
         self.auth = (api_token, api_secret)
-    
+
     def _encode_if_not_encoded(self, str_):
         """
         Takes a string and encodes it if it is not already encoded, otherwise does nothing to id
@@ -1205,7 +1204,7 @@ class Client:
             ##     'updated'    : '2017-02-10T09:11:50Z'}
 
         """
-        path = '/phoneNumbers/numberInfo/%s' % quote(number)
+        path = '/phoneNumbers/numberInfo/%s' % self._encode_if_not_encoded(number)
         return self._make_request('get', path)[0]
 
     def list_phone_numbers(
