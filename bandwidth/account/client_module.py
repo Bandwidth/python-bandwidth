@@ -55,7 +55,7 @@ class Client:
 
     def _encode_if_not_encoded(self, str_):
         """
-        Takes a string and encodes it if it is not already encoded, otherwise does nothing to id
+        Takes a string and encodes it if it is not already encoded, otherwise does nothing to it
 
         params:
           str_ (string):
