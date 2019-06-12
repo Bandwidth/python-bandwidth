@@ -11,6 +11,7 @@ from bandwidth.version import __version__ as version
 from .api_exception_module import BandwidthAccountAPIException
 
 quote = urllib.parse.quote if six.PY3 else urllib.quote
+unquote = urllib.parse.unquote if six.PY3 else urllib.unquote
 lazy_map = map if six.PY3 else itertools.imap
 
 
@@ -51,6 +52,21 @@ class Client:
             'api_endpoint', 'https://api.catapult.inetwork.com')
         self.api_version = other_options.get('api_version', 'v1')
         self.auth = (api_token, api_secret)
+
+    def _encode_if_not_encoded(self, str_):
+        """
+        Takes a string and encodes it if it is not already encoded, otherwise does nothing to it
+
+        params:
+          str_ (string):
+        :type str_: str
+        :param str_: string to check encoding
+        """
+        unparsed_str = unquote(str_)
+        if unparsed_str == str_:
+            return quote(str_)
+        else:
+            return str_
 
     def _request(self, method, url, *args, **kwargs):
         user_agent = 'PythonSDK_' + version
@@ -1123,7 +1139,7 @@ class Client:
         if file_path is not None and content is None:
             content = open(file_path, 'rb')
             is_file_path = True
-        path = '/users/%s/media/%s' % (self.user_id, quote(media_name))
+        path = '/users/%s/media/%s' % (self.user_id, self._encode_if_not_encoded(media_name))
         try:
             return self._make_request('put', path, data=content, headers={'content-type': content_type})
         finally:
@@ -1149,7 +1165,7 @@ class Client:
                     with io.open(media['media_name'], 'wb') as file:
                         file.write(stream.read())
         """
-        path = '/users/%s/media/%s' % (self.user_id, quote(media_name))
+        path = '/users/%s/media/%s' % (self.user_id, self._encode_if_not_encoded(media_name))
         response = self._request('get', path, stream=True)
         response.raise_for_status()
         return response.raw, response.headers['content-type']
@@ -1165,7 +1181,7 @@ class Client:
 
             api.delete_media_file('file1.txt')
         """
-        path = '/users/%s/media/%s' % (self.user_id, quote(media_name))
+        path = '/users/%s/media/%s' % (self.user_id, self._encode_if_not_encoded(media_name))
         self._make_request('delete', path)
 
     def get_number_info(self, number):
@@ -1188,7 +1204,7 @@ class Client:
             ##     'updated'    : '2017-02-10T09:11:50Z'}
 
         """
-        path = '/phoneNumbers/numberInfo/%s' % quote(number)
+        path = '/phoneNumbers/numberInfo/%s' % self._encode_if_not_encoded(number)
         return self._make_request('get', path)[0]
 
     def list_phone_numbers(

@@ -143,3 +143,20 @@ class ClientTests(unittest.TestCase):
                                  headers=headers, auth=('apiToken', 'apiSecret'))
             self.assertIs(estimated_response, response)
             self.assertEqual('id', id)
+
+    def test_encode_if_not_encoded_encoded_string(self):
+        """
+        encode_if_not_encoded() should return the same string if it is already encoded
+        """
+        client = Client('userId', 'apiToken', 'apiSecret')
+        encoded_string = "Home%281%29-m-m4dh5ym.jpg"
+        self.assertEqual(encoded_string, client._encode_if_not_encoded(encoded_string))
+
+    def test_encoded_if_not_encoded_non_encoded_string(self):
+        """
+        encoded_if_not_encoded() should encode the string if not already encoded
+        """
+        client = Client('userId', 'apiToken', 'apiSecret')
+        encoded_string = "Home%281%29-m-m4dh5ym.jpg"
+        non_encoded_string = "Home(1)-m-m4dh5ym.jpg"
+        self.assertEqual(encoded_string, client._encode_if_not_encoded(non_encoded_string))
